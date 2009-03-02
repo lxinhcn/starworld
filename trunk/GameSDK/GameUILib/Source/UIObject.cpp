@@ -1,0 +1,11 @@
+#include "UIObject.h"
+//////////////////////////////////////////////////////////////////////////
+// CXObject
+CUIObject::CUIObject()
+{
+	// 自动列表
+}
+
+CUIObject::~CUIObject()
+{
+}
