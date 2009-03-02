@@ -1,0 +1,28 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameCore", "GameCore\GameCore.vcproj", "{2DB0D95C-7472-4494-BB66-E3F2624EEE87}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameWorld", "GameWorld\GameWorld.vcproj", "{DFC4FCE6-5749-4FA2-8FC5-4CD42B9E9A3A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2DB0D95C-7472-4494-BB66-E3F2624EEE87} = {2DB0D95C-7472-4494-BB66-E3F2624EEE87}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2DB0D95C-7472-4494-BB66-E3F2624EEE87}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2DB0D95C-7472-4494-BB66-E3F2624EEE87}.Debug|Win32.Build.0 = Debug|Win32
+		{2DB0D95C-7472-4494-BB66-E3F2624EEE87}.Release|Win32.ActiveCfg = Release|Win32
+		{2DB0D95C-7472-4494-BB66-E3F2624EEE87}.Release|Win32.Build.0 = Release|Win32
+		{DFC4FCE6-5749-4FA2-8FC5-4CD42B9E9A3A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DFC4FCE6-5749-4FA2-8FC5-4CD42B9E9A3A}.Debug|Win32.Build.0 = Debug|Win32
+		{DFC4FCE6-5749-4FA2-8FC5-4CD42B9E9A3A}.Release|Win32.ActiveCfg = Release|Win32
+		{DFC4FCE6-5749-4FA2-8FC5-4CD42B9E9A3A}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
