@@ -161,6 +161,18 @@ SIZE GfxFont::GetTextSize( const wchar_t* text )
 	return dim;
 }
 
+// 获取字符宽度
+LONG GfxFont::GetCharacterWidth( const wchar_t character )
+{
+	return static_cast<LONG>( GetWidthFromCharacter(character) + m_nKerningWidth );
+}
+
+// 获取字符高度
+LONG GfxFont::GetCharacterHeight()const
+{
+	return static_cast<LONG>(m_nFontSize + m_nKerningHeight);
+}
+
 // 根据坐标获取字符
 wchar_t GfxFont::GetCharacterFromPos( const wchar_t* text, float pixel_x, float pixel_y )
 {
@@ -203,17 +215,18 @@ void GfxFont::SetKerningHeight( float kerning )
 }
 
 // 获取字间距
-float GfxFont::GetKerningWidth()
+float GfxFont::GetKerningWidth()const
 {
 	return m_nKerningWidth;
 }
-float GfxFont::GetKerningHeight()
+
+float GfxFont::GetKerningHeight()const
 {
 	return m_nKerningHeight;
 }	
 
 // 字体大小
-float GfxFont::GetFontSize()
+float GfxFont::GetFontSize()const
 {
 	return m_nFontSize;
 }
@@ -225,12 +238,14 @@ unsigned int GfxFont::GetGlyphByCharacter( wchar_t c )
 	if (NULL == (m_Glyphs[idx].t)) CacheCharacter(idx,c);
 	return idx;
 }
+
 inline float GfxFont::GetWidthFromCharacter( wchar_t c, bool original )
 {
 	unsigned int idx = GetGlyphByCharacter(c);
 	if (original && idx > 0 && idx < font_count) return m_Glyphs[idx].c;
 	return	(idx >= 0x2000) ? m_nFontSize : _floor(m_nFontSize / 2);
 }
+
 inline void GfxFont::CacheCharacter(unsigned int idx, wchar_t c)
 {
 	if (idx < font_count && NULL == m_Glyphs[idx].t)

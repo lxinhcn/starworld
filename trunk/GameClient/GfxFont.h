@@ -9,29 +9,32 @@ public:
 
 public:
 	// 渲染文本
-	virtual void	Print( float x, float y, const char *format, ... );
-	virtual void	Render(float x, float y, const wchar_t* text );
+	void	Print( float x, float y, const char *format, ... );
+	void	Render(float x, float y, const wchar_t* text );
 
 	// 设置与获取颜色
-	virtual void	SetColor( DWORD dwColor, int i = -1 );
-	virtual DWORD	GetColor( int i = 0 );
+	void	SetColor( DWORD dwColor, int i = -1 );
+	DWORD	GetColor( int i = 0 );
 
 	// 获取文本宽高
-	virtual SIZE	GetTextSize( const wchar_t* text );
+	SIZE	GetTextSize( const wchar_t* text );
+
+	LONG	GetCharacterWidth( const wchar_t character );
+	LONG	GetCharacterHeight()const;
 
 	// 根据坐标获取字符
-	virtual wchar_t	GetCharacterFromPos( const wchar_t* text, float pixel_x, float pixel_y );
+	wchar_t	GetCharacterFromPos( const wchar_t* text, float pixel_x, float pixel_y );
 
 	// 设置字间距
-	virtual void	SetKerningWidth( float kerning );
-	virtual void	SetKerningHeight( float kerning );
+	void	SetKerningWidth( float kerning );
+	void	SetKerningHeight( float kerning );
 
 	// 获取字间距
-	virtual float	GetKerningWidth();
-	virtual float	GetKerningHeight();
+	float	GetKerningWidth()const;
+	float	GetKerningHeight()const;
 
 	// 字体大小
-	virtual float	GetFontSize();
+	float	GetFontSize()const;
 
 private:
 	// 根据字符获取轮廓

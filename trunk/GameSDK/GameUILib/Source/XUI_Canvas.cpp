@@ -56,4 +56,56 @@ namespace UILib
 		return true;
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	FontAttribute::FontAttribute()
+		: name( _T("") )
+		, size( 12 )
+		, bold( false )
+		, italic( false )
+		, antialias( false )
+	{
+
+	}
+
+
+	FontAttribute::FontAttribute( LPCTSTR lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias )
+		: name( lpszFont )
+		, size( nSize )
+		, bold( bBold )
+		, italic( bItalic )
+		, antialias( bAntialias )
+	{
+
+	}
+
+	FontAttribute::FontAttribute( const FontAttribute& src )
+		: name( src.name )
+		, size( src.size )
+		, bold( src.bold )
+		, italic( src.italic )
+		, antialias( src.antialias )
+	{
+
+	}
+
+	bool FontAttribute::operator==( const FontAttribute& rsh )const
+	{ 
+		return 
+			name == rsh.name &&
+			size == rsh.size && 
+			bold == rsh.bold && 
+			italic == rsh.italic && 
+			antialias == rsh.antialias; 
+	}
+
+	bool FontAttribute::operator<( const FontAttribute& rsh )const
+	{
+		return 
+			name < rsh.name?true:
+			size < rsh.size?true:
+			bold < rsh.bold?true:
+			italic < rsh.italic?true:
+			antialias < rsh.antialias;
+	}
+
 }

@@ -109,14 +109,14 @@ bool CClientSprite::LoadTexture( LPCTSTR lpszFileName, float x, float y, float w
 	return true;
 }
 
-DWORD	CClientSprite::GetWidth()const
+float CClientSprite::GetWidth()const
 {
-	return (DWORD)m_w;
+	return m_w;
 }
 
-DWORD	CClientSprite::GetHeight()const
+float CClientSprite::GetHeight()const
 {
-	return (DWORD)m_h;
+	return m_h;
 }
 
 void	CClientSprite::SetUV(float U0, float V0, float U1, float V1)
@@ -147,17 +147,19 @@ CClientFont::~CClientFont()
 {
 };
 
-int		CClientFont::Ge_stringWidth( LPCTSTR lpszString )const
+SIZE CClientFont::GetStringSize( LPCTSTR lpszString )
 {
-	//m_pFont->GetWidthFromCharacter( szChar );
-	return 0;
+	return m_pFont->GetTextSize( lpszString );
 }
 
-int		CClientFont::Ge_stringHeight( LPCTSTR lpszString )const
+INT CClientFont::GetCharacterWidth( TCHAR szChar )
 {
-	CSize sz = m_pFont->GetTextSize( lpszString );
-	return sz.cy;
-	return 0;
+	return m_pFont->GetCharacterWidth( szChar );
+}
+
+INT	CClientFont::GetCharacterHeight()
+{
+	return m_pFont->GetCharacterHeight();
 }
 
 void	CClientFont::SetColor( DWORD dwColor )
@@ -172,16 +174,16 @@ void	CClientFont::Reader( float x, float y, float w, float h, LPCTSTR lpszText )
 
 //////////////////////////////////////////////////////////////////////////
 
-static bool _DrawText( LPCTSTR lpszText, UILib::XUI_IFont* pFont, int nX, int nY, DWORD dwColor, LPCRECT lpRect/* = NULL*/ )
+static bool _DrawText( LPCTSTR lpszText, UILib::XUI_IFont* pFont, float x, float y, unsigned int color, LPCRECT lpRect/* = NULL*/ )
 {
 	if( pFont == NULL ) pFont = GuiSystem::Instance().GetDefaultFont();
 	CClientFont* pF = static_cast< CClientFont* >( pFont );
 	if( pF )
 	{
-		pF->SetColor( dwColor );
-		pF->Reader( float(nX), float(nY), lpRect->right - lpRect->left, lpRect->bottom - lpRect->top, lpszText );
+		pF->SetColor( color );
+		pF->Reader( x, y, lpRect->right - lpRect->left, lpRect->bottom - lpRect->top, lpszText );
 	}
-	return true;	
+	return true;
 }
 
 //没有边框的矩形背景

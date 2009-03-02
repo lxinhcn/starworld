@@ -25,56 +25,12 @@ namespace UILib
 		int				size;
 		bool			bold, italic, antialias;
 
-		FontAttribute()
-			: name( _T("") )
-			, size( 12 )
-			, bold( false )
-			, italic( false )
-			, antialias( false )
-		{
+		FontAttribute();
+		FontAttribute( LPCTSTR lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias );
+		FontAttribute( const FontAttribute& src );
 
-		}
-
-
-		FontAttribute( LPCTSTR lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias )
-			: name( lpszFont )
-			, size( nSize )
-			, bold( bBold )
-			, italic( bItalic )
-			, antialias( bAntialias )
-		{
-
-		}
-
-		FontAttribute( const FontAttribute& src )
-			: name( src.name )
-			, size( src.size )
-			, bold( src.bold )
-			, italic( src.italic )
-			, antialias( src.antialias )
-		{
-
-		}
-
-		bool operator==( const FontAttribute& rsh )const
-		{ 
-			return 
-				name == rsh.name &&
-				size == rsh.size && 
-				bold == rsh.bold && 
-				italic == rsh.italic && 
-				antialias == rsh.antialias; 
-		}
-
-		bool operator<( const FontAttribute& rsh )const
-		{
-			return 
-				name < rsh.name?true:
-				size < rsh.size?true:
-				bold < rsh.bold?true:
-				italic < rsh.italic?true:
-				antialias < rsh.antialias;
-		}
+		bool operator==( const FontAttribute& rsh )const;
+		bool operator<( const FontAttribute& rsh )const;
 
 		LPCTSTR GetFontName()const{ return name.c_str(); }
 		int		GetSize()const{ return size; }
@@ -83,8 +39,8 @@ namespace UILib
 	struct XUI_ISprite	:	protected	SpriteAttribute
 	{
 		virtual ~XUI_ISprite(){}
-		virtual DWORD	GetWidth()const		= 0;
-		virtual DWORD	GetHeight()const	= 0;
+		virtual float	GetWidth()const		= 0;
+		virtual float	GetHeight()const	= 0;
 
 		virtual void	SetUV(float U0, float V0, float U1, float V1) = 0;
 		virtual float	GetU0() const = 0;
@@ -98,8 +54,8 @@ namespace UILib
 		virtual void	SetAngle( float fAngle )	= 0;
 		virtual float	GetAngle()const				= 0;
 
-		virtual void	SetDiffuse( DWORD dwValue ) = 0;
-		virtual DWORD	GetDiffuse() const			= 0;
+		virtual void	SetDiffuse( float dwValue ) = 0;
+		virtual float	GetDiffuse() const			= 0;
 
 		virtual void	Release()					= 0;
 	};
@@ -109,11 +65,13 @@ namespace UILib
 		XUI_IFont(){}
 		XUI_IFont( const FontAttribute& FontAttrib ): FontAttribute( FontAttrib ){}
 		virtual ~XUI_IFont(){}
-		virtual INT		Ge_stringWidth( LPCTSTR lpszString )const = 0;
-		virtual INT		Ge_stringHeight( LPCTSTR lpszString )const = 0;
+		virtual SIZE GetStringSize( LPCTSTR lpszString ) = 0;
+
+		virtual INT GetCharacterWidth( TCHAR szChar ) = 0;
+		virtual INT	GetCharacterHeight() = 0;
 	};
 
-	typedef bool		(*pfnDrawText)		( LPCTSTR lpszText, XUI_IFont* pFont, int nX, int nY, DWORD dwColor, LPCRECT lpRect );
+	typedef bool		(*pfnDrawText)		( LPCTSTR lpszText, XUI_IFont* pFont, float x, float y, unsigned int color, LPCRECT lpRect );
 	typedef bool		(*pfnDrawRect)		( const RECT& rcDest, DWORD dwBorderColor, DWORD dwBkColor );	//没有边框的矩形背景
 	typedef bool		(*pfnDrawPolygon)	( const LPPOINT ptArray, DWORD* dwColorArray, int nCount, unsigned short* pTriListArray, int nTriCount );
 	typedef bool		(*pfnDrawSprite)	( const XUI_ISprite* Tex,int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect );
