@@ -4,46 +4,106 @@
 
 namespace UILib
 {
-	//BEGIN_PROPERTY_MAP( CXEditBox, XUI_Wnd );
-	//	PROPERTY_BIND( _T("Text"),		m_strText );
-	//	PROPERTY_BIND_METHOD( _T("FontName"),	m_strFontName,	OnFontNameChange	);
-	//	PROPERTY_BIND_METHOD( _T("FontSize"),	m_dwFontSize,	OnFontSizeChange	);
-	//	PROPERTY_BIND_METHOD( _T("Bold"),		m_bBold,		OnFontBoldChange	);
-	//	PROPERTY_BIND_METHOD( _T("Italic"),		m_bItalic,		OnFontItalicChange	);
-	//END_PROPERTY_MAP()
-
-	BEGIN_UIMSG_MAP( CXEditBox, XUI_Wnd )
+	BEGIN_UIMSG_MAP( XUI_EditBox, XUI_Wnd )
 	END_UIMSG_MAP()
 
-	CXEditBox::CXEditBox(void)
+	XUI_EditBox::XUI_EditBox(void)
 	: m_bControl( false )
 	, m_bShift( false )
+	, m_CaratPos( 0 )
+	, m_FirstVisiblePos( 0 )
 	{
-		m_FirstVisiblePos	= 
-		m_CaratPos			= 0;
+		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
+		if( pFont )
+		{
+			m_WindowSize.cx		= m_wndRect.Width()/pFont->GetCharacterWidth( _T(' ') );
+			m_WindowSize.cy		= m_wndRect.Height()/pFont->GetCharacterHeight();
+		}
 	}
 
-	CXEditBox::~CXEditBox(void)
+	XUI_EditBox::~XUI_EditBox(void)
 	{
+	}
+
+	void XUI_EditBox::RenderCharacter( TCHAR szChar, XUI_IFont* pFont, LONG &x, LONG &y, BOOL bRender )
+	{
+		if( bRender )
+		{
+			XUI_DrawCharacter( szChar, pFont, (float)x, (float)y );
+		}
+
+		x += pFont->GetCharacterWidth( szChar );
 	}
 
 	//重绘，通过实现这个方法来表现空间的外观
-	void CXEditBox::RenderSelf(const CRect& clipper)
+	void XUI_EditBox::RenderSelf(const CRect& clipper)
 	{
-		int nX = m_wndRect.left;
-		int nY = m_wndRect.top;
+		CPoint pt = m_wndRect.TopLeft();
+		AdjustPoint( pt, true );
 
 		XUI_DrawRect( m_wndRect, 0xff00ff00, 0xff00ff00 );
+
 		CRect rc;
 		rc.IntersectRect( m_wndRect, clipper );
 
-		_string::size_type end, begin = m_FirstVisiblePos;
-		while( ( end = m_strText.find( _T('\r'), begin ) ) != _string::npos )
+		CPoint CharPos = pt;
+		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
+
+		line_recorder::iterator iter = m_LineRecorder.begin() + ( m_LineRecorder.empty()?0:m_FirstVisiblePos );
+		while( iter != m_LineRecorder.end() )
 		{
-			XUI_DrawText( m_strText.substr( begin, end - begin ).c_str(), m_pFont, nX, nY, 0, rc );
-			begin = end+1;
+			_string::size_type end = (iter+1 == m_LineRecorder.end())?m_strText.length():*(iter+1);
+
+			for( size_t i = *iter; i < end; ++i )
+			{
+				TCHAR c = m_strText[i];
+				if( pFont->GetCharacterWidth( c ) + CharPos.x > m_wndRect.right )
+				{
+					CharPos.x = 0;
+					CharPos.y += pFont->GetCharacterHeight();
+					if( CharPos.y > m_wndRect.bottom ) 
+					{
+						return;
+					}
+				}
+
+				if( _istprint( c ) )
+				{
+					RenderCharacter( c, pFont, CharPos.x, CharPos.y, rc.PtInRect( CharPos ) );
+				}
+				else
+				{
+					switch( c )
+					{
+					case '\t':
+						{
+							size_t CharCount = i - *iter;
+							size_t NextTab = CharPos.x + (4 - CharCount%4)*pFont->GetCharacterWidth( _T(' ') );
+							if( (long)NextTab > m_wndRect.right ) NextTab = m_wndRect.right;
+							while( CharPos.x < (long)NextTab )
+							{
+								RenderCharacter( _T(' '), pFont, CharPos.x, CharPos.y, rc.PtInRect( CharPos ) );
+							}
+						}
+						break;
+					case '\n':
+						{
+							CharPos.x = 0;
+							CharPos.y += pFont->GetCharacterHeight();
+							if( CharPos.y > m_wndRect.bottom ) 
+							{
+								return;
+							}
+						}
+						break;
+					default:
+						RenderCharacter( _T('?'), pFont, CharPos.x, CharPos.y, rc.PtInRect( CharPos ) );
+						break;
+					}
+				}
+			}
+			++iter;
 		}
-		XUI_DrawText( m_strText.substr( begin ).c_str(), m_pFont, nX, nY, 0, rc );
 	}
 
 	//鼠标
@@ -51,22 +111,22 @@ namespace UILib
 	//参数说明：
 	//pt，鼠标的坐标，相对于控件
 	//sysKeys，各种重要按键的状态，参见MSDN	
-	bool CXEditBox::onMouseMove(const CPoint& pt, UINT sysKeys)
+	bool XUI_EditBox::onMouseMove(const CPoint& pt, UINT sysKeys)
 	{
 		return true;
 	}
 
-	bool CXEditBox::onMouseHover(const CPoint& pt)
+	bool XUI_EditBox::onMouseHover(const CPoint& pt)
 	{
 		return true;
 	}
 
-	bool CXEditBox::onMouseEnter()
+	bool XUI_EditBox::onMouseEnter()
 	{
 		return true;
 	}
 
-	bool CXEditBox::onMouseLeave()
+	bool XUI_EditBox::onMouseLeave()
 	{
 		return true;
 	}
@@ -76,12 +136,12 @@ namespace UILib
 	//button，按下的键，0-左键，1-右键，2-中键
 	//pt，鼠标的坐标
 	//sysKeys，各种重要按键的状态，参见MSDN
-	bool CXEditBox::onButtonDown(int button, const CPoint& pt, UINT sysKeys)
+	bool XUI_EditBox::onButtonDown(int button, const CPoint& pt, UINT sysKeys)
 	{
 		return true;
 	}
 
-	bool CXEditBox::onButtonUp(int button, const CPoint& pt, UINT sysKeys)
+	bool XUI_EditBox::onButtonUp(int button, const CPoint& pt, UINT sysKeys)
 	{
 		return true;
 	}
@@ -90,7 +150,7 @@ namespace UILib
 	//参数说明
 	//keycode，按下的键
 	//sysKeys，各种重要按键的状态，参见MSDN
-	bool CXEditBox::onKeyDown(DWORD keycode, UINT sysKeys)
+	bool XUI_EditBox::onKeyDown(DWORD keycode, UINT sysKeys)
 	{
 		switch( keycode )
 		{
@@ -133,53 +193,72 @@ namespace UILib
 		return true;
 	}
 
-	void CXEditBox::HandleBack( UINT nSysKey )
+	void XUI_EditBox::DeleteCharacter( nPos )
+	{
+		if( m_strText[nPos] == _T('\n') )
+		{
+			// 从第一个可见行开始查找
+			line_recorder::iterator i = m_LineRecorder.begin() + ( m_LineRecorder.empty()?0:m_FirstVisiblePos );
+			while( i != m_LineRecorder.end() )
+			{
+				if( *i == nPos )
+				{
+					m_LineRecorder.erase( i );
+					break;
+				}
+				++i;
+			}
+		}
+		m_strText.erase( nPos, 1 );
+	}
+
+	void XUI_EditBox::HandleBack( UINT nSysKey )
 	{
 		if( m_CaratPos <= 0 ) return;
-		m_strText.erase( --m_CaratPos, 1 );
+		DeleteCharacter( --m_CaratPos );
 	}
 
-	void CXEditBox::HandleDelete( UINT nSysKey )
+	void XUI_EditBox::HandleDelete( UINT nSysKey )
 	{
 		if( m_CaratPos >= m_strText.length() ) return;
-		m_strText.erase( m_CaratPos, 1 );
+		DeleteCharacter( m_CaratPos );
 	}
 
-	void CXEditBox::HandleHome( UINT nSysKey )
+	void XUI_EditBox::HandleHome( UINT nSysKey )
 	{
 		while( m_CaratPos && m_strText[m_CaratPos] != _T('\n') ) --m_CaratPos;
 	}
 
-	void CXEditBox::HandleEnd( UINT nSysKey )
+	void XUI_EditBox::HandleEnd( UINT nSysKey )
 	{
 		while( m_CaratPos != m_strText.length() && m_strText[m_CaratPos] != _T('\n') ) ++m_CaratPos;
 	}
 
-	void CXEditBox::HandleWordLeft( UINT nSysKey )
+	void XUI_EditBox::HandleWordLeft( UINT nSysKey )
 	{
 		while( m_CaratPos && m_strText[m_CaratPos] != _T(' ') ) --m_CaratPos;
 	}
 
-	void CXEditBox::HandleCharLeft( UINT nSysKey )
+	void XUI_EditBox::HandleCharLeft( UINT nSysKey )
 	{
 		if( m_CaratPos > 0 ) --m_CaratPos; 
 	}
 
-	void CXEditBox::HandleWordRight( UINT nSysKey )
+	void XUI_EditBox::HandleWordRight( UINT nSysKey )
 	{
 		while( m_CaratPos != m_strText.length() && m_strText[m_CaratPos] != _T(' ') ) ++m_CaratPos;
 	}
 
-	void CXEditBox::HandleCharRight( UINT nSysKey )
+	void XUI_EditBox::HandleCharRight( UINT nSysKey )
 	{
 		if( m_CaratPos <= m_strText.length() ) ++m_CaratPos;
 	}
 
-	void CXEditBox::HandleReturn( UINT nSysKey )
+	void XUI_EditBox::HandleReturn( UINT nSysKey )
 	{
 	}
 
-	bool CXEditBox::onKeyUp( DWORD keycode, UINT sysKeys )
+	bool XUI_EditBox::onKeyUp( DWORD keycode, UINT sysKeys )
 	{
 		switch( keycode )
 		{
@@ -197,7 +276,7 @@ namespace UILib
 	//参数说明
 	//c，输入的字符
 	//sysKeys，各种重要按键的状态，参见MSDN
-	bool CXEditBox::onChar(DWORD c, UINT sysKeys)
+	bool XUI_EditBox::onChar(DWORD c, UINT sysKeys)
 	{
 		if( _istprint( LOWORD(c) ) )
 		{
@@ -208,30 +287,50 @@ namespace UILib
 
 	//输入法
 	//参见MSDN
-	bool CXEditBox::onImeComp(DWORD wParam, DWORD lParam)
+	bool XUI_EditBox::onImeComp(DWORD wParam, DWORD lParam)
 	{
 		return true;
 	}
 
-	bool CXEditBox::onImeEndComp(DWORD wParam, DWORD lParam)
+	bool XUI_EditBox::onImeEndComp(DWORD wParam, DWORD lParam)
 	{
 		return true;
 	}
 
-	bool CXEditBox::onImeNotify(DWORD wParam, DWORD lParam)
+	bool XUI_EditBox::onImeNotify(DWORD wParam, DWORD lParam)
 	{
 		return true;
 	}
 
-	unsigned int CXEditBox::BiuldFont()
+	//---------------------------------------------------------------------//
+	// describe	: 根据字符位置获得行号
+	// nPos		: 字符索引
+	// return	: 行号
+	//---------------------------------------------------------------------//
+	size_t XUI_EditBox::GetLineFromCharaterPos( size_t nPos )const
 	{
-		XUI_DestroyFont( m_pFont );
-		//m_pFont = XUI_CreateFont( m_strFontName.c_str(), m_dwFontSize, m_bBold, m_bItalic, m_bAntialias );
-		return 0;
+		struct _compare
+		{
+			explicit _compare( size_t _nPos ) 
+				: nPos( _nPos )
+			{
+			}
+
+			bool operator()( size_t nLineIndex )
+			{
+				return nPos < nLineIndex;
+			}
+
+			const size_t nPos;
+		};
+		
+		line_recorder::const_iterator i = std::find_if( m_LineRecorder.begin(), m_LineRecorder.end(), _compare( nPos ) );
+		if( i != m_LineRecorder.end() )
+		{
+			return i - m_LineRecorder.begin();
+		}
+
+		return -1;
 	}
 
-	unsigned int CXEditBox::OnMoveWindow( CRect& rcWindow )
-	{
-		return XUI_Wnd::OnMoveWindow( rcWindow );
-	}
 }

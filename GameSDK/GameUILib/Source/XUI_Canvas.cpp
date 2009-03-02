@@ -3,6 +3,16 @@
 
 namespace UILib
 {
+	pfnDrawText			XUI_DrawText		= 0;
+	pfnDrawCharacter	XUI_DrawCharacter	= 0;
+	pfnDrawRect			XUI_DrawRect		= 0;
+	pfnDrawPolygon		XUI_DrawPolygon		= 0;
+	pfnDrawSprite		XUI_DrawSprite		= 0;
+	pfnCreateSprite		XUI_CreateSprite	= 0;
+	pfnDestroySprite	XUI_DestroySprite	= 0;
+	pfnCreateFont		XUI_CreateFont		= 0;
+	pfnDestroyFont		XUI_DestroyFont		= 0;
+
 	SpriteAttribute::SpriteAttribute( const char* _path, float _x, float _y, float _w, float _h )
 		: path( _path )
 		, x( _x )
@@ -58,7 +68,7 @@ namespace UILib
 
 	//////////////////////////////////////////////////////////////////////////
 	FontAttribute::FontAttribute()
-		: name( _T("") )
+		: name( "" )
 		, size( 12 )
 		, bold( false )
 		, italic( false )
@@ -68,7 +78,7 @@ namespace UILib
 	}
 
 
-	FontAttribute::FontAttribute( LPCTSTR lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias )
+	FontAttribute::FontAttribute( const char* lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias )
 		: name( lpszFont )
 		, size( nSize )
 		, bold( bBold )
@@ -108,4 +118,32 @@ namespace UILib
 			antialias < rsh.antialias;
 	}
 
+	bool FontAttribute::save_file( TiXmlElement* pNode )
+	{
+		TiXmlElement* pElement = pNode->ToElement();
+		if( pElement )
+		{
+			pElement->SetAttribute( "name", name.c_str() );
+			pElement->IntAttribute( "size", size );
+			pElement->BoolAttribute( "bold", bold );
+			pElement->BoolAttribute( "italic", italic );
+			pElement->BoolAttribute( "antialias", antialias );
+		}
+		return true;
+	}
+
+	bool FontAttribute::load_file( TiXmlElement* pNode )
+	{
+		TiXmlElement* pElement = pNode->ToElement();
+		if( pElement )
+		{
+			name = pElement->Attribute( "name" );
+			pElement->Attribute( "size", &size );
+
+			bold		= pElement->BoolAttribute( "bold" );
+			italic		= pElement->BoolAttribute( "italic" );
+			antialias	= pElement->BoolAttribute( "antialias" );
+		}
+		return true;
+	}
 }

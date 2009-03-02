@@ -64,7 +64,7 @@ namespace UILib
 			XUI_DrawSprite( m_pButtonSkin[m_enState], pt.x, pt.y, nWidth, nHeight, clipper );
 		}
 		// ÎÄ×Ö
-		XUI_DrawText( m_strCaption.c_str(), m_pFont, pt.x + nWidth/2, pt.y + nHeight/2, m_dwColor, clipper );
+		XUI_DrawText( m_strCaption.c_str(), m_pFont, pt.x + nWidth/2, pt.y + nHeight/2 );
 	}
 
 	bool XUI_Button::onMouseEnter()

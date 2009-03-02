@@ -64,7 +64,8 @@ CFontManager::~CFontManager()
 
 GfxFont* CFontManager::GetFont( LPCTSTR lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias )
 {
-	UILib::FontAttribute font( lpszFont, nSize, bBold, bItalic, bAntialias );
+	USES_CONVERSION;
+	UILib::FontAttribute font( T2A( lpszFont ), nSize, bBold, bItalic, bAntialias );
 	CFontMap::iterator iter = m_FontMap.find( font );
 	if( iter != m_FontMap.end() )
 	{
@@ -167,21 +168,36 @@ void	CClientFont::SetColor( DWORD dwColor )
 	m_pFont->SetColor( dwColor );
 }
 
-void	CClientFont::Reader( float x, float y, float w, float h, LPCTSTR lpszText )const
+void	CClientFont::Render( float x, float y, LPCTSTR lpszText )const
 {
 	m_pFont->Render( x, y, lpszText );
 }
 
+void CClientFont::Render( float x, float y, TCHAR szChar )const
+{
+	m_pFont->Render( x, y, szChar );
+}
+
 //////////////////////////////////////////////////////////////////////////
 
-static bool _DrawText( LPCTSTR lpszText, UILib::XUI_IFont* pFont, float x, float y, unsigned int color, LPCRECT lpRect/* = NULL*/ )
+static bool _DrawText( LPCTSTR lpszText, UILib::XUI_IFont* pFont, float x, float y )
 {
 	if( pFont == NULL ) pFont = GuiSystem::Instance().GetDefaultFont();
 	CClientFont* pF = static_cast< CClientFont* >( pFont );
 	if( pF )
 	{
-		pF->SetColor( color );
-		pF->Reader( x, y, lpRect->right - lpRect->left, lpRect->bottom - lpRect->top, lpszText );
+		pF->Render( x, y, lpszText );
+	}
+	return true;
+}
+
+static bool _DrawCharacter( TCHAR szChar, UILib::XUI_IFont* pFont, float x, float y )
+{
+	if( pFont == NULL ) pFont = GuiSystem::Instance().GetDefaultFont();
+	CClientFont* pF = static_cast< CClientFont* >( pFont );
+	if( pF )
+	{
+		pF->Render( x, y, szChar );
 	}
 	return true;
 }
@@ -227,7 +243,8 @@ static XUI_IFont* _CreateFont( LPCTSTR lpszFontName, int nSize, bool bBold, bool
 	GfxFont* pGfxFont = FontManager::Instance().GetFont( lpszFontName, nSize, bBold, bItalic, bAntialias );
 	if( pGfxFont )
 	{
-		return new CClientFont( FontAttribute( lpszFontName, nSize, bBold, bItalic, bAntialias ), pGfxFont );
+		USES_CONVERSION;
+		return new CClientFont( FontAttribute( T2A(lpszFontName), nSize, bBold, bItalic, bAntialias ), pGfxFont );
 	}
 	return NULL;
 }
@@ -240,6 +257,7 @@ static void _DestroyFont( XUI_IFont* pFont )
 void init_canvas()
 {
 	UILib::XUI_DrawText			= _DrawText;
+	UILib::XUI_DrawCharacter	= _DrawCharacter;
 	UILib::XUI_DrawRect			= _DrawRect;
 	UILib::XUI_DrawPolygon		= _DrawPolygon;
 	UILib::XUI_DrawSprite		= _DrawSprite;

@@ -11,6 +11,7 @@ public:
 	// 渲染文本
 	void	Print( float x, float y, const char *format, ... );
 	void	Render(float x, float y, const wchar_t* text );
+	inline void	Render(float x, float y, const wchar_t text );
 
 	// 设置与获取颜色
 	void	SetColor( DWORD dwColor, int i = -1 );

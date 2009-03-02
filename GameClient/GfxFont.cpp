@@ -106,21 +106,22 @@ void GfxFont::Render(float x, float y, const wchar_t* text )
 		}
 		else
 		{
-			unsigned int idx = GetGlyphByCharacter(*text);
-			if (idx > 0)
-			{
-				m_pSprite->SetTexture(m_Glyphs[idx].t);
-				m_pSprite->SetTextureRect(0, 0, m_Glyphs[idx].w, m_Glyphs[idx].h);
-				m_pSprite->Render(offsetX - m_Glyphs[idx].x, offsetY - m_Glyphs[idx].y);
-				offsetX += (GetWidthFromCharacter(*text) + m_nKerningWidth);
-			}
-			else
-			{
-				offsetX += (GetWidthFromCharacter(*text) + m_nKerningWidth);
-			}
+			Render( offsetX, offsetY, *text );
+			offsetX += (GetWidthFromCharacter(*text) + m_nKerningWidth);
 		}
 
 		++text;
+	}
+}
+
+inline void GfxFont::Render(float x, float y, const wchar_t text )
+{
+	unsigned int idx = GetGlyphByCharacter(text);
+	if (idx > 0)
+	{
+		m_pSprite->SetTexture(m_Glyphs[idx].t);
+		m_pSprite->SetTextureRect(0, 0, m_Glyphs[idx].w, m_Glyphs[idx].h);
+		m_pSprite->Render(x - m_Glyphs[idx].x, y - m_Glyphs[idx].y);
 	}
 }
 

@@ -8,15 +8,6 @@
 ****************************************************/
 namespace UILib
 {
-	pfnDrawText			XUI_DrawText		= 0;
-	pfnDrawRect			XUI_DrawRect		= 0;
-	pfnDrawPolygon		XUI_DrawPolygon		= 0;
-	pfnDrawSprite		XUI_DrawSprite		= 0;
-	pfnCreateSprite		XUI_CreateSprite	= 0;
-	pfnDestroySprite	XUI_DestroySprite	= 0;
-	pfnCreateFont		XUI_CreateFont		= 0;
-	pfnDestroyFont		XUI_DestroyFont		= 0;
-
 	CGuiSystem* _afxCurrentGuiSystem = NULL;
 
 	CGuiSystem::CGuiSystem()

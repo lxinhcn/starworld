@@ -32,6 +32,7 @@ namespace UILib
 		DWORD			m_dwColor;
 
 		void RenderSelf(const CRect& clipper);
+
 		bool onMouseEnter();
 		bool onMouseLeave();
 		bool onButtonDown(int button, const CPoint& pt, UINT sysKeys);
