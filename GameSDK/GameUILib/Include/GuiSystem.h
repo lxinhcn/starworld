@@ -6,7 +6,9 @@
 #include <loki/Singleton.h>
 
 //界面系统，主要负责消息的转发
-#define DEFAULT_DESKTOP		0x10000
+#define DEFAULT_DESKTOP			0x10000
+#define TIMER_PRECISION			(0.1f)
+#define TIMER_SECOND(second)	(second*1.0f/TIMER_PRECISION);
 namespace UILib
 {
 	struct ICanvas;
@@ -46,10 +48,11 @@ namespace UILib
 		CDesktopMap	m_DesktopMap;
 		CModalList	m_ModalList;
 
-		_string		m_strMediaPath;
 		XUI_IFont*	m_pDefaultFont;
+		_string		m_strMediaPath;
 		xtimer		m_timer;
-		clock_t		m_nowtime;
+		float		m_nowtime;
+		float		m_timer_anchor;
 	protected:
 		void SetFocus(XUI_Wnd* pElement);
 

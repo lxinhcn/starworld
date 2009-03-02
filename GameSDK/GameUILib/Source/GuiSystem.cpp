@@ -15,7 +15,8 @@ namespace UILib
 	, m_bPointInRoot(false)
 	, m_hWnd(NULL)
 	, m_bInitialized( FALSE )
-	, m_nowtime( clock() )
+	, m_nowtime( 0.0f )
+	, m_timer_anchor( 0.0f )
 	{
 		m_pDesktop=new XUI_Window();
 		m_pDesktop->SetID( DEFAULT_DESKTOP );
@@ -60,9 +61,12 @@ namespace UILib
 
 	void CGuiSystem::Update( float fDelta )
 	{
-		int times = (clock() - m_nowtime)/CLOCKS_PER_SEC;
-		for( int i = 0; i < times; ++i ) m_timer.timer();
-		m_nowtime += times*CLOCKS_PER_SEC;
+		m_nowtime += fDelta;
+		while( m_nowtime >= 0.1f )
+		{
+			m_timer_anchor += 0.1f;
+			m_timer.timer();
+		}
 	}
 
 	bool CGuiSystem::onMouseMove(XUI_Wnd* pElement, const CPoint& pt, UINT sysKeys)

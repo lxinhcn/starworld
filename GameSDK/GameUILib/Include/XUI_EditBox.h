@@ -53,7 +53,8 @@ namespace UILib
 
 	protected:
 		void RenderCharacter( TCHAR szChar, XUI_IFont* pFont, LONG &x, LONG &y, BOOL bRender );
-		void DeleteCharacter( nPos );
+		void DeleteCharacter( int nPos );
+		bool CaratTimerUpdate( unsigned int handle, unsigned short& repeat, unsigned int& timer );
 
 		void HandleBack( UINT nSysKey );
 		void HandleDelete( UINT nSysKey );
@@ -87,6 +88,9 @@ namespace UILib
 
 		bool	m_bControl, m_bShift;
 		CSize	m_WindowSize;				//  ”¥∞¥Û–°
+
+		unsigned int	m_CaratTimerHandler;
+		bool			m_bShowCarat;
 
 		XUI_IFont*	m_pFont;
 	};

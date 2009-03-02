@@ -12,6 +12,7 @@ namespace UILib
 	, m_bShift( false )
 	, m_CaratPos( 0 )
 	, m_FirstVisiblePos( 0 )
+	, m_bShowCarat( true )
 	{
 		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
 		if( pFont )
@@ -19,10 +20,20 @@ namespace UILib
 			m_WindowSize.cx		= m_wndRect.Width()/pFont->GetCharacterWidth( _T(' ') );
 			m_WindowSize.cy		= m_wndRect.Height()/pFont->GetCharacterHeight();
 		}
+
+		m_CaratTimerHandler = GuiSystem::Instance().SetTimer( event_function( this, &XUI_EditBox::CaratTimerUpdate ), 1, TIMER_SECOND(1) );
 	}
 
 	XUI_EditBox::~XUI_EditBox(void)
 	{
+		GuiSystem::Instance().KillTimer( m_CaratTimerHandler );
+	}
+
+	bool CaratTimerUpdate( unsigned int handle, unsigned short& repeat, unsigned int& timer )
+	{
+		m_bShowCarat = !m_bShowCarat;
+		repeat = 1;
+		return true;
 	}
 
 	void XUI_EditBox::RenderCharacter( TCHAR szChar, XUI_IFont* pFont, LONG &x, LONG &y, BOOL bRender )
@@ -100,6 +111,13 @@ namespace UILib
 						RenderCharacter( _T('?'), pFont, CharPos.x, CharPos.y, rc.PtInRect( CharPos ) );
 						break;
 					}
+				}
+
+				if( i == m_CaratPos )
+				{
+					long x = CharPos.x;
+					long y = CharPos.y;
+					RenderCharacter( _T('|'), pFont, x - pFont->GetCharacterWidth( _T('|') )/2, y, rc.PtInRect( CharPos ) );
 				}
 			}
 			++iter;
@@ -193,7 +211,7 @@ namespace UILib
 		return true;
 	}
 
-	void XUI_EditBox::DeleteCharacter( nPos )
+	void XUI_EditBox::DeleteCharacter( int nPos )
 	{
 		if( m_strText[nPos] == _T('\n') )
 		{
@@ -226,17 +244,17 @@ namespace UILib
 
 	void XUI_EditBox::HandleHome( UINT nSysKey )
 	{
-		while( m_CaratPos && m_strText[m_CaratPos] != _T('\n') ) --m_CaratPos;
+		while( m_CaratPos > 0 && m_strText[m_CaratPos] != _T('\n') ) --m_CaratPos;
 	}
 
 	void XUI_EditBox::HandleEnd( UINT nSysKey )
 	{
-		while( m_CaratPos != m_strText.length() && m_strText[m_CaratPos] != _T('\n') ) ++m_CaratPos;
+		while( m_CaratPos <= m_strText.length() && m_strText[m_CaratPos] != _T('\n') ) ++m_CaratPos;
 	}
 
 	void XUI_EditBox::HandleWordLeft( UINT nSysKey )
 	{
-		while( m_CaratPos && m_strText[m_CaratPos] != _T(' ') ) --m_CaratPos;
+		while( m_CaratPos > 0 && m_strText[m_CaratPos] != _T(' ') ) --m_CaratPos;
 	}
 
 	void XUI_EditBox::HandleCharLeft( UINT nSysKey )
@@ -246,7 +264,7 @@ namespace UILib
 
 	void XUI_EditBox::HandleWordRight( UINT nSysKey )
 	{
-		while( m_CaratPos != m_strText.length() && m_strText[m_CaratPos] != _T(' ') ) ++m_CaratPos;
+		while( m_CaratPos <= m_strText.length() && m_strText[m_CaratPos] != _T(' ') ) ++m_CaratPos;
 	}
 
 	void XUI_EditBox::HandleCharRight( UINT nSysKey )
