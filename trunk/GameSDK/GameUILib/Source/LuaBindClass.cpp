@@ -76,6 +76,18 @@ namespace UILib
 			.set( "load",	&SpriteAttribute::load_file )
 			;
 
+		Class< FontAttribute >( "ui::FontAttribute" )
+			.constructor< const char*, int, bool, bool, bool >()
+			.member_readonly( "name", &FontAttribute::name )
+			.member_readonly( "size", &FontAttribute::size )
+			.member_readonly( "bold", &FontAttribute::bold )
+			.member_readonly( "italic", &FontAttribute::italic )
+			.member_readonly( "antialias", &FontAttribute::antialias )
+			.set( "members",&show_members< FontAttribute > )
+			.set( "save",	&FontAttribute::save_file )
+			.set( "load",	&FontAttribute::load_file )
+			;
+
 		Class< XUI_Wnd, SLB::Instance::NoCopyNoDestroy >( "ui::Wnd" )
 			.set( "MoveWindow",		&XUI_Wnd::Move )
 			.set( "OffsetWindow",	&XUI_Wnd::Offset )
@@ -95,6 +107,7 @@ namespace UILib
 			.member( "visible",		&XUI_Wnd::m_bVisible)
 			.member( "enable",		&XUI_Wnd::m_bEnable )
 			.member( "transparent",	&XUI_Wnd::m_bTranslateParent )
+			.member( "font",		&XUI_Wnd::m_FontAttribute )
 			;
 
 		Class< XUI_Window >( "ui:Window" )

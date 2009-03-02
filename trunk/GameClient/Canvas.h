@@ -88,8 +88,8 @@ public:
 
 public:
 	void SetColor( DWORD dwColor );
-	void Reader( float x, float y, float w, float h, LPCTSTR lpszText )const;
-
+	void Render( float x, float y, LPCTSTR lpszText )const;
+	void Render( float x, float y, TCHAR szChar )const;
 private:
 	GfxFont*	m_pFont;
 };

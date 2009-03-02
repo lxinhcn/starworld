@@ -183,8 +183,9 @@ namespace UILib
 		bool			m_bTranslateParent;	// 是否将WM_COMMAND消息传给父控件
 
 		float			m_fZ;
-		CRect			m_wndRect;			//位置和大小，相对于父控件
+		CRect			m_wndRect;			// 位置和大小，相对于父控件
 
+		FontAttribute	m_FontAttribute;	// 字体信息
 		XUI_IFont*		m_pFont;
 
 		XUI_Wnd*		m_pChildMouseOver;	// 当前鼠标下的子控件

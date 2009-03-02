@@ -3,14 +3,14 @@
 
 namespace UILib
 {
-	class CXEditBox :	public UIObjTypeT< XUI_Wnd, TypeEditBox >
+	class XUI_EditBox :	public UIObjTypeT< XUI_Wnd, TypeEditBox >
 	{
-		//DECLARE_PROPERTY_MAP( CXEditBox, XUI_Wnd )
+		//DECLARE_PROPERTY_MAP( XUI_EditBox, XUI_Wnd )
 		DECLARE_UIMSG_MAP()
 		DECLARE_LABLE( EDITBOX )
 	public:
-		CXEditBox(void);
-		~CXEditBox(void);
+		XUI_EditBox(void);
+		~XUI_EditBox(void);
 
 		//重绘，通过实现这个方法来表现空间的外观
 		virtual void RenderSelf(const CRect& clipper);
@@ -52,6 +52,9 @@ namespace UILib
 		virtual bool onImeNotify(DWORD wParam, DWORD lParam);
 
 	protected:
+		void RenderCharacter( TCHAR szChar, XUI_IFont* pFont, LONG &x, LONG &y, BOOL bRender );
+		void DeleteCharacter( nPos );
+
 		void HandleBack( UINT nSysKey );
 		void HandleDelete( UINT nSysKey );
 		void HandleHome( UINT nSysKey );
@@ -62,21 +65,28 @@ namespace UILib
 		void HandleCharRight( UINT nSysKey );
 		void HandleReturn( UINT nSysKey );
 
-		unsigned int BiuldFont();
+		//---------------------------------------------------------------------//
+		// describe	: 根据字符位置获得行号
+		// nPos		: 字符索引
+		// return	: 行号
+		//---------------------------------------------------------------------//
+		size_t GetLineFromCharaterPos( size_t nPos )const;
 
-		unsigned int OnMoveWindow( CRect& rcWindow );
 	protected:
 		// Attribute
 		_string			m_strText;			// 编辑框文字
+		bool			m_bWarpText;		// 折行标志
 
 	private:
 		typedef _string::size_type Position;
+		typedef	std::deque< Position >	line_recorder;
 
 		Position		m_FirstVisiblePos;	// 编辑框里看到的第一个字符的位置
 		Position		m_CaratPos;			// 光标位置
+		line_recorder	m_LineRecorder;		// 换行符位置列表
 
 		bool	m_bControl, m_bShift;
-		CSize	m_WindowSize;
+		CSize	m_WindowSize;				// 视窗大小
 
 		XUI_IFont*	m_pFont;
 	};

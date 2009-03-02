@@ -21,19 +21,22 @@ namespace UILib
 
 	struct FontAttribute
 	{
-		_string			name;
+		std::string		name;
 		int				size;
 		bool			bold, italic, antialias;
 
 		FontAttribute();
-		FontAttribute( LPCTSTR lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias );
+		FontAttribute( const char* lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias );
 		FontAttribute( const FontAttribute& src );
 
 		bool operator==( const FontAttribute& rsh )const;
 		bool operator<( const FontAttribute& rsh )const;
 
-		LPCTSTR GetFontName()const{ return name.c_str(); }
-		int		GetSize()const{ return size; }
+		const char* GetFontName()const{ return name.c_str(); }
+		int			GetSize()const{ return size; }
+
+		bool save_file( TiXmlElement* pNode );
+		bool load_file( TiXmlElement* pNode );
 	};
 
 	struct XUI_ISprite	:	protected	SpriteAttribute
@@ -71,7 +74,8 @@ namespace UILib
 		virtual INT	GetCharacterHeight() = 0;
 	};
 
-	typedef bool		(*pfnDrawText)		( LPCTSTR lpszText, XUI_IFont* pFont, float x, float y, unsigned int color, LPCRECT lpRect );
+	typedef bool		(*pfnDrawText)		( LPCTSTR lpszText, XUI_IFont* pFont, float x, float y );
+	typedef bool		(*pfnDrawCharacter)	( TCHAR lpszText, XUI_IFont* pFont, float x, float y );
 	typedef bool		(*pfnDrawRect)		( const RECT& rcDest, DWORD dwBorderColor, DWORD dwBkColor );	//没有边框的矩形背景
 	typedef bool		(*pfnDrawPolygon)	( const LPPOINT ptArray, DWORD* dwColorArray, int nCount, unsigned short* pTriListArray, int nTriCount );
 	typedef bool		(*pfnDrawSprite)	( const XUI_ISprite* Tex,int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect );
@@ -81,6 +85,7 @@ namespace UILib
 	typedef void		(*pfnDestroyFont)	( XUI_IFont* pFont );
 
 	extern pfnDrawText			XUI_DrawText;
+	extern pfnDrawCharacter		XUI_DrawCharacter;
 	extern pfnDrawRect			XUI_DrawRect;
 	extern pfnDrawPolygon		XUI_DrawPolygon;
 	extern pfnDrawSprite		XUI_DrawSprite;
