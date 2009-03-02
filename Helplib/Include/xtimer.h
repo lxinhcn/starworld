@@ -13,7 +13,7 @@ public:
 	xtimer(void);
 	~xtimer(void);
 
-	typedef Loki::Function< bool( unsigned int /*handle*/, unsigned short /*repeat*/, unsigned int /*timer*/) > event_function;
+	typedef Loki::Function< bool( unsigned int /*handle*/, unsigned short& /*repeat*/, unsigned int& /*timer*/) > event_function;
 	struct event_interface
 	{
 		friend class xtimer;
