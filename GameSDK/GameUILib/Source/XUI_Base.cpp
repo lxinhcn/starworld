@@ -40,10 +40,10 @@ namespace UILib
 			lpEntry = FindMessageEntry( pMessageMap->lpEntry, nMsg, nCode, nID );
 			if( lpEntry )
 			{
-				return DispatchCmdMsg( nID, nCode, lpEntry->pfn, lpExtra, lpEntry->nSig );
+				DispatchCmdMsg( nID, nCode, lpEntry->pfn, lpExtra, lpEntry->nSig );
 			}
 		}
-		return false;
+		return true;
 	}
 
 	const UI_MSGMAP_ENTRY*	XUI_Base::FindMessageEntry( const UI_MSGMAP_ENTRY* lpEntry, UINT nMsg, INT nEvent, UINT nID )

@@ -45,8 +45,8 @@ public:
 	~CClientSprite();
 	bool LoadTexture( LPCTSTR lpszFileName, float x, float y, float w, float h );
 
-	virtual DWORD	GetWidth()const;
-	virtual DWORD	GetHeight()const;
+	virtual float	GetWidth()const;
+	virtual float	GetHeight()const;
 
 	virtual void	SetUV(float U0, float V0, float U1, float V1);
 	virtual float	GetU0() const{ return m_u0; }
@@ -60,8 +60,8 @@ public:
 	virtual void	SetAngle( float fAngle ){ m_angle = fAngle; }
 	virtual float	GetAngle()const{ return m_angle; }
 
-	virtual void	SetDiffuse( DWORD dwValue ){ m_diffuse = (float)dwValue; }
-	virtual DWORD	GetDiffuse()const{ return (DWORD)m_diffuse; }
+	virtual void	SetDiffuse( float fValue ){ m_diffuse = fValue; }
+	virtual float	GetDiffuse()const{ return m_diffuse; }
 
 	virtual void	Release();
 
@@ -81,8 +81,10 @@ public:
 	CClientFont( const FontAttribute& FontAttrib, GfxFont* pFont );
 	~CClientFont();
 
-	virtual INT		Ge_stringWidth( LPCTSTR lpszString )const;
-	virtual INT		Ge_stringHeight( LPCTSTR lpszString )const;
+	virtual SIZE GetStringSize( LPCTSTR lpszString );
+
+	virtual INT GetCharacterWidth( TCHAR szChar );
+	virtual INT	GetCharacterHeight();
 
 public:
 	void SetColor( DWORD dwColor );
