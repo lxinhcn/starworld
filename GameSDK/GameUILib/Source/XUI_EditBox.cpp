@@ -29,7 +29,7 @@ namespace UILib
 		GuiSystem::Instance().KillTimer( m_CaratTimerHandler );
 	}
 
-	bool CaratTimerUpdate( unsigned int handle, unsigned short& repeat, unsigned int& timer )
+	bool XUI_EditBox::CaratTimerUpdate( unsigned int handle, unsigned short& repeat, unsigned int& timer )
 	{
 		m_bShowCarat = !m_bShowCarat;
 		repeat = 1;
@@ -115,9 +115,9 @@ namespace UILib
 
 				if( i == m_CaratPos )
 				{
-					long x = CharPos.x;
+					long x = CharPos.x - pFont->GetCharacterWidth( _T('|') )/2;
 					long y = CharPos.y;
-					RenderCharacter( _T('|'), pFont, x - pFont->GetCharacterWidth( _T('|') )/2, y, rc.PtInRect( CharPos ) );
+					RenderCharacter( _T('|'), pFont, x, y, rc.PtInRect( CharPos ) );
 				}
 			}
 			++iter;

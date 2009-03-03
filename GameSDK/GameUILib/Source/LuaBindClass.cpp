@@ -119,6 +119,7 @@ namespace UILib
 			;
 
 		Class< XUI_Button >( "ui::Button" )
+			.static_inherits< XUI_Wnd >()
 			.constructor()
 			.set( "SetState",	&XUI_Button::SetState )
 			.set( "SetSkin",	&XUI_Button::SetSkin )
@@ -128,7 +129,13 @@ namespace UILib
 			.enumValue( "MouseOver",	XUI_Button::MouseOver )
 			.enumValue( "ButtonDown",	XUI_Button::ButtonDown )
 			.enumValue( "Disable",		XUI_Button::Disable )
+			;
+
+		Class< XUI_EditBox >( "ui::EditCtrl" )
 			.static_inherits< XUI_Wnd >()
+			.constructor()
+			.member( "text", &XUI_EditBox::m_strText )
+			.member( "warp", &XUI_EditBox::m_bWarpText )
 			;
 
 		try

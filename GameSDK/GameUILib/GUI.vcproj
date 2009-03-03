@@ -65,9 +65,9 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="loki_d.lib HelperLib.lib SLB.lib"
+				AdditionalDependencies="HelperLib.lib SLB.lib"
 				OutputFile="..\..\Lib\$(ConfigurationName)\$(ProjectName).lib"
-				AdditionalLibraryDirectories="&quot;..\..\Lib\$(ConfigurationName)\&quot;;&quot;..\lua-5.1.4\src&quot;;&quot;..\..\Depend\Loki-0.1.6\Lib&quot;"
+				AdditionalLibraryDirectories="&quot;..\..\Lib\$(ConfigurationName)\&quot;;&quot;..\lua-5.1.4\src&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
