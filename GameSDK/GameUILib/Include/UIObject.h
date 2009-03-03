@@ -33,6 +33,7 @@ class UIObjTypeT	:	public TBase
 {
 protected:
 	UIObjTypeT()
+		:TBase()
 	{
 		//ASSERT( IsTypeOf( TypeObjectbase ), "´íÎóµÄ¼Ì³ĞÀàĞÍ¡£" );
 	}

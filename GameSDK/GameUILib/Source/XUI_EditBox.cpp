@@ -8,7 +8,8 @@ namespace UILib
 	END_UIMSG_MAP()
 
 	XUI_EditBox::XUI_EditBox(void)
-	: m_bControl( false )
+	: UIObjTypeT< XUI_Wnd, TypeEditBox >()
+	, m_bControl( false )
 	, m_bShift( false )
 	, m_CaratPos( 0 )
 	, m_FirstVisiblePos( 0 )
@@ -60,67 +61,68 @@ namespace UILib
 		CPoint CharPos = pt;
 		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
 
-		line_recorder::iterator iter = m_LineRecorder.begin() + ( m_LineRecorder.empty()?0:m_FirstVisiblePos );
-		while( iter != m_LineRecorder.end() )
+		_string::size_type begin	= m_LineRecorder.empty()?0:m_LineRecorder[m_FirstVisiblePos]+1;
+		_string::size_type end		= m_LineRecorder.empty()?m_strText.length():(m_FirstVisiblePos<m_LineRecorder.size()?m_LineRecorder[m_FirstVisiblePos+1]+1:m_strText.length());
+
+		for( size_t i = begin; i <= end; ++i )
 		{
-			_string::size_type end = (iter+1 == m_LineRecorder.end())?m_strText.length():*(iter+1);
-
-			for( size_t i = *iter; i < end; ++i )
+			TCHAR c = m_strText[i];
+			if( pFont->GetCharacterWidth( c ) + CharPos.x > rc.right )
 			{
-				TCHAR c = m_strText[i];
-				if( pFont->GetCharacterWidth( c ) + CharPos.x > m_wndRect.right )
+				// 字符显示超出宽度，则折行显示
+				CharPos.x = rc.left;
+				CharPos.y += pFont->GetCharacterHeight();
+				if( CharPos.y > rc.bottom ) 
 				{
-					CharPos.x = 0;
-					CharPos.y += pFont->GetCharacterHeight();
-					if( CharPos.y > m_wndRect.bottom ) 
-					{
-						return;
-					}
-				}
-
-				if( _istprint( c ) )
-				{
-					RenderCharacter( c, pFont, CharPos.x, CharPos.y, rc.PtInRect( CharPos ) );
-				}
-				else
-				{
-					switch( c )
-					{
-					case '\t':
-						{
-							size_t CharCount = i - *iter;
-							size_t NextTab = CharPos.x + (4 - CharCount%4)*pFont->GetCharacterWidth( _T(' ') );
-							if( (long)NextTab > m_wndRect.right ) NextTab = m_wndRect.right;
-							while( CharPos.x < (long)NextTab )
-							{
-								RenderCharacter( _T(' '), pFont, CharPos.x, CharPos.y, rc.PtInRect( CharPos ) );
-							}
-						}
-						break;
-					case '\n':
-						{
-							CharPos.x = 0;
-							CharPos.y += pFont->GetCharacterHeight();
-							if( CharPos.y > m_wndRect.bottom ) 
-							{
-								return;
-							}
-						}
-						break;
-					default:
-						RenderCharacter( _T('?'), pFont, CharPos.x, CharPos.y, rc.PtInRect( CharPos ) );
-						break;
-					}
-				}
-
-				if( i == m_CaratPos )
-				{
-					long x = CharPos.x - pFont->GetCharacterWidth( _T('|') )/2;
-					long y = CharPos.y;
-					RenderCharacter( _T('|'), pFont, x, y, rc.PtInRect( CharPos ) );
+					return;
 				}
 			}
-			++iter;
+
+			BOOL bRender = rc.PtInRect( CharPos + CPoint( pFont->GetCharacterWidth( c ), pFont->GetCharacterHeight() ) );
+			if( _istprint( c ) )
+			{
+				RenderCharacter( c, pFont, CharPos.x, CharPos.y, bRender );
+			}
+			else
+			{
+				switch( c )
+				{
+				case '\t':
+					{
+						size_t CharCount = i - begin;
+						size_t NextTab = CharPos.x + (4 - CharCount%4)*pFont->GetCharacterWidth( _T(' ') );
+						if( (long)NextTab > m_wndRect.right ) NextTab = m_wndRect.right;
+						while( CharPos.x < (long)NextTab )
+						{
+							RenderCharacter( _T(' '), pFont, CharPos.x, CharPos.y, bRender );
+						}
+					}
+					break;
+				case '\n':
+					{
+						CharPos.x = 0;
+						CharPos.y += pFont->GetCharacterHeight();
+						if( CharPos.y > m_wndRect.bottom ) 
+						{
+							return;
+						}
+					}
+					break;
+				case '\0':
+					RenderCharacter( _T(' '), pFont, CharPos.x, CharPos.y, bRender );
+					break;
+				default:
+					RenderCharacter( _T('?'), pFont, CharPos.x, CharPos.y, bRender );
+					break;
+				}
+			}
+
+			if( i == m_CaratPos && m_bShowCarat )
+			{
+				long x = CharPos.x - long( pFont->GetCharacterWidth( _T('|') )*1.5f );
+				long y = CharPos.y;
+				RenderCharacter( _T('|'), pFont, x, y, bRender );
+			}
 		}
 	}
 
@@ -211,7 +213,7 @@ namespace UILib
 		return true;
 	}
 
-	void XUI_EditBox::DeleteCharacter( int nPos )
+	void XUI_EditBox::DeleteCharacter( size_t nPos )
 	{
 		if( m_strText[nPos] == _T('\n') )
 		{
@@ -249,7 +251,8 @@ namespace UILib
 
 	void XUI_EditBox::HandleEnd( UINT nSysKey )
 	{
-		while( m_CaratPos <= m_strText.length() && m_strText[m_CaratPos] != _T('\n') ) ++m_CaratPos;
+		int c = m_strText[m_CaratPos];
+		while( m_CaratPos < m_strText.length() && c != _T('\n') && c != _T('\0') ) ++m_CaratPos;
 	}
 
 	void XUI_EditBox::HandleWordLeft( UINT nSysKey )
@@ -264,12 +267,12 @@ namespace UILib
 
 	void XUI_EditBox::HandleWordRight( UINT nSysKey )
 	{
-		while( m_CaratPos <= m_strText.length() && m_strText[m_CaratPos] != _T(' ') ) ++m_CaratPos;
+		while( m_CaratPos < m_strText.length() && m_strText[m_CaratPos] != _T(' ') ) ++m_CaratPos;
 	}
 
 	void XUI_EditBox::HandleCharRight( UINT nSysKey )
 	{
-		if( m_CaratPos <= m_strText.length() ) ++m_CaratPos;
+		if( m_CaratPos < m_strText.length() ) ++m_CaratPos;
 	}
 
 	void XUI_EditBox::HandleReturn( UINT nSysKey )
@@ -318,6 +321,17 @@ namespace UILib
 	bool XUI_EditBox::onImeNotify(DWORD wParam, DWORD lParam)
 	{
 		return true;
+	}
+
+	unsigned int XUI_EditBox::OnMoveWindow( CRect& rcWindow )
+	{
+		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
+		if( pFont )
+		{
+			m_WindowSize.cx		= m_wndRect.Width()/pFont->GetCharacterWidth( _T(' ') );
+			m_WindowSize.cy		= m_wndRect.Height()/pFont->GetCharacterHeight();
+		}
+		return 0;
 	}
 
 	//---------------------------------------------------------------------//
