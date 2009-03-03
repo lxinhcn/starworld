@@ -147,7 +147,7 @@ namespace UILib
 					bString = true;
 				}
 				szParam[nPos++] = *pCmd++;
-				if( *pCmd == 0 || bString?(_T(']')==*pCmd):
+				if( *pCmd == 0 || ( bString?(_T(']')==*pCmd):
 					( 
 						*pCmd != _T('.') &&
 						*pCmd != _T('_') && 
@@ -155,7 +155,7 @@ namespace UILib
 						*pCmd != _T('~') && 
 						*pCmd != _T('\\') &&
 						!_istalnum( *pCmd ) 
-					) )
+					) ) )
 				{
 					szParam[nPos] = 0;
 					param.push_back( szParam );

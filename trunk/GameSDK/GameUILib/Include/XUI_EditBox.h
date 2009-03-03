@@ -7,7 +7,7 @@ namespace UILib
 	{
 		friend class LuaBindClass;
 		DECLARE_UIMSG_MAP()
-		DECLARE_LABLE( EDITBOX )
+		DECLARE_LABLE( EDIT )
 	public:
 		XUI_EditBox(void);
 		~XUI_EditBox(void);
@@ -51,9 +51,11 @@ namespace UILib
 		virtual bool onImeEndComp(DWORD wParam, DWORD lParam);
 		virtual bool onImeNotify(DWORD wParam, DWORD lParam);
 
+		virtual unsigned int OnMoveWindow( CRect& rcWindow );
+
 	protected:
 		void RenderCharacter( TCHAR szChar, XUI_IFont* pFont, LONG &x, LONG &y, BOOL bRender );
-		void DeleteCharacter( int nPos );
+		void DeleteCharacter( size_t nPos );
 		bool CaratTimerUpdate( unsigned int handle, unsigned short& repeat, unsigned int& timer );
 
 		void HandleBack( UINT nSysKey );

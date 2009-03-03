@@ -118,7 +118,7 @@ bool CApplication::Initialize()
 		TCHAR szPath[1024];
 		helper::GetModulePath( NULL, szPath, sizeof( szPath ) );
 		GuiSystem::Instance().SetImagePath( szPath );
-		GuiSystem::Instance().LoadFromFile( _T("main.xml") );
+		UICommander::Instance().ProcessCommand( _T("load main.xml") );
 	}
 
 	return true;
@@ -166,6 +166,7 @@ bool CApplication::UpdateLogic( float fDelta )
 			break;
 		}
 	}
+	GuiSystem::Instance().Update( fDelta );
 	return false;
 }
 

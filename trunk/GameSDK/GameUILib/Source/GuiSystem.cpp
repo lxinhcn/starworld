@@ -15,6 +15,7 @@ namespace UILib
 	, m_bInitialized( FALSE )
 	, m_nowtime( 0.0f )
 	, m_timer_anchor( 0.0f )
+	, m_pDefaultFont( NULL )
 	{
 		m_pDesktop=new XUI_Window();
 		m_pDesktop->SetID( DEFAULT_DESKTOP );
@@ -31,6 +32,7 @@ namespace UILib
 
 	BOOL CGuiSystem::Initialize( HWND hWnd, XUI_IFont* pFont )
 	{
+		m_pDefaultFont			= pFont;
 		if( m_bInitialized )	return TRUE;
 
 		// 初始化lua脚本系统
@@ -58,7 +60,7 @@ namespace UILib
 	void CGuiSystem::Update( float fDelta )
 	{
 		m_nowtime += fDelta;
-		while( m_nowtime >= 0.1f )
+		while( m_nowtime - m_timer_anchor >= 0.1f )
 		{
 			m_timer_anchor += 0.1f;
 			m_timer.timer();

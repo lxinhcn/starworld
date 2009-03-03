@@ -139,15 +139,19 @@ namespace UILib
 					if( p )
 					{
 						XUI_Wnd* pElement = CUIFactory::GetInstance().Creator( p );
-						AddChild( pElement );
-						Attribute = pXMLChildElement->FirstChild( "Attribute" );
-						pElement->load_file( Attribute->ToElement() );
-
-						pElement->SendMessage( UI_CREATE, 0, 0 );
-
-						if( pElement->IsKindOf( TypeWindow ) )
+						ASSERT_MSG( pElement, _T("无法创建控件") );
+						if( pElement )
 						{
-							if( ((XUI_Window*)pElement)->CreateFromXMLNode( pNodeChild ) == false ) return false;
+							AddChild( pElement );
+							Attribute = pXMLChildElement->FirstChild( "Attribute" );
+							pElement->load_file( Attribute->ToElement() );
+
+							pElement->SendMessage( UI_CREATE, 0, 0 );
+
+							if( pElement->IsKindOf( TypeWindow ) )
+							{
+								if( ((XUI_Window*)pElement)->CreateFromXMLNode( pNodeChild ) == false ) return false;
+							}
 						}
 					}
 					//const CRect& rc = pElement->GetRect();
