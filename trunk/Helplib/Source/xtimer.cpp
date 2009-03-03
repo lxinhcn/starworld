@@ -60,7 +60,7 @@ unsigned int xtimer::insert_event( event_interface* event )
 
 xtimer::event_interface* xtimer::get_event( unsigned int handle )
 {
-	timer_handle& h = (timer_handle&)m_cur_pos;
+	timer_handle& h = (timer_handle&)handle;
 	if( h.position < m_EventVec.size() )
 	{
 		event_interface* event = m_EventVec.at(h.position);
@@ -82,7 +82,7 @@ void xtimer::remove_event( event_interface* event )
 {
 	if( event )
 	{
-		timer_handle& h = (timer_handle&)m_cur_pos;
+		timer_handle& h = (timer_handle&)event->handle;
 		event_interface* _event = m_EventVec[h.position];
 		if( event == _event )
 		{

@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\Include;.\;..\Depend\Loki-0.1.6\Include"
+				AdditionalIncludeDirectories=".\;.\Include;&quot;..\Depend\Loki-0.1.6\Include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;TOOLLIB_EXPORTS;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
