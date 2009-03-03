@@ -65,7 +65,7 @@ namespace UILib
 		if( pParent == NULL )
 		{
 			//_assert( _afxCurrentGuiSystem );
-			pParent = _afxCurrentGuiSystem->GetRoot();
+			pParent = GuiSystem::Instance().GetRoot();
 		}
 
 		while( pParent->GetParent() )
@@ -76,7 +76,7 @@ namespace UILib
 		m_nResult = 0;
 		m_bEnableParent = true;
 		m_bModal = true;
-		_afxCurrentGuiSystem->EnterModaless( this );
+		GuiSystem::Instance().EnterModaless( this );
 		return pParent;
 	}
 
@@ -117,7 +117,7 @@ namespace UILib
 			{
 				if( !pfn( FALSE ) )
 				{
-					::PostMessage( _afxCurrentGuiSystem->GetHWND(), WM_QUIT, 0, 0 );
+					::PostMessage( GuiSystem::Instance().GetHWND(), WM_QUIT, 0, 0 );
 					return;
 				}
 
@@ -128,7 +128,7 @@ namespace UILib
 
 	void CXDialog::PostModal()
 	{
-		_afxCurrentGuiSystem->LeaveModaless();
+		GuiSystem::Instance().LeaveModaless();
 	}
 
 	void CXDialog::EndModalLoop()

@@ -11,8 +11,8 @@ namespace UILib
 {
 
 	CUICommander::CUICommander()
-		: m_pCurElement( GuiSystem::Instance().GetRoot() )
 	{
+		m_pCurElement = GuiSystem::Instance().GetRoot();
 		RegistCommand( _T("help"),		&CUICommander::cmd_help,		_T("help")	);
 		RegistCommand( _T("create"),	&CUICommander::cmd_create,		_T("create control :create [lable]")	);
 		RegistCommand( _T("delete"),	&CUICommander::cmd_delete,		_T("delete control :delete (index|control name)")	);

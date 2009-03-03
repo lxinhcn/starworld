@@ -97,6 +97,7 @@ bool CApplication::Initialize()
 	m_hge->System_SetState(HGE_SCREENHEIGHT, SCREEN_HEIGHT);
 	m_hge->System_SetState(HGE_SCREENBPP, 32);
 
+	GuiSystem::Instance();
 	// 挂接窗口消息处理函数
 	HMODULE hUser32 = GetModuleHandle( _T("User32.dll") );
 	if( hUser32 )

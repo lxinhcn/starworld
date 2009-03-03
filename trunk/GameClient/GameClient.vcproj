@@ -65,7 +65,7 @@
 				AdditionalDependencies="hge.lib GameWorld.lib GameCore.lib GUI.lib Helperlib.lib loki_d.lib"
 				ShowProgress="2"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;..\lib\$(ConfigurationName)&quot;;..\Depend\DX81SDK\Lib;&quot;..\Depend\hge181\Lib\$(ConfigurationName)&quot;;&quot;..\Depend\Loki-0.1.6\Lib&quot;"
+				AdditionalLibraryDirectories="&quot;..\lib\$(ConfigurationName)&quot;;..\Depend\DX81SDK\Lib;&quot;..\Depend\hge181\Lib\$(ConfigurationName)&quot;;&quot;..\Depend\loki-0.1.6\Lib&quot;"
 				GenerateManifest="true"
 				IgnoreDefaultLibraryNames="LibC.lib"
 				GenerateDebugInformation="true"

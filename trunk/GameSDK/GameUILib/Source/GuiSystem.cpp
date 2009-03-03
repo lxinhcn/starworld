@@ -8,8 +8,6 @@
 ****************************************************/
 namespace UILib
 {
-	CGuiSystem* _afxCurrentGuiSystem = NULL;
-
 	CGuiSystem::CGuiSystem()
 	: m_pDesktop(NULL)
 	, m_bPointInRoot(false)
@@ -33,7 +31,6 @@ namespace UILib
 
 	BOOL CGuiSystem::Initialize( HWND hWnd, XUI_IFont* pFont )
 	{
-		_afxCurrentGuiSystem	= this;
 		if( m_bInitialized )	return TRUE;
 
 		// 初始化lua脚本系统
@@ -52,7 +49,6 @@ namespace UILib
 
 	void CGuiSystem::Render()
 	{
-		_afxCurrentGuiSystem = this;
 		if ( m_pDesktop )
 		{
 			m_pDesktop->Render( m_pDesktop->GetWindowRect() );
@@ -205,7 +201,6 @@ namespace UILib
 
 	void CGuiSystem::HandleMessage( UINT uMsg, WPARAM wParam, LPARAM lParam )
 	{
-		_afxCurrentGuiSystem = this;
 		if( m_pDesktop )
 		{
 			if( uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST )
@@ -420,7 +415,6 @@ namespace UILib
 	// 界面生成
 	bool CGuiSystem::LoadFromFile( LPCTSTR pszFilename )
 	{
-		_afxCurrentGuiSystem = this;
 		if( m_pDesktop )
 		{
 			TiXmlDocument Doc;
@@ -439,7 +433,6 @@ namespace UILib
 
 	bool CGuiSystem::SaveToFile( LPCTSTR pszFilename )
 	{
-		_afxCurrentGuiSystem = this;
 		if( m_pDesktop )
 		{
 			TiXmlDocument	Doc;

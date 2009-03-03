@@ -8,14 +8,14 @@
 //界面系统，主要负责消息的转发
 #define DEFAULT_DESKTOP			0x10000
 #define TIMER_PRECISION			(0.1f)
-#define TIMER_SECOND(second)	(second*1.0f/TIMER_PRECISION);
+#define TIMER_SECOND(second)	int(second*1.0f/TIMER_PRECISION)
 namespace UILib
 {
 	struct ICanvas;
 	class XUI_Window;
 	class CGuiSystem
 	{
-	friend struct Loki::CreateStatic< CGuiSystem >;
+	friend struct Loki::CreateUsingNew< CGuiSystem >;
 	private:
 		CGuiSystem();
 		CGuiSystem( CONST CGuiSystem& src );
@@ -105,7 +105,7 @@ namespace UILib
 		void KillTimer( unsigned int handle );
 	};
 
-	typedef Loki::SingletonHolder< CGuiSystem, Loki::CreateStatic > GuiSystem;
+	typedef Loki::SingletonHolder< CGuiSystem, Loki::CreateUsingNew, Loki::LongevityLifetime::DieAsSmallObjectChild > GuiSystem;
 }
 
 #endif

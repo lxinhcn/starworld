@@ -5,7 +5,7 @@ namespace UILib
 {
 	class XUI_EditBox :	public UIObjTypeT< XUI_Wnd, TypeEditBox >
 	{
-		//DECLARE_PROPERTY_MAP( XUI_EditBox, XUI_Wnd )
+		friend class LuaBindClass;
 		DECLARE_UIMSG_MAP()
 		DECLARE_LABLE( EDITBOX )
 	public:
@@ -91,7 +91,5 @@ namespace UILib
 
 		unsigned int	m_CaratTimerHandler;
 		bool			m_bShowCarat;
-
-		XUI_IFont*	m_pFont;
 	};
 }
