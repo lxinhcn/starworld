@@ -91,6 +91,13 @@ namespace UILib
 		bool	m_bControl, m_bShift;
 		CSize	m_WindowSize;				// 视窗大小
 
+		struct line_info
+		{
+			size_t	count;		// 字符数
+			size_t	width;		// 占用宽度
+			size_t	tag;		// 第一个字符在串中的索引号
+		};
+
 		unsigned int	m_CaratTimerHandler;
 		bool			m_bShowCarat;
 	};
