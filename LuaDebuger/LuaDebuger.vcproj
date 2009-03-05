@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="GameClient"
-	ProjectGUID="{C9AE6665-7E52-4E5D-862D-6E37BA55FEA9}"
-	RootNamespace="GameClient"
+	Name="LuaDebuger"
+	ProjectGUID="{A6A3A671-E708-4D13-9D42-2EF9BF13A4AF}"
+	RootNamespace="LuaDebuger"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -19,7 +19,7 @@
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)Exe\$(ConfigurationName)"
 			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="1"
+			ConfigurationType="4"
 			CharacterSet="1"
 			>
 			<Tool
@@ -40,13 +40,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Depend\hge181\include;&quot;..\Depend\Loki-0.1.6\Include&quot;;..\GameSDK\GameCore\Include;..\GameSDK\GameWorld\Include;..\GameSDK\GameUILib\;..\Helplib"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
+				AdditionalIncludeDirectories="..\GameSDK\lua-5.1.4\src"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
-				BrowseInformation="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
@@ -61,25 +60,13 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="hge.lib lua51.lib GameWorld.lib GameCore.lib GUI.lib Helperlib.lib loki_d.lib"
-				ShowProgress="2"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;..\lib\$(ConfigurationName)&quot;;..\Depend\DX81SDK\Lib;&quot;..\Depend\hge181\Lib\$(ConfigurationName)&quot;;&quot;..\Depend\loki-0.1.6\Lib&quot;;&quot;..\GameSDK\lua-5.1.4\src&quot;"
-				GenerateManifest="true"
-				IgnoreDefaultLibraryNames="LibC.lib"
-				GenerateDebugInformation="true"
-				SubSystem="2"
-				TargetMachine="1"
-				AllowIsolation="true"
+				Name="VCLibrarianTool"
+				AdditionalDependencies="lua51.lib"
+				OutputFile="$(SolutionDir)lib/$(ConfigurationName)/$(ProjectName).lib"
+				AdditionalLibraryDirectories="$(SolutionDir)GameSDK/lua-5.1.4/src"
 			/>
 			<Tool
 				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-				EmbedManifest="true"
-				UseFAT32Workaround="true"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -91,12 +78,6 @@
 				Name="VCFxCopTool"
 			/>
 			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -104,7 +85,7 @@
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)Exe\$(ConfigurationName)"
 			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="1"
+			ConfigurationType="4"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
@@ -125,7 +106,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -142,19 +123,11 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="1"
-				GenerateDebugInformation="true"
-				SubSystem="2"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="1"
+				Name="VCLibrarianTool"
+				OutputFile="$(SolutionDir)lib/$(ConfigurationName)/$(TargetName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -164,12 +137,6 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -185,23 +152,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\Application.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Canvas.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ClientMap.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\GameClient.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\GfxFont.cpp"
+				RelativePath=".\LuaDebuger.cpp"
 				>
 			</File>
 			<File
@@ -231,27 +182,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\Application.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Canvas.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ClientMap.h"
-				>
-			</File>
-			<File
-				RelativePath=".\GameClient.h"
-				>
-			</File>
-			<File
-				RelativePath=".\GfxFont.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Resource.h"
+				RelativePath=".\LuaDebuger.h"
 				>
 			</File>
 			<File
@@ -264,18 +195,6 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
-			<File
-				RelativePath=".\GameClient.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\GameClient.rc"
-				>
-			</File>
-			<File
-				RelativePath=".\small.ico"
-				>
-			</File>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"

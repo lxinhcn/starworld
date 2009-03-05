@@ -3,10 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameClient", "GameClient\GameClient.vcproj", "{C9AE6665-7E52-4E5D-862D-6E37BA55FEA9}"
 	ProjectSection(ProjectDependencies) = postProject
-		{0CAAD250-94F2-4158-A8A5-506B578D6E08} = {0CAAD250-94F2-4158-A8A5-506B578D6E08}
-		{2DB0D95C-7472-4494-BB66-E3F2624EEE87} = {2DB0D95C-7472-4494-BB66-E3F2624EEE87}
-		{DFC4FCE6-5749-4FA2-8FC5-4CD42B9E9A3A} = {DFC4FCE6-5749-4FA2-8FC5-4CD42B9E9A3A}
 		{6BAE9CF1-A632-461A-A5D4-527A5EB3A93D} = {6BAE9CF1-A632-461A-A5D4-527A5EB3A93D}
+		{DFC4FCE6-5749-4FA2-8FC5-4CD42B9E9A3A} = {DFC4FCE6-5749-4FA2-8FC5-4CD42B9E9A3A}
+		{2DB0D95C-7472-4494-BB66-E3F2624EEE87} = {2DB0D95C-7472-4494-BB66-E3F2624EEE87}
+		{0CAAD250-94F2-4158-A8A5-506B578D6E08} = {0CAAD250-94F2-4158-A8A5-506B578D6E08}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameCore", "GameSDK\GameCore\GameCore.vcproj", "{2DB0D95C-7472-4494-BB66-E3F2624EEE87}"
@@ -37,6 +37,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ui script", "ui script", "{
 	ProjectSection(SolutionItems) = preProject
 		exe\Resource\Scripts\ui\utility.lua = exe\Resource\Scripts\ui\utility.lua
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaDebuger", "LuaDebuger\LuaDebuger.vcproj", "{A6A3A671-E708-4D13-9D42-2EF9BF13A4AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -72,6 +74,10 @@ Global
 		{FB1A9503-D67D-4311-AB3B-113DAD7D6F9F}.Debug|Win32.Build.0 = Debug|Win32
 		{FB1A9503-D67D-4311-AB3B-113DAD7D6F9F}.Release|Win32.ActiveCfg = Release|Win32
 		{FB1A9503-D67D-4311-AB3B-113DAD7D6F9F}.Release|Win32.Build.0 = Release|Win32
+		{A6A3A671-E708-4D13-9D42-2EF9BF13A4AF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A6A3A671-E708-4D13-9D42-2EF9BF13A4AF}.Debug|Win32.Build.0 = Debug|Win32
+		{A6A3A671-E708-4D13-9D42-2EF9BF13A4AF}.Release|Win32.ActiveCfg = Release|Win32
+		{A6A3A671-E708-4D13-9D42-2EF9BF13A4AF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

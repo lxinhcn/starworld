@@ -7,6 +7,7 @@
 
 #define LUA_CATCH(...)	catch( std::runtime_error& err ){ OutputDebugStringA( err.what() ); __VA_ARGS__; }
 
+class LuaDebuger;
 namespace UILib
 {
 	class XUI_Wnd;
@@ -22,6 +23,8 @@ namespace UILib
 		~LuaBindClass(void);
 
 		void Initialize();
+
+		LuaDebuger	*m_pLuaDebuger; 
 	};
 	typedef Loki::SingletonHolder< LuaBindClass, Loki::CreateStatic >	Lua;
 
