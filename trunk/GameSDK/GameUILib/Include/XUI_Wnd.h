@@ -3,6 +3,7 @@
 #pragma once
 
 #include "XUI_Base.h"
+#include "XUI_Canvas.h"
 #define DECLARE_LABLE( lable )\
 	virtual LPCTSTR GetLable()const { return _T(#lable); }\
 

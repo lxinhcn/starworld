@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="./Include;..\GameCore\Include;..\..\Helplib\;..\SLB\Include;&quot;..\lua-5.1.4\src&quot;;&quot;..\..\Depend\Loki-0.1.6\Include&quot;"
+				AdditionalIncludeDirectories="..\..\Helplib\;&quot;..\..\Depend\Loki-0.1.6\Include&quot;;..\..\LuaDebuger;&quot;..\lua-5.1.4\src&quot;;..\SLB\Include;..\GameCore\Include;./Include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_MEMLEAK_"
 				GeneratePreprocessedFile="0"
 				MinimalRebuild="false"
@@ -65,7 +65,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="HelperLib.lib SLB.lib"
+				AdditionalDependencies="HelperLib.lib SLB.lib LuaDebuger.lib"
 				OutputFile="..\..\Lib\$(ConfigurationName)\$(ProjectName).lib"
 				AdditionalLibraryDirectories="&quot;..\..\Lib\$(ConfigurationName)\&quot;;&quot;..\lua-5.1.4\src&quot;"
 			/>

@@ -7,6 +7,9 @@
 #include "XUI_Dialog.h"
 #include "XUI_EditBox.h"
 #include "XUI_Window.h"
+//////////////////////////////////////////////////////////////////////////
+#include "LuaDebuger.h"
+//////////////////////////////////////////////////////////////////////////
 #include "SLB\SLB.hpp"
 using namespace SLB;
 
@@ -14,6 +17,7 @@ using namespace XGC;
 namespace UILib
 {
 	LuaBindClass::LuaBindClass(void)
+		: m_pLuaDebuger( NULL )
 	{
 	}
 
@@ -25,7 +29,10 @@ namespace UILib
 	{
 		//SLB::Class< CUICommander, SLB::Instance::NoCopyNoDestroy >( "ui::Commander" )
 		//	.set( "run", &CUICommander::ProcessCommand )
-			;
+		//	;
+
+		m_pLuaDebuger = new LuaDebuger();
+		m_pLuaDebuger->initialize( Lua::Instance().getState() );
 
 		Class< TiXmlElement >( "xml::Element" )
 			.constructor< const char* >()
