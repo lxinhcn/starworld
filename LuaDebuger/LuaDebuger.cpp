@@ -25,6 +25,29 @@ struct LuaDebuger::Impl
 	// 运行模式
 	enum run_mode { run, stop, step, stepover, stepout };
 
+	struct variant
+	{
+		std::string		name;
+		unsigned char	type;
+		int				stackindex;
+		//union value
+		//{
+		//	int			boolean;
+		//	lua_Integer	integer;
+		//	lua_Number	number;
+		//	const cahr*	string;
+		//	std::list< variant >*	table;
+		//}
+	};
+
+	struct stackframe
+	{
+		int						currentline;
+		std::string				filename;
+		std::list< variant >	variants;
+		std::list< variant >	upvalues;
+	};
+
 	path_set	paths;
 	break_map	breakpoints;
 
@@ -64,14 +87,10 @@ void LuaDebuger::set_breakpoint( const char* name, int line )
 	}
 }
 
-void LuaDebuger::set_output_handle( HANDLE out )
+void LuaDebuger::set_stream_handle( HANDLE in, HANDLE out )
 {
-	m_pImpl->out = out;
-}
-
-void LuaDebuger::set_input_handle( HANDLE in )
-{
-	m_pImpl->in = in;
+	m_pImpl->in		= in;
+	m_pImpl->out	= out;
 }
 
 bool LuaDebuger::is_break( const char* name, int line )
@@ -183,10 +202,13 @@ static void Debug(lua_State *L, lua_Debug *ar)
 	//}
 }
 
-bool LuaDebuger::initialize( lua_State* L )
+bool LuaDebuger::initialize( lua_State* L, HANDLE in, HANDLE out )
 {
+	set_stream_handle( in, out );
+
 	lua_sethook( L, Debug, LUA_MASKCALL|LUA_MASKLINE|LUA_MASKRET|LUA_MASKCOUNT, 1 );
 	lua_pushlightuserdata( L, this );
 	lua_setglobal( L, "__debuger" );
+
 	return true;
 }
