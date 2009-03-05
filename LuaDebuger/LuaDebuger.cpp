@@ -30,14 +30,6 @@ struct LuaDebuger::Impl
 		std::string		name;
 		unsigned char	type;
 		int				stackindex;
-		//union value
-		//{
-		//	int			boolean;
-		//	lua_Integer	integer;
-		//	lua_Number	number;
-		//	const cahr*	string;
-		//	std::list< variant >*	table;
-		//}
 	};
 
 	struct stackframe
@@ -48,6 +40,8 @@ struct LuaDebuger::Impl
 		std::list< variant >	upvalues;
 	};
 
+	typedef std::stack< stackframe >	luastack;
+
 	path_set	paths;
 	break_map	breakpoints;
 
@@ -57,6 +51,8 @@ struct LuaDebuger::Impl
 
 	int			call_level;	// 当前堆栈深度
 	int			stop_level;	// 暂停时的堆栈深度
+
+	luastack	lstack;		// lua 栈
 };
 
 LuaDebuger::LuaDebuger()
