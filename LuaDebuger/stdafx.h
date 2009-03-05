@@ -18,3 +18,9 @@ extern "C"
 	#include "lauxlib.h"
 	#include "lualib.h"
 }
+
+#include <string>
+#include <map>
+#include <list>
+#include <set>
+#include <sstream>
