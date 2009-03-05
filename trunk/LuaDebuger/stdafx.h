@@ -19,8 +19,9 @@ extern "C"
 	#include "lualib.h"
 }
 
-#include <string>
 #include <map>
-#include <list>
 #include <set>
+#include <list>
+#include <stack>
+#include <string>
 #include <sstream>

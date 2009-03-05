@@ -32,7 +32,7 @@ namespace UILib
 		//	;
 
 		m_pLuaDebuger = new LuaDebuger();
-		m_pLuaDebuger->initialize( Lua::Instance().getState() );
+		m_pLuaDebuger->initialize( Lua::Instance().getState(), INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE );
 
 		Class< TiXmlElement >( "xml::Element" )
 			.constructor< const char* >()

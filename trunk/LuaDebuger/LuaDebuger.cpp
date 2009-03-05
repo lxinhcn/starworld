@@ -67,14 +67,6 @@ LuaDebuger::~LuaDebuger()
 	m_pImpl = NULL;
 }
 
-void LuaDebuger::set_path( const char* path )
-{
-	if( path != NULL )
-	{
-		m_pImpl->paths.insert( path );
-	}
-}
-
 void LuaDebuger::set_breakpoint( const char* name, int line )
 {
 	if( name != NULL && line >= 0 )
@@ -137,6 +129,7 @@ static void line_hook( LuaDebuger* pDebuger, lua_State *L, lua_Debug *ar )
 	case LuaDebuger::Impl::run:
 		if( ar->source[0] == '@' && pDebuger->is_break( ar->source+1, ar->currentline ) )
 		{
+			lua_getinfo( L, "nu", ar );
 			pDebuger->waitSignal(L);
 		}
 		break;
