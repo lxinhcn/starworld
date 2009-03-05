@@ -25,3 +25,7 @@ extern "C"
 #include <stack>
 #include <string>
 #include <sstream>
+
+#include <process.h>
+
+#define BUFSIZE 1024*32

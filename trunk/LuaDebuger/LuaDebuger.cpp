@@ -4,18 +4,14 @@
 struct LuaDebuger::Impl
 {
 	Impl()
-		: in( INVALID_HANDLE_VALUE )
-		, out( INVALID_HANDLE_VALUE )
-		, call_level( 0 )
+		: call_level( 0 )
 		, stop_level( 0 )
 		, runmode( run )
 	{
-		debug_signal = CreateEvent( NULL, TRUE, TRUE, NULL );
 	}
 
 	~Impl()
 	{
-		CloseHandle( debug_signal );
 	}
 
 	typedef std::set< int >	line_set;
@@ -45,14 +41,41 @@ struct LuaDebuger::Impl
 	path_set	paths;
 	break_map	breakpoints;
 
-	HANDLE		in, out;
-	HANDLE		debug_signal;
 	run_mode	runmode;
 
 	int			call_level;	// 当前堆栈深度
 	int			stop_level;	// 暂停时的堆栈深度
 
 	luastack	lstack;		// lua 栈
+};
+
+struct LuaDebuger::ThreadParam
+{
+	ThreadParam( LuaDebuger* p, bool (LuaDebuger::* c)( const char* cmd ) )
+		: in( INVALID_HANDLE_VALUE )
+		, out( INVALID_HANDLE_VALUE )
+		, pThis( p )
+		, command( c )
+	{
+		debug_signal = CreateEvent( NULL, TRUE, TRUE, NULL );
+	}
+
+	~ThreadParam()
+	{
+		WaitForSingleObject( debug_signal, INFINITE );
+		CloseHandle( debug_signal );
+	}
+
+	bool _call( const char* cmd )
+	{
+		return (pThis->*command)( cmd );
+	}
+	HANDLE		in, out;
+	HANDLE		debug_signal;
+
+private:
+	LuaDebuger*	pThis;
+	bool (LuaDebuger::* command)( const char* cmd )	;
 };
 
 LuaDebuger::LuaDebuger()
@@ -67,7 +90,7 @@ LuaDebuger::~LuaDebuger()
 	m_pImpl = NULL;
 }
 
-void LuaDebuger::set_breakpoint( const char* name, int line )
+void LuaDebuger::bp( const char* name, int line )
 {
 	if( name != NULL && line >= 0 )
 	{
@@ -75,13 +98,7 @@ void LuaDebuger::set_breakpoint( const char* name, int line )
 	}
 }
 
-void LuaDebuger::set_stream_handle( HANDLE in, HANDLE out )
-{
-	m_pImpl->in		= in;
-	m_pImpl->out	= out;
-}
-
-bool LuaDebuger::is_break( const char* name, int line )
+bool LuaDebuger::judgeBreak( const char* name, int line )
 {
 	Impl::break_map::const_iterator citer = m_pImpl->breakpoints.find( name );
 	if( citer != m_pImpl->breakpoints.end() )
@@ -98,7 +115,12 @@ bool LuaDebuger::is_break( const char* name, int line )
 
 bool LuaDebuger::waitSignal( lua_State *L )
 {
-	DWORD dwRet = WaitForSingleObject( m_pImpl->debug_signal, INFINITE );
+	if( m_thread_param == NULL ) 
+	{
+		return false;
+	}
+
+	DWORD dwRet = WaitForSingleObject( m_thread_param->debug_signal, INFINITE );
 	if( dwRet != WAIT_OBJECT_0 )
 	{
 		luaL_error( L, "debug signal error." );
@@ -127,7 +149,7 @@ static void line_hook( LuaDebuger* pDebuger, lua_State *L, lua_Debug *ar )
 		}
 		break;
 	case LuaDebuger::Impl::run:
-		if( ar->source[0] == '@' && pDebuger->is_break( ar->source+1, ar->currentline ) )
+		if( ar->source[0] == '@' && pDebuger->judgeBreak( ar->source+1, ar->currentline ) )
 		{
 			lua_getinfo( L, "nu", ar );
 			pDebuger->waitSignal(L);
@@ -191,13 +213,73 @@ static void Debug(lua_State *L, lua_Debug *ar)
 	//}
 }
 
-bool LuaDebuger::initialize( lua_State* L, HANDLE in, HANDLE out )
+unsigned int __stdcall LuaDebuger::guard( void *param )
 {
-	set_stream_handle( in, out );
+	LuaDebuger::ThreadParam* p = ( LuaDebuger::ThreadParam* )param;
 
+	TCHAR	buffer[BUFSIZE];
+	DWORD	dwRead, dwWrite;
+	HANDLE	hPipe;
+	BOOL	fConnected; 
+	LPTSTR	lpszPipename = TEXT("\\\\.\\pipe\\lua_debuger"); 
+
+	// The main loop creates an instance of the named pipe and 
+	// then waits for a client to connect to it. When the client 
+	// connects, a thread is created to handle communications 
+	// with that client, and the loop is repeated. 
+
+	for (;;) 
+	{ 
+		hPipe = CreateNamedPipe( 
+			lpszPipename,             // pipe name 
+			PIPE_ACCESS_DUPLEX,       // read/write access 
+			PIPE_TYPE_MESSAGE |       // message type pipe 
+			PIPE_READMODE_MESSAGE |   // message-read mode 
+			PIPE_WAIT,                // blocking mode 
+			1,						  // max. instances  
+			BUFSIZE,                  // output buffer size 
+			BUFSIZE,                  // input buffer size 
+			NMPWAIT_USE_DEFAULT_WAIT, // client time-out 
+			NULL);                    // default security attribute 
+
+		if (hPipe == INVALID_HANDLE_VALUE) 
+		{
+			printf("CreatePipe failed"); 
+			return 0;
+		}
+
+		// Wait for the client to connect; if it succeeds, 
+		// the function returns a nonzero value. If the function
+		// returns zero, GetLastError returns ERROR_PIPE_CONNECTED. 
+
+		fConnected = ConnectNamedPipe(hPipe, NULL) ? TRUE : (GetLastError() == ERROR_PIPE_CONNECTED); 
+
+		while(fConnected)
+		{ 
+			BOOL ret = ReadFile( hPipe, buffer, sizeof(buffer), &dwRead, NULL);
+			if( ret )
+			{
+				p->_call( (const char*)buffer );
+			}
+		}
+	}
+
+	return 0;
+}
+
+bool LuaDebuger::initialize( lua_State* L )
+{
+	m_thread_param = new ThreadParam( this, &LuaDebuger::command );
+	
 	lua_sethook( L, Debug, LUA_MASKCALL|LUA_MASKLINE|LUA_MASKRET|LUA_MASKCOUNT, 1 );
 	lua_pushlightuserdata( L, this );
 	lua_setglobal( L, "__debuger" );
 
+	m_thread_param->debug_signal = (HANDLE)_beginthreadex( NULL, 0, guard, m_thread_param, 0, NULL );
+	return true;
+}
+
+bool LuaDebuger::command( const char* cmd )
+{
 	return true;
 }
