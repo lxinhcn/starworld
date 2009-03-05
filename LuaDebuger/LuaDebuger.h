@@ -8,10 +8,12 @@ public:
 	LuaDebuger();
 	~LuaDebuger();
 
-	bool initialize( lua_State* L, HANDLE in, HANDLE out );
+	bool initialize( lua_State* L );
+	void terminal();
 
-	void set_breakpoint( const char* name, int line );
+	bool command( const char* cmd );
 
+	void bp( const char* name, int line );
 	void step();
 	void stepover();
 	void stepout();
@@ -26,12 +28,13 @@ protected:
 	friend void ret_hook( LuaDebuger *pDebuger, lua_State *L, lua_Debug *ar );
 	friend void count_hook( LuaDebuger *pDebuger, lua_State *L, lua_Debug *ar );
 
-	// …Ë÷√ ‰»Î ‰≥ˆæ‰±˙
-	void set_stream_handle( HANDLE in, HANDLE out );
-
-	bool is_break( const char* name, int line );
+	bool judgeBreak( const char* name, int line );
 	bool waitSignal( lua_State *L );
+
+	static unsigned int __stdcall guard( void *param );
 private:
 	struct Impl;
-	Impl*	m_pImpl;
+	struct ThreadParam;
+	Impl*			m_pImpl;
+	ThreadParam*	m_thread_param;
 };

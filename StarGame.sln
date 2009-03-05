@@ -41,6 +41,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ui script", "ui script", "{
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaDebuger", "LuaDebuger\LuaDebuger.vcproj", "{A6A3A671-E708-4D13-9D42-2EF9BF13A4AF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaDebugConsole", "LuaDebugConsole\LuaDebugConsole.vcproj", "{58D8BDF1-87D1-4325-8A31-DCA78518A7E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -79,6 +81,10 @@ Global
 		{A6A3A671-E708-4D13-9D42-2EF9BF13A4AF}.Debug|Win32.Build.0 = Debug|Win32
 		{A6A3A671-E708-4D13-9D42-2EF9BF13A4AF}.Release|Win32.ActiveCfg = Release|Win32
 		{A6A3A671-E708-4D13-9D42-2EF9BF13A4AF}.Release|Win32.Build.0 = Release|Win32
+		{58D8BDF1-87D1-4325-8A31-DCA78518A7E7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{58D8BDF1-87D1-4325-8A31-DCA78518A7E7}.Debug|Win32.Build.0 = Debug|Win32
+		{58D8BDF1-87D1-4325-8A31-DCA78518A7E7}.Release|Win32.ActiveCfg = Release|Win32
+		{58D8BDF1-87D1-4325-8A31-DCA78518A7E7}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
