@@ -12,6 +12,7 @@
 
 // TODO: reference additional headers your program requires here
 #include <Windows.h>
+#include <tchar.h>
 extern "C" 
 {
 	#include "lua.h"
@@ -29,3 +30,9 @@ extern "C"
 #include <process.h>
 
 #define BUFSIZE 1024*32
+
+#ifdef _UNICODE
+typedef std::wstring _string;
+#else
+typedef std::string _string;
+#endif
