@@ -11,9 +11,9 @@ public:
 	bool initialize( lua_State* L );
 	void terminal();
 
-	bool command( const char* cmd );
+	bool command( LPCTSTR lpszCmd );
 
-	void bp( const char* name, int line );
+	void bp( LPCTSTR name, int line );
 	void step();
 	void stepover();
 	void stepout();
@@ -27,6 +27,9 @@ protected:
 	friend void call_hook( LuaDebuger *pDebuger, lua_State *L, lua_Debug *ar );
 	friend void ret_hook( LuaDebuger *pDebuger, lua_State *L, lua_Debug *ar );
 	friend void count_hook( LuaDebuger *pDebuger, lua_State *L, lua_Debug *ar );
+
+	bool cmd_breakpoint( LPCTSTR lpszParam );
+	bool cmd_step( LPCTSTR lpszParam );
 
 	bool judgeBreak( const char* name, int line );
 	bool waitSignal( lua_State *L );

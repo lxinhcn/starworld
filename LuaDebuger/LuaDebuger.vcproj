@@ -40,8 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\GameSDK\lua-5.1.4\src"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
+				AdditionalIncludeDirectories="&quot;..\GameSDK\lua-5.1.4\src&quot;;..\Helplib\Include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -62,7 +62,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				OutputFile="$(SolutionDir)lib/$(ConfigurationName)/$(ProjectName).lib"
-				AdditionalLibraryDirectories="$(SolutionDir)GameSDK/lua-5.1.4/src"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)GameSDK/lua-5.1.4/src&quot;;&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"

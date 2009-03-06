@@ -6,10 +6,12 @@ public:
 	LuaDebugCommander(void);
 	~LuaDebugCommander(void);
 
-	bool initialize( LPCTSTR lpszPipename );
-	const char* command( const char* cmd );
+	bool	initialize( LPCTSTR lpszPipename );
+	bool	command( LPCTSTR cmd, DWORD &dwWrite );
+	bool	result( LPCTSTR end, DWORD dwWrite );
 
+	LPBYTE	buffer()const{ return szBuffer; }
 private:
 	HANDLE m_hPipe;
-	TCHAR* szBuffer;
+	LPBYTE szBuffer;
 };

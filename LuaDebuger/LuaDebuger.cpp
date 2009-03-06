@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "LuaDebuger.h"
+#include "critical_lock.h"
 
 struct LuaDebuger::Impl
 {
@@ -15,8 +16,7 @@ struct LuaDebuger::Impl
 	}
 
 	typedef std::set< int >	line_set;
-	typedef std::map< std::string, line_set >	break_map;
-	typedef std::set< std::string >	path_set;
+	typedef std::map< _string, line_set >	break_map;
 
 	// 运行模式
 	enum run_mode { run, stop, step, stepover, stepout };
@@ -38,20 +38,20 @@ struct LuaDebuger::Impl
 
 	typedef std::stack< stackframe >	luastack;
 
-	path_set	paths;
 	break_map	breakpoints;
-
 	run_mode	runmode;
 
 	int			call_level;	// 当前堆栈深度
 	int			stop_level;	// 暂停时的堆栈深度
 
 	luastack	lstack;		// lua 栈
+
+	CCritical	breakmap_lock;
 };
 
 struct LuaDebuger::ThreadParam
 {
-	ThreadParam( LuaDebuger* p, bool (LuaDebuger::* c)( const char* cmd ) )
+	ThreadParam( LuaDebuger* p, bool (LuaDebuger::* c)( LPCTSTR lpszCmd ) )
 		: in( INVALID_HANDLE_VALUE )
 		, out( INVALID_HANDLE_VALUE )
 		, pThis( p )
@@ -66,16 +66,30 @@ struct LuaDebuger::ThreadParam
 		CloseHandle( debug_signal );
 	}
 
-	bool _call( const char* cmd )
+	bool _call( LPCTSTR lpszCmd )
 	{
-		return (pThis->*command)( cmd );
+		return (pThis->*command)( lpszCmd );
 	}
-	HANDLE		in, out;
-	HANDLE		debug_signal;
+
+	typedef bool (LuaDebuger::* instruct)( LPCTSTR lpszParams );
+	typedef struct _instruct_map : public std::map< _string, instruct >
+	{
+		_instruct_map()
+		{
+			// insert( std::make_pair( _T(""), &LuaDebuger::cmd_ ) );
+			insert( std::make_pair( _T("bp"),		&LuaDebuger::cmd_breakpoint ) );
+			insert( std::make_pair( _T("step"),		&LuaDebuger::cmd_step ) );
+		}
+	}instruct_map;
+
+	HANDLE			in, out;
+	HANDLE			debug_signal;
+	HANDLE			pipe;
+	static instruct_map	instructs;	// 指令映射表
 
 private:
 	LuaDebuger*	pThis;
-	bool (LuaDebuger::* command)( const char* cmd )	;
+	bool (LuaDebuger::* command)( LPCTSTR lpszCmd )	;
 };
 
 LuaDebuger::LuaDebuger()
@@ -90,17 +104,27 @@ LuaDebuger::~LuaDebuger()
 	m_pImpl = NULL;
 }
 
-void LuaDebuger::bp( const char* name, int line )
+void LuaDebuger::bp( LPCTSTR name, int line )
 {
 	if( name != NULL && line >= 0 )
 	{
+		CCriticalLock _l( m_pImpl->breakmap_lock);
 		m_pImpl->breakpoints[name].insert( line );
 	}
 }
 
 bool LuaDebuger::judgeBreak( const char* name, int line )
 {
-	Impl::break_map::const_iterator citer = m_pImpl->breakpoints.find( name );
+	CCriticalLock _l( m_pImpl->breakmap_lock);
+#if defined( _UNICODE )
+	LPTSTR path = (TCHAR*)_alloca( (_MAX_DIR + _MAX_FNAME + _MAX_EXT)*sizeof(wchar_t) );
+	mbstowcs( path, name, (_MAX_DIR + _MAX_FNAME + _MAX_EXT) );
+	_string filename = path;
+#else
+	_string filename = name;
+#endif
+
+	Impl::break_map::const_iterator citer = m_pImpl->breakpoints.find( filename );
 	if( citer != m_pImpl->breakpoints.end() )
 	{
 		const Impl::line_set &lineset = citer->second;
@@ -217,9 +241,8 @@ unsigned int __stdcall LuaDebuger::guard( void *param )
 {
 	LuaDebuger::ThreadParam* p = ( LuaDebuger::ThreadParam* )param;
 
-	TCHAR	buffer[BUFSIZE];
+	BYTE	buffer[BUFSIZE];
 	DWORD	dwRead, dwWrite;
-	HANDLE	hPipe;
 	BOOL	fConnected; 
 	LPTSTR	lpszPipename = TEXT("\\\\.\\pipe\\lua_debuger"); 
 
@@ -230,7 +253,7 @@ unsigned int __stdcall LuaDebuger::guard( void *param )
 
 	for (;;) 
 	{ 
-		hPipe = CreateNamedPipe( 
+		p->pipe = CreateNamedPipe( 
 			lpszPipename,             // pipe name 
 			PIPE_ACCESS_DUPLEX,       // read/write access 
 			PIPE_TYPE_MESSAGE |       // message type pipe 
@@ -242,7 +265,7 @@ unsigned int __stdcall LuaDebuger::guard( void *param )
 			NMPWAIT_USE_DEFAULT_WAIT, // client time-out 
 			NULL);                    // default security attribute 
 
-		if (hPipe == INVALID_HANDLE_VALUE) 
+		if (p->pipe == INVALID_HANDLE_VALUE) 
 		{
 			printf("CreatePipe failed"); 
 			return 0;
@@ -252,14 +275,19 @@ unsigned int __stdcall LuaDebuger::guard( void *param )
 		// the function returns a nonzero value. If the function
 		// returns zero, GetLastError returns ERROR_PIPE_CONNECTED. 
 
-		fConnected = ConnectNamedPipe(hPipe, NULL) ? TRUE : (GetLastError() == ERROR_PIPE_CONNECTED); 
+		fConnected = ConnectNamedPipe(p->pipe, NULL) ? TRUE : (GetLastError() == ERROR_PIPE_CONNECTED); 
 
 		while(fConnected)
 		{ 
-			BOOL ret = ReadFile( hPipe, buffer, sizeof(buffer), &dwRead, NULL);
+			BOOL ret = ReadFile( p->pipe, buffer, sizeof(buffer), &dwRead, NULL);
 			if( ret )
 			{
-				p->_call( (const char*)buffer );
+				p->_call( (LPCTSTR)buffer );
+				WriteFile( p->pipe, buffer, dwRead, &dwWrite, NULL );
+			}
+			else if( GetLastError() == ERROR_BROKEN_PIPE )
+			{
+				break;
 			}
 		}
 	}
@@ -276,10 +304,26 @@ bool LuaDebuger::initialize( lua_State* L )
 	lua_setglobal( L, "__debuger" );
 
 	m_thread_param->debug_signal = (HANDLE)_beginthreadex( NULL, 0, guard, m_thread_param, 0, NULL );
+
+	// _tsystem( _T("LuaDebugConsole.exe") );
 	return true;
 }
 
-bool LuaDebuger::command( const char* cmd )
+bool LuaDebuger::command( LPCTSTR lpszCmd )
+{
+	return true;
+}
+
+bool LuaDebuger::cmd_breakpoint( LPCTSTR lpszParam )
+{
+	TCHAR	szFilename[_MAX_PATH+_MAX_FNAME+_MAX_EXT];
+	int		line;
+	_stscanf( lpszParam, _T("%255s %d"), &szFilename, &line );
+	bp( szFilename, line );
+	return true;
+}
+
+bool LuaDebuger::cmd_step( LPCTSTR lpszParam )
 {
 	return true;
 }
