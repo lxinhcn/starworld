@@ -32,7 +32,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	DWORD dwSize = 0;
 	while(work)
 	{
-		_tprintf( _T("\n>>") );
+		_tprintf( _T(">>") );
 		ReadConsole( GetStdHandle( STD_INPUT_HANDLE ), szCommand, _countof(szCommand), &dwSize, NULL  );
 		if( dwSize >= _countof(szCommand) )
 		{
