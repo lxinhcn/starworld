@@ -48,7 +48,7 @@ namespace UILib
 		// 皮肤改变时调用
 		void onSkinChange();
 	protected:
-		uimsg void OnEnable( BOOL bEnable );
+		void OnEnable( BOOL bEnable );
 
 		LRESULT OnSkinChanged( SpriteAttribute& attrib );
 	public:
