@@ -39,8 +39,8 @@ namespace UILib
 		int		ScrollHorizontal(int iOffset);
 
 		// uimsg
-		uimsg BOOL OnScrollCreate( WPARAM wParam, LPARAM lParam );
-		uimsg BOOL OnScrollPosChange( WPARAM wParam, LPARAM lParam );
+		BOOL OnScrollCreate( WPARAM wParam, LPARAM lParam );
+		BOOL OnScrollPosChange( WPARAM wParam, LPARAM lParam );
 	protected:
 		int m_nOffsetX;
 		int m_nOffsetY;

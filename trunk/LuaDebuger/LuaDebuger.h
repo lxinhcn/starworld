@@ -31,8 +31,10 @@ protected:
 	bool cmd_breakpoint( LPCTSTR lpszParam );
 	bool cmd_step( LPCTSTR lpszParam );
 
+	void make( lua_State *L, lua_Debug *ar );
 	bool judgeBreak( const char* name, int line );
 	bool waitSignal( lua_State *L );
+	int	 output( LPCTSTR szFmt, ... );
 
 	static unsigned int __stdcall guard( void *param );
 private:

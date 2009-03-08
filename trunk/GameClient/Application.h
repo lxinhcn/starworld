@@ -17,19 +17,20 @@ public:
 
 	HGE* operator->(){ return m_hge; }
 	HGE* getEngine(){ return m_hge; }
+
 protected:
 	bool UpdateLogic( float fDelta );
 	void Render();
 
 private:
 	static 
-		LRESULT CALLBACK UIWindowProc( __in HWND hWnd, __in UINT Msg, __in WPARAM wParam, __in LPARAM lParam );
+		LRESULT __stdcall UIWindowProc( HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam );
 
 	static
-		LRESULT CALLBACK UIDispatchMessage( __in CONST MSG *lpMsg );
+		LRESULT __stdcall UIDispatchMessage( CONST MSG *lpMsg );
 
 	static 
-		ATOM CALLBACK UIRegisterClass( __in CONST WNDCLASSA *lpWndClass );
+		WORD __stdcall UIRegisterClass( CONST WNDCLASSA *lpWndClass );
 
 	static
 	bool RenderFunc();

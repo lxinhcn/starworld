@@ -23,20 +23,29 @@ struct LuaDebuger::Impl
 
 	struct variant
 	{
-		std::string		name;
-		unsigned char	type;
-		int				stackindex;
+		variant( const char* n, int si )
+			: name( n )
+			, stackindex( si )
+		{
+
+		}
+
+		std::string	name;
+		int			stackindex;
 	};
 
 	struct stackframe
 	{
 		int						currentline;
-		std::string				filename;
+		std::string				funcname;
 		std::list< variant >	variants;
 		std::list< variant >	upvalues;
 	};
 
-	typedef std::stack< stackframe >	luastack;
+	struct luastack :public std::stack< stackframe* >
+	{
+		lua_State	*L;
+	};
 
 	break_map	breakpoints;
 	run_mode	runmode;
@@ -72,15 +81,15 @@ struct LuaDebuger::ThreadParam
 	}
 
 	typedef bool (LuaDebuger::* instruct)( LPCTSTR lpszParams );
-	typedef struct _instruct_map : public std::map< _string, instruct >
+	typedef struct instruct_map : public std::map< _string, instruct >
 	{
-		_instruct_map()
+		instruct_map()
 		{
 			// insert( std::make_pair( _T(""), &LuaDebuger::cmd_ ) );
 			insert( std::make_pair( _T("bp"),		&LuaDebuger::cmd_breakpoint ) );
 			insert( std::make_pair( _T("step"),		&LuaDebuger::cmd_step ) );
 		}
-	}instruct_map;
+	};
 
 	HANDLE			in, out;
 	HANDLE			debug_signal;
@@ -91,6 +100,8 @@ private:
 	LuaDebuger*	pThis;
 	bool (LuaDebuger::* command)( LPCTSTR lpszCmd )	;
 };
+
+LuaDebuger::ThreadParam::instruct_map	LuaDebuger::ThreadParam::instructs;	// Ö¸ÁîÓ³Éä±í
 
 LuaDebuger::LuaDebuger()
 : m_pImpl( new Impl )
@@ -158,26 +169,27 @@ static void line_hook( LuaDebuger* pDebuger, lua_State *L, lua_Debug *ar )
 	switch( pDebuger->m_pImpl->runmode )
 	{
 	case LuaDebuger::Impl::stop:
-		pDebuger->waitSignal(L);
+		luaL_error( L, "debug stop." );
 		break;
 	case LuaDebuger::Impl::step:
+		pDebuger->make(L,ar);
+		pDebuger->waitSignal(L);
+		break;
+	case LuaDebuger::Impl::stepover:
 		if( pDebuger->m_pImpl->stop_level >= pDebuger->m_pImpl->call_level )
 		{
+			pDebuger->make(L,ar);
 			pDebuger->waitSignal(L);
 		}
 		break;
 	case LuaDebuger::Impl::stepout:
 		if( pDebuger->m_pImpl->stop_level > pDebuger->m_pImpl->call_level )
 		{
+			pDebuger->make(L,ar);
 			pDebuger->waitSignal(L);
 		}
 		break;
 	case LuaDebuger::Impl::run:
-		if( ar->source[0] == '@' && pDebuger->judgeBreak( ar->source+1, ar->currentline ) )
-		{
-			lua_getinfo( L, "nu", ar );
-			pDebuger->waitSignal(L);
-		}
 		break;
 	}
 }
@@ -218,23 +230,29 @@ static void Debug(lua_State *L, lua_Debug *ar)
 		break;
 
 	case LUA_HOOKLINE:
-		lua_getinfo( L, "Sl", ar );
 		line_hook( pDebuger, L, ar );
 		break;
 	}
+}
 
-	//char szFilename[_MAX_FNAME];
-	//char szExt[_MAX_EXT];
-	//std::stringstream filename;
-	//lua_getstack(L, 0, &debug );
-	//if( lua_getinfo(L, "Sln", &debug) )
-	//{
-	//	_splitpath_s( debug.source, NULL, 0, NULL, 0, szFilename, _countof(szFilename), szExt, _countof(szExt) );
-	//	{
-	//		filename << szFilename << szExt;
-	//		pDebuger->is_break( filename.str().c_str(), debug.currentline );
-	//	}
-	//}
+void LuaDebuger::make( lua_State *L, lua_Debug *ar )
+{
+	m_pImpl->lstack.L = L;
+
+	for ( int level = 0; lua_getstack(L, level, ar ); level++)
+	{
+		lua_getinfo( L, "Slnu", ar );
+		Impl::stackframe* sf = new Impl::stackframe();
+		sf->currentline	= ar->currentline;
+		sf->funcname	= ar->name;
+		const char* varname = NULL;
+		for( int index = 0; varname = lua_getlocal( L, ar, index ); ++index )
+		{
+			sf->variants.push_back( Impl::variant( varname, lua_gettop( L ) ) );
+		}
+
+		m_pImpl->lstack.push( sf );
+	}
 }
 
 unsigned int __stdcall LuaDebuger::guard( void *param )
@@ -311,7 +329,33 @@ bool LuaDebuger::initialize( lua_State* L )
 
 bool LuaDebuger::command( LPCTSTR lpszCmd )
 {
+	LPCTSTR pCmd = lpszCmd;
+	while( *pCmd && _istalnum( *pCmd ) ) ++pCmd;
+
+	_string strCmd( lpszCmd, pCmd - lpszCmd );
+
+	ThreadParam::instruct_map::iterator iter = m_thread_param->instructs.find( strCmd );
+	if( iter != m_thread_param->instructs.end() )
+	{
+		return (this->* iter->second)( pCmd );
+	}
 	return true;
+}
+
+int	 LuaDebuger::output( LPCTSTR szFmt, ... )
+{
+	TCHAR tszLog[4096];
+	va_list args;
+	va_start(args, szFmt);
+
+	size_t nSize = _countof( tszLog );
+	int size = _vsntprintf( tszLog, nSize, szFmt, args );
+	va_end(args);
+	if( size < 0 )	return 0;
+	tszLog[nSize-1] = 0;
+
+	WriteFile( m_thread_param->pipe, tszLog, size * sizeof(TCHAR), (DWORD*)&size, NULL );
+	return size;
 }
 
 bool LuaDebuger::cmd_breakpoint( LPCTSTR lpszParam )
@@ -320,6 +364,8 @@ bool LuaDebuger::cmd_breakpoint( LPCTSTR lpszParam )
 	int		line;
 	_stscanf( lpszParam, _T("%255s %d"), &szFilename, &line );
 	bp( szFilename, line );
+	
+	output( _T("break point set at %s line %d\n"), szFilename, line );
 	return true;
 }
 
