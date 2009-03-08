@@ -31,7 +31,9 @@ struct LuaDebuger::Impl
 		}
 
 		std::string	name;
+		std::string value;
 		int			stackindex;
+		std::list< variant >*	variants;
 	};
 
 	struct stackframe
@@ -39,7 +41,6 @@ struct LuaDebuger::Impl
 		int						currentline;
 		std::string				funcname;
 		std::list< variant >	variants;
-		std::list< variant >	upvalues;
 	};
 
 	struct luastack :public std::stack< stackframe* >
@@ -371,5 +372,11 @@ bool LuaDebuger::cmd_breakpoint( LPCTSTR lpszParam )
 
 bool LuaDebuger::cmd_step( LPCTSTR lpszParam )
 {
+	return true;
+}
+
+bool LuaDebuger::cmd_stack( LPCTSTR lpszParam )
+{
+//	output( _T("%32s %s"),  )
 	return true;
 }
