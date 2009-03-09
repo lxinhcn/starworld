@@ -31,6 +31,9 @@ protected:
 	bool cmd_breakpoint( LPCTSTR lpszParam );
 	bool cmd_step( LPCTSTR lpszParam );
 	bool cmd_stack( LPCTSTR lpszParam );
+	bool cmd_open( LPCTSTR lpszParam );
+	bool cmd_cd( LPCTSTR lpszParam );
+	bool cmd_dir( LPCTSTR lpszParam );
 
 	void make( lua_State *L, lua_Debug *ar );
 	bool judgeBreak( const char* name, int line );

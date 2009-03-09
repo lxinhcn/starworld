@@ -61,6 +61,8 @@ bool LuaDebugCommander::result( LPCTSTR end, DWORD dwWrite )
 	DWORD dwRead = 0;
 	if( ReadFile( m_hPipe, szBuffer, BUFSIZE, &dwRead, NULL ) )
 	{
+		szBuffer[dwRead] = 0;
+		szBuffer[dwRead+1] = 0;
 		return !( dwRead == dwWrite && memcmp( szBuffer, end, dwRead ) == 0 );
 	}
 	return false;

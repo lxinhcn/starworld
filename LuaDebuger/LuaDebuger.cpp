@@ -1,7 +1,8 @@
 #include "StdAfx.h"
 #include "LuaDebuger.h"
 #include "critical_lock.h"
-
+#include <io.h>
+#include <vector>
 struct LuaDebuger::Impl
 {
 	Impl()
@@ -15,8 +16,14 @@ struct LuaDebuger::Impl
 	{
 	}
 
-	typedef std::set< int >	line_set;
-	typedef std::map< _string, line_set >	break_map;
+	struct breakinfo
+	{
+		std::vector< _string >	file;
+		std::set< int >			breakline;
+	};
+
+	typedef std::set< int >			line_set;
+	typedef std::map< _string, breakinfo >	break_map;
 
 	// 运行模式
 	enum run_mode { run, stop, step, stepover, stepout };
@@ -54,8 +61,8 @@ struct LuaDebuger::Impl
 	int			call_level;	// 当前堆栈深度
 	int			stop_level;	// 暂停时的堆栈深度
 
-	luastack	lstack;		// lua 栈
-
+	luastack	lstack;			// lua 栈
+	_string		strFilename;	// 当前文件
 	CCritical	breakmap_lock;
 };
 
@@ -89,6 +96,9 @@ struct LuaDebuger::ThreadParam
 			// insert( std::make_pair( _T(""), &LuaDebuger::cmd_ ) );
 			insert( std::make_pair( _T("bp"),		&LuaDebuger::cmd_breakpoint ) );
 			insert( std::make_pair( _T("step"),		&LuaDebuger::cmd_step ) );
+			insert( std::make_pair( _T("open"),		&LuaDebuger::cmd_open ) );
+			insert( std::make_pair( _T("dir"),		&LuaDebuger::cmd_dir ) );
+			insert( std::make_pair( _T("cd"),		&LuaDebuger::cmd_cd ) );
 		}
 	};
 
@@ -121,7 +131,16 @@ void LuaDebuger::bp( LPCTSTR name, int line )
 	if( name != NULL && line >= 0 )
 	{
 		CCriticalLock _l( m_pImpl->breakmap_lock);
-		m_pImpl->breakpoints[name].insert( line );
+		Impl::break_map::iterator iter = m_pImpl->breakpoints.find( name );
+		if( iter != m_pImpl->breakpoints.end() )
+		{
+			iter->second.breakline.insert( line );
+			output( _T("break point set in %s, line %d"), name, line );
+		}
+		else
+		{
+			output( _T("file %s are not open!"), name );
+		}
 	}
 }
 
@@ -139,7 +158,7 @@ bool LuaDebuger::judgeBreak( const char* name, int line )
 	Impl::break_map::const_iterator citer = m_pImpl->breakpoints.find( filename );
 	if( citer != m_pImpl->breakpoints.end() )
 	{
-		const Impl::line_set &lineset = citer->second;
+		const Impl::line_set &lineset = citer->second.breakline;
 		Impl::line_set::const_iterator cline = lineset.find( line );
 		if( cline != lineset.end() )
 		{
@@ -334,6 +353,7 @@ bool LuaDebuger::command( LPCTSTR lpszCmd )
 	while( *pCmd && _istalnum( *pCmd ) ) ++pCmd;
 
 	_string strCmd( lpszCmd, pCmd - lpszCmd );
+	while( *pCmd == _T(' ') ) ++pCmd;
 
 	ThreadParam::instruct_map::iterator iter = m_thread_param->instructs.find( strCmd );
 	if( iter != m_thread_param->instructs.end() )
@@ -377,6 +397,88 @@ bool LuaDebuger::cmd_step( LPCTSTR lpszParam )
 
 bool LuaDebuger::cmd_stack( LPCTSTR lpszParam )
 {
-//	output( _T("%32s %s"),  )
+	return true;
+}
+
+bool LuaDebuger::cmd_open( LPCTSTR lpszParam )
+{
+	if( _tcslen( lpszParam ) == 0 )
+	{
+		CCriticalLock _l( m_pImpl->breakmap_lock );
+		Impl::break_map::const_iterator c = m_pImpl->breakpoints.begin();
+		while( c != m_pImpl->breakpoints.end() )
+		{
+			output( _T("%s\n"), c->first.c_str() );
+			++c;
+		}
+	}
+	else if( _taccess( lpszParam, 0 ) != -1 )
+	{
+		TCHAR szFull[_MAX_PATH];
+		if( _tfullpath( szFull, lpszParam, _MAX_PATH ) )
+		{
+			FILE* fp = _tfopen( szFull, _T("r") );
+			// 读取文件
+			if( fp != NULL )
+			{
+				TCHAR szLine[1024*4];
+				
+				Impl::breakinfo &info = m_pImpl->breakpoints[szFull];
+				info.file.clear();
+				info.breakline.clear();
+
+				while( !feof(fp) )
+				{
+					_fgetts( szLine, _countof(szLine), fp );
+					info.file.push_back( szLine );
+				}
+
+				fclose( fp );
+			}
+		}
+		m_pImpl->strFilename = szFull;
+		output( _T("now set current file is %s\n"), szFull );
+	}
+	else
+	{
+		output( _T("file %s are not exist\n"), lpszParam );
+	}
+	return true;
+}
+
+bool LuaDebuger::cmd_cd( LPCTSTR lpszParam )
+{
+	TCHAR szFull[_MAX_PATH];
+	if( _tfullpath( szFull, lpszParam, _MAX_PATH ) != NULL )
+	{
+		_tchdir( szFull );
+		output( _T("change director at :%s\n"), szFull );
+	}
+	return true;
+}
+
+bool LuaDebuger::cmd_dir( LPCTSTR lpszParam )
+{
+	struct _tfinddata_t c_file;
+	intptr_t hFile;
+
+	// Find first .c file in current directory 
+	if( (hFile = _tfindfirst( _T("*.*"), &c_file )) != -1L )
+	{
+		output( _T("Listing of all files\n\n") );
+		output( _T("RDO HID SYS ARC  DATA%25c SIZE      FILE\n"), _T(' ') );
+		output( _T("--- --- --- ---  ----%25c ----      ----\n"), _T(' ') );
+		do {
+			TCHAR buffer[30];
+			output( ( c_file.attrib & _A_RDONLY ) ? _T(" Y  ") : _T(" N  ") );
+			output( ( c_file.attrib & _A_SYSTEM ) ? _T(" Y  ") : _T(" N  ") );
+			output( ( c_file.attrib & _A_HIDDEN ) ? _T(" Y  ") : _T(" N  ") );
+			output( ( c_file.attrib & _A_ARCH )   ? _T(" Y  ") : _T(" N  ") );
+			_tctime_s( buffer, _countof(buffer), &c_file.time_write );
+			output( _T(" %.24s  %9ld %s \n"), buffer, c_file.size, c_file.name );
+		} while( _tfindnext( hFile, &c_file ) == 0 );
+		_findclose( hFile );
+	}
+
 	return true;
 }
