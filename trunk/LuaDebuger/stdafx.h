@@ -32,7 +32,9 @@ extern "C"
 #define BUFSIZE 1024*32
 
 #ifdef _UNICODE
-typedef std::wstring _string;
+typedef std::wstring		_string;
+typedef std::wstringstream	_stringstream;
 #else
-typedef std::string _string;
+typedef std::string			_string;
+typedef std::stringstream	_stringstream;
 #endif

@@ -38,7 +38,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			break;
 		}
-		szCommand[dwSize] = 0;
+		szCommand[dwSize-2] = 0;
 
 		if( commander.command( szCommand, dwSize ) )
 		{
