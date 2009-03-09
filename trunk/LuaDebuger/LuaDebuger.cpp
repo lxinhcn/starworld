@@ -417,23 +417,28 @@ bool LuaDebuger::cmd_open( LPCTSTR lpszParam )
 		TCHAR szFull[_MAX_PATH];
 		if( _tfullpath( szFull, lpszParam, _MAX_PATH ) )
 		{
-			FILE* fp = _tfopen( szFull, _T("r") );
-			// 读取文件
-			if( fp != NULL )
+			Impl::break_map::const_iterator c = m_pImpl->breakpoints.find( szFull );
+			if( c != m_pImpl->breakpoints.end() )
 			{
-				TCHAR szLine[1024*4];
-				
-				Impl::breakinfo &info = m_pImpl->breakpoints[szFull];
-				info.file.clear();
-				info.breakline.clear();
-
-				while( !feof(fp) )
+				FILE* fp = _tfopen( szFull, _T("r") );
+				// 读取文件
+				if( fp != NULL )
 				{
-					_fgetts( szLine, _countof(szLine), fp );
-					info.file.push_back( szLine );
-				}
+					TCHAR szLine[1024*4];
+					
+					Impl::breakinfo &info = m_pImpl->breakpoints[szFull];
+					info.file.clear();
+					info.breakline.clear();
 
-				fclose( fp );
+					while( !feof(fp) )
+					{
+						_fgetts( szLine, _countof(szLine), fp );
+						info.file.push_back( szLine );
+					}
+
+					fclose( fp );
+					output( _T("file %s opened!\n"), szFull );
+				}
 			}
 		}
 		m_pImpl->strFilename = szFull;
