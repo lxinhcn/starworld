@@ -1,8 +1,11 @@
 #include "StdAfx.h"
 #include "LuaDebuger.h"
 #include "critical_lock.h"
+#include "utility.h"
 #include <io.h>
 #include <vector>
+#include <algorithm>
+
 struct LuaDebuger::Impl
 {
 	Impl()
@@ -31,26 +34,27 @@ struct LuaDebuger::Impl
 
 	struct variant
 	{
-		variant( const char* n, int si )
+		variant( LPCTSTR n, int si )
 			: name( n )
 			, stackindex( si )
 		{
 
 		}
 
-		std::string	name;
-		std::string value;
-		int			stackindex;
+		_string	name;
+		_string value;
+		int		stackindex;
 		std::list< variant >*	variants;
 	};
 
+	typedef std::list< variant >	variant_list;
 	struct stackframe
 	{
-		int						currentline;
-		std::string				filename;
-		std::string				funcname;
-		std::string				what;
-		std::list< variant >	variants;
+		int			currentline;
+		_string		filename;
+		_string		funcname;
+		_string		what;
+		variant_list	variants;
 	};
 
 	struct luastack :public std::vector< stackframe* >
@@ -74,17 +78,16 @@ struct LuaDebuger::Impl
 struct LuaDebuger::ThreadParam
 {
 	ThreadParam( LuaDebuger* p, bool (LuaDebuger::* c)( LPCTSTR lpszCmd ) )
-		: in( INVALID_HANDLE_VALUE )
-		, out( INVALID_HANDLE_VALUE )
-		, pThis( p )
+		: pThis( p )
 		, command( c )
 	{
-		debug_signal = CreateEvent( NULL, FALSE, TRUE, NULL );
+		debug_signal = CreateEvent( NULL, FALSE, FALSE, NULL );
 	}
 
 	~ThreadParam()
 	{
-		WaitForSingleObject( debug_signal, INFINITE );
+		WaitForSingleObject( thread, INFINITE );
+		CloseHandle( thread );
 		CloseHandle( debug_signal );
 	}
 
@@ -100,6 +103,7 @@ struct LuaDebuger::ThreadParam
 		{
 			// insert( std::make_pair( _T(""), &LuaDebuger::cmd_ ) );
 			insert( std::make_pair( _T("bp"),		&LuaDebuger::cmd_breakpoint ) );
+			insert( std::make_pair( _T("stack"),	&LuaDebuger::cmd_stack ) );
 			insert( std::make_pair( _T("step"),		&LuaDebuger::cmd_step ) );
 			insert( std::make_pair( _T("stepin"),	&LuaDebuger::cmd_stepin ) );
 			insert( std::make_pair( _T("stepout"),	&LuaDebuger::cmd_stepout ) );
@@ -111,9 +115,9 @@ struct LuaDebuger::ThreadParam
 		}
 	};
 
-	HANDLE			in, out;
-	HANDLE			debug_signal;
-	HANDLE			pipe;
+	HANDLE	thread;
+	HANDLE	debug_signal;
+	HANDLE	pipe;
 	static instruct_map	instructs;	// 指令映射表
 
 private:
@@ -173,6 +177,7 @@ bool LuaDebuger::judgeBreak( const char* name, int line )
 	_string filename = name;
 #endif
 
+	std::transform( filename.begin(), filename.end(), filename.begin(), tolower );
 	Impl::break_map::const_iterator citer = m_pImpl->breakpoints.find( filename );
 	if( citer != m_pImpl->breakpoints.end() )
 	{
@@ -216,29 +221,33 @@ static void line_hook( LuaDebuger* pDebuger, lua_State *L, lua_Debug *ar )
 		luaL_error( L, "debug stop." );
 		break;
 	case LuaDebuger::Impl::step:
-		pDebuger->make(L,ar);
+		pDebuger->makestack(L,ar);
 		pDebuger->waitSignal(L);
+		pDebuger->clearstack();
 		break;
 	case LuaDebuger::Impl::stepin:
 		if( pDebuger->m_pImpl->stop_level <= pDebuger->m_pImpl->call_level )
 		{
-			pDebuger->make(L,ar);
+			pDebuger->makestack(L,ar);
 			pDebuger->waitSignal(L);
+			pDebuger->clearstack();
 		}
 		break;
 	case LuaDebuger::Impl::stepout:
 		if( pDebuger->m_pImpl->stop_level > pDebuger->m_pImpl->call_level )
 		{
-			pDebuger->make(L,ar);
+			pDebuger->makestack(L,ar);
 			pDebuger->waitSignal(L);
+			pDebuger->clearstack();
 		}
 		break;
 	case LuaDebuger::Impl::run:
 		lua_getinfo( L, "S", ar );
 		if( ar->source[0] == '@' && pDebuger->judgeBreak( ar->source+1, ar->currentline ) )
 		{
-			pDebuger->make(L,ar);
+			pDebuger->makestack(L,ar);
 			pDebuger->waitSignal(L);
+			pDebuger->clearstack();
 		}
 		break;
 	}
@@ -285,17 +294,9 @@ static void Debug(lua_State *L, lua_Debug *ar)
 	}
 }
 
-void LuaDebuger::make( lua_State *L, lua_Debug *ar )
+void LuaDebuger::makestack( lua_State *L, lua_Debug *ar )
 {
-	// clear all old stackframe;
-	for( Impl::luastack::iterator i = m_pImpl->lstack.begin(); i !=  m_pImpl->lstack.end(); ++i )
-	{
-		delete *i;
-	}
-	m_pImpl->lstack.clear();
-
 	m_pImpl->begin = ar->currentline;
-
 	m_pImpl->lstack.L = L;
 	m_pImpl->stop_level = m_pImpl->call_level;
 
@@ -303,21 +304,40 @@ void LuaDebuger::make( lua_State *L, lua_Debug *ar )
 	{
 		lua_getinfo( L, "Slnu", ar );
 		Impl::stackframe* sf = new Impl::stackframe();
+#ifndef _UNICODE
 		sf->currentline	= ar->currentline;
-		sf->funcname	= ar->name;
-		char* source	= _strdup(ar->source+1);
-		sf->filename	= ar->source[0] == '@'?_strlwr(source):"";
-		free( source );
-		sf->what		= ar->what;
-
+		sf->funcname	= ar->name?ar->name:"";
+		sf->filename	= ar->source[0] == '@'?ar->source+1:"";
+		sf->what		= ar->what?ar->what:"";
 		const char* varname = NULL;
 		for( int index = 0; varname = lua_getlocal( L, ar, index ); ++index )
 		{
 			sf->variants.push_back( Impl::variant( varname, lua_gettop( L ) ) );
 		}
+#else
+		sf->currentline	= ar->currentline;
+		sf->funcname	= ar->name?helper::s2ws( ar->name ):L"";
+		sf->filename	= ar->source[0] == '@'?helper::s2ws(ar->source+1):L"";
+		sf->what		= ar->what?helper::s2ws( ar->what ):L"";
+		const char* varname = NULL;
+		for( int index = 0; varname = lua_getlocal( L, ar, index ); ++index )
+		{
+			sf->variants.push_back( Impl::variant( helper::s2ws( varname ).c_str(), lua_gettop( L ) ) );
+		}
+#endif
 
 		m_pImpl->lstack.push_back( sf );
 	}
+}
+
+void LuaDebuger::clearstack()
+{
+	// clear all old stackframe;
+	for( Impl::luastack::iterator i = m_pImpl->lstack.begin(); i !=  m_pImpl->lstack.end(); ++i )
+	{
+		delete *i;
+	}
+	m_pImpl->lstack.clear();
 }
 
 unsigned int __stdcall LuaDebuger::guard( void *param )
@@ -361,17 +381,25 @@ unsigned int __stdcall LuaDebuger::guard( void *param )
 		fConnected = ConnectNamedPipe(p->pipe, NULL) ? TRUE : (GetLastError() == ERROR_PIPE_CONNECTED); 
 
 		while(fConnected)
-		{ 
-			BOOL ret = ReadFile( p->pipe, buffer, sizeof(buffer), &dwRead, NULL);
-			if( ret )
+		{
+			if( PeekNamedPipe( p->pipe, NULL, 0, NULL, NULL, &dwRead ) && dwRead > 0 )
 			{
-				p->_call( (LPCTSTR)buffer );
-				WriteFile( p->pipe, "~!@#$%^&*()?", 12, &dwWrite, NULL );
+				BOOL ret = ReadFile( p->pipe, buffer, sizeof(buffer), &dwRead, NULL);
+				if( ret )
+				{
+					p->_call( (LPCTSTR)buffer );
+					WriteFile( p->pipe, "~!@#$%^&*()?", 12, &dwWrite, NULL );
+				}
 			}
 			else if( GetLastError() == ERROR_BROKEN_PIPE )
 			{
 				break;
 			}
+			else
+			{
+				Sleep( 1 );
+			}
+
 		}
 	}
 
@@ -386,7 +414,7 @@ bool LuaDebuger::initialize( lua_State* L )
 	lua_pushlightuserdata( L, this );
 	lua_setglobal( L, "__debuger" );
 
-	m_thread_param->debug_signal = (HANDLE)_beginthreadex( NULL, 0, guard, m_thread_param, 0, NULL );
+	m_thread_param->thread = (HANDLE)_beginthreadex( NULL, 0, guard, m_thread_param, 0, NULL );
 
 	// _tsystem( _T("LuaDebugConsole.exe") );
 	return true;
@@ -457,6 +485,47 @@ void LuaDebuger::cmd_run( LPCTSTR lpszParam )
 
 void LuaDebuger::cmd_stack( LPCTSTR lpszParam )
 {
+	size_t idx = 0;
+	size_t n = _stscanf( lpszParam, _T("%d"), &idx );
+	switch( n )
+	{
+	case EOF:
+	case 0:
+		idx = m_pImpl->lstack.size();
+		for( Impl::luastack::reverse_iterator i = m_pImpl->lstack.rbegin(); i !=  m_pImpl->lstack.rend(); ++i )
+		{
+			Impl::stackframe* sf = *i;
+			output( _T("%4s|%15s|%8s|%04s|%.30s\n"), _T("idx"), _T("function name"), _T("what"), _T("line"), _T("file name") );
+			output( _T("----|---------------|--------|----|----\n"), _T('-') );
+			output( _T("%04d|%15s|%8s|%04d|%.30s\n"), --idx, sf->funcname.c_str(), sf->what.c_str(), sf->currentline, sf->filename.c_str() );
+		}
+		break;
+	case 1:
+		if( idx >= 0 && idx < m_pImpl->lstack.size() )
+		{
+			Impl::stackframe* sf = m_pImpl->lstack[idx];
+			Impl::variant_list::iterator i = sf->variants.begin();
+			n = 0;
+			while( i != sf->variants.end() )
+			{
+				Impl::variant& v = (*i);
+				if( v.value.empty() )
+				{
+					int t = lua_type( m_pImpl->lstack.L, v.stackindex );
+					if( t == LUA_TBOOLEAN || t == LUA_TNUMBER || t == LUA_TSTRING )
+					{
+						v.value = XA2T( lua_tostring( m_pImpl->lstack.L, v.stackindex ) );
+					}
+					else
+					{
+						v.value = XA2T( lua_typename( m_pImpl->lstack.L, v.stackindex ) );
+					}
+				}
+				output( _T("%2d | %20s = %s\n"), n++, v.name.c_str(), v.value.c_str() );
+				++i;
+			}
+		}
+	}
 }
 
 void LuaDebuger::cmd_open( LPCTSTR lpszParam )
@@ -555,12 +624,12 @@ void LuaDebuger::cmd_list( LPCTSTR lpszParam )
 
 		switch( n )
 		{
+		case EOF:
 		case 0:
 			break;
 		case 1:
 			// 输入了显示行数
-			end		= __min( m_pImpl->begin + begin, c->second.file.size() );
-			begin	= m_pImpl->begin;
+			end	= __min( begin + 20, c->second.file.size() );
 			break;
 		case 2:
 			if( end < begin ) 

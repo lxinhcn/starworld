@@ -367,4 +367,44 @@ namespace helper
 		}
 	}
 	//////////////////////////////////////////////////////////////////////////
+
+	std::string ws2s(const std::wstring& ws)
+	{
+		const wchar_t* _Source = ws.c_str();
+		size_t _Dsize = ws.size() + 1;
+		char *_Dest = ( char* )_alloca(_Dsize);
+		memset(_Dest,0,_Dsize);
+		wcstombs(_Dest,_Source,_Dsize);
+		return _Dest;
+	}
+
+	std::string ws2s(const wchar_t* ws)
+	{
+		const wchar_t* _Source = ws;
+		size_t _Dsize = wcslen(ws) + 1;
+		char *_Dest = ( char* )_alloca(_Dsize);
+		memset(_Dest,0,_Dsize);
+		wcstombs(_Dest,_Source,_Dsize);
+		return _Dest;
+	}
+
+	std::wstring s2ws(const std::string& s)
+	{
+		const char* _Source = s.c_str();
+		size_t _Dsize = s.size() + 1;
+		wchar_t *_Dest = (wchar_t*)_alloca(_Dsize*sizeof(wchar_t) );
+		wmemset(_Dest, 0, _Dsize);
+		mbstowcs(_Dest,_Source,_Dsize);
+		return _Dest;
+	}
+
+	std::wstring s2ws(const char* s)
+	{
+		const char* _Source = s;
+		size_t _Dsize = strlen( s ) + 1;
+		wchar_t *_Dest = (wchar_t*)_alloca(_Dsize*sizeof(wchar_t) );
+		wmemset(_Dest, 0, _Dsize);
+		mbstowcs(_Dest,_Source,_Dsize);
+		return _Dest;
+	}
 }
