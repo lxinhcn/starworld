@@ -9,6 +9,7 @@ struct LuaDebuger::Impl
 		: call_level( 0 )
 		, stop_level( 0 )
 		, runmode( run )
+		, begin( 0 )
 	{
 	}
 
@@ -22,11 +23,11 @@ struct LuaDebuger::Impl
 		std::set< int >			breakline;
 	};
 
-	typedef std::set< int >			line_set;
+	typedef std::set< int >					line_set;
 	typedef std::map< _string, breakinfo >	break_map;
 
 	// 运行模式
-	enum run_mode { run, stop, step, stepover, stepout };
+	enum run_mode { run = 0, stop, step, stepin, stepout, mode_count };
 
 	struct variant
 	{
@@ -46,13 +47,16 @@ struct LuaDebuger::Impl
 	struct stackframe
 	{
 		int						currentline;
+		std::string				filename;
 		std::string				funcname;
+		std::string				what;
 		std::list< variant >	variants;
 	};
 
-	struct luastack :public std::stack< stackframe* >
+	struct luastack :public std::vector< stackframe* >
 	{
 		lua_State	*L;
+		int			current;	// 当前查看的堆栈位置
 	};
 
 	break_map	breakpoints;
@@ -60,6 +64,7 @@ struct LuaDebuger::Impl
 
 	int			call_level;	// 当前堆栈深度
 	int			stop_level;	// 暂停时的堆栈深度
+	size_t		begin;		// 当前文件游标
 
 	luastack	lstack;			// lua 栈
 	_string		strFilename;	// 当前文件
@@ -88,7 +93,7 @@ struct LuaDebuger::ThreadParam
 		return (pThis->*command)( lpszCmd );
 	}
 
-	typedef bool (LuaDebuger::* instruct)( LPCTSTR lpszParams );
+	typedef void (LuaDebuger::* instruct)( LPCTSTR lpszParams );
 	typedef struct instruct_map : public std::map< _string, instruct >
 	{
 		instruct_map()
@@ -96,9 +101,13 @@ struct LuaDebuger::ThreadParam
 			// insert( std::make_pair( _T(""), &LuaDebuger::cmd_ ) );
 			insert( std::make_pair( _T("bp"),		&LuaDebuger::cmd_breakpoint ) );
 			insert( std::make_pair( _T("step"),		&LuaDebuger::cmd_step ) );
+			insert( std::make_pair( _T("stepin"),	&LuaDebuger::cmd_stepin ) );
+			insert( std::make_pair( _T("stepout"),	&LuaDebuger::cmd_stepout ) );
+			insert( std::make_pair( _T("run"),		&LuaDebuger::cmd_run ) );
 			insert( std::make_pair( _T("open"),		&LuaDebuger::cmd_open ) );
 			insert( std::make_pair( _T("dir"),		&LuaDebuger::cmd_dir ) );
 			insert( std::make_pair( _T("cd"),		&LuaDebuger::cmd_cd ) );
+			insert( std::make_pair( _T("list"),		&LuaDebuger::cmd_list ) );
 		}
 	};
 
@@ -135,12 +144,21 @@ void LuaDebuger::bp( LPCTSTR name, int line )
 		if( iter != m_pImpl->breakpoints.end() )
 		{
 			iter->second.breakline.insert( line );
-			output( _T("break point set in %s, line %d"), name, line );
+			output( _T("break point set at %s, line %d\n"), name, line );
 		}
 		else
 		{
 			output( _T("file %s are not open!"), name );
 		}
+	}
+}
+
+void LuaDebuger::run( int mode )
+{
+	if( mode >= 0 && mode < Impl::mode_count )
+	{
+		m_pImpl->runmode = Impl::run_mode( mode );
+		Signal();
 	}
 }
 
@@ -162,6 +180,7 @@ bool LuaDebuger::judgeBreak( const char* name, int line )
 		Impl::line_set::const_iterator cline = lineset.find( line );
 		if( cline != lineset.end() )
 		{
+			output( _T("break at %s %d\n"), citer->first.c_str(), *cline );
 			return true;
 		}
 	}
@@ -184,7 +203,7 @@ bool LuaDebuger::waitSignal( lua_State *L )
 	return true;
 }
 
-void LuaDebuger::signal()
+void LuaDebuger::Signal()
 {
 	SetEvent( m_thread_param->debug_signal );
 }
@@ -200,8 +219,8 @@ static void line_hook( LuaDebuger* pDebuger, lua_State *L, lua_Debug *ar )
 		pDebuger->make(L,ar);
 		pDebuger->waitSignal(L);
 		break;
-	case LuaDebuger::Impl::stepover:
-		if( pDebuger->m_pImpl->stop_level >= pDebuger->m_pImpl->call_level )
+	case LuaDebuger::Impl::stepin:
+		if( pDebuger->m_pImpl->stop_level <= pDebuger->m_pImpl->call_level )
 		{
 			pDebuger->make(L,ar);
 			pDebuger->waitSignal(L);
@@ -215,6 +234,12 @@ static void line_hook( LuaDebuger* pDebuger, lua_State *L, lua_Debug *ar )
 		}
 		break;
 	case LuaDebuger::Impl::run:
+		lua_getinfo( L, "S", ar );
+		if( ar->source[0] == '@' && pDebuger->judgeBreak( ar->source+1, ar->currentline ) )
+		{
+			pDebuger->make(L,ar);
+			pDebuger->waitSignal(L);
+		}
 		break;
 	}
 }
@@ -262,7 +287,17 @@ static void Debug(lua_State *L, lua_Debug *ar)
 
 void LuaDebuger::make( lua_State *L, lua_Debug *ar )
 {
+	// clear all old stackframe;
+	for( Impl::luastack::iterator i = m_pImpl->lstack.begin(); i !=  m_pImpl->lstack.end(); ++i )
+	{
+		delete *i;
+	}
+	m_pImpl->lstack.clear();
+
+	m_pImpl->begin = ar->currentline;
+
 	m_pImpl->lstack.L = L;
+	m_pImpl->stop_level = m_pImpl->call_level;
 
 	for ( int level = 0; lua_getstack(L, level, ar ); level++)
 	{
@@ -270,13 +305,18 @@ void LuaDebuger::make( lua_State *L, lua_Debug *ar )
 		Impl::stackframe* sf = new Impl::stackframe();
 		sf->currentline	= ar->currentline;
 		sf->funcname	= ar->name;
+		char* source	= _strdup(ar->source+1);
+		sf->filename	= ar->source[0] == '@'?_strlwr(source):"";
+		free( source );
+		sf->what		= ar->what;
+
 		const char* varname = NULL;
 		for( int index = 0; varname = lua_getlocal( L, ar, index ); ++index )
 		{
 			sf->variants.push_back( Impl::variant( varname, lua_gettop( L ) ) );
 		}
 
-		m_pImpl->lstack.push( sf );
+		m_pImpl->lstack.push_back( sf );
 	}
 }
 
@@ -363,7 +403,11 @@ bool LuaDebuger::command( LPCTSTR lpszCmd )
 	ThreadParam::instruct_map::iterator iter = m_thread_param->instructs.find( strCmd );
 	if( iter != m_thread_param->instructs.end() )
 	{
-		return (this->* iter->second)( pCmd );
+		(this->* iter->second)( pCmd );
+	}
+	else
+	{
+		output( _T("command not exist.\n") );
 	}
 	return true;
 }
@@ -384,29 +428,38 @@ int	 LuaDebuger::output( LPCTSTR szFmt, ... )
 	return size;
 }
 
-bool LuaDebuger::cmd_breakpoint( LPCTSTR lpszParam )
+void LuaDebuger::cmd_breakpoint( LPCTSTR lpszParam )
 {
-	TCHAR	szFilename[_MAX_PATH+_MAX_FNAME+_MAX_EXT];
 	int		line;
 	_stscanf( lpszParam, _T("%d"), &line );
 	bp( m_pImpl->strFilename.c_str(), line );
-	
-	output( _T("break point set at %s line %d\n"), szFilename, line );
-	return true;
 }
 
-bool LuaDebuger::cmd_step( LPCTSTR lpszParam )
+void LuaDebuger::cmd_step( LPCTSTR lpszParam )
 {
-	signal();
-	return true;
+	run( Impl::step );
 }
 
-bool LuaDebuger::cmd_stack( LPCTSTR lpszParam )
+void LuaDebuger::cmd_stepout( LPCTSTR lpszParam )
 {
-	return true;
+	run( Impl::stepout );
 }
 
-bool LuaDebuger::cmd_open( LPCTSTR lpszParam )
+void LuaDebuger::cmd_stepin( LPCTSTR lpszParam )
+{
+	run( Impl::stepin );
+}
+
+void LuaDebuger::cmd_run( LPCTSTR lpszParam )
+{
+	run( Impl::run );
+}
+
+void LuaDebuger::cmd_stack( LPCTSTR lpszParam )
+{
+}
+
+void LuaDebuger::cmd_open( LPCTSTR lpszParam )
 {
 	if( _tcslen( lpszParam ) == 0 )
 	{
@@ -423,8 +476,9 @@ bool LuaDebuger::cmd_open( LPCTSTR lpszParam )
 		TCHAR szFull[_MAX_PATH];
 		if( _tfullpath( szFull, lpszParam, _MAX_PATH ) )
 		{
+			_tcslwr( szFull );
 			Impl::break_map::const_iterator c = m_pImpl->breakpoints.find( szFull );
-			if( c != m_pImpl->breakpoints.end() )
+			if( c == m_pImpl->breakpoints.end() )
 			{
 				FILE* fp = _tfopen( szFull, _T("r") );
 				// 读取文件
@@ -454,10 +508,9 @@ bool LuaDebuger::cmd_open( LPCTSTR lpszParam )
 	{
 		output( _T("file %s are not exist\n"), lpszParam );
 	}
-	return true;
 }
 
-bool LuaDebuger::cmd_cd( LPCTSTR lpszParam )
+void LuaDebuger::cmd_cd( LPCTSTR lpszParam )
 {
 	TCHAR szFull[_MAX_PATH];
 	if( _tfullpath( szFull, lpszParam, _MAX_PATH ) != NULL )
@@ -465,10 +518,9 @@ bool LuaDebuger::cmd_cd( LPCTSTR lpszParam )
 		_tchdir( szFull );
 		output( _T("change director at :%s\n"), szFull );
 	}
-	return true;
 }
 
-bool LuaDebuger::cmd_dir( LPCTSTR lpszParam )
+void LuaDebuger::cmd_dir( LPCTSTR lpszParam )
 {
 	struct _tfinddata_t c_file;
 	intptr_t hFile;
@@ -490,6 +542,40 @@ bool LuaDebuger::cmd_dir( LPCTSTR lpszParam )
 		} while( _tfindnext( hFile, &c_file ) == 0 );
 		_findclose( hFile );
 	}
+}
 
-	return true;
+void LuaDebuger::cmd_list( LPCTSTR lpszParam )
+{
+	Impl::break_map::const_iterator c = m_pImpl->breakpoints.find( m_pImpl->strFilename );
+	if( c != m_pImpl->breakpoints.end() )
+	{
+		size_t begin	= m_pImpl->begin;
+		size_t end		= __min( begin + 20 , c->second.file.size() );
+		size_t n = _stscanf( lpszParam, _T("%d %d"), &begin, &end );
+
+		switch( n )
+		{
+		case 0:
+			break;
+		case 1:
+			// 输入了显示行数
+			end		= __min( m_pImpl->begin + begin, c->second.file.size() );
+			begin	= m_pImpl->begin;
+			break;
+		case 2:
+			if( end < begin ) 
+			{
+				output( _T("error for input begin > end.\n") );
+				return;
+			}
+			break;
+		}
+
+		for( size_t i = begin; i < end; ++i )
+		{
+			const _string& l = c->second.file[i];
+			output( _T("%04u> %s"), i, l.c_str() );
+		}
+		m_pImpl->begin = __min( end + 1, c->second.file.size() );
+	}
 }
