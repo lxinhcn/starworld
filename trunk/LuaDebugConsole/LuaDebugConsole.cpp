@@ -40,12 +40,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 		szCommand[dwSize-2] = 0;
 
-		if( commander.command( szCommand, dwSize ) )
+		if( commander.command( szCommand ) )
 		{
-			while( commander.result( szCommand, dwSize ) )
-			{
-				_tprintf( (LPCTSTR)commander.buffer() );
-			}
+			commander.waitSignal();
 		}
 		Sleep(1);
 	}
