@@ -74,7 +74,7 @@ struct LuaDebuger::ThreadParam
 		, pThis( p )
 		, command( c )
 	{
-		debug_signal = CreateEvent( NULL, TRUE, TRUE, NULL );
+		debug_signal = CreateEvent( NULL, FALSE, TRUE, NULL );
 	}
 
 	~ThreadParam()
@@ -182,6 +182,11 @@ bool LuaDebuger::waitSignal( lua_State *L )
 		return false;
 	}
 	return true;
+}
+
+void LuaDebuger::signal()
+{
+	SetEvent( m_thread_param->debug_signal );
 }
 
 static void line_hook( LuaDebuger* pDebuger, lua_State *L, lua_Debug *ar )
@@ -321,7 +326,7 @@ unsigned int __stdcall LuaDebuger::guard( void *param )
 			if( ret )
 			{
 				p->_call( (LPCTSTR)buffer );
-				WriteFile( p->pipe, buffer, dwRead, &dwWrite, NULL );
+				WriteFile( p->pipe, "~!@#$%^&*()?", 12, &dwWrite, NULL );
 			}
 			else if( GetLastError() == ERROR_BROKEN_PIPE )
 			{
@@ -383,8 +388,8 @@ bool LuaDebuger::cmd_breakpoint( LPCTSTR lpszParam )
 {
 	TCHAR	szFilename[_MAX_PATH+_MAX_FNAME+_MAX_EXT];
 	int		line;
-	_stscanf( lpszParam, _T("%255s %d"), &szFilename, &line );
-	bp( szFilename, line );
+	_stscanf( lpszParam, _T("%d"), &line );
+	bp( m_pImpl->strFilename.c_str(), line );
 	
 	output( _T("break point set at %s line %d\n"), szFilename, line );
 	return true;
@@ -392,6 +397,7 @@ bool LuaDebuger::cmd_breakpoint( LPCTSTR lpszParam )
 
 bool LuaDebuger::cmd_step( LPCTSTR lpszParam )
 {
+	signal();
 	return true;
 }
 

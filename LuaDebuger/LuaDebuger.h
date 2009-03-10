@@ -39,6 +39,7 @@ protected:
 	void make( lua_State *L, lua_Debug *ar );
 	bool judgeBreak( const char* name, int line );
 	bool waitSignal( lua_State *L );
+	void signal();
 	int	 output( LPCTSTR szFmt, ... );
 
 	static unsigned int __stdcall guard( void *param );
