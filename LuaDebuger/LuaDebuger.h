@@ -22,24 +22,24 @@ protected:
 	bool command( LPCTSTR lpszCmd );
 
 	void bp( LPCTSTR name, int line );
-	void step();
-	void stepover();
-	void stepout();
-	void pause();
-	void run();
-	void stop();
+	void run( int mode );
 
-	bool cmd_breakpoint( LPCTSTR lpszParam );
-	bool cmd_step( LPCTSTR lpszParam );
-	bool cmd_stack( LPCTSTR lpszParam );
-	bool cmd_open( LPCTSTR lpszParam );
-	bool cmd_cd( LPCTSTR lpszParam );
-	bool cmd_dir( LPCTSTR lpszParam );
+	void cmd_breakpoint( LPCTSTR lpszParam );
+	void cmd_step( LPCTSTR lpszParam );
+	void cmd_stepout( LPCTSTR lpszParam );
+	void cmd_stepin( LPCTSTR lpszParam );
+	void cmd_run( LPCTSTR lpszParam );
+
+	void cmd_stack( LPCTSTR lpszParam );
+	void cmd_open( LPCTSTR lpszParam );
+	void cmd_cd( LPCTSTR lpszParam );
+	void cmd_dir( LPCTSTR lpszParam );
+	void cmd_list( LPCTSTR lpszParam );
 
 	void make( lua_State *L, lua_Debug *ar );
 	bool judgeBreak( const char* name, int line );
 	bool waitSignal( lua_State *L );
-	void signal();
+	void Signal();
 	int	 output( LPCTSTR szFmt, ... );
 
 	static unsigned int __stdcall guard( void *param );

@@ -11,8 +11,7 @@ BOOL WINAPI HandlerRoutine( DWORD dwCtrlType )
 {
 	if( dwCtrlType == CTRL_CLOSE_EVENT )
 	{
-		DWORD dwWrite;
-		WriteConsole( GetStdHandle( STD_INPUT_HANDLE ), "", 0, &dwWrite, NULL );
+		SetEvent( GetStdHandle( STD_INPUT_HANDLE ) );
 		work = false;
 	}
 	return TRUE;
@@ -33,7 +32,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	while(work)
 	{
 		_tprintf( _T(">>") );
-		ReadConsole( GetStdHandle( STD_INPUT_HANDLE ), szCommand, _countof(szCommand), &dwSize, NULL  );
+		ReadConsole( GetStdHandle( STD_INPUT_HANDLE ), szCommand, _countof(szCommand), &dwSize, NULL );
 		if( dwSize >= _countof(szCommand) )
 		{
 			break;
