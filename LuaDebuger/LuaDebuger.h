@@ -36,7 +36,9 @@ protected:
 	void cmd_dir( LPCTSTR lpszParam );
 	void cmd_list( LPCTSTR lpszParam );
 
-	void make( lua_State *L, lua_Debug *ar );
+	void makestack( lua_State *L, lua_Debug *ar );
+	void clearstack();
+
 	bool judgeBreak( const char* name, int line );
 	bool waitSignal( lua_State *L );
 	void Signal();

@@ -118,6 +118,25 @@ namespace helper
 	// Çå³ý²¹¶¡
 	TOOLLIB_API VOID restoreimport (HMODULE importmodule, LPCSTR exportmodulename, LPCSTR exportmodulepath, LPCSTR importname, LPCVOID replacement);
 
+	// ´®×ª»»
+	TOOLLIB_API std::string ws2s(const std::wstring& ws);
+	TOOLLIB_API std::string ws2s(const wchar_t* ws);
+
+	TOOLLIB_API std::wstring s2ws(const std::string& s);
+	TOOLLIB_API std::wstring s2ws(const char* s);
+
+#ifdef _UNICODE
+	#define XA2T( a )	helper::s2ws( a ).c_str()
+	#define XT2A( t )	helper::ws2s( t ).c_str()
+	#define XW2T( w )	std::wstring( a ).c_str()
+	#define XT2W( t )	std::wstring( t ).c_str()
+#else
+	#define XA2T( a )	std::string( a ).c_str()
+	#define XT2A( t )	std::string( t ).c_str()
+	#define XW2T( w )	helper::ws2s( a ).c_str()
+	#define XT2W( t )	helper::s2ws( t ).c_str()
+#endif
+
 	class TOOLLIB_API CErrorDescribe
 	{
 	public:
