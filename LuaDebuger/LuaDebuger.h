@@ -25,6 +25,7 @@ protected:
 	void run( int mode );
 
 	void cmd_breakpoint( LPCTSTR lpszParam );
+	void cmd_clearpoint( LPCTSTR lpszParam );
 	void cmd_step( LPCTSTR lpszParam );
 	void cmd_stepout( LPCTSTR lpszParam );
 	void cmd_stepin( LPCTSTR lpszParam );
