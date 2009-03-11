@@ -11,7 +11,6 @@ public:
 	bool initialize( lua_State* L );
 	void terminal();
 
-
 protected:
 	friend void Debug( lua_State *L, lua_Debug* ar );
 	friend void line_hook( LuaDebuger *pDebuger, lua_State *L, lua_Debug *ar );
