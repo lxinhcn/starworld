@@ -307,14 +307,14 @@ void LuaDebuger::makestack( lua_State *L, lua_Debug *ar )
 	{
 		lua_getinfo( L, "Slnu", &d );
 		Impl::stackframe* sf = new Impl::stackframe();
-		sf->currentline	= ar->currentline;
-		sf->funcname	= ar->name?XA2T( ar->name ):_T("");
-		sf->filename	= ar->source[0] == '@'?XA2T(ar->source+1):_T("");
+		sf->currentline	= d.currentline;
+		sf->funcname	= d.name?XA2T( d.name ):_T("");
+		sf->filename	= d.source[0] == '@'?XA2T(d.source+1):_T("");
 		std::transform( sf->filename.begin(), sf->filename.end(), sf->filename.begin(), tolower );
-		sf->what		= ar->what?XA2T( ar->what ):_T("");
+		sf->what		= d.what?XA2T( d.what ):_T("");
 		const char* varname		= NULL;
 		std::string varvalue;
-		for( int index = 1; varname = lua_getlocal( L, ar, index ); ++index )
+		for( int index = 1; varname = lua_getlocal( L, &d, index ); ++index )
 		{
 			int top = lua_gettop(L);
 			int t = lua_type( L, top );
@@ -351,11 +351,11 @@ void LuaDebuger::makestack( lua_State *L, lua_Debug *ar )
 			sf->variants.push_back( Impl::variant( XA2T( varname ), XA2T( varvalue ), index ) );
 			lua_pop(L,1);
 		}
-		m_pImpl->lstack.push_front( sf );
+		m_pImpl->lstack.push_back( sf );
 	}
 
 	// 输出当前行
-	Impl::stackframe* sf = m_pImpl->lstack.back();
+	Impl::stackframe* sf = m_pImpl->lstack.front();
 	if( sf )
 	{
 		m_pImpl->begin = sf->currentline;
@@ -560,12 +560,12 @@ void LuaDebuger::cmd_stack( LPCTSTR lpszParam )
 	case EOF:
 	case 0:
 		idx = m_pImpl->lstack.size();
+		output( _T("%4s|%15s|%8s|%04s|%.30s\n"), _T("idx"), _T("function name"), _T("what"), _T("line"), _T("file name") );
+		output( _T("----|---------------|--------|----|----\n"), _T('-') );
 		for( Impl::luastack::reverse_iterator i = m_pImpl->lstack.rbegin(); i !=  m_pImpl->lstack.rend(); ++i )
 		{
 			Impl::stackframe* sf = *i;
-			output( _T("%4s|%15s|%8s|%04s|%.30s\n"), _T("idx"), _T("function name"), _T("what"), _T("line"), _T("file name") );
-			output( _T("----|---------------|--------|----|----\n"), _T('-') );
-			output( _T("%04d|%15s|%8s|%04d|%.30s\n"), --idx, sf->funcname.c_str(), sf->what.c_str(), sf->currentline, sf->filename.c_str() );
+			output( _T("%04d|%15s|%8s|%04d|...%.30s\n"), --idx, sf->funcname.c_str(), sf->what.c_str(), sf->currentline, sf->filename.size() > 30?sf->filename.c_str() + sf->filename.size() - 20:sf->filename.c_str() );
 		}
 		break;
 	case 1:
