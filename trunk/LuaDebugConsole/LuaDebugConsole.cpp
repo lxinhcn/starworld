@@ -20,24 +20,42 @@ BOOL WINAPI HandlerRoutine( DWORD dwCtrlType )
 int _tmain(int argc, _TCHAR* argv[])
 {
 	SetConsoleCtrlHandler( HandlerRoutine, TRUE );
+	
+	int ConsoleWidth = 120;
+	int ConsoleHeight = 40;
+	HANDLE hStd = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD size;
+	size.X = ConsoleWidth;
+	size.Y = ConsoleHeight;
+	SetConsoleScreenBufferSize(hStd, size);
+	SMALL_RECT rc = { 0, 0, ConsoleWidth -1, ConsoleHeight -1 };
+
+	SetConsoleWindowInfo( hStd, TRUE, &rc );
+
 	LuaDebugCommander commander;
 	setlocale( LC_ALL, "chs");
 	LPTSTR	lpszPipename = TEXT("\\\\.\\pipe\\lua_debuger"); 
 	commander.initialize( lpszPipename );
 
 	_tprintf( _T("连接LuaDebuger成功。\n") );
-
 	TCHAR szCommand[256];
 	DWORD dwSize = 0;
+	commander.command( _T("cd ..\\Resource\\Scripts\\ui") );
+	commander.waitSignal();
+	commander.command( _T("open utility.lua") );
+	commander.waitSignal();
+	commander.command( _T("list") );
+	commander.waitSignal();
 	while(work)
 	{
-		_tprintf( _T(">>") );
+		_tprintf( _T("\n>>") );
 		ReadConsole( GetStdHandle( STD_INPUT_HANDLE ), szCommand, _countof(szCommand), &dwSize, NULL );
 		if( dwSize >= _countof(szCommand) )
 		{
 			break;
 		}
-		szCommand[dwSize-2] = 0;
+		while( !_istprint( szCommand[dwSize-1] ) ) --dwSize;
+		szCommand[dwSize] = 0;
 
 		if( commander.command( szCommand ) )
 		{

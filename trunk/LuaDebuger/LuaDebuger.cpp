@@ -4,6 +4,7 @@
 #include "utility.h"
 #include <io.h>
 #include <vector>
+#include <deque>
 #include <algorithm>
 
 struct LuaDebuger::Impl
@@ -34,17 +35,17 @@ struct LuaDebuger::Impl
 
 	struct variant
 	{
-		variant( LPCTSTR n, int si )
-			: name( n )
-			, stackindex( si )
+		variant( LPCTSTR n, LPCTSTR v, int i )
+			: name( n )		// 变量名
+			, value( v )	// 变量值
+			, idx( i )		// 变量索引
 		{
 
 		}
 
+		int		idx;
 		_string	name;
 		_string value;
-		int		stackindex;
-		std::list< variant >*	variants;
 	};
 
 	typedef std::list< variant >	variant_list;
@@ -57,7 +58,7 @@ struct LuaDebuger::Impl
 		variant_list	variants;
 	};
 
-	struct luastack :public std::vector< stackframe* >
+	struct luastack :public std::deque< stackframe* >
 	{
 		lua_State	*L;
 		int			current;	// 当前查看的堆栈位置
@@ -103,6 +104,8 @@ struct LuaDebuger::ThreadParam
 		{
 			// insert( std::make_pair( _T(""), &LuaDebuger::cmd_ ) );
 			insert( std::make_pair( _T("bp"),		&LuaDebuger::cmd_breakpoint ) );
+			insert( std::make_pair( _T("clr"),		&LuaDebuger::cmd_clearpoint ) );
+
 			insert( std::make_pair( _T("stack"),	&LuaDebuger::cmd_stack ) );
 			insert( std::make_pair( _T("step"),		&LuaDebuger::cmd_step ) );
 			insert( std::make_pair( _T("stepin"),	&LuaDebuger::cmd_stepin ) );
@@ -296,7 +299,6 @@ static void Debug(lua_State *L, lua_Debug *ar)
 
 void LuaDebuger::makestack( lua_State *L, lua_Debug *ar )
 {
-	m_pImpl->begin = ar->currentline;
 	m_pImpl->lstack.L = L;
 	m_pImpl->stop_level = m_pImpl->call_level;
 
@@ -304,29 +306,69 @@ void LuaDebuger::makestack( lua_State *L, lua_Debug *ar )
 	{
 		lua_getinfo( L, "Slnu", ar );
 		Impl::stackframe* sf = new Impl::stackframe();
-#ifndef _UNICODE
 		sf->currentline	= ar->currentline;
-		sf->funcname	= ar->name?ar->name:"";
-		sf->filename	= ar->source[0] == '@'?ar->source+1:"";
-		sf->what		= ar->what?ar->what:"";
-		const char* varname = NULL;
-		for( int index = 0; varname = lua_getlocal( L, ar, index ); ++index )
+		sf->funcname	= ar->name?XA2T( ar->name ):_T("");
+		sf->filename	= ar->source[0] == '@'?XA2T(ar->source+1):_T("");
+		std::transform( sf->filename.begin(), sf->filename.end(), sf->filename.begin(), tolower );
+		sf->what		= ar->what?XA2T( ar->what ):_T("");
+		const char* varname		= NULL;
+		std::string varvalue;
+		for( int index = 1; varname = lua_getlocal( L, ar, index ); ++index )
 		{
-			sf->variants.push_back( Impl::variant( varname, lua_gettop( L ) ) );
+			int top = lua_gettop(L);
+			int t = lua_type( L, top );
+			switch( t )
+			{
+			case LUA_TBOOLEAN:
+				varvalue = lua_toboolean( L, top )?"true":"false";
+				break;
+			case LUA_TNUMBER:
+				varvalue = lua_tostring( L, top );
+				break;
+			case LUA_TSTRING:
+				varvalue = std::string("\"") + lua_tostring( L, top ) + "\"";
+				break;
+			case LUA_TTABLE:
+				varvalue = "table";
+				break;
+			case LUA_TUSERDATA:
+				varvalue = "userdata";
+				break;
+			case LUA_TLIGHTUSERDATA:
+				varvalue = "lightuserdata";
+				break;
+			case LUA_TNIL:
+				varvalue = "nil";
+				break;
+			case LUA_TFUNCTION:
+				varvalue = "function";
+				break;
+			case LUA_TTHREAD:
+				varvalue = "thread";
+				break;
+			}
+			sf->variants.push_back( Impl::variant( XA2T( varname ), XA2T( varvalue ), index ) );
+			lua_pop(L,1);
 		}
-#else
-		sf->currentline	= ar->currentline;
-		sf->funcname	= ar->name?helper::s2ws( ar->name ):L"";
-		sf->filename	= ar->source[0] == '@'?helper::s2ws(ar->source+1):L"";
-		sf->what		= ar->what?helper::s2ws( ar->what ):L"";
-		const char* varname = NULL;
-		for( int index = 0; varname = lua_getlocal( L, ar, index ); ++index )
-		{
-			sf->variants.push_back( Impl::variant( helper::s2ws( varname ).c_str(), lua_gettop( L ) ) );
-		}
-#endif
+		m_pImpl->lstack.push_front( sf );
+	}
 
-		m_pImpl->lstack.push_back( sf );
+	// 输出当前行
+	Impl::stackframe* sf = m_pImpl->lstack.back();
+	if( sf )
+	{
+		m_pImpl->begin = sf->currentline;
+		m_pImpl->strFilename = sf->filename;
+		CCriticalLock _l( m_pImpl->breakmap_lock );
+
+		Impl::break_map::const_iterator c = m_pImpl->breakpoints.find( sf->filename );
+		if( c != m_pImpl->breakpoints.end() )
+		{
+			if( sf->currentline >= 0 && sf->currentline < c->second.file.size() )
+			{
+				output( _T("\n%04d > %s"), sf->currentline, c->second.file[sf->currentline].c_str() );
+			}
+		}
 	}
 }
 
@@ -463,6 +505,31 @@ void LuaDebuger::cmd_breakpoint( LPCTSTR lpszParam )
 	bp( m_pImpl->strFilename.c_str(), line );
 }
 
+void LuaDebuger::cmd_clearpoint( LPCTSTR lpszParam )
+{
+	if( _tcsicmp( lpszParam, _T("all") ) == 0 )
+	{
+		CCriticalLock _l( m_pImpl->breakmap_lock);
+		Impl::break_map::iterator iter = m_pImpl->breakpoints.find( m_pImpl->strFilename );
+		if( iter != m_pImpl->breakpoints.end() )
+		{
+			iter->second.breakline.clear();
+		}
+	}
+	else
+	{
+		int		line;
+		_stscanf( lpszParam, _T("%d"), &line );
+
+		CCriticalLock _l( m_pImpl->breakmap_lock);
+		Impl::break_map::iterator iter = m_pImpl->breakpoints.find( m_pImpl->strFilename );
+		if( iter != m_pImpl->breakpoints.end() )
+		{
+			iter->second.breakline.erase( line );
+		}
+	}
+}
+
 void LuaDebuger::cmd_step( LPCTSTR lpszParam )
 {
 	run( Impl::step );
@@ -509,18 +576,6 @@ void LuaDebuger::cmd_stack( LPCTSTR lpszParam )
 			while( i != sf->variants.end() )
 			{
 				Impl::variant& v = (*i);
-				if( v.value.empty() )
-				{
-					int t = lua_type( m_pImpl->lstack.L, v.stackindex );
-					if( t == LUA_TBOOLEAN || t == LUA_TNUMBER || t == LUA_TSTRING )
-					{
-						v.value = XA2T( lua_tostring( m_pImpl->lstack.L, v.stackindex ) );
-					}
-					else
-					{
-						v.value = XA2T( lua_typename( m_pImpl->lstack.L, v.stackindex ) );
-					}
-				}
 				output( _T("%2d | %20s = %s\n"), n++, v.name.c_str(), v.value.c_str() );
 				++i;
 			}
@@ -536,9 +591,13 @@ void LuaDebuger::cmd_open( LPCTSTR lpszParam )
 		Impl::break_map::const_iterator c = m_pImpl->breakpoints.begin();
 		while( c != m_pImpl->breakpoints.end() )
 		{
-			output( _T("%s\n"), c->first.c_str() );
+			output( _T("%02d | %s\n"), c->first.c_str() );
 			++c;
 		}
+	}
+	else if( _istdigit( lpszParam[0] ) )
+	{
+
 	}
 	else if( _taccess( lpszParam, 0 ) != -1 )
 	{
@@ -559,6 +618,7 @@ void LuaDebuger::cmd_open( LPCTSTR lpszParam )
 					info.file.clear();
 					info.breakline.clear();
 
+					info.file.push_back( _T("\n") );
 					while( !feof(fp) )
 					{
 						_fgetts( szLine, _countof(szLine), fp );
@@ -643,7 +703,8 @@ void LuaDebuger::cmd_list( LPCTSTR lpszParam )
 		for( size_t i = begin; i < end; ++i )
 		{
 			const _string& l = c->second.file[i];
-			output( _T("%04u> %s"), i, l.c_str() );
+			bool b = c->second.breakline.find( i ) != c->second.breakline.end();
+			output( _T("%c %04u> %s"), b?_T('@'):_T(' '), i, l.c_str() );
 		}
 		m_pImpl->begin = __min( end + 1, c->second.file.size() );
 	}
