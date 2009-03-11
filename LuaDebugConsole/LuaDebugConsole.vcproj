@@ -62,7 +62,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="LuaDebuger.lib"
-				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(SolutionDir)Lib\$(ConfigurationName)\"
 				GenerateDebugInformation="true"
 				SubSystem="1"
