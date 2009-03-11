@@ -24,10 +24,10 @@ struct LuaDebuger::Impl
 	struct breakinfo
 	{
 		std::vector< _string >	file;
-		std::set< int >			breakline;
+		std::set< size_t >		breakline;
 	};
 
-	typedef std::set< int >					line_set;
+	typedef std::set< size_t >				line_set;
 	typedef std::map< _string, breakinfo >	break_map;
 
 	// 运行模式
@@ -364,7 +364,7 @@ void LuaDebuger::makestack( lua_State *L, lua_Debug *ar )
 		Impl::break_map::const_iterator c = m_pImpl->breakpoints.find( sf->filename );
 		if( c != m_pImpl->breakpoints.end() )
 		{
-			if( sf->currentline >= 0 && sf->currentline < c->second.file.size() )
+			if( sf->currentline >= 0 && sf->currentline < (int)c->second.file.size() )
 			{
 				output( _T("\n%04d > %s"), sf->currentline, c->second.file[sf->currentline].c_str() );
 			}
@@ -589,15 +589,13 @@ void LuaDebuger::cmd_open( LPCTSTR lpszParam )
 	{
 		CCriticalLock _l( m_pImpl->breakmap_lock );
 		Impl::break_map::const_iterator c = m_pImpl->breakpoints.begin();
+		int i = 1;
 		while( c != m_pImpl->breakpoints.end() )
 		{
-			output( _T("%02d | %s\n"), c->first.c_str() );
+			output( _T("%02d | %s\n"), i, c->first.c_str() );
 			++c;
+			++i;
 		}
-	}
-	else if( _istdigit( lpszParam[0] ) )
-	{
-
 	}
 	else if( _taccess( lpszParam, 0 ) != -1 )
 	{
@@ -635,7 +633,25 @@ void LuaDebuger::cmd_open( LPCTSTR lpszParam )
 	}
 	else
 	{
-		output( _T("file %s are not exist\n"), lpszParam );
+		LPCTSTR p = lpszParam;
+		while( _istdigit( *p ) ) ++p;
+		if( *p == 0 && p != lpszParam )
+		{
+			CCriticalLock _l( m_pImpl->breakmap_lock );
+			Impl::break_map::const_iterator c = m_pImpl->breakpoints.begin();
+			int i = 1;
+			while( c != m_pImpl->breakpoints.end() )
+			{
+				if( i == _ttoi( lpszParam ) )
+				{
+					m_pImpl->strFilename = c->first;
+					m_pImpl->begin = 0;
+					break;
+				}
+				++c;
+				++i;
+			}
+		}
 	}
 }
 
@@ -703,7 +719,7 @@ void LuaDebuger::cmd_list( LPCTSTR lpszParam )
 		for( size_t i = begin; i < end; ++i )
 		{
 			const _string& l = c->second.file[i];
-			bool b = c->second.breakline.find( i ) != c->second.breakline.end();
+			bool b = ( c->second.breakline.find( i ) != c->second.breakline.end() );
 			output( _T("%c %04u> %s"), b?_T('@'):_T(' '), i, l.c_str() );
 		}
 		m_pImpl->begin = __min( end + 1, c->second.file.size() );
