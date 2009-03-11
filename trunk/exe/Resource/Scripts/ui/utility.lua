@@ -1,7 +1,12 @@
 function class_attrib( item, name, indent )
 	local attrib = item[name];
-	local var = 10;
-	local t = { 1, 2, 3 };
+	function test()
+		local a = 1;
+		local b = "asdf";
+		local t = { 1, 2, 3 };
+		print( a, b );
+	end
+	test();
 	if type( attrib ) == "userdata" then
 		slb.print( string.format( " %s < %s >", name, slb.type( attrib ) ) );
 		return attrib:members( indent + 1 );
@@ -35,3 +40,7 @@ function load( item, name, node )
 		end;
 	end
 end;
+
+-- cd ..\Resource\Scripts\ui\
+-- open utility.lua
+-- bp 2

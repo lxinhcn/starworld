@@ -302,9 +302,10 @@ void LuaDebuger::makestack( lua_State *L, lua_Debug *ar )
 	m_pImpl->lstack.L = L;
 	m_pImpl->stop_level = m_pImpl->call_level;
 
-	for ( int level = 0; lua_getstack(L, level, ar ); level++)
+	lua_Debug d;
+	for ( int level = 0; lua_getstack(L, level, &d ); level++)
 	{
-		lua_getinfo( L, "Slnu", ar );
+		lua_getinfo( L, "Slnu", &d );
 		Impl::stackframe* sf = new Impl::stackframe();
 		sf->currentline	= ar->currentline;
 		sf->funcname	= ar->name?XA2T( ar->name ):_T("");
