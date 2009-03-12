@@ -593,7 +593,8 @@ void LuaDebuger::cmd_open( LPCTSTR lpszParam )
 		int i = 1;
 		while( c != m_pImpl->breakpoints.end() )
 		{
-			output( _T("%02d | %s\n"), i, c->first.c_str() );
+			TCHAR mark = m_pImpl->strFilename == c->first?_T('*'):_T(' ');
+			output( _T("%c%02d | %s\n"), mark, i, c->first.c_str() );
 			++c;
 			++i;
 		}

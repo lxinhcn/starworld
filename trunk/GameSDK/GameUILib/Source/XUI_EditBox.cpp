@@ -72,7 +72,7 @@ namespace UILib
 				// 字符显示超出宽度，则折行显示
 				CharPos.x = rc.left;
 				CharPos.y += pFont->GetCharacterHeight();
-				if( CharPos.y > rc.bottom ) 
+				if( CharPos.y > rc.bottom - pFont->GetCharacterHeight() )
 				{
 					return;
 				}
@@ -102,7 +102,7 @@ namespace UILib
 					{
 						CharPos.x = 0;
 						CharPos.y += pFont->GetCharacterHeight();
-						if( CharPos.y > m_wndRect.bottom ) 
+						if( CharPos.y > m_wndRect.bottom - pFont->GetCharacterHeight() )
 						{
 							return;
 						}
