@@ -155,14 +155,16 @@
 
 #if defined(LUA_CORE) || defined(LUA_LIB)
 #define LUA_API __declspec(dllexport)
+#define CC "export"
 #else
 #define LUA_API __declspec(dllimport)
+#define CC "import"
 #endif
 
 #else
 
 #define LUA_API		extern
-
+#define CC "extern"
 #endif
 
 /* more often than not the libs go together with the core */
