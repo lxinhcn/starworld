@@ -122,7 +122,7 @@ void xtimer::timer()
 			continue;
 		}
 
-		if( event->round == m_round )
+		if( event->round == m_timer_round )
 		{
 			unsigned int handle = event->handle;
 			bool ret = event->function( handle, event->repeat, event->timer );
