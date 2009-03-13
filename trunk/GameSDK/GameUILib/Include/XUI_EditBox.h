@@ -3,6 +3,35 @@
 
 namespace UILib
 {
+	class CEditBuffer
+	{
+	public:
+		CEditBuffer();
+		~CEditBuffer();
+
+		//---------------------------------------------------------------------//
+		// describe	: 调整缓冲大小
+		// return	: 是否成功
+		//---------------------------------------------------------------------//
+		bool increase( size_t inc );
+
+	private:
+		struct	unit
+		{
+			unit( unsigned short c, unsigned short w = 1 )
+				: ch( c )
+				, width( w )
+			{
+
+			}
+
+			unsigned short	ch;		// 字符
+			unsigned short	width;	// 跨度，之后几个字节无效
+		};
+		unit*	m_buffer;
+		size_t	m_size;
+	};
+
 	class XUI_EditBox :	public UIObjTypeT< XUI_Wnd, TypeEditBox >
 	{
 		friend class LuaBindClass;

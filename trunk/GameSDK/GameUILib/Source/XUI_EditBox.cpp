@@ -4,6 +4,25 @@
 
 namespace UILib
 {
+	CEditBuffer::CEditBuffer()
+	{
+	}
+
+	CEditBuffer::~CEditBuffer()
+	{
+
+	}
+
+	//---------------------------------------------------------------------//
+	// describe	: 调整缓冲大小
+	// return	: 是否成功
+	//---------------------------------------------------------------------//
+	bool CEditBuffer::increase( size_t inc )
+	{
+		size_t alloc = ( inc == -1 || inc < 1024 )?( m_size?m_size+1024:1024 ):m_size + inc;
+		m_buffer = realloc( m_buffer, alloc*sizeof(m_buffer[0]) );
+	}
+
 	BEGIN_UIMSG_MAP( XUI_EditBox, XUI_Wnd )
 	END_UIMSG_MAP()
 
@@ -22,7 +41,7 @@ namespace UILib
 			m_WindowSize.cy		= m_wndRect.Height()/pFont->GetCharacterHeight();
 		}
 
-		m_CaratTimerHandler = GuiSystem::Instance().SetTimer( event_function( this, &XUI_EditBox::CaratTimerUpdate ), 1, TIMER_SECOND(1) );
+		m_CaratTimerHandler = GuiSystem::Instance().SetTimer( event_function( this, &XUI_EditBox::CaratTimerUpdate ), 1, TIMER_SECOND(0.5f) );
 	}
 
 	XUI_EditBox::~XUI_EditBox(void)
