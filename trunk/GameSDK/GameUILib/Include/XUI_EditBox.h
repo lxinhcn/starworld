@@ -15,6 +15,10 @@ namespace UILib
 		//---------------------------------------------------------------------//
 		bool increase( size_t inc );
 
+		void insert( unsigned short pos, unsigned short c );
+		void insert( unsigned short pos, const char* c );
+		void insert( unsigned short pos, const wchar_t* c );
+
 	private:
 		struct	unit
 		{
@@ -26,10 +30,12 @@ namespace UILib
 			}
 
 			unsigned short	ch;		// 字符
-			unsigned short	width;	// 跨度，之后几个字节无效
+			unsigned short	width;	// 跨度
 		};
-		unit*	m_buffer;
-		size_t	m_size;
+		unit*			m_buffer;
+		XUI_IFont*		m_pFont;
+		unsigned short	m_size;
+		unsigned short	m_capacity;
 	};
 
 	class XUI_EditBox :	public UIObjTypeT< XUI_Wnd, TypeEditBox >
@@ -111,9 +117,10 @@ namespace UILib
 
 	private:
 		typedef _string::size_type Position;
-		typedef	std::deque< Position >	line_recorder;
+		typedef	std::vector< Position >	line_recorder;
 
-		Position		m_FirstVisiblePos;	// 编辑框里看到的第一个字符的位置
+		Position		m_FirstLineNumber;	// 编辑框里看到的第一个字符的位置
+		Position		m_nCurLineNumber;	// 当前行索引
 		Position		m_CaratPos;			// 光标位置
 		line_recorder	m_LineRecorder;		// 换行符位置列表
 

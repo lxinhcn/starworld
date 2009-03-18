@@ -19,8 +19,61 @@ namespace UILib
 	//---------------------------------------------------------------------//
 	bool CEditBuffer::increase( size_t inc )
 	{
-		size_t alloc = ( inc == -1 || inc < 1024 )?( m_size?m_size+1024:1024 ):m_size + inc;
-		m_buffer = realloc( m_buffer, alloc*sizeof(m_buffer[0]) );
+		size_t alloc = ( inc == -1 || inc < 1024 )?( m_capacity?m_capacity+1024:1024 ):m_capacity + inc;
+		m_buffer = (unit*)realloc( m_buffer, alloc*sizeof(m_buffer[0]) );
+		memset( m_buffer + m_capacity, 0, ( alloc - m_capacity )*sizeof(unit) );
+		m_capacity = alloc;
+		return true;
+	}
+
+	void CEditBuffer::insert( unsigned short pos, unsigned short c )
+	{
+		unsigned short width = m_pFont->GetCharacterWidth( c );
+		if( m_size >= m_capacity )
+		{
+			increase( -1 );
+		}
+
+		if( pos + width >= m_capacity )
+		{
+			if( increase( m_capacity - pos - width + 1 ) == false ) return;
+		}
+		else if( pos + width >= m_size )
+		{
+			m_size = pos + width;
+		}
+		else
+		{
+			for( unsigned short p = pos; p < m_size - pos; ++p )
+			{
+				m_buffer[p + width] = m_buffer[p];
+			}
+			m_size += width;
+		}
+		m_buffer[pos].ch = c;
+		m_buffer[pos].width = width;
+	}
+
+	void CEditBuffer::insert( unsigned short pos, const char* c )
+	{
+		const wchar_t* w = XA2T( c );
+		insert( pos, w );
+	}
+
+	void CEditBuffer::insert( unsigned short pos, const wchar_t* c )
+	{
+		if( pos == -1 )
+		{
+			pos = m_size;
+		}
+
+		unsigned short width = 0;
+		const wchar_t *i = c;
+		while( i )
+		{
+			width += m_pFont->GetCharacterWidth( *i );
+			++i;
+		}
 	}
 
 	BEGIN_UIMSG_MAP( XUI_EditBox, XUI_Wnd )
@@ -31,7 +84,8 @@ namespace UILib
 	, m_bControl( false )
 	, m_bShift( false )
 	, m_CaratPos( 0 )
-	, m_FirstVisiblePos( 0 )
+	, m_FirstLineNumber( 0 )
+	, m_nCurLineNumber( 0 )
 	, m_bShowCarat( true )
 	{
 		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
@@ -80,8 +134,8 @@ namespace UILib
 		CPoint CharPos = pt;
 		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
 
-		_string::size_type begin	= m_LineRecorder.empty()?0:m_LineRecorder[m_FirstVisiblePos]+1;
-		_string::size_type end		= m_LineRecorder.empty()?m_strText.length():(m_FirstVisiblePos<m_LineRecorder.size()?m_LineRecorder[m_FirstVisiblePos+1]+1:m_strText.length());
+		_string::size_type begin	= m_LineRecorder.empty()?0:m_LineRecorder[m_FirstLineNumber]+1;
+		_string::size_type end		= m_LineRecorder.empty()?m_strText.length():(m_FirstLineNumber<m_LineRecorder.size()?m_LineRecorder[m_FirstLineNumber+1]+1:m_strText.length());
 
 		for( size_t i = begin; i <= end; ++i )
 		{
@@ -237,7 +291,7 @@ namespace UILib
 		if( m_strText[nPos] == _T('\n') )
 		{
 			// 从第一个可见行开始查找
-			line_recorder::iterator i = m_LineRecorder.begin() + ( m_LineRecorder.empty()?0:m_FirstVisiblePos );
+			line_recorder::iterator i = m_LineRecorder.begin() + ( m_LineRecorder.empty()?0:m_FirstLineNumber );
 			while( i != m_LineRecorder.end() )
 			{
 				if( *i == nPos )
@@ -296,6 +350,9 @@ namespace UILib
 
 	void XUI_EditBox::HandleReturn( UINT nSysKey )
 	{
+		m_LineRecorder.insert( m_nCurLineNumber, m_CaratPos );
+		++m_nCurLineNumber;
+		++m_FirstLineNumber;
 	}
 
 	bool XUI_EditBox::onKeyUp( DWORD keycode, UINT sysKeys )
