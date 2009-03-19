@@ -596,7 +596,10 @@ namespace UILib
 
 	void XUI_Wnd::OnLoadPropertys( const char* name, TiXmlElement* pNode )
 	{
-
+		if( strcmp( "window", name ) == 0 )
+		{
+			OnMoveWindow( m_wndRect );
+		}
 	}
 
 };

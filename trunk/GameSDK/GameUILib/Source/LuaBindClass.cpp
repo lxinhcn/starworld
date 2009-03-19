@@ -109,12 +109,12 @@ namespace UILib
 			.set( "save",			&XUI_Wnd::save_file )
 			.set( "load",			&XUI_Wnd::load_file )
 			.member( "id",			&XUI_Wnd::m_nID )
-			.member( "window",		&XUI_Wnd::m_wndRect )
 			.member( "name",		&XUI_Wnd::m_strName )
 			.member( "visible",		&XUI_Wnd::m_bVisible)
 			.member( "enable",		&XUI_Wnd::m_bEnable )
 			.member( "transparent",	&XUI_Wnd::m_bTranslateParent )
-			.member( "font",		&XUI_Wnd::m_FontAttribute )
+			.member_readonly( "font",	&XUI_Wnd::m_FontAttribute )
+			.member_readonly( "window",	&XUI_Wnd::m_wndRect )
 			;
 
 		Class< XUI_Window >( "ui:Window" )
