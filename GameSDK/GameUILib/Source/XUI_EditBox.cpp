@@ -4,78 +4,6 @@
 
 namespace UILib
 {
-	CEditBuffer::CEditBuffer()
-	{
-	}
-
-	CEditBuffer::~CEditBuffer()
-	{
-
-	}
-
-	//---------------------------------------------------------------------//
-	// describe	: 调整缓冲大小
-	// return	: 是否成功
-	//---------------------------------------------------------------------//
-	bool CEditBuffer::increase( size_t inc )
-	{
-		size_t alloc = ( inc == -1 || inc < 1024 )?( m_capacity?m_capacity+1024:1024 ):m_capacity + inc;
-		m_buffer = (unit*)realloc( m_buffer, alloc*sizeof(m_buffer[0]) );
-		memset( m_buffer + m_capacity, 0, ( alloc - m_capacity )*sizeof(unit) );
-		m_capacity = alloc;
-		return true;
-	}
-
-	void CEditBuffer::insert( unsigned short pos, unsigned short c )
-	{
-		unsigned short width = m_pFont->GetCharacterWidth( c );
-		if( m_size >= m_capacity )
-		{
-			increase( -1 );
-		}
-
-		if( pos + width >= m_capacity )
-		{
-			if( increase( m_capacity - pos - width + 1 ) == false ) return;
-		}
-		else if( pos + width >= m_size )
-		{
-			m_size = pos + width;
-		}
-		else
-		{
-			for( unsigned short p = pos; p < m_size - pos; ++p )
-			{
-				m_buffer[p + width] = m_buffer[p];
-			}
-			m_size += width;
-		}
-		m_buffer[pos].ch = c;
-		m_buffer[pos].width = width;
-	}
-
-	void CEditBuffer::insert( unsigned short pos, const char* c )
-	{
-		const wchar_t* w = XA2T( c );
-		insert( pos, w );
-	}
-
-	void CEditBuffer::insert( unsigned short pos, const wchar_t* c )
-	{
-		if( pos == -1 )
-		{
-			pos = m_size;
-		}
-
-		unsigned short width = 0;
-		const wchar_t *i = c;
-		while( i )
-		{
-			width += m_pFont->GetCharacterWidth( *i );
-			++i;
-		}
-	}
-
 	BEGIN_UIMSG_MAP( XUI_EditBox, XUI_Wnd )
 	END_UIMSG_MAP()
 
@@ -134,26 +62,47 @@ namespace UILib
 		CPoint CharPos = pt;
 		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
 
-		_string::size_type begin	= m_LineRecorder.empty()?0:m_LineRecorder[m_FirstLineNumber]+1;
-		_string::size_type end		= m_LineRecorder.empty()?m_strText.length():(m_FirstLineNumber<m_LineRecorder.size()?m_LineRecorder[m_FirstLineNumber+1]+1:m_strText.length());
-
-		for( size_t i = begin; i <= end; ++i )
+		Position begin = m_FirstLineNumber?m_LineRecorder[m_FirstLineNumber-1]:0;
+		Position drawline = m_FirstLineNumber;
+		for( size_t i = begin; i < m_strText.length()+1; ++i )
 		{
 			TCHAR c = m_strText[i];
-			if( pFont->GetCharacterWidth( c ) + CharPos.x > rc.right )
+
+			if( CharPos.y > rc.bottom - pFont->GetCharacterHeight() )
 			{
-				// 字符显示超出宽度，则折行显示
-				CharPos.x = rc.left;
-				CharPos.y += pFont->GetCharacterHeight();
-				if( CharPos.y > rc.bottom - pFont->GetCharacterHeight() )
-				{
-					return;
-				}
+				// 超出高度则跳出
+				break;
 			}
 
 			BOOL bRender = rc.PtInRect( CharPos + CPoint( pFont->GetCharacterWidth( c ), pFont->GetCharacterHeight() ) );
 			if( _istprint( c ) )
 			{
+				if( pFont->GetCharacterWidth( c ) + CharPos.x > rc.right )
+				{
+					if( m_bWarpText )
+					{
+						// 字符显示超出宽度，则折行显示
+						CharPos.x = pt.x;
+						CharPos.y += pFont->GetCharacterHeight();
+						if( drawline < m_LineRecorder.size() )
+						{
+							if( m_LineRecorder[drawline] != i )
+							{
+								m_LineRecorder.insert( m_LineRecorder.begin() + drawline, i );
+							}
+						}
+						else
+						{
+							m_LineRecorder.push_back( i );
+						}
+					}
+					else
+					{
+						i = drawline?m_LineRecorder[drawline-1]:m_strText.length();
+						CharPos.x = pt.x;
+					}
+				}
+
 				RenderCharacter( c, pFont, CharPos.x, CharPos.y, bRender );
 			}
 			else
@@ -164,7 +113,7 @@ namespace UILib
 					{
 						size_t CharCount = i - begin;
 						size_t NextTab = CharPos.x + (4 - CharCount%4)*pFont->GetCharacterWidth( _T(' ') );
-						if( (long)NextTab > m_wndRect.right ) NextTab = m_wndRect.right;
+						if( (long)NextTab > pt.x + m_wndRect.Width() ) NextTab = pt.x + m_wndRect.Width();
 						while( CharPos.x < (long)NextTab )
 						{
 							RenderCharacter( _T(' '), pFont, CharPos.x, CharPos.y, bRender );
@@ -173,12 +122,9 @@ namespace UILib
 					break;
 				case '\n':
 					{
-						CharPos.x = 0;
+						CharPos.x = pt.x;
 						CharPos.y += pFont->GetCharacterHeight();
-						if( CharPos.y > m_wndRect.bottom - pFont->GetCharacterHeight() )
-						{
-							return;
-						}
+						++drawline;
 					}
 					break;
 				case '\0':
@@ -291,15 +237,18 @@ namespace UILib
 		if( m_strText[nPos] == _T('\n') )
 		{
 			// 从第一个可见行开始查找
-			line_recorder::iterator i = m_LineRecorder.begin() + ( m_LineRecorder.empty()?0:m_FirstLineNumber );
-			while( i != m_LineRecorder.end() )
+			if( m_nCurLineNumber > 0 )
 			{
-				if( *i == nPos )
+				line_recorder::iterator i = m_LineRecorder.begin() + m_nCurLineNumber - 1;
+				if( *i == nPos+1 )
 				{
 					m_LineRecorder.erase( i );
-					break;
+					--m_nCurLineNumber;
+					if( m_nCurLineNumber < m_FirstLineNumber )
+					{
+						m_FirstLineNumber = m_FirstLineNumber < (size_t)m_WindowSize.cy?0:(m_FirstLineNumber - m_WindowSize.cy);
+					}
 				}
-				++i;
 			}
 		}
 		m_strText.erase( nPos, 1 );
@@ -350,9 +299,12 @@ namespace UILib
 
 	void XUI_EditBox::HandleReturn( UINT nSysKey )
 	{
-		m_LineRecorder.insert( m_nCurLineNumber, m_CaratPos );
+		m_LineRecorder.insert( m_LineRecorder.begin() + m_nCurLineNumber, m_CaratPos );
 		++m_nCurLineNumber;
-		++m_FirstLineNumber;
+		if( m_nCurLineNumber - m_FirstLineNumber >= (size_t)m_WindowSize.cy )
+		{
+			++m_FirstLineNumber;
+		}
 	}
 
 	bool XUI_EditBox::onKeyUp( DWORD keycode, UINT sysKeys )
@@ -407,6 +359,7 @@ namespace UILib
 			m_WindowSize.cx		= m_wndRect.Width()/pFont->GetCharacterWidth( _T(' ') );
 			m_WindowSize.cy		= m_wndRect.Height()/pFont->GetCharacterHeight();
 		}
+		Analyse();
 		return 0;
 	}
 
@@ -441,4 +394,11 @@ namespace UILib
 		return -1;
 	}
 
+	//---------------------------------------------------------------------//
+	// describe	: 分析当前串，刷新LineRecorder对象。
+	//---------------------------------------------------------------------//
+	void XUI_EditBox::Analyse()
+	{
+
+	}
 }

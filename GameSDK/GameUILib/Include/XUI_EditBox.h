@@ -3,41 +3,6 @@
 
 namespace UILib
 {
-	class CEditBuffer
-	{
-	public:
-		CEditBuffer();
-		~CEditBuffer();
-
-		//---------------------------------------------------------------------//
-		// describe	: 调整缓冲大小
-		// return	: 是否成功
-		//---------------------------------------------------------------------//
-		bool increase( size_t inc );
-
-		void insert( unsigned short pos, unsigned short c );
-		void insert( unsigned short pos, const char* c );
-		void insert( unsigned short pos, const wchar_t* c );
-
-	private:
-		struct	unit
-		{
-			unit( unsigned short c, unsigned short w = 1 )
-				: ch( c )
-				, width( w )
-			{
-
-			}
-
-			unsigned short	ch;		// 字符
-			unsigned short	width;	// 跨度
-		};
-		unit*			m_buffer;
-		XUI_IFont*		m_pFont;
-		unsigned short	m_size;
-		unsigned short	m_capacity;
-	};
-
 	class XUI_EditBox :	public UIObjTypeT< XUI_Wnd, TypeEditBox >
 	{
 		friend class LuaBindClass;
@@ -110,6 +75,10 @@ namespace UILib
 		//---------------------------------------------------------------------//
 		size_t GetLineFromCharaterPos( size_t nPos )const;
 
+		//---------------------------------------------------------------------//
+		// describe	: 分析当前串，刷新LineRecorder对象。
+		//---------------------------------------------------------------------//
+		void Analyse();
 	protected:
 		// Attribute
 		_string			m_strText;			// 编辑框文字
@@ -117,7 +86,7 @@ namespace UILib
 
 	private:
 		typedef _string::size_type Position;
-		typedef	std::vector< Position >	line_recorder;
+		typedef	std::vector< unsigned int >	line_recorder;
 
 		Position		m_FirstLineNumber;	// 编辑框里看到的第一个字符的位置
 		Position		m_nCurLineNumber;	// 当前行索引
@@ -126,13 +95,6 @@ namespace UILib
 
 		bool	m_bControl, m_bShift;
 		CSize	m_WindowSize;				// 视窗大小
-
-		struct line_info
-		{
-			size_t	count;		// 字符数
-			size_t	width;		// 占用宽度
-			size_t	tag;		// 第一个字符在串中的索引号
-		};
 
 		unsigned int	m_CaratTimerHandler;
 		bool			m_bShowCarat;
