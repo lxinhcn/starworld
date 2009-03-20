@@ -204,32 +204,38 @@ namespace UILib
 			m_bShift = true;
 			break;
 		case VK_BACK:
-			HandleBack( sysKeys );
+			HandleBack();
 			break;
 		case VK_DELETE:
-			HandleDelete( sysKeys );
+			HandleDelete();
 			break;
 		case VK_HOME:
-			HandleHome( sysKeys );
+			HandleHome();
 			break;
 		case VK_END:
-			HandleEnd( sysKeys );
+			HandleEnd();
 			break;
 		case VK_LEFT:
 			if( m_bControl )
-				HandleWordLeft( sysKeys );
+				HandleWordLeft();
 			else
-				HandleCharLeft( sysKeys );
+				HandleCharLeft();
 			break;
 		case VK_RIGHT:
 			if( m_bControl )
-				HandleWordRight( sysKeys );
+				HandleWordRight();
 			else
-				HandleCharRight( sysKeys );
+				HandleCharRight();
+			break;
+		case VK_UP:
+			HandleLineUp();
+			break;
+		case VK_DOWN:
+			HandleLineDown();
 			break;
 		case VK_RETURN:
 			m_strText.insert( m_CaratPos++, 1, _T('\n') );
-			HandleReturn( sysKeys );
+			HandleReturn();
 			break;
 		}
 		return true;
@@ -250,29 +256,29 @@ namespace UILib
 		m_strText.erase( nPos, 1 );
 	}
 
-	void XUI_EditBox::HandleBack( UINT nSysKey )
+	void XUI_EditBox::HandleBack()
 	{
 		if( m_CaratPos <= 0 ) return;
 		DeleteCharacter( --m_CaratPos );
 	}
 
-	void XUI_EditBox::HandleDelete( UINT nSysKey )
+	void XUI_EditBox::HandleDelete()
 	{
 		if( m_CaratPos >= m_strText.length() ) return;
 		DeleteCharacter( m_CaratPos );
 	}
 
-	void XUI_EditBox::HandleHome( UINT nSysKey )
+	void XUI_EditBox::HandleHome()
 	{
 		m_CaratPos = m_nCurLineNumber > 0?m_LineRecorder[m_nCurLineNumber-1]:0;
 	}
 
-	void XUI_EditBox::HandleEnd( UINT nSysKey )
+	void XUI_EditBox::HandleEnd()
 	{
 		m_CaratPos = m_nCurLineNumber < m_LineRecorder.size()?m_LineRecorder[m_nCurLineNumber]-1:m_strText.length();
 	}
 
-	void XUI_EditBox::HandleWordLeft( UINT nSysKey )
+	void XUI_EditBox::HandleWordLeft()
 	{
 		while( m_CaratPos > 0 && m_strText[m_CaratPos] != _T(' ') )
 		{
@@ -284,7 +290,7 @@ namespace UILib
 		}
 	}
 
-	void XUI_EditBox::HandleCharLeft( UINT nSysKey )
+	void XUI_EditBox::HandleCharLeft()
 	{
 		if( m_CaratPos > 0 )
 		{
@@ -296,7 +302,7 @@ namespace UILib
 		}
 	}
 
-	void XUI_EditBox::HandleWordRight( UINT nSysKey )
+	void XUI_EditBox::HandleWordRight()
 	{
 		while( m_CaratPos < m_strText.length() && m_strText[m_CaratPos] != _T(' ') )
 		{
@@ -308,7 +314,7 @@ namespace UILib
 		}
 	}
 
-	void XUI_EditBox::HandleCharRight( UINT nSysKey )
+	void XUI_EditBox::HandleCharRight()
 	{
 		if( m_CaratPos < m_strText.length() )
 		{
@@ -320,10 +326,27 @@ namespace UILib
 		}
 	}
 
-	void XUI_EditBox::HandleReturn( UINT nSysKey )
+	void XUI_EditBox::HandleReturn()
 	{
 		m_LineRecorder.insert( m_LineRecorder.begin() + m_nCurLineNumber, m_CaratPos );
 		SetCurLineNumber( m_nCurLineNumber + 1 );
+	}
+
+	void XUI_EditBox::HandleLineUp()
+	{
+		if( m_nCurLineNumber > 0 )
+		{
+			XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
+
+			size_t h = m_LineRecorder[m_nCurLineNumber-1];
+			long width = m_pFont->GetStringSize( m_strText.substr( h, m_CaratPos - h ).c_str() ).cx;
+			SetCurLineNumber( m_nCurLineNumber - 1 );
+		}
+	}
+
+	void XUI_EditBox::HandleLineDown()
+	{
+
 	}
 
 	bool XUI_EditBox::onKeyUp( DWORD keycode, UINT sysKeys )

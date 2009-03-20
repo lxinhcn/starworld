@@ -58,15 +58,17 @@ namespace UILib
 		void DeleteCharacter( size_t nPos );
 		bool CaratTimerUpdate( unsigned int handle, unsigned short& repeat, unsigned int& timer );
 
-		void HandleBack( UINT nSysKey );
-		void HandleDelete( UINT nSysKey );
-		void HandleHome( UINT nSysKey );
-		void HandleEnd( UINT nSysKey );
-		void HandleWordLeft( UINT nSysKey );
-		void HandleCharLeft( UINT nSysKey );
-		void HandleWordRight( UINT nSysKey );
-		void HandleCharRight( UINT nSysKey );
-		void HandleReturn( UINT nSysKey );
+		void HandleBack();
+		void HandleDelete();
+		void HandleHome();
+		void HandleEnd();
+		void HandleWordLeft();
+		void HandleCharLeft();
+		void HandleWordRight();
+		void HandleCharRight();
+		void HandleReturn();
+		void HandleLineUp();
+		void HandleLineDown();
 
 		//---------------------------------------------------------------------//
 		// describe	: 根据字符位置获得行号
@@ -93,10 +95,9 @@ namespace UILib
 	private:
 		typedef _string::size_type Position;
 		typedef	std::vector< unsigned int >	line_recorder;
-
-		Position		m_FirstLineNumber;	// 编辑框里看到的第一个字符的位置
-		Position		m_nCurLineNumber;	// 当前行索引
-		Position		m_CaratPos;			// 光标位置
+		size_t			m_FirstLineNumber;	// 编辑框里看到的第一个字符的位置
+		size_t			m_nCurLineNumber;	// 当前行索引
+		size_t			m_CaratPos;			// 光标位置
 		line_recorder	m_LineRecorder;		// 换行符位置列表
 
 		bool	m_bControl, m_bShift;

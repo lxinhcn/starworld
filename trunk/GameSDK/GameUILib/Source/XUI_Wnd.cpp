@@ -591,7 +591,13 @@ namespace UILib
 	// ±£´æ,ÔØÈë
 	void XUI_Wnd::OnSavePropertys( const char* name, TiXmlElement* pNode )
 	{
-
+		if( strcmp( name, "window" ) == 0 )
+		{
+			pNode->SetAttribute( "left",	m_wndRect.left );
+			pNode->SetAttribute( "top",		m_wndRect.top );
+			pNode->SetAttribute( "right",	m_wndRect.right );
+			pNode->SetAttribute( "bottom",	m_wndRect.bottom );
+		}
 	}
 
 	void XUI_Wnd::OnLoadPropertys( const char* name, TiXmlElement* pNode )
