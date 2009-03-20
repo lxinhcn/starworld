@@ -74,35 +74,39 @@ namespace UILib
 				break;
 			}
 
-			BOOL bRender = rc.PtInRect( CharPos + CPoint( pFont->GetCharacterWidth( c ), pFont->GetCharacterHeight() ) );
-			if( _istprint( c ) )
+			if( pFont->GetCharacterWidth( c ) + CharPos.x > rc.right )
 			{
-				if( pFont->GetCharacterWidth( c ) + CharPos.x > rc.right )
+				if( m_bWarpText )
 				{
-					if( m_bWarpText )
+					// 字符显示超出宽度，则折行显示
+					CharPos.x = pt.x;
+					CharPos.y += pFont->GetCharacterHeight();
+					if( drawline < m_LineRecorder.size() )
 					{
-						// 字符显示超出宽度，则折行显示
-						CharPos.x = pt.x;
-						CharPos.y += pFont->GetCharacterHeight();
-						if( drawline < m_LineRecorder.size() )
+						if( m_LineRecorder[drawline] != i )
 						{
-							if( m_LineRecorder[drawline] != i )
-							{
-								m_LineRecorder.insert( m_LineRecorder.begin() + drawline, i );
-							}
-						}
-						else
-						{
-							m_LineRecorder.push_back( i );
+							m_LineRecorder.insert( m_LineRecorder.begin() + drawline, i );
+							SetCurLineNumber( m_nCurLineNumber + 1 );
 						}
 					}
 					else
 					{
-						i = drawline?m_LineRecorder[drawline-1]:m_strText.length();
-						CharPos.x = pt.x;
+						m_LineRecorder.push_back( i );
+						SetCurLineNumber( m_nCurLineNumber + 1 );
 					}
-				}
 
+					++drawline;
+				}
+				else
+				{
+					i = drawline?m_LineRecorder[drawline-1]:m_strText.length();
+					CharPos.x = pt.x;
+				}
+			}
+
+			BOOL bRender = rc.PtInRect( CharPos + CPoint( pFont->GetCharacterWidth( c ), pFont->GetCharacterHeight() ) );
+			if( _istprint( c ) )
+			{
 				RenderCharacter( c, pFont, CharPos.x, CharPos.y, bRender );
 			}
 			else
@@ -234,21 +238,14 @@ namespace UILib
 
 	void XUI_EditBox::DeleteCharacter( size_t nPos )
 	{
-		if( m_strText[nPos] == _T('\n') )
+		// 从第一个可见行开始查找
+		if( m_nCurLineNumber > 0 )
 		{
-			// 从第一个可见行开始查找
-			if( m_nCurLineNumber > 0 )
+			line_recorder::iterator i = m_LineRecorder.begin() + m_nCurLineNumber - 1;
+			if( *i == nPos+1 )
 			{
-				line_recorder::iterator i = m_LineRecorder.begin() + m_nCurLineNumber - 1;
-				if( *i == nPos+1 )
-				{
-					m_LineRecorder.erase( i );
-					--m_nCurLineNumber;
-					if( m_nCurLineNumber < m_FirstLineNumber )
-					{
-						m_FirstLineNumber = m_FirstLineNumber < (size_t)m_WindowSize.cy?0:(m_FirstLineNumber - m_WindowSize.cy);
-					}
-				}
+				m_LineRecorder.erase( i );
+				SetCurLineNumber( m_nCurLineNumber - 1 );
 			}
 		}
 		m_strText.erase( nPos, 1 );
@@ -268,43 +265,66 @@ namespace UILib
 
 	void XUI_EditBox::HandleHome( UINT nSysKey )
 	{
-		while( m_CaratPos > 0 && m_strText[m_CaratPos] != _T('\n') ) --m_CaratPos;
+		m_CaratPos = m_nCurLineNumber > 0?m_LineRecorder[m_nCurLineNumber-1]:0;
 	}
 
 	void XUI_EditBox::HandleEnd( UINT nSysKey )
 	{
-		int c = m_strText[m_CaratPos];
-		while( m_CaratPos < m_strText.length() && c != _T('\n') && c != _T('\0') ) ++m_CaratPos;
+		m_CaratPos = m_nCurLineNumber < m_LineRecorder.size()?m_LineRecorder[m_nCurLineNumber]:m_strText.length();
 	}
 
 	void XUI_EditBox::HandleWordLeft( UINT nSysKey )
 	{
-		while( m_CaratPos > 0 && m_strText[m_CaratPos] != _T(' ') ) --m_CaratPos;
+		while( 
+			m_strText[m_CaratPos] != _T(' ') &&
+			m_strText[m_CaratPos] != _T('\n') &&
+			m_strText[m_CaratPos] != _T(',') )
+		{
+			HandleCharLeft( nSysKey );
+		}
 	}
 
 	void XUI_EditBox::HandleCharLeft( UINT nSysKey )
 	{
-		if( m_CaratPos > 0 ) --m_CaratPos; 
+		if( m_CaratPos > 0 )
+		do
+		{
+			 --m_CaratPos;
+			if( m_nCurLineNumber > 0 && m_CaratPos < m_LineRecorder[m_nCurLineNumber-1] )
+			{
+				SetCurLineNumber( m_nCurLineNumber - 1 );
+			}
+		}while( m_strText[m_CaratPos] == _T('\n') );
 	}
 
 	void XUI_EditBox::HandleWordRight( UINT nSysKey )
 	{
-		while( m_CaratPos < m_strText.length() && m_strText[m_CaratPos] != _T(' ') ) ++m_CaratPos;
+		while( 	
+			m_strText[m_CaratPos] != _T(' ') &&
+			m_strText[m_CaratPos] != _T('\n') &&
+			m_strText[m_CaratPos] != _T(',') )
+		{
+			HandleCharRight( nSysKey );
+		}
 	}
 
 	void XUI_EditBox::HandleCharRight( UINT nSysKey )
 	{
-		if( m_CaratPos < m_strText.length() ) ++m_CaratPos;
+		if( m_CaratPos < m_strText.length() )
+		do
+		{
+			++m_CaratPos;
+			if( m_nCurLineNumber < m_LineRecorder.size() && m_CaratPos >= m_LineRecorder[m_nCurLineNumber] )
+			{
+				SetCurLineNumber( m_nCurLineNumber + 1 );
+			}
+		}while( m_strText[m_CaratPos] == _T('\n') );
 	}
 
 	void XUI_EditBox::HandleReturn( UINT nSysKey )
 	{
 		m_LineRecorder.insert( m_LineRecorder.begin() + m_nCurLineNumber, m_CaratPos );
-		++m_nCurLineNumber;
-		if( m_nCurLineNumber - m_FirstLineNumber >= (size_t)m_WindowSize.cy )
-		{
-			++m_FirstLineNumber;
-		}
+		SetCurLineNumber( m_nCurLineNumber + 1 );
 	}
 
 	bool XUI_EditBox::onKeyUp( DWORD keycode, UINT sysKeys )
@@ -400,5 +420,22 @@ namespace UILib
 	void XUI_EditBox::Analyse()
 	{
 
+	}
+
+	//---------------------------------------------------------------------//
+	// describe	: 设置当前行
+	// line		: 行索引
+	//---------------------------------------------------------------------//
+	void XUI_EditBox::SetCurLineNumber( size_t line )
+	{
+		m_nCurLineNumber = line;
+		if( m_nCurLineNumber < m_FirstLineNumber )
+		{
+			m_FirstLineNumber = ( m_FirstLineNumber <= (size_t)m_WindowSize.cy?0:(m_FirstLineNumber - m_WindowSize.cy) );
+		}
+		else if( m_nCurLineNumber - m_FirstLineNumber >= (size_t)m_WindowSize.cy )
+		{
+			m_FirstLineNumber = m_nCurLineNumber - (size_t)m_WindowSize.cy + 1;
+		}
 	}
 }
