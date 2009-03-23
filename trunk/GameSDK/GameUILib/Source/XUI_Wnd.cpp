@@ -299,13 +299,13 @@ namespace UILib
 		SendMessage( WM_MOVE, 0, MAKELONG( m_wndRect.left, m_wndRect.top ) );
 	}
 
-	void XUI_Wnd::Show( bool bVisible /* = true  */ )
+	void XUI_Wnd::ShowWindow( bool bVisible /* = true  */ )
 	{
 		SendMessage( WM_SHOWWINDOW, bVisible, 0 );
 		m_bVisible=bVisible;
 	}
 
-	void XUI_Wnd::Enable( bool bEnable )
+	void XUI_Wnd::EnableWindow( bool bEnable )
 	{
 		SendMessage( WM_ENABLE, bEnable, 0 );
 		m_bEnable = bEnable;

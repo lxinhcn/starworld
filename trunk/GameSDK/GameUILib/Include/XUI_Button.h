@@ -47,12 +47,11 @@ namespace UILib
 
 		// 皮肤改变时调用
 		void onSkinChange();
+
 	protected:
 		void OnEnable( BOOL bEnable );
 
-		LRESULT OnSkinChanged( SpriteAttribute& attrib );
 	public:
-
 		// 设置控件属性
 		void			SetSkin( const _string& path, float x, float y, float w, float h );
 		XUI_ISprite*	GetSkin( int idx )const{ return( idx >= 0 && idx < _countof(m_pButtonSkin) )?m_pButtonSkin[idx]:NULL; }
