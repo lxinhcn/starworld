@@ -49,7 +49,7 @@ namespace UILib
 
 			Move( rc.left, rc.top, rc.right, rc.bottom );
 
-			Show( true );
+			ShowWindow( true );
 			return OnInitDialog();
 		}
 		else
@@ -72,7 +72,7 @@ namespace UILib
 		{
 			pParent = pParent->GetParent();
 		}
-		pParent->Enable( false );
+		pParent->EnableWindow( false );
 		m_nResult = 0;
 		m_bEnableParent = true;
 		m_bModal = true;
@@ -95,7 +95,7 @@ namespace UILib
 		PostModal();
 		if( m_bEnableParent )
 		{
-			pParent->Enable( true );
+			pParent->EnableWindow( true );
 			m_bEnableParent = false;
 		}
 

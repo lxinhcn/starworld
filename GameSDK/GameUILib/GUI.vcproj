@@ -316,10 +316,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\VTune\GUI.vpj"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

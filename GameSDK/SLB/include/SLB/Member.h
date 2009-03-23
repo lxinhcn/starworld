@@ -27,7 +27,7 @@ namespace SLB
 			C* p = (C*)( (*Instance)->isConst()?(*Instance)->get_const_ptr():(*Instance)->get_ptr() );
 			if( p )
 			{
-				p->*m_offset = Private::Type< V >::get(L,3);
+				p->*m_offset = Private::Type< V >::get(L,2);
 			}
 			return 0;
 		}

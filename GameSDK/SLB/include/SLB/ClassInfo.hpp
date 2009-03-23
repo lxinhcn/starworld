@@ -90,8 +90,8 @@ namespace SLB {
 		void member( const char* name, setMethod s, getMethod g )
 		{
 			std::string key( "__members::" );
-			set( key + name + "::__get", FuncCall::create( s ) );
-			set( key + name + "::__set", FuncCall::create( g ) );
+			set( key + name + "::__get", FuncCall::create( g ) );
+			set( key + name + "::__set", FuncCall::create( s ) );
 		}
 
 		template< class setMethod >

@@ -145,14 +145,14 @@ namespace UILib
 		const _string& GetName()const {return m_strName;}
 
 		void	SetID( UINT nID ){ m_nID = nID; }
-		UINT	GetID(){ return m_nID; }
+		UINT	GetID()const{ return m_nID; }
 
 		//œ‘ æ
-		bool	IsVisible() {return m_bVisible;}
-		void	Show( bool bVisible = true );
+		bool	IsVisible()const {return m_bVisible;}
+		void	ShowWindow( bool bVisible = true );
 
-		bool	IsEnable() { return m_bEnable; }
-		void	Enable( bool bEnable );
+		bool	IsEnable()const { return m_bEnable; }
+		void	EnableWindow( bool bEnable );
 
 		//…Ë÷√Ωπµ„
 		void	SetFocus(bool bFocused);

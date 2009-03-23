@@ -344,6 +344,7 @@ namespace SLB {
 					{
 						member->push(L);
 						lua_insert(L,1);
+						lua_remove(L,3);
 						lua_call(L,lua_gettop(L)-1, LUA_MULTRET);
 						result = lua_gettop(L);
 					}
@@ -367,7 +368,9 @@ namespace SLB {
 						{
 							member->push(L);
 							lua_insert(L,1);
+							lua_remove(L,3);
 							lua_call(L,lua_gettop(L)-1, LUA_MULTRET);
+
 							result = lua_gettop(L);
 							break;
 						}
@@ -437,7 +440,8 @@ namespace SLB {
 		if( member )
 		{
 			member->push(L);		// f
-			lua_insert(L,1);	
+			lua_insert(L,1);
+			lua_remove(L,3);
 			lua_call(L,lua_gettop(L)-1, LUA_MULTRET);
 			return lua_gettop(L);
 		}
@@ -450,6 +454,7 @@ namespace SLB {
 				{
 					member->push(L);
 					lua_insert(L,1);
+					lua_remove(L,3);
 					lua_call(L,lua_gettop(L)-1, LUA_MULTRET);
 					return lua_gettop(L);
 				}
