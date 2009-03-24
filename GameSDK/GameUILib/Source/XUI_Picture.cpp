@@ -17,8 +17,8 @@ namespace UILib
 		{
 			CPoint pt( 0, 0 );
 			pt = ClientToScreen(pt);
-			int iWidth	= m_wndRect.Width();
-			int iHeight	= m_wndRect.Height();
+			int iWidth	= m_WindowRect.Width();
+			int iHeight	= m_WindowRect.Height();
 			int nImageWidth = 0;
 			int nImageHeight = 0;
 

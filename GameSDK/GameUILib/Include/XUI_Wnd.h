@@ -99,7 +99,7 @@ namespace UILib
 		virtual CPoint AdjustPoint(const CPoint& pt, bool bClientToScreen) const {return pt;}
 
 		//获取空间的显示区域
-		const CRect& GetWindowRect()const { return m_wndRect; }
+		const CRect& GetWindowRect()const { return m_WindowRect; }
 
 		//--------------------------------------------------------------------------
 		//层次关系
@@ -184,7 +184,7 @@ namespace UILib
 		bool			m_bTranslateParent;	// 是否将WM_COMMAND消息传给父控件
 
 		float			m_fZ;
-		CRect			m_wndRect;			// 位置和大小，相对于父控件
+		CRect			m_WindowRect;		// 位置和大小，相对于父控件
 
 		FontAttribute	m_FontAttribute;	// 字体信息
 		XUI_IFont*		m_pFont;

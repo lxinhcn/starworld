@@ -19,8 +19,8 @@ namespace UILib
 		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
 		if( pFont )
 		{
-			m_WindowSize.cx		= m_wndRect.Width()/pFont->GetCharacterWidth( _T(' ') );
-			m_WindowSize.cy		= m_wndRect.Height()/pFont->GetCharacterHeight();
+			m_WindowSize.cx		= m_WindowRect.Width()/pFont->GetCharacterWidth( _T(' ') );
+			m_WindowSize.cy		= m_WindowRect.Height()/pFont->GetCharacterHeight();
 		}
 
 		m_CaratTimerHandler = GuiSystem::Instance().SetTimer( event_function( this, &XUI_EditBox::CaratTimerUpdate ), 1, TIMER_SECOND(0.5f) );
@@ -51,13 +51,13 @@ namespace UILib
 	//重绘，通过实现这个方法来表现空间的外观
 	void XUI_EditBox::RenderSelf(const CRect& clipper)
 	{
-		CPoint pt = m_wndRect.TopLeft();
+		CPoint pt = m_WindowRect.TopLeft();
 		AdjustPoint( pt, true );
 
-		XUI_DrawRect( m_wndRect, 0xff00ff00, 0xff00ff00 );
+		XUI_DrawRect( m_WindowRect, 0xff00ff00, 0xff00ff00 );
 
 		CRect rc;
-		rc.IntersectRect( m_wndRect, clipper );
+		rc.IntersectRect( m_WindowRect, clipper );
 
 		CPoint CharPos = pt;
 		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
@@ -121,7 +121,7 @@ namespace UILib
 					{
 						size_t CharCount = i - begin;
 						size_t NextTab = CharPos.x + (4 - CharCount%4)*pFont->GetCharacterWidth( _T(' ') );
-						if( (long)NextTab > pt.x + m_wndRect.Width() ) NextTab = pt.x + m_wndRect.Width();
+						if( (long)NextTab > pt.x + m_WindowRect.Width() ) NextTab = pt.x + m_WindowRect.Width();
 						while( CharPos.x < (long)NextTab )
 						{
 							RenderCharacter( _T(' '), pFont, CharPos.x, CharPos.y, bRender );
@@ -398,8 +398,8 @@ namespace UILib
 		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
 		if( pFont )
 		{
-			m_WindowSize.cx		= m_wndRect.Width()/pFont->GetCharacterWidth( _T(' ') );
-			m_WindowSize.cy		= m_wndRect.Height()/pFont->GetCharacterHeight();
+			m_WindowSize.cx		= m_WindowRect.Width()/pFont->GetCharacterWidth( _T(' ') );
+			m_WindowSize.cy		= m_WindowRect.Height()/pFont->GetCharacterHeight();
 		}
 		Analyse();
 		return 0;

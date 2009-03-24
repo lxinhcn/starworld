@@ -79,8 +79,8 @@ namespace UILib
 			{
 				//在同一个子控件内
 				CPoint ptTemp(pt);
-				ptTemp.x -= pEnterElement->m_wndRect.left;
-				ptTemp.y -= pEnterElement->m_wndRect.top;
+				ptTemp.x -= pEnterElement->m_WindowRect.left;
+				ptTemp.y -= pEnterElement->m_WindowRect.top;
 				ptTemp = pEnterElement->AdjustPoint( ptTemp, false );
 				if( onMouseMove(pEnterElement, ptTemp, sysKeys) )
 					return true;
@@ -106,8 +106,8 @@ namespace UILib
 
 				//继续细分
 				CPoint ptTemp(pt);
-				ptTemp.x -= pEnterElement->m_wndRect.left;
-				ptTemp.y -= pEnterElement->m_wndRect.top;
+				ptTemp.x -= pEnterElement->m_WindowRect.left;
+				ptTemp.y -= pEnterElement->m_WindowRect.top;
 				ptTemp = pEnterElement->AdjustPoint( ptTemp, false );
 				if( onMouseMove(pEnterElement, ptTemp, sysKeys) )
 					return true;
@@ -139,8 +139,8 @@ namespace UILib
 		if (pFocusChild)
 		{
 			CPoint ptTemp(pt);
-			ptTemp.x -= pFocusChild->m_wndRect.left;
-			ptTemp.y -= pFocusChild->m_wndRect.top;
+			ptTemp.x -= pFocusChild->m_WindowRect.left;
+			ptTemp.y -= pFocusChild->m_WindowRect.top;
 			return onMouseHover(pFocusChild, ptTemp);
 		}
 		return false;
@@ -154,8 +154,8 @@ namespace UILib
 		if (pChild )
 		{
 			CPoint ptTemp(pt);
-			ptTemp.x -= pChild->m_wndRect.left;
-			ptTemp.y -= pChild->m_wndRect.top;
+			ptTemp.x -= pChild->m_WindowRect.left;
+			ptTemp.y -= pChild->m_WindowRect.top;
 			ptTemp = pChild->AdjustPoint( ptTemp, false );
 			if (onButtonDown(pChild, iButton, ptTemp, sysKeys))
 				return true;
@@ -176,8 +176,8 @@ namespace UILib
 		if (pChild)
 		{
 			CPoint ptTemp(pt);
-			ptTemp.x -= pChild->m_wndRect.left;
-			ptTemp.y -= pChild->m_wndRect.top;
+			ptTemp.x -= pChild->m_WindowRect.left;
+			ptTemp.y -= pChild->m_WindowRect.top;
 			ptTemp = pChild->AdjustPoint( ptTemp, false );
 			if (onButtonUp(pChild, iButton, ptTemp, sysKeys))
 				return true;
@@ -238,8 +238,8 @@ namespace UILib
 			CPoint pt(x, y);
 			if (pDesktop->IsPointIn(pt))
 			{
-				pt.x-=pDesktop->m_wndRect.left;
-				pt.y-=pDesktop->m_wndRect.top;
+				pt.x-=pDesktop->m_WindowRect.left;
+				pt.y-=pDesktop->m_WindowRect.top;
 
 				//分发消息
 				switch (uMsg)
