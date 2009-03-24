@@ -14,9 +14,9 @@ public:
 protected:
 	typedef struct _resource_
 	{
-		DWORD	nID;	
-		DWORD	nType;
-		DWORD	nRef;
+		uint32	nID;
+		uint32	nType;
+		uint32	nRef;
 		void*	pResource;
 		_resource_()
 		{
@@ -34,11 +34,11 @@ public:
 
 	int		AddResource( RES_TYPE enType, void* pRes );
 
-	BOOL	DeleteResource( DWORD dwResID );
+	BOOL	DeleteResource( uint32 dwResID );
 
-	BOOL	IsResIDValid( DWORD dwResID );
-	void*	GetResource( DWORD dwResID );
-	void	ReleaseResource( DWORD dwResID );
+	BOOL	IsResIDValid( uint32 dwResID );
+	void*	GetResource( uint32 dwResID );
+	void	ReleaseResource( uint32 dwResID );
 
 private:
 	struct	Impl;

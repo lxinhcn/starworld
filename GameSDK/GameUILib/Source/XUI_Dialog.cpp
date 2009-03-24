@@ -9,7 +9,7 @@ namespace UILib
 //////////////////////////////////////////////////////////////////////////
 	BEGIN_UIMSG_MAP( CXDialog, XUI_Window )
 	END_UIMSG_MAP()
-	CXDialog::CXDialog( LPCTSTR lpszTemplate /*= NULL*/ )
+	CXDialog::CXDialog( _lpctstr lpszTemplate /*= NULL*/ )
 	{
 		m_bTranslateParent = false;
 		m_bEnableParent = false;
@@ -24,7 +24,7 @@ namespace UILib
 		OnDestroy();
 	}
 
-	bool CXDialog::Create( LPCTSTR strTemplate, XUI_Window* pParent /* = NULL  */)
+	bool CXDialog::Create( _lpctstr strTemplate, XUI_Window* pParent /* = NULL  */)
 	{
 		m_strTemplate = strTemplate;
 		if( pParent )
@@ -47,7 +47,7 @@ namespace UILib
 			rc.right	= pElement->IntAttribute( "Width" ) + rc.left;
 			rc.bottom	= pElement->IntAttribute( "Height" ) + rc.top;
 
-			Move( rc.left, rc.top, rc.right, rc.bottom );
+			MoveWindow( rc.left, rc.top, rc.right, rc.bottom );
 
 			ShowWindow( true );
 			return OnInitDialog();
@@ -164,7 +164,7 @@ namespace UILib
 	{
 	}
 
-	bool CXDialog::onKeyUp(DWORD keycode, UINT sysKeys)
+	bool CXDialog::onKeyUp(uint32 keycode, UINT sysKeys)
 	{
 		// 通过Tab键在控件中切换
 		if( m_bFocused && keycode == VK_TAB )

@@ -21,7 +21,7 @@ namespace UILib
 	, m_bOwnerDraw( false )
 	, m_pFont( NULL )
 	{
-		Move(0,0,0,0);
+		MoveWindow(0,0,0,0);
 		m_bTranslateParent = true;
 		m_fZ=0.1f;
 	}
@@ -116,33 +116,33 @@ namespace UILib
 	}
 
 	//键盘
-	bool XUI_Wnd::onKeyDown(DWORD keycode, UINT sysKeys)
+	bool XUI_Wnd::onKeyDown(uint32 keycode, UINT sysKeys)
 	{
 		return false;
 	}
 
-	bool XUI_Wnd::onKeyUp(DWORD keycode, UINT sysKeys)
+	bool XUI_Wnd::onKeyUp(uint32 keycode, UINT sysKeys)
 	{
 		return false;
 	}
 
-	bool XUI_Wnd::onChar(DWORD c, UINT sysKeys)
+	bool XUI_Wnd::onChar(uint32 c, UINT sysKeys)
 	{
 		return false;
 	}
 
 	//输入法
-	bool XUI_Wnd::onImeComp(DWORD wParam, DWORD lParam)
+	bool XUI_Wnd::onImeComp(uint32 wParam, uint32 lParam)
 	{
 		return false;
 	}
 
-	bool XUI_Wnd::onImeEndComp(DWORD wParam, DWORD lParam)
+	bool XUI_Wnd::onImeEndComp(uint32 wParam, uint32 lParam)
 	{
 		return false;
 	}
 
-	bool XUI_Wnd::onImeNotify(DWORD wParam, DWORD lParam)
+	bool XUI_Wnd::onImeNotify(uint32 wParam, uint32 lParam)
 	{
 		return false;
 	}
@@ -248,7 +248,7 @@ namespace UILib
 		return NULL;
 	}
 
-	XUI_Wnd* XUI_Wnd::FindChildByName(LPCTSTR sName) const
+	XUI_Wnd* XUI_Wnd::FindChildByName(_lpctstr sName) const
 	{
 		for(size_t i=0; i<m_pChildren.size(); i++)
 		{
@@ -282,7 +282,7 @@ namespace UILib
 	}
 
 	// 移动对象
-	void XUI_Wnd::Move(int left, int top, int right, int bottom)
+	void XUI_Wnd::MoveWindow(int left, int top, int right, int bottom)
 	{
 		CRect oldRect = m_WindowRect;
 		m_WindowRect.SetRect( left, top, right, bottom );
@@ -470,7 +470,7 @@ namespace UILib
 							break;
 						case uiSig_vwp:
 							{
-								CPoint point( (DWORD) lParam );
+								CPoint point( (uint32) lParam );
 								( this->*mmf.pfn_vwp )( ( UINT )wParam, point );
 							}
 							break;
@@ -588,16 +588,39 @@ namespace UILib
 		return true;
 	}
 
+	void XUI_Wnd::show_members( int indent )
+	{
+		ClassInfo* c = Manager::getInstance().getClass( typeid( *this ) );
+		if( c )
+		{
+			LuaCall< const char*( const XUI_Wnd*, const char*, int ) > op( Lua::Instance(), "class_attrib" );
+			std::list< const char* > l;
+			c->getMembers( l );
+			std::list< const char* >::iterator i = l.begin();
+			while( i != l.end() )
+			{
+				try
+				{
+					for( int n = 0; n < indent; ++n ) printf( "  " );
+					printf( "|->");
+					const char* attrib = op( this, *i, indent );
+					if( attrib )
+					{
+						printf( " %s = %s\n", *i, attrib );
+					}
+				}
+				catch( std::runtime_error& err )
+				{
+					OutputDebugStringA( err.what() );
+				}
+				++i;
+			}
+		}
+	}
+
 	// 保存,载入
 	void XUI_Wnd::OnSavePropertys( const char* name, TiXmlElement* pNode )
 	{
-		if( strcmp( name, "window" ) == 0 )
-		{
-			pNode->SetAttribute( "left",	m_WindowRect.left );
-			pNode->SetAttribute( "top",		m_WindowRect.top );
-			pNode->SetAttribute( "right",	m_WindowRect.right );
-			pNode->SetAttribute( "bottom",	m_WindowRect.bottom );
-		}
 	}
 
 	void XUI_Wnd::OnLoadPropertys( const char* name, TiXmlElement* pNode )

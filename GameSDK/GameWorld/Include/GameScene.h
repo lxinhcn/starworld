@@ -21,7 +21,7 @@ public:
 	int		m_nIntension;	// 强度
 	POINT	m_ptPos;		// 格子坐标
 	CAnimation*	m_pAni;		// 建筑动画控制器
-	typedef std::list< DWORD >	CObjList;
+	typedef std::list< uint32 >	CObjList;
 	CObjList		m_ObjList;
 
 	CMapBlock()
@@ -115,8 +115,8 @@ private:
 	CAnimationList	m_AnimationList;	// 渲染器列表
 
 protected:
-	DWORD	m_dwMapWidth;
-	DWORD	m_dwMapHeight;
+	uint32	m_dwMapWidth;
+	uint32	m_dwMapHeight;
 	SIZE	m_siBlockSize;
 	int		m_nRoleID;			// 主角ID, 可被控制对象的ID;
 
@@ -153,23 +153,23 @@ public:
 	}
 
 	// 初始化地图
-	VOID InitializeMap( DWORD dwMapWidth, DWORD dwMapHeight, int nRoleID = INVALID_OBJID );
+	VOID InitializeMap( uint32 dwMapWidth, uint32 dwMapHeight, int nRoleID = INVALID_OBJID );
 
-	inline	DWORD	GetMapWidth()const		{ return m_dwMapWidth; }
-	inline	DWORD	GetMapHeight()const		{ return m_dwMapHeight; }
-	inline	DWORD	GetBlockWidth()const	{ return m_siBlockSize.cx; }
-	inline	DWORD	GetBlockHeight()const	{ return m_siBlockSize.cy; }
-	inline	DWORD	GetWorldWidth()const	{ return m_dwMapWidth* m_siBlockSize.cx; }
-	inline	DWORD	GetWorldHeight()const	{ return m_dwMapHeight*m_siBlockSize.cy; }
+	inline	uint32	GetMapWidth()const		{ return m_dwMapWidth; }
+	inline	uint32	GetMapHeight()const		{ return m_dwMapHeight; }
+	inline	uint32	GetBlockWidth()const	{ return m_siBlockSize.cx; }
+	inline	uint32	GetBlockHeight()const	{ return m_siBlockSize.cy; }
+	inline	uint32	GetWorldWidth()const	{ return m_dwMapWidth* m_siBlockSize.cx; }
+	inline	uint32	GetWorldHeight()const	{ return m_dwMapHeight*m_siBlockSize.cy; }
 
-	inline	CMapBlock*	GetBlock( DWORD x, DWORD y )const;
+	inline	CMapBlock*	GetBlock( uint32 x, uint32 y )const;
 
 	// 设置主角ID
 	inline	VOID	SetRoleID( int nID )	{ m_nRoleID = nID; }
 	inline	int		GetRoleID()const		{ return m_nRoleID; }
 
 	BOOL	GetCollisionBlock( const RECT& rc, CBlockList& retList )const;
-	DWORD	Update( float fDeltaTime );
+	uint32	Update( float fDeltaTime );
 
 	virtual BOOL	CreateMap( LPCSTR lpszMapFilename ) = 0;
 

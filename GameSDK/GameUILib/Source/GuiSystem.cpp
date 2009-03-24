@@ -30,23 +30,32 @@ namespace UILib
 		m_pDesktop = NULL;
 	}
 
-	BOOL CGuiSystem::Initialize( HWND hWnd, XUI_IFont* pFont )
+	bool CGuiSystem::Initialize( HWND w, _lpctstr p, const XUI_FontAttribute& f, const XUI_SpriteAttribute& c )
 	{
-		m_pDefaultFont			= pFont;
+		m_strMediaPath			= p;
+		m_pCursor				= XUI_CreateSprite( XA2T(c.path), c.x, c.y, c.w, c.h );	// 设置鼠标
+		m_pDefaultFont			= XUI_CreateFont( XA2T(f.name), f.size, f.bold, f.italic, f.antialias );	// 设置字体
 		if( m_bInitialized )	return TRUE;
 
 		// 初始化lua脚本系统
 		Lua::Instance().Initialize();
 
-		m_hWnd			= hWnd;
-		m_pDefaultFont	= pFont;
+		m_hWnd = w;
+
+		// 初始化定时器系统
 		m_timer.initialize( 1024, 4096 );
 
 		RECT rect;
-		::GetClientRect( hWnd, &rect );
+		::GetClientRect( w, &rect );
 
-		m_pDesktop->Move( 0, 0, rect.right - rect.left, rect.bottom - rect.top);
+		m_pDesktop->MoveWindow( 0, 0, rect.right - rect.left, rect.bottom - rect.top);
 		return TRUE;
+	}
+
+	void CGuiSystem::Unitialize()
+	{
+		XUI_DestroyFont( m_pDefaultFont );
+		XUI_DestroySprite( m_pCursor );
 	}
 
 	void CGuiSystem::Render()
@@ -54,6 +63,7 @@ namespace UILib
 		if ( m_pDesktop )
 		{
 			m_pDesktop->Render( m_pDesktop->GetWindowRect() );
+			XUI_DrawSprite( m_pCursor, m_MousePt.x, m_MousePt.y, m_pCursor->GetWidth(), m_pCursor->GetHeight(), m_pDesktop->GetWindowRect() );
 		}
 	}
 
@@ -69,6 +79,7 @@ namespace UILib
 
 	bool CGuiSystem::onMouseMove(XUI_Wnd* pElement, const CPoint& pt, UINT sysKeys)
 	{
+		m_MousePt = pt;
 		if( !pElement->IsEnable() )	return false;
 
 		XUI_Wnd *pEnterElement=pElement->FindChildInPoint(pt);
@@ -273,7 +284,7 @@ namespace UILib
 		}
 	}
 
-	bool CGuiSystem::onKeyDown(XUI_Wnd* pElement, DWORD dwVirtualCode, UINT sysKeys)
+	bool CGuiSystem::onKeyDown(XUI_Wnd* pElement, uint32 dwVirtualCode, UINT sysKeys)
 	{
 		if( !pElement->IsEnable() )	return false;
 
@@ -291,7 +302,7 @@ namespace UILib
 			return false;
 	}
 
-	bool CGuiSystem::onKeyUp(XUI_Wnd* pElement, DWORD dwVirtualCode, UINT sysKeys)
+	bool CGuiSystem::onKeyUp(XUI_Wnd* pElement, uint32 dwVirtualCode, UINT sysKeys)
 	{
 		if( !pElement->IsEnable() )	return false;
 
@@ -309,7 +320,7 @@ namespace UILib
 			return false;
 	}
 
-	bool CGuiSystem::onChar(XUI_Wnd* pElement, DWORD dwChar, UINT sysKeys)
+	bool CGuiSystem::onChar(XUI_Wnd* pElement, uint32 dwChar, UINT sysKeys)
 	{
 		if( !pElement->IsEnable() )	return false;
 
@@ -342,31 +353,31 @@ namespace UILib
 			switch(uMsg)
 			{
 			case WM_KEYDOWN:
-				onKeyDown(pDesktop, (DWORD)wParam, (UINT)lParam);
+				onKeyDown(pDesktop, (uint32)wParam, (UINT)lParam);
 				break;
 			case WM_KEYUP:
-				onKeyUp(pDesktop, (DWORD)wParam, (UINT)lParam);
+				onKeyUp(pDesktop, (uint32)wParam, (UINT)lParam);
 				break;
 			case WM_CHAR:
-				onChar(pDesktop, (DWORD)wParam, (UINT)lParam);
+				onChar(pDesktop, (uint32)wParam, (UINT)lParam);
 				break;
 			
 			//输入法
 			case WM_IME_COMPOSITION:
-				onImeComp(pDesktop, (DWORD)wParam, (DWORD)lParam);
+				onImeComp(pDesktop, (uint32)wParam, (uint32)lParam);
 				break;
 			case WM_IME_ENDCOMPOSITION:
-				onImeEndComp(pDesktop, (DWORD)wParam, (DWORD)lParam);
+				onImeEndComp(pDesktop, (uint32)wParam, (uint32)lParam);
 				break;
 			case WM_IME_NOTIFY:
-				onImeNotify(pDesktop, (DWORD)wParam, (DWORD)lParam);
+				onImeNotify(pDesktop, (uint32)wParam, (uint32)lParam);
 				break;
 			
 			}
 		}
 	}
 
-	bool CGuiSystem::onImeComp(XUI_Wnd* pElement, DWORD wParam, DWORD lParam)
+	bool CGuiSystem::onImeComp(XUI_Wnd* pElement, uint32 wParam, uint32 lParam)
 	{
 		if (pElement->onImeComp(wParam, lParam))
 			return true;
@@ -376,7 +387,7 @@ namespace UILib
 			return false;
 	}
 
-	bool CGuiSystem::onImeEndComp(XUI_Wnd* pElement, DWORD wParam, DWORD lParam)
+	bool CGuiSystem::onImeEndComp(XUI_Wnd* pElement, uint32 wParam, uint32 lParam)
 	{
 		if (pElement->onImeEndComp(wParam, lParam))
 			return true;
@@ -386,7 +397,7 @@ namespace UILib
 			return false;
 	}
 
-	bool CGuiSystem::onImeNotify(XUI_Wnd* pElement, DWORD wParam, DWORD lParam)
+	bool CGuiSystem::onImeNotify(XUI_Wnd* pElement, uint32 wParam, uint32 lParam)
 	{
 		if (pElement->onImeNotify(wParam, lParam))
 			return true;
@@ -402,20 +413,20 @@ namespace UILib
 		switch(uMsg)
 		{
 		case WM_IME_COMPOSITION:
-			onImeComp(m_pDesktop, (DWORD)wParam, (DWORD)lParam);
+			onImeComp(m_pDesktop, (uint32)wParam, (uint32)lParam);
 			break;
 		case WM_IME_ENDCOMPOSITION:
-			onImeEndComp(m_pDesktop, (DWORD)wParam, (DWORD)lParam);
+			onImeEndComp(m_pDesktop, (uint32)wParam, (uint32)lParam);
 			break;
 		case WM_IME_NOTIFY:
-			onImeNotify(m_pDesktop, (DWORD)wParam, (DWORD)lParam);
+			onImeNotify(m_pDesktop, (uint32)wParam, (uint32)lParam);
 			break;
 		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////
 	// 界面生成
-	bool CGuiSystem::LoadFromFile( LPCTSTR pszFilename )
+	bool CGuiSystem::LoadFromFile( _lpctstr pszFilename )
 	{
 		if( m_pDesktop )
 		{
@@ -433,7 +444,7 @@ namespace UILib
 		return false;
 	}
 
-	bool CGuiSystem::SaveToFile( LPCTSTR pszFilename )
+	bool CGuiSystem::SaveToFile( _lpctstr pszFilename )
 	{
 		if( m_pDesktop )
 		{
@@ -452,12 +463,7 @@ namespace UILib
 		return false;
 	}
 
-	void	CGuiSystem::SetImagePath( LPCTSTR lpszImagePath )
-	{
-		m_strMediaPath = lpszImagePath;
-	}
-
-	LPCTSTR	CGuiSystem::GetImagePath()
+	_lpctstr	CGuiSystem::GetImagePath()
 	{
 		return m_strMediaPath.c_str();
 	}

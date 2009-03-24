@@ -28,7 +28,7 @@
 #include <algorithm>
 
 // common head file
-#include "macro_define.h"
+#include "defines.h"
 #include "logger.h"
 #pragma comment( lib, "ws2_32.lib" )
 #pragma comment( lib, "winmm.lib" )

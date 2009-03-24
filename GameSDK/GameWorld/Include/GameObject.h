@@ -122,7 +122,7 @@ public:
 	// 更新逻辑
 	// Map			:	地图数据对象的引用
 	// fDeltaTime	:	时间差
-	virtual	DWORD	Update( const CMap& Map, float fDeltaTime );
+	virtual	uint32	Update( const CMap& Map, float fDeltaTime );
 };
 
 //////////////////////////////////////////////////////////////////////////

@@ -23,14 +23,11 @@ namespace UILib
 
 	LuaBindClass::~LuaBindClass(void)
 	{
+		delete m_pLuaDebuger;
 	}
 
 	void LuaBindClass::Initialize()
 	{
-		//SLB::Class< CUICommander, SLB::Instance::NoCopyNoDestroy >( "ui::Commander" )
-		//	.set( "run", &CUICommander::ProcessCommand )
-		//	;
-
 		m_pLuaDebuger = new LuaDebuger();
 		m_pLuaDebuger->initialize( Lua::Instance().getState() );
 
@@ -51,7 +48,7 @@ namespace UILib
 			.set( "members",	&show_members< CRect > )
 			.set( "save",		&save_file< CRect > )
 			.set( "load",		&load_file< CRect > )
-		;
+			;
 
 		Class< CPoint >( "ui::Point" )
 			.constructor< long, long >()
@@ -71,37 +68,37 @@ namespace UILib
 			.set( "load",		&load_file< CSize > )
 			;
 
-		Class< SpriteAttribute >( "ui::SpriteAttribute" )
+		Class< XUI_SpriteAttribute >( "ui::XUI_SpriteAttribute" )
 			.constructor< const char*, float, float, float, float >()
-			.member_readonly( "f",	&SpriteAttribute::path )
-			.member_readonly( "x",	&SpriteAttribute::x )
-			.member_readonly( "y",	&SpriteAttribute::y )
-			.member_readonly( "w",	&SpriteAttribute::w )
-			.member_readonly( "h",	&SpriteAttribute::h )
-			.set( "members",&show_members< SpriteAttribute > )
-			.set( "save",	&SpriteAttribute::save_file )
-			.set( "load",	&SpriteAttribute::load_file )
+			.member_readonly( "f",	&XUI_SpriteAttribute::path )
+			.member_readonly( "x",	&XUI_SpriteAttribute::x )
+			.member_readonly( "y",	&XUI_SpriteAttribute::y )
+			.member_readonly( "w",	&XUI_SpriteAttribute::w )
+			.member_readonly( "h",	&XUI_SpriteAttribute::h )
+			.set( "members",&show_members< XUI_SpriteAttribute > )
+			.set( "save",	&XUI_SpriteAttribute::save_file )
+			.set( "load",	&XUI_SpriteAttribute::load_file )
 			;
 
-		Class< FontAttribute >( "ui::FontAttribute" )
+		Class< XUI_FontAttribute >( "ui::XUI_FontAttribute" )
 			.constructor< const char*, int, bool, bool, bool >()
-			.member_readonly( "name", &FontAttribute::name )
-			.member_readonly( "size", &FontAttribute::size )
-			.member_readonly( "bold", &FontAttribute::bold )
-			.member_readonly( "italic", &FontAttribute::italic )
-			.member_readonly( "antialias", &FontAttribute::antialias )
-			.set( "members",&show_members< FontAttribute > )
-			.set( "save",	&FontAttribute::save_file )
-			.set( "load",	&FontAttribute::load_file )
+			.member_readonly( "name", &XUI_FontAttribute::name )
+			.member_readonly( "size", &XUI_FontAttribute::size )
+			.member_readonly( "bold", &XUI_FontAttribute::bold )
+			.member_readonly( "italic",		&XUI_FontAttribute::italic )
+			.member_readonly( "antialias",	&XUI_FontAttribute::antialias )
+			.set( "members",&show_members< XUI_FontAttribute > )
+			.set( "save",	&XUI_FontAttribute::save_file )
+			.set( "load",	&XUI_FontAttribute::load_file )
 			;
 
 		Class< XUI_Wnd, SLB::Instance::NoCopyNoDestroy >( "ui::Wnd" )
-			.set( "MoveWindow",		&XUI_Wnd::Move )
+			.set( "MoveWindow",		&XUI_Wnd::MoveWindow )
 			.set( "OffsetWindow",	&XUI_Wnd::Offset )
 			.set( "SendMessage",	&XUI_Wnd::SendMessage )
 			.set( "SetName",		&XUI_Wnd::SetName )
 			.set( "GetName",		&XUI_Wnd::GetName )
-			.set( "members",		&show_members< XUI_Wnd > )
+			.set( "members",		&XUI_Wnd::show_members )
 			.set( "save",			&XUI_Wnd::save_file )
 			.set( "load",			&XUI_Wnd::load_file )
 			.member( "id",			&XUI_Wnd::SetID,		&XUI_Wnd::GetID )
@@ -143,7 +140,7 @@ namespace UILib
 
 		try
 		{
-			TCHAR path[_MAX_PATH+_MAX_FNAME];
+			_tchar path[_MAX_PATH+_MAX_FNAME];
 			helper::NormalizePath(  _T("..\\Resource\\Scripts\\"), path, _countof( path ) );
 			// 设置脚本根目录
 			_string _script( path );

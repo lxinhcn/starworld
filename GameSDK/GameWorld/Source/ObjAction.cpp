@@ -83,10 +83,10 @@
 //	//	break;
 //	//}
 //
-//	//if( (DWORD)nObjInBlockX >= Map.GetMapWidth() )	nObjInBlockX = Map.GetMapWidth() - 1;
-//	//if( (DWORD)nObjInBlockX < 0 )	nObjInBlockX = 0;
-//	//if( (DWORD)nObjInBlockY >= Map.GetMapHeight() ) nObjInBlockY = Map.GetMapHeight() - 1;
-//	//if( (DWORD)nObjInBlockY < 0 )	nObjInBlockY = 0;
+//	//if( (uint32)nObjInBlockX >= Map.GetMapWidth() )	nObjInBlockX = Map.GetMapWidth() - 1;
+//	//if( (uint32)nObjInBlockX < 0 )	nObjInBlockX = 0;
+//	//if( (uint32)nObjInBlockY >= Map.GetMapHeight() ) nObjInBlockY = Map.GetMapHeight() - 1;
+//	//if( (uint32)nObjInBlockY < 0 )	nObjInBlockY = 0;
 //
 //	//CMap::CBlockList::const_iterator citer = retList.begin();
 //	//while( citer != retList.end() )

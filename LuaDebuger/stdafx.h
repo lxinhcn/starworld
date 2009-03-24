@@ -28,7 +28,7 @@ extern "C"
 #include <sstream>
 
 #include <process.h>
-
+#include "helplib.h"
 #define BUFSIZE 1024*32
 
 #ifdef _UNICODE

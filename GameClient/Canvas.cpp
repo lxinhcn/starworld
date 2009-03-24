@@ -12,21 +12,13 @@ CTextureManager::CTextureManager()
 
 CTextureManager::~CTextureManager()
 {
-	HGE* hge = Application::Instance().getEngine();
-	CTextureMap::iterator iter = m_TextureMap.begin();
-	while( iter != m_TextureMap.end() )
-	{
-		hge->Texture_Free( iter->second );
-		++iter;
-	}
-	m_TextureMap.clear();
 }
 
 //---------------------------------------------------------------------//
 // describe	: 得到路径指定的纹理句柄
 // return	: 纹理句柄
 //---------------------------------------------------------------------//
-HTEXTURE CTextureManager::GetTexture( LPCTSTR lpszTexpath )
+HTEXTURE CTextureManager::GetTexture( _lpctstr lpszTexpath )
 {
 	if( lpszTexpath == NULL ) return NULL;
 	CTextureMap::iterator iter = m_TextureMap.find( lpszTexpath );
@@ -43,6 +35,17 @@ HTEXTURE CTextureManager::GetTexture( LPCTSTR lpszTexpath )
 	return h;
 }
 
+void CTextureManager::Clear()
+{
+	HGE* hge = Application::Instance().getEngine();
+	CTextureMap::iterator iter = m_TextureMap.begin();
+	while( iter != m_TextureMap.end() )
+	{
+		hge->Texture_Free( iter->second );
+		++iter;
+	}
+	m_TextureMap.clear();
+}
 //////////////////////////////////////////////////////////////////////////
 // CFontManager
 //////////////////////////////////////////////////////////////////////////
@@ -62,10 +65,10 @@ CFontManager::~CFontManager()
 	m_FontMap.clear();
 }
 
-GfxFont* CFontManager::GetFont( LPCTSTR lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias )
+GfxFont* CFontManager::GetFont( _lpctstr lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias )
 {
 	USES_CONVERSION;
-	UILib::FontAttribute font( T2A( lpszFont ), nSize, bBold, bItalic, bAntialias );
+	UILib::XUI_FontAttribute font( T2A( lpszFont ), nSize, bBold, bItalic, bAntialias );
 	CFontMap::iterator iter = m_FontMap.find( font );
 	if( iter != m_FontMap.end() )
 	{
@@ -89,6 +92,7 @@ CClientSprite::CClientSprite()
 
 CClientSprite::~CClientSprite()
 {
+	SAFE_DELETE( m_pSprite );
 }
 
 void CClientSprite::Release()
@@ -96,7 +100,7 @@ void CClientSprite::Release()
 	delete this;
 }
 
-bool CClientSprite::LoadTexture( LPCTSTR lpszFileName, float x, float y, float w, float h )
+bool CClientSprite::LoadTexture( _lpctstr lpszFileName, float x, float y, float w, float h )
 {
 	if( lpszFileName == NULL ) return FALSE;
 
@@ -138,7 +142,7 @@ VOID CClientSprite::Render( int nX, int nY, int nWidth, int nHeight, LPCRECT lpC
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-CClientFont::CClientFont( const FontAttribute& FontAttrib, GfxFont* pFont )
+CClientFont::CClientFont( const XUI_FontAttribute& FontAttrib, GfxFont* pFont )
 : XUI_IFont( FontAttrib )
 , m_pFont( pFont )
 {
@@ -148,12 +152,12 @@ CClientFont::~CClientFont()
 {
 };
 
-SIZE CClientFont::GetStringSize( LPCTSTR lpszString )
+SIZE CClientFont::GetStringSize( _lpctstr lpszString )
 {
 	return m_pFont->GetTextSize( lpszString );
 }
 
-INT CClientFont::GetCharacterWidth( TCHAR szChar )
+INT CClientFont::GetCharacterWidth( _tchar szChar )
 {
 	return m_pFont->GetCharacterWidth( szChar );
 }
@@ -163,24 +167,24 @@ INT	CClientFont::GetCharacterHeight()
 	return m_pFont->GetCharacterHeight();
 }
 
-void	CClientFont::SetColor( DWORD dwColor )
+void	CClientFont::SetColor( uint32 dwColor )
 {
 	m_pFont->SetColor( dwColor );
 }
 
-void	CClientFont::Render( float x, float y, LPCTSTR lpszText )const
+void	CClientFont::Render( float x, float y, _lpctstr lpszText )const
 {
 	m_pFont->Render( x, y, lpszText );
 }
 
-void CClientFont::Render( float x, float y, TCHAR szChar )const
+void CClientFont::Render( float x, float y, _tchar szChar )const
 {
 	m_pFont->Render( x, y, szChar );
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-static bool _DrawText( LPCTSTR lpszText, UILib::XUI_IFont* pFont, float x, float y )
+static bool _DrawText( _lpctstr lpszText, UILib::XUI_IFont* pFont, float x, float y )
 {
 	if( pFont == NULL ) pFont = GuiSystem::Instance().GetDefaultFont();
 	CClientFont* pF = static_cast< CClientFont* >( pFont );
@@ -191,7 +195,7 @@ static bool _DrawText( LPCTSTR lpszText, UILib::XUI_IFont* pFont, float x, float
 	return true;
 }
 
-static bool _DrawCharacter( TCHAR szChar, UILib::XUI_IFont* pFont, float x, float y )
+static bool _DrawCharacter( _tchar szChar, UILib::XUI_IFont* pFont, float x, float y )
 {
 	if( pFont == NULL ) pFont = GuiSystem::Instance().GetDefaultFont();
 	CClientFont* pF = static_cast< CClientFont* >( pFont );
@@ -203,7 +207,7 @@ static bool _DrawCharacter( TCHAR szChar, UILib::XUI_IFont* pFont, float x, floa
 }
 
 //没有边框的矩形背景
-static bool _DrawRect( const RECT& rcDest, DWORD dwBorderColor, DWORD dwBkColor/* = -1*/ )
+static bool _DrawRect( const RECT& rcDest, uint32 dwBorderColor, uint32 dwBkColor/* = -1*/ )
 {
 	Application::Instance()->Gfx_RenderLine( (float)rcDest.left, (float)rcDest.top, (float)rcDest.right, (float)rcDest.top, dwBorderColor );
 	Application::Instance()->Gfx_RenderLine( (float)rcDest.right, (float)rcDest.top, (float)rcDest.right, (float)rcDest.bottom, dwBorderColor );
@@ -212,7 +216,7 @@ static bool _DrawRect( const RECT& rcDest, DWORD dwBorderColor, DWORD dwBkColor/
 	return true;
 }
 
-static bool _DrawPolygon( const LPPOINT ptArray, DWORD* dwColorArray, int nCount, unsigned short* pTriListArray, int nTriCount )
+static bool _DrawPolygon( const LPPOINT ptArray, uint32* dwColorArray, int nCount, unsigned short* pTriListArray, int nTriCount )
 {
 	return true;
 }
@@ -224,11 +228,13 @@ static bool _DrawSprite( const XUI_ISprite* Tex, int nX, int nY, int nWidth, int
 	return true;
 }
 
-static XUI_ISprite* _CreateSprite( LPCTSTR lpszPathname, float x, float y, float w, float h )
+static XUI_ISprite* _CreateSprite( _lpctstr lpszPathname, float x, float y, float w, float h )
 {
 	CClientSprite* pTexture = new CClientSprite();
 	if( pTexture->LoadTexture( lpszPathname, x, y, w, h ) )
+	{
 		return pTexture;
+	}
 	delete pTexture;
 	return NULL;
 }
@@ -238,13 +244,13 @@ static void _DestroySprite( XUI_ISprite* pTexture )
 	delete pTexture;
 }
 
-static XUI_IFont* _CreateFont( LPCTSTR lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias )
+static XUI_IFont* _CreateFont( _lpctstr lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias )
 {
 	GfxFont* pGfxFont = FontManager::Instance().GetFont( lpszFontName, nSize, bBold, bItalic, bAntialias );
 	if( pGfxFont )
 	{
 		USES_CONVERSION;
-		return new CClientFont( FontAttribute( T2A(lpszFontName), nSize, bBold, bItalic, bAntialias ), pGfxFont );
+		return new CClientFont( XUI_FontAttribute( T2A(lpszFontName), nSize, bBold, bItalic, bAntialias ), pGfxFont );
 	}
 	return NULL;
 }

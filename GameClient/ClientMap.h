@@ -7,5 +7,5 @@ public:
 	CClientMap(void);
 	~CClientMap(void);
 
-	BOOL CreateMap( LPCTSTR lpszMapFile );
+	BOOL CreateMap( _lpctstr lpszMapFile );
 };

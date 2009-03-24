@@ -25,11 +25,11 @@ namespace UILib
 
 	protected:
 		_string			m_strCaption;
-		SpriteAttribute	m_SpriteAttribute;
+		XUI_SpriteAttribute	m_SpriteAttribute;
 
 		XUI_ISprite*	m_pButtonSkin[State_count];
 		ButtonState		m_enState;
-		DWORD			m_dwColor;
+		uint32			m_dwColor;
 
 		void RenderSelf(const CRect& clipper);
 
@@ -38,7 +38,7 @@ namespace UILib
 		bool onButtonDown(int button, const CPoint& pt, UINT sysKeys);
 		bool onButtonUp(int button, const CPoint& pt, UINT sysKeys);
 		
-		bool onKeyDown(DWORD keycode, UINT sysKeys);
+		bool onKeyDown(uint32 keycode, UINT sysKeys);
 
 		//»ñµÃ½¹µã
 		virtual void onGetFocus();
@@ -56,8 +56,8 @@ namespace UILib
 		void			SetSkin( const _string& path, float x, float y, float w, float h );
 		XUI_ISprite*	GetSkin( int idx )const{ return( idx >= 0 && idx < _countof(m_pButtonSkin) )?m_pButtonSkin[idx]:NULL; }
 
-		void SetText( LPCTSTR sText);
-		void SetTextColor( DWORD dwColor ){ m_dwColor = dwColor; }
+		void SetText( _lpctstr sText);
+		void SetTextColor( uint32 dwColor ){ m_dwColor = dwColor; }
 		void SetState( ButtonState enState );
 	};
 }

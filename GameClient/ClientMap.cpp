@@ -9,7 +9,7 @@ CClientMap::~CClientMap(void)
 {
 }
 
-BOOL CClientMap::CreateMap( LPCTSTR lpszMapFile )
+BOOL CClientMap::CreateMap( _lpctstr lpszMapFile )
 {
 	return TRUE;
 }

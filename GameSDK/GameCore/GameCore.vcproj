@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\;.\include;&quot;..\..\Depend\Loki-0.1.6\Include&quot;"
+				AdditionalIncludeDirectories=".\;.\include;&quot;..\..\Depend\Loki-0.1.6\Include&quot;;..\..\Helplib"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;CORE_EXPORTS;LOKI_FUNCTOR_IS_NOT_A_SMALLOBJECT"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

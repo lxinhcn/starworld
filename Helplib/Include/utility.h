@@ -1,7 +1,7 @@
 #pragma once
 #ifndef _COMMON_H
 #define _COMMON_H
-#include "macro_define.h"
+#include "defines.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // Verify that a null-terminated string points to valid memory

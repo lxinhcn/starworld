@@ -28,7 +28,7 @@
 #include <algorithm>
 
 // common head file
-#include "include\macro_define.h"
+#include "defines.h"
 #include "Include\console.h"
 #include "Include\console_buffer.h"
 #include "include\utility.h"
@@ -45,8 +45,6 @@
 #include "include\netpackage.h"
 #include "include\netstream.h"
 #include "include\netselect.h"
-#include "include\singleton.h"
-#include "include\smart_point.h"
 #include "include\tls.h"
 #include "include\xtimer.h"
 

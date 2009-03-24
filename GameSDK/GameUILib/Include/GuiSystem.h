@@ -22,11 +22,10 @@ namespace UILib
 		virtual ~CGuiSystem(void);
 
 	public:
-		BOOL	Initialize( HWND hWnd, XUI_IFont* pDefaultFont );
-
+		bool Initialize( HWND w, _lpctstr p, const XUI_FontAttribute& f, const XUI_SpriteAttribute& c );
+		void Unitialize();
 		// …Ë÷√Õº∆¨¬∑æ∂
-		void	SetImagePath( LPCTSTR lpszImagePath );
-		LPCTSTR	GetImagePath();
+		_lpctstr	GetImagePath();
 
 		XUI_IFont*	GetDefaultFont()const{ return m_pDefaultFont; }
 
@@ -44,15 +43,17 @@ namespace UILib
 		typedef std::map< int, XUI_Window* >	CDesktopMap;
 		typedef std::list< XUI_Window* >		CModalList;
 
-		XUI_Window*	m_pDesktop;
-		CDesktopMap	m_DesktopMap;
-		CModalList	m_ModalList;
+		XUI_Window*		m_pDesktop;
+		CDesktopMap		m_DesktopMap;
+		CModalList		m_ModalList;
 
-		XUI_IFont*	m_pDefaultFont;
-		_string		m_strMediaPath;
-		xtimer		m_timer;
-		float		m_nowtime;
-		float		m_timer_anchor;
+		XUI_IFont*		m_pDefaultFont;
+		XUI_ISprite*	m_pCursor;
+		CPoint			m_MousePt;
+		_string			m_strMediaPath;
+		xtimer			m_timer;
+		float			m_nowtime;
+		float			m_timer_anchor;
 	protected:
 		void SetFocus(XUI_Wnd* pElement);
 
@@ -63,13 +64,13 @@ namespace UILib
 		bool onButtonDown(XUI_Wnd* pElement, int iButton, const CPoint& pt, UINT sysKeys);
 		bool onButtonUp(XUI_Wnd* pElement, int iButton, const CPoint& pt, UINT sysKeys);
 
-		bool onKeyDown(XUI_Wnd* pElement, DWORD dwVirtualCode, UINT sysKeys);
-		bool onKeyUp(XUI_Wnd* pElement, DWORD dwVirtualCode, UINT sysKeys);
-		bool onChar(XUI_Wnd* pElement, DWORD dwChar, UINT sysKeys);
+		bool onKeyDown(XUI_Wnd* pElement, uint32 dwVirtualCode, UINT sysKeys);
+		bool onKeyUp(XUI_Wnd* pElement, uint32 dwVirtualCode, UINT sysKeys);
+		bool onChar(XUI_Wnd* pElement, uint32 dwChar, UINT sysKeys);
 
-		bool onImeComp(XUI_Wnd* pElement, DWORD wParam, DWORD lParam);
-		bool onImeEndComp(XUI_Wnd* pElement, DWORD wParam, DWORD lParam);
-		bool onImeNotify(XUI_Wnd* pElement, DWORD wParam, DWORD lParam);
+		bool onImeComp(XUI_Wnd* pElement, uint32 wParam, uint32 lParam);
+		bool onImeEndComp(XUI_Wnd* pElement, uint32 wParam, uint32 lParam);
+		bool onImeNotify(XUI_Wnd* pElement, uint32 wParam, uint32 lParam);
 
 		void HandleMouse(UINT uMsg, WPARAM wParam, LPARAM lParam);
 		void HandleKeyboard(UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -98,8 +99,8 @@ namespace UILib
 		bool EnterModaless( XUI_Window* pDialog );
 		void LeaveModaless();
 
-		bool LoadFromFile( LPCTSTR pszFilename );
-		bool SaveToFile( LPCTSTR pszFilename );
+		bool LoadFromFile( _lpctstr pszFilename );
+		bool SaveToFile( _lpctstr pszFilename );
 
 		unsigned int SetTimer( event_function function, unsigned short repeat, unsigned short timer );
 		void KillTimer( unsigned int handle );

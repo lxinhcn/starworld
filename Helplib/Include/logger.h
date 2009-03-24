@@ -9,7 +9,7 @@
 #define TOOLLIB_API __declspec(dllimport)
 #endif	//TOOLLIB_EXPORTS
 #include <list>
-#include "macro_define.h"
+#include "defines.h"
 #include "critical_lock.h"
 
 class CLoggerAdapter;

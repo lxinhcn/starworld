@@ -41,8 +41,8 @@ protected:
 public:
 	static	int		GetPointType()					{ return TYPE; }
 	virtual int		GetType()const					{ return TYPE; }
-	virtual BOOL	IsKindOf( DWORD dwType )const	{ if( this == NULL ) return FALSE;if( GetPointType() == dwType ) return TRUE; else return TBase::IsKindOf( dwType );}
-	static	BOOL	IsTypeOf( DWORD dwType )		{ if( GetPointType() == dwType ) return TRUE; else return TBase::IsTypeOf( dwType );}
+	virtual bool	IsKindOf( unsigned int nType )const	{ if( this == NULL ) return false;if( GetPointType() == nType ) return true; else return TBase::IsKindOf( nType );}
+	static	bool	IsTypeOf( unsigned int nType )		{ if( GetPointType() == nType ) return true; else return TBase::IsTypeOf( nType );}
 };
 
 /*	:	public XObjTypeT< CXObjectBase, EN_OBJECT, 1 > */
@@ -55,7 +55,7 @@ protected:
 public:
 	static	int		GetPointType()					{ return TypeObjectbase;		}
 	virtual int		GetType()const					{ return TypeObjectbase;		}
-	virtual BOOL	IsKindOf( DWORD dwType )const	{ return TypeObjectbase == dwType;}
-	static	BOOL	IsTypeOf( DWORD dwType )		{ return TypeObjectbase == dwType;}
+	virtual bool	IsKindOf( unsigned int nType )const	{ return TypeObjectbase == nType;}
+	static	bool	IsTypeOf( unsigned int nType )		{ return TypeObjectbase == nType;}
 };
 #endif //_UIOBJECT_

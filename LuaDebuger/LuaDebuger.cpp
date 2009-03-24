@@ -1,7 +1,5 @@
 #include "StdAfx.h"
 #include "LuaDebuger.h"
-#include "critical_lock.h"
-#include "utility.h"
 #include <io.h>
 #include <vector>
 #include <deque>
@@ -87,6 +85,14 @@ struct LuaDebuger::ThreadParam
 
 	~ThreadParam()
 	{
+		if( bWork )
+		{
+			bWork = false;
+			HANDLE p = CreateFile( TEXT("\\\\.\\pipe\\lua_debuger"), GENERIC_READ|GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL );
+			DisconnectNamedPipe( p );
+			CloseHandle( p );
+		}
+		CloseHandle( pipe );
 		WaitForSingleObject( thread, INFINITE );
 		CloseHandle( thread );
 		CloseHandle( debug_signal );
@@ -121,6 +127,7 @@ struct LuaDebuger::ThreadParam
 	HANDLE	thread;
 	HANDLE	debug_signal;
 	HANDLE	pipe;
+	bool	bWork;
 	static instruct_map	instructs;	// Ö¸ÁîÓ³Éä±í
 
 private:
@@ -138,6 +145,7 @@ LuaDebuger::LuaDebuger()
 
 LuaDebuger::~LuaDebuger()
 {
+	SAFE_DELETE( m_thread_param );
 	delete m_pImpl;
 	m_pImpl = NULL;
 }
@@ -389,15 +397,15 @@ unsigned int __stdcall LuaDebuger::guard( void *param )
 
 	BYTE	buffer[BUFSIZE];
 	DWORD	dwRead, dwWrite;
-	BOOL	fConnected; 
 	LPTSTR	lpszPipename = TEXT("\\\\.\\pipe\\lua_debuger"); 
 
+	p->bWork = true;
 	// The main loop creates an instance of the named pipe and 
 	// then waits for a client to connect to it. When the client 
 	// connects, a thread is created to handle communications 
 	// with that client, and the loop is repeated. 
 
-	for (;;) 
+	while( p->bWork )
 	{ 
 		p->pipe = CreateNamedPipe( 
 			lpszPipename,             // pipe name 
@@ -421,9 +429,10 @@ unsigned int __stdcall LuaDebuger::guard( void *param )
 		// the function returns a nonzero value. If the function
 		// returns zero, GetLastError returns ERROR_PIPE_CONNECTED. 
 
-		fConnected = ConnectNamedPipe(p->pipe, NULL) ? TRUE : (GetLastError() == ERROR_PIPE_CONNECTED); 
 
-		while(fConnected)
+		BOOL bConnected = ConnectNamedPipe(p->pipe, NULL) ? TRUE : (GetLastError() == ERROR_PIPE_CONNECTED); 
+
+		while( bConnected )
 		{
 			if( PeekNamedPipe( p->pipe, NULL, 0, NULL, NULL, &dwRead ) && dwRead > 0 )
 			{
@@ -434,15 +443,21 @@ unsigned int __stdcall LuaDebuger::guard( void *param )
 					WriteFile( p->pipe, "~!@#$%^&*()?", 12, &dwWrite, NULL );
 				}
 			}
-			else if( GetLastError() == ERROR_BROKEN_PIPE )
+			else 
 			{
-				break;
+				DWORD dwCode = GetLastError();
+				if( dwCode == ERROR_BROKEN_PIPE ||
+					dwCode == ERROR_INVALID_HANDLE ||
+					dwCode == ERROR_PIPE_CONNECTED
+					)
+				{
+					break;
+				}
+				else
+				{
+					Sleep( 1 );
+				}
 			}
-			else
-			{
-				Sleep( 1 );
-			}
-
 		}
 	}
 

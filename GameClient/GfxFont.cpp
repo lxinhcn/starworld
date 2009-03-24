@@ -21,7 +21,7 @@ const unsigned char g_byAlphaLevel[65] =
 	208,212,216,220,224,228,232,236,240,244,248,252,255
 };
 
-GfxFont::GfxFont( LPCTSTR lpsFontName, int nFaceSize, BOOL bBold, BOOL bItalic, BOOL bAntialias)
+GfxFont::GfxFont( _lpctstr lpsFontName, int nFaceSize, BOOL bBold, BOOL bItalic, BOOL bAntialias)
 {
 	m_pHGE = hgeCreate(HGE_VERSION);
 
@@ -86,7 +86,7 @@ void GfxFont::Print( float x, float y, const char *format, ... )
 {
 	char sBuffer[10240] = {0};
 	char *lpsArg=(char*)&format+sizeof(format);
-	vsprintf(sBuffer, format, lpsArg);
+	_vsnprintf( sBuffer, _countof(sBuffer), format, lpsArg);
 
 	USES_CONVERSION;
 	Render(x,y,A2W(sBuffer));
@@ -126,12 +126,12 @@ inline void GfxFont::Render(float x, float y, const wchar_t text )
 }
 
 // 设置与获取颜色
-void GfxFont::SetColor( DWORD dwColor, int i )
+void GfxFont::SetColor( uint32 dwColor, int i )
 {
 	m_pSprite->SetColor(dwColor,i);
 }
 
-DWORD GfxFont::GetColor(int i)
+uint32 GfxFont::GetColor(int i)
 {
 	return m_pSprite->GetColor(i);
 }
@@ -255,7 +255,7 @@ inline void GfxFont::CacheCharacter(unsigned int idx, wchar_t c)
 
 		MAT2 mat2 = {{0,1},{0,0},{0,0},{0,1}};
 		GLYPHMETRICS gm;
-		DWORD nLen = ::GetGlyphOutlineW(m_hMemDC,nChar,m_nAntialias,&gm,0,NULL,&mat2);
+		uint32 nLen = ::GetGlyphOutlineW(m_hMemDC,nChar,m_nAntialias,&gm,0,NULL,&mat2);
 
 		HTEXTURE hTex = m_pHGE->Texture_Create(gm.gmBlackBoxX,gm.gmBlackBoxY);
 		if (NULL == hTex) return;

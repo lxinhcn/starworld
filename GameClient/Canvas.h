@@ -14,7 +14,13 @@ public:
 	// describe	: 得到路径指定的纹理句柄
 	// return	: 纹理句柄
 	//---------------------------------------------------------------------//
-	HTEXTURE GetTexture( LPCTSTR lpszTexpath );
+	HTEXTURE GetTexture( _lpctstr lpszTexpath );
+
+	//---------------------------------------------------------------------//
+	// describe	: 清除所有资源
+	// return	:
+	//---------------------------------------------------------------------//
+	void Clear();
 
 private:
 	typedef std::map< _string, HTEXTURE >	CTextureMap;
@@ -30,10 +36,10 @@ private:
 	~CFontManager();
 
 public:
-	GfxFont* GetFont( LPCTSTR lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias );
+	GfxFont* GetFont( _lpctstr lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias );
 
 private:
-	typedef std::map< UILib::FontAttribute, GfxFont* >	CFontMap;
+	typedef std::map< UILib::XUI_FontAttribute, GfxFont* >	CFontMap;
 	CFontMap	m_FontMap;
 };
 typedef Loki::SingletonHolder< CFontManager, Loki::CreateStatic >	FontManager;
@@ -43,7 +49,7 @@ class CClientSprite	:	public UILib::XUI_ISprite
 public:
 	CClientSprite();
 	~CClientSprite();
-	bool LoadTexture( LPCTSTR lpszFileName, float x, float y, float w, float h );
+	bool LoadTexture( _lpctstr lpszFileName, float x, float y, float w, float h );
 
 	virtual float	GetWidth()const;
 	virtual float	GetHeight()const;
@@ -78,18 +84,18 @@ private:
 class CClientFont	:	public UILib::XUI_IFont
 {
 public:
-	CClientFont( const FontAttribute& FontAttrib, GfxFont* pFont );
+	CClientFont( const XUI_FontAttribute& FontAttrib, GfxFont* pFont );
 	~CClientFont();
 
-	virtual SIZE GetStringSize( LPCTSTR lpszString );
+	virtual SIZE GetStringSize( _lpctstr lpszString );
 
-	virtual INT GetCharacterWidth( TCHAR szChar );
+	virtual INT GetCharacterWidth( _tchar szChar );
 	virtual INT	GetCharacterHeight();
 
 public:
-	void SetColor( DWORD dwColor );
-	void Render( float x, float y, LPCTSTR lpszText )const;
-	void Render( float x, float y, TCHAR szChar )const;
+	void SetColor( uint32 dwColor );
+	void Render( float x, float y, _lpctstr lpszText )const;
+	void Render( float x, float y, _tchar szChar )const;
 private:
 	GfxFont*	m_pFont;
 };
