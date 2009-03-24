@@ -145,8 +145,8 @@ void CApplication::UnInitialize()
 	helper::restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "DefWindowProcA",	m_pDefWindowProc );
 	helper::restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "DispatchMessageA", m_pDispatchMessage );
 	// Clean up and shutdown
-	GuiSystem::Instance().Unitialize();
 
+	GuiSystem::Instance().Unitialize();
 	TextureManager::Instance().Clear();
 	m_hge->System_Shutdown();
 	m_hge->Release();
