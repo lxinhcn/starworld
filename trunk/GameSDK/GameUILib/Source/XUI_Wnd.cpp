@@ -49,7 +49,7 @@ namespace UILib
 
 	void XUI_Wnd::Validate()
 	{
-		m_wndRect.NormalizeRect();
+		m_WindowRect.NormalizeRect();
 	}
 
 	//事件处理
@@ -153,7 +153,7 @@ namespace UILib
 	CPoint XUI_Wnd::ClientToScreen(const CPoint& pt) const
 	{
 		CPoint rstPt= AdjustPoint(pt, true);
-		CPoint ptSelf( m_wndRect.TopLeft() );
+		CPoint ptSelf( m_WindowRect.TopLeft() );
 		rstPt+=ptSelf;
 		if (m_pParent)
 			return m_pParent->ClientToScreen(rstPt);
@@ -167,7 +167,7 @@ namespace UILib
 		CPoint rstPt=AdjustPoint(pt, false);
 		if (m_pParent)
 			rstPt=m_pParent->ScreenToClient(rstPt);
-		CPoint ptSelf( m_wndRect.TopLeft() );
+		CPoint ptSelf( m_WindowRect.TopLeft() );
 		rstPt-=ptSelf;
 		return rstPt;
 	}
@@ -197,9 +197,9 @@ namespace UILib
 	{
 		if (pElement)
 		{
-			if (pElement->m_wndRect.left != 0 || pElement->m_wndRect.top != 0 )
+			if (pElement->m_WindowRect.left != 0 || pElement->m_WindowRect.top != 0 )
 			{
-				pElement->Offset(-pElement->m_wndRect.left, -pElement->m_wndRect.top );
+				pElement->Offset(-pElement->m_WindowRect.left, -pElement->m_WindowRect.top );
 			}
 			pElement->Offset(x, y);
 			AddChild(pElement);
@@ -284,19 +284,19 @@ namespace UILib
 	// 移动对象
 	void XUI_Wnd::Move(int left, int top, int right, int bottom)
 	{
-		CRect oldRect = m_wndRect;
-		m_wndRect.SetRect( left, top, right, bottom );
+		CRect oldRect = m_WindowRect;
+		m_WindowRect.SetRect( left, top, right, bottom );
 		Validate();
 		SendMessage( WM_MOVE, 0, MAKELONG( left, top ) );
-		SendMessage( WM_SIZE, 0, MAKELONG( m_wndRect.Width(), m_wndRect.Height() ) );
+		SendMessage( WM_SIZE, 0, MAKELONG( m_WindowRect.Width(), m_WindowRect.Height() ) );
 		// 发送位置变更消息
-		OnMoveWindow( m_wndRect );
+		OnMoveWindow( m_WindowRect );
 	}
 
 	void XUI_Wnd::Offset(int x, int y)
 	{
-		m_wndRect.OffsetRect( x, y );
-		SendMessage( WM_MOVE, 0, MAKELONG( m_wndRect.left, m_wndRect.top ) );
+		m_WindowRect.OffsetRect( x, y );
+		SendMessage( WM_MOVE, 0, MAKELONG( m_WindowRect.left, m_WindowRect.top ) );
 	}
 
 	void XUI_Wnd::ShowWindow( bool bVisible /* = true  */ )
@@ -385,7 +385,7 @@ namespace UILib
 
 	BOOL XUI_Wnd::IsPointIn(const CPoint& pt)
 	{
-		return m_wndRect.PtInRect( pt );
+		return m_WindowRect.PtInRect( pt );
 	}
 
 	void XUI_Wnd::Render(const CRect& clipper)
@@ -393,7 +393,7 @@ namespace UILib
 		if (!m_bVisible)		return;
 
 		//计算可见区域
-		CRect clpSelf( m_wndRect );
+		CRect clpSelf( m_WindowRect );
 		CPoint pt( 0, 0 );
 		if( m_pParent )		pt = m_pParent->ClientToScreen( pt );
 		clpSelf += pt;
@@ -406,7 +406,7 @@ namespace UILib
 				if( m_bOwnerDraw )
 				{
 					DRAWSTRUCT ds;
-					ds.rcClient		= m_wndRect;
+					ds.rcClient		= m_WindowRect;
 					ds.rcClipper	= clpSelf;
 					ds.pCtrl		= this;
 					SendMessage( UI_OWNERDRAW, GetID(), (LPARAM)&ds );
@@ -593,10 +593,10 @@ namespace UILib
 	{
 		if( strcmp( name, "window" ) == 0 )
 		{
-			pNode->SetAttribute( "left",	m_wndRect.left );
-			pNode->SetAttribute( "top",		m_wndRect.top );
-			pNode->SetAttribute( "right",	m_wndRect.right );
-			pNode->SetAttribute( "bottom",	m_wndRect.bottom );
+			pNode->SetAttribute( "left",	m_WindowRect.left );
+			pNode->SetAttribute( "top",		m_WindowRect.top );
+			pNode->SetAttribute( "right",	m_WindowRect.right );
+			pNode->SetAttribute( "bottom",	m_WindowRect.bottom );
 		}
 	}
 
@@ -604,7 +604,7 @@ namespace UILib
 	{
 		if( strcmp( "window", name ) == 0 )
 		{
-			OnMoveWindow( m_wndRect );
+			OnMoveWindow( m_WindowRect );
 		}
 	}
 
