@@ -1,12 +1,5 @@
 function class_attrib( item, name, indent )
 	local attrib = item[name];
-	function test()
-		local a = 1;
-		local b = "asdf";
-		local t = { 1, 2, 3 };
-		print( a, b );
-	end
-	test();
 	if type( attrib ) == "userdata" then
 		slb.print( string.format( " %s < %s >", name, slb.type( attrib ) ) );
 		return attrib:members( indent + 1 );

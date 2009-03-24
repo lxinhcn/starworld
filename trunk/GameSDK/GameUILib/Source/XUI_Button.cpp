@@ -55,8 +55,8 @@ namespace UILib
 		//±³¾°
 		CPoint pt( 0, 0 );
 		pt = ClientToScreen(pt);
-		int nWidth	= m_wndRect.Width();
-		int nHeight	= m_wndRect.Height();
+		int nWidth	= m_WindowRect.Width();
+		int nHeight	= m_WindowRect.Height();
 
 		// °´Å¥±³¾°
 		if( m_pButtonSkin[m_enState] )

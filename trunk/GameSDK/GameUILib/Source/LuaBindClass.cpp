@@ -110,7 +110,7 @@ namespace UILib
 			.member( "enable",		&XUI_Wnd::EnableWindow, &XUI_Wnd::IsEnable	)
 			.member( "transparent",	&XUI_Wnd::m_bTranslateParent )
 			.member_readonly( "font",	&XUI_Wnd::m_FontAttribute )
-			.member_readonly( "window",	&XUI_Wnd::m_wndRect )
+			.member_readonly( "window",	&XUI_Wnd::m_WindowRect )
 			;
 
 		Class< XUI_Window >( "ui:Window" )
