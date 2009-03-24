@@ -12,15 +12,39 @@
 //--------------------------------------------------------------------------------------------------------//
 #define SAFE_DELETE( p )		delete (p); (p) = NULL;
 #define SAFE_DELETE_ARRAY( p )	delete[] (p); (p) = NULL;
+#define SAFE_RELEASE(p)			if(p){(p)->Release();(p) = NULL;}
 
 //--------------------------------------------------------------------------------------------------------//
 // 定义转义字符串类型,用于支持UNICODE
 //--------------------------------------------------------------------------------------------------------//
 #if defined( _UNICODE )
 	typedef std::wstring						_string;
+	typedef wchar_t								_tchar;
 #else
 	typedef std::string							_string;
+	typedef char								_tchar;
 #endif // _UNICODE
+
+#ifndef _DEFINES
+#define _DEFINES
+	typedef char	int8;
+	typedef short 	int16;
+	typedef int		int32;
+	typedef __int64 int64;
+	typedef long	_long;
+
+	typedef unsigned char		byte;
+	typedef unsigned short		uint16;
+	typedef unsigned int		uint32;
+	typedef unsigned long		ulong;
+	typedef unsigned __int64	uint64;
+
+	typedef const _tchar*		_lpctstr;
+	typedef _tchar*				_lptstr;
+
+	typedef const char*			_lpcstr;
+	typedef char*				_lpstr;
+#endif
 
 //--------------------------------------------------------------------------------------------------------//
 // ASSERT 定义
