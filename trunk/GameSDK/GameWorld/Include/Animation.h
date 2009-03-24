@@ -8,12 +8,12 @@ class CSurface;
 class CAnimation
 {
 protected:
-	DWORD	m_dwResID;			// 资源ID
+	uint32	m_dwResID;			// 资源ID
 	int		m_nCurFrame;		// 当前帧，	对应行
 	int		m_nCurState;		// 当前状态， 对应列
 
-	DWORD	m_dwAniSpeed;		// 动画速度，1/1000秒为单位。
-	DWORD	m_dwOldTime;		// 上帧播放时的时间。
+	uint32	m_dwAniSpeed;		// 动画速度，1/1000秒为单位。
+	uint32	m_dwOldTime;		// 上帧播放时的时间。
 	int		m_nRef;
 
 protected:
@@ -29,7 +29,7 @@ public:
 	virtual void	SetCurFrame( int nFrame )		{ m_nCurFrame = nFrame;				} 
 
 	//		如果动画速度为0则不进行换帧
-	virtual void	SetAniSpeed( DWORD dwAniSpeed )	{ m_dwAniSpeed = dwAniSpeed;		}
+	virtual void	SetAniSpeed( uint32 dwAniSpeed )	{ m_dwAniSpeed = dwAniSpeed;		}
 	
 	virtual int		GetCurFrame()				{ return m_nCurFrame; }
 	virtual void	FrameReset()				{ m_nCurFrame = 0; }

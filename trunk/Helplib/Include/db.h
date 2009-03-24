@@ -5,7 +5,7 @@
 #include "IDB.h"
 #include "lookaside.h"
 #include "critical_lock.h"
-#include "macro_define.h"
+#include "defines.h"
 
 #ifdef USE_MYSQL
 	#pragma comment( lib, "libmySQL.lib" )

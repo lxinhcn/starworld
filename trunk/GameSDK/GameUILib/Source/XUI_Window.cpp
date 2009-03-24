@@ -135,7 +135,7 @@ namespace UILib
 				if( strcmp( "CONTROL", pXMLChildElement->Value() ) == 0 )
 				{
 					USES_CONVERSION;
-					LPCTSTR p = A2T( pXMLChildElement->Attribute( "Lable" ) );
+					_lpctstr p = A2T( pXMLChildElement->Attribute( "Lable" ) );
 					if( p )
 					{
 						XUI_Wnd* pElement = CUIFactory::GetInstance().Creator( p );

@@ -33,7 +33,7 @@ namespace UILib
 
 	}
 
-	void CUICommander::RegistCommand( LPCTSTR lpszCommand, Command func, LPCTSTR lpszHelpString  )
+	void CUICommander::RegistCommand( _lpctstr lpszCommand, Command func, _lpctstr lpszHelpString  )
 	{
 		m_cmdMap.insert( std::make_pair( lpszCommand, cmd( func, lpszHelpString ) ) );
 	}
@@ -47,7 +47,7 @@ namespace UILib
 
 	bool FindChildByIndex( XUI_Wnd* pXUI_Wnd, LPVOID lpParam )
 	{
-		DWORD& count = *(DWORD*)lpParam;
+		uint32& count = *(uint32*)lpParam;
 		if( LOWORD( count ) == HIWORD( count ) )
 			return true;
 		count = MAKELONG( LOWORD( count ) + 1, HIWORD( count ) );
@@ -56,7 +56,7 @@ namespace UILib
 
 	bool FindChildByName( XUI_Wnd* pXUI_Wnd, LPVOID lpParam )
 	{
-		LPCTSTR lpszName = (LPCTSTR)lpParam;
+		_lpctstr lpszName = (_lpctstr)lpParam;
 		if( pXUI_Wnd->GetName() == lpszName )
 			return true;
 		return false;
@@ -64,23 +64,23 @@ namespace UILib
 
 	bool BuildChildTree( XUI_Wnd* pXUI_Wnd, LPVOID lpParam )
 	{
-		DWORD& count = *(DWORD*)lpParam;
+		uint32& count = *(uint32*)lpParam;
 		for( WORD i = 0; i < LOWORD( count ); ++i ) _tprintf( _T("     ") );
 		_tprintf( _T("|--[%03d] %s < %s >\n"), HIWORD(count), pXUI_Wnd->GetName().c_str(), pXUI_Wnd->GetLable() );
 
-		DWORD child = MAKELONG( LOWORD( count ) + 1, 0 );
+		uint32 child = MAKELONG( LOWORD( count ) + 1, 0 );
 		pXUI_Wnd->ForAllChild( BuildChildTree, (LPVOID)&child );
 		count = MAKELONG( LOWORD( count ), HIWORD( count ) +1 );
 		return false;
 	}
 
-	XUI_Wnd* CUICommander::GetElementByPath( LPCTSTR lpszPath )
+	XUI_Wnd* CUICommander::GetElementByPath( _lpctstr lpszPath )
 	{
-		TCHAR path[1024];
+		_tchar path[1024];
 		_tcsncpy_s( path, _countof(path), lpszPath, _TRUNCATE );
 		LPTSTR section, next;
 
-		TCHAR sep[] = _T("/\\");
+		_tchar sep[] = _T("/\\");
 
 		XUI_Wnd* pCurElement = m_pCurElement;
 		section = _tcstok_s( path, sep, &next );
@@ -100,7 +100,7 @@ namespace UILib
 				if( *section == 0 )
 				{
 					// using index select child
-					DWORD p = MAKELONG(0,_ttoi(child.c_str()));
+					uint32 p = MAKELONG(0,_ttoi(child.c_str()));
 					pXUI_Wnd = pCurElement->ForAllChild( FindChildByIndex, (LPVOID)&p );
 				}
 				else
@@ -118,16 +118,16 @@ namespace UILib
 		return pCurElement;
 	}
 
-	bool CUICommander::ProcessCommand( LPCTSTR lpszCommand )
+	bool CUICommander::ProcessCommand( _lpctstr lpszCommand )
 	{
-		LPCTSTR pCmd = lpszCommand;
+		_lpctstr pCmd = lpszCommand;
 		while( *pCmd && _istalnum( *pCmd ) ) ++pCmd;
 
 		_string strCmd( lpszCommand, pCmd - lpszCommand );
 		CCommandMap::iterator iter = m_cmdMap.find( strCmd );
 		if( iter != m_cmdMap.end() )
 		{
-			TCHAR szParam[1024];
+			_tchar szParam[1024];
 			UINT nPos = 0;
 			Params param;
 			bool bString = false;
@@ -226,6 +226,7 @@ namespace UILib
 				}
 			}
 		}
+		m_pCurElement = pCurElement;
 		return true;
 	}
 
@@ -234,7 +235,11 @@ namespace UILib
 		XUI_Window* pDesktop = GuiSystem::Instance().GetRoot();
 		if( param.size() == 0 )
 		{
-			if( pDesktop == m_pCurElement ) return false;
+			if( pDesktop == m_pCurElement )
+			{
+				_putts( _T("Connot delete Desktop.") );
+				return false;
+			}
 
 			XUI_Wnd* pParent = m_pCurElement->GetParent();
 			if( pParent )
@@ -268,14 +273,14 @@ namespace UILib
 	{
 		if( !m_pCurElement ) return false;
 
-		show_members( m_pCurElement, 0 );
+		m_pCurElement->show_members( 0 );
 		return true;
 	}
 
 	bool CUICommander::cmd_save( Params& param )
 	{
 		if( param.size() != 1 ) return false;
-		TCHAR szCurrentDirectory[_MAX_PATH];
+		_tchar szCurrentDirectory[_MAX_PATH];
 		helper::NormalizePath( (_T(".\\") + param[0]).c_str(), szCurrentDirectory, _countof( szCurrentDirectory ) );
 		_tprintf( _T("saving file at %s ...\n"), szCurrentDirectory );
 
@@ -287,7 +292,7 @@ namespace UILib
 	bool CUICommander::cmd_load( Params& param )
 	{
 		if( param.size() != 1 ) return false;
-		TCHAR szPath[1024];
+		_tchar szPath[1024];
 		helper::NormalizePath( (_T(".\\") + param[0]).c_str(), szPath, _countof( szPath ) );
 		GuiSystem::Instance().LoadFromFile( szPath );
 		m_pCurElement = GuiSystem::Instance().GetRoot();
@@ -305,7 +310,7 @@ namespace UILib
 	bool CUICommander::cmd_tree( Params& param )
 	{
 		if( !m_pCurElement ) return true;
-		DWORD count = 1;
+		uint32 count = 1;
 
 		XUI_Wnd* pTreeRoot = ( param.size() == 0 )?m_pCurElement:GetElementByPath( param[0].c_str() );
 		_tprintf( _T("[%03d] %s < %s >\n"), HIWORD(count), pTreeRoot->GetName().c_str(), pTreeRoot->GetLable() );
@@ -355,8 +360,7 @@ namespace UILib
 
 	bool CUICommander::cmd_lua( Params& param )
 	{
-		USES_CONVERSION;
-		LPCSTR szCommand = T2A( param[0].c_str() );
+		LPCSTR szCommand = XT2A( param[0] );
 		try
 		{
 			Lua::Instance().set( "this", m_pCurElement );
@@ -369,5 +373,4 @@ namespace UILib
 			return false;
 		}
 	}
-
 }

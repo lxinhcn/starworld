@@ -23,6 +23,7 @@ namespace UILib
 		~LuaBindClass(void);
 
 		void Initialize();
+		bool SetupMeta();
 
 		LuaDebuger	*m_pLuaDebuger; 
 	};

@@ -40,7 +40,7 @@ int		CXObjectList::AddObj( CXObject* pObj )
 
 void	CXObjectList::DelObj( int nID )
 {
-	ASSERT_MSG( m_pObjList[nID]->GetObjID() == nID, "不等的ID，删除对象时出错。" );
+	ASSERT_MSG( m_pObjList[nID]->GetObjID() == nID, _T("不等的ID，删除对象时出错。") );
 	if( m_pObjList[nID]->GetObjID() != nID )	return;
 
 	m_pObjList[nID] = NULL;

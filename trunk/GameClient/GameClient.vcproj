@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Depend\hge181\include;&quot;..\Depend\Loki-0.1.6\Include&quot;;..\GameSDK\GameCore\Include;..\GameSDK\GameWorld\Include;..\GameSDK\GameUILib\;..\Helplib"
+				AdditionalIncludeDirectories="..\Depend\hge181\include;&quot;..\Depend\Loki-0.1.6\Include&quot;;..\GameSDK\GameCore\Include;..\GameSDK\GameWorld\Include;..\GameSDK\GameUILib\;..\Helplib;&quot;..\Depend\Visual Leak Detector\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

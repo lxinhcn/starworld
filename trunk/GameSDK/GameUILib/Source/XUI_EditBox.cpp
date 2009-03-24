@@ -38,7 +38,7 @@ namespace UILib
 		return true;
 	}
 
-	void XUI_EditBox::RenderCharacter( TCHAR szChar, XUI_IFont* pFont, LONG &x, LONG &y, BOOL bRender )
+	void XUI_EditBox::RenderCharacter( _tchar szChar, XUI_IFont* pFont, LONG &x, LONG &y, BOOL bRender )
 	{
 		if( bRender )
 		{
@@ -66,7 +66,7 @@ namespace UILib
 		Position drawline = m_FirstLineNumber;
 		for( size_t i = begin; i < m_strText.length()+1; ++i )
 		{
-			TCHAR c = m_strText[i];
+			_tchar c = m_strText[i];
 
 			if( CharPos.y > rc.bottom - pFont->GetCharacterHeight() )
 			{
@@ -192,7 +192,7 @@ namespace UILib
 	//参数说明
 	//keycode，按下的键
 	//sysKeys，各种重要按键的状态，参见MSDN
-	bool XUI_EditBox::onKeyDown(DWORD keycode, UINT sysKeys)
+	bool XUI_EditBox::onKeyDown(uint32 keycode, UINT sysKeys)
 	{
 		switch( keycode )
 		{
@@ -349,7 +349,7 @@ namespace UILib
 
 	}
 
-	bool XUI_EditBox::onKeyUp( DWORD keycode, UINT sysKeys )
+	bool XUI_EditBox::onKeyUp( uint32 keycode, UINT sysKeys )
 	{
 		switch( keycode )
 		{
@@ -367,7 +367,7 @@ namespace UILib
 	//参数说明
 	//c，输入的字符
 	//sysKeys，各种重要按键的状态，参见MSDN
-	bool XUI_EditBox::onChar(DWORD c, UINT sysKeys)
+	bool XUI_EditBox::onChar(uint32 c, UINT sysKeys)
 	{
 		if( _istprint( LOWORD(c) ) )
 		{
@@ -378,17 +378,17 @@ namespace UILib
 
 	//输入法
 	//参见MSDN
-	bool XUI_EditBox::onImeComp(DWORD wParam, DWORD lParam)
+	bool XUI_EditBox::onImeComp(uint32 wParam, uint32 lParam)
 	{
 		return true;
 	}
 
-	bool XUI_EditBox::onImeEndComp(DWORD wParam, DWORD lParam)
+	bool XUI_EditBox::onImeEndComp(uint32 wParam, uint32 lParam)
 	{
 		return true;
 	}
 
-	bool XUI_EditBox::onImeNotify(DWORD wParam, DWORD lParam)
+	bool XUI_EditBox::onImeNotify(uint32 wParam, uint32 lParam)
 	{
 		return true;
 	}

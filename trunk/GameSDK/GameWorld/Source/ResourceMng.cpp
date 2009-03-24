@@ -25,7 +25,7 @@ CResourceMng& CResourceMng::GetInstance()
 	return resmng;
 }
 
-BOOL	CResourceMng::IsResIDValid( DWORD dwResID )
+BOOL	CResourceMng::IsResIDValid( uint32 dwResID )
 {
 	return dwResID < m_Impl->m_ResourceVec.size();
 }
@@ -54,7 +54,7 @@ int		CResourceMng::AddResource( RES_TYPE enType, void* pRes )
 	return INVALID_RESID;
 }
 
-BOOL	CResourceMng::DeleteResource( DWORD dwResID )
+BOOL	CResourceMng::DeleteResource( uint32 dwResID )
 {
 	if( !IsResIDValid( dwResID ) )	return FALSE;
 
@@ -69,7 +69,7 @@ BOOL	CResourceMng::DeleteResource( DWORD dwResID )
 	return TRUE;
 }
 
-void*	CResourceMng::GetResource( DWORD dwResID )
+void*	CResourceMng::GetResource( uint32 dwResID )
 {
 	PRESOURCE pResource = m_Impl->m_ResourceVec[dwResID];
 	ASSERT_MSG( pResource, _T("无效的指针参数") );
@@ -79,7 +79,7 @@ void*	CResourceMng::GetResource( DWORD dwResID )
 	return pResource->pResource;
 }
 
-void	CResourceMng::ReleaseResource( DWORD dwResID )
+void	CResourceMng::ReleaseResource( uint32 dwResID )
 {
 	PRESOURCE pResource = m_Impl->m_ResourceVec[dwResID];
 	ASSERT_MSG( pResource, _T("无效的指针参数") );

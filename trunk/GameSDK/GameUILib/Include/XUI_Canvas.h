@@ -3,14 +3,14 @@
 #include <windows.h>
 #include <tchar.h>
 #include <string>
-#include "GuiMacroDefine.h"
+#include "defines.h"
 class TiXmlElement;
 namespace UILib
 {
-	struct SpriteAttribute
+	struct XUI_SpriteAttribute
 	{
-		SpriteAttribute( const char* _path, float _x, float _y, float _w, float _h );
-		SpriteAttribute();
+		XUI_SpriteAttribute( const char* _path, float _x, float _y, float _w, float _h );
+		XUI_SpriteAttribute();
 
 		bool save_file( TiXmlElement* pNode );
 		bool load_file( TiXmlElement* pNode );
@@ -19,18 +19,18 @@ namespace UILib
 		float		x, y, w, h;
 	};
 
-	struct FontAttribute
+	struct XUI_FontAttribute
 	{
 		std::string		name;
 		int				size;
 		bool			bold, italic, antialias;
 
-		FontAttribute();
-		FontAttribute( const char* lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias );
-		FontAttribute( const FontAttribute& src );
+		XUI_FontAttribute();
+		XUI_FontAttribute( const char* lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias );
+		XUI_FontAttribute( const XUI_FontAttribute& src );
 
-		bool operator==( const FontAttribute& rsh )const;
-		bool operator<( const FontAttribute& rsh )const;
+		bool operator==( const XUI_FontAttribute& rsh )const;
+		bool operator<( const XUI_FontAttribute& rsh )const;
 
 		const char* GetFontName()const{ return name.c_str(); }
 		int			GetSize()const{ return size; }
@@ -39,7 +39,21 @@ namespace UILib
 		bool load_file( TiXmlElement* pNode );
 	};
 
-	struct XUI_ISprite	:	protected	SpriteAttribute
+	struct XUI_IMouse
+	{
+		virtual ~XUI_IMouse(){}
+		virtual void GetMousePos( float &x, float &y );
+		virtual float GetMouseWheel();
+		virtual bool IsPressedLButton()const;
+		virtual bool IsReleaseLButton()const;
+		virtual bool IsPressedRButton()const;
+		virtual bool IsReleaseRButton()const;
+		virtual bool IsPressedMButton()const;
+		virtual bool IsReleaseMButton()const;
+		virtual void RenderMouse();
+	};
+
+	struct XUI_ISprite	:	protected	XUI_SpriteAttribute
 	{
 		virtual ~XUI_ISprite(){}
 		virtual float	GetWidth()const		= 0;
@@ -63,25 +77,25 @@ namespace UILib
 		virtual void	Release()					= 0;
 	};
 
-	struct XUI_IFont	:	protected	FontAttribute
+	struct XUI_IFont	:	protected	XUI_FontAttribute
 	{
 		XUI_IFont(){}
-		XUI_IFont( const FontAttribute& FontAttrib ): FontAttribute( FontAttrib ){}
+		XUI_IFont( const XUI_FontAttribute& FontAttrib ): XUI_FontAttribute( FontAttrib ){}
 		virtual ~XUI_IFont(){}
-		virtual SIZE GetStringSize( LPCTSTR lpszString ) = 0;
+		virtual SIZE GetStringSize( _lpctstr lpszString ) = 0;
 
-		virtual INT GetCharacterWidth( TCHAR szChar ) = 0;
+		virtual INT GetCharacterWidth( _tchar szChar ) = 0;
 		virtual INT	GetCharacterHeight() = 0;
 	};
 
-	typedef bool		(*pfnDrawText)		( LPCTSTR lpszText, XUI_IFont* pFont, float x, float y );
-	typedef bool		(*pfnDrawCharacter)	( TCHAR lpszText, XUI_IFont* pFont, float x, float y );
-	typedef bool		(*pfnDrawRect)		( const RECT& rcDest, DWORD dwBorderColor, DWORD dwBkColor );	//没有边框的矩形背景
-	typedef bool		(*pfnDrawPolygon)	( const LPPOINT ptArray, DWORD* dwColorArray, int nCount, unsigned short* pTriListArray, int nTriCount );
+	typedef bool		(*pfnDrawText)		( _lpctstr lpszText, XUI_IFont* pFont, float x, float y );
+	typedef bool		(*pfnDrawCharacter)	( _tchar lpszText, XUI_IFont* pFont, float x, float y );
+	typedef bool		(*pfnDrawRect)		( const RECT& rcDest, uint32 dwBorderColor, uint32 dwBkColor );	//没有边框的矩形背景
+	typedef bool		(*pfnDrawPolygon)	( const LPPOINT ptArray, uint32* dwColorArray, int nCount, unsigned short* pTriListArray, int nTriCount );
 	typedef bool		(*pfnDrawSprite)	( const XUI_ISprite* Tex,int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect );
-	typedef XUI_ISprite*(*pfnCreateSprite)	( LPCTSTR lpszTexpath, float x, float y, float w, float h );
+	typedef XUI_ISprite*(*pfnCreateSprite)	( _lpctstr lpszTexpath, float x, float y, float w, float h );
 	typedef void		(*pfnDestroySprite)	( XUI_ISprite* pSprite );
-	typedef XUI_IFont*	(*pfnCreateFont)	( LPCTSTR lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias );
+	typedef XUI_IFont*	(*pfnCreateFont)	( _lpctstr lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias );
 	typedef void		(*pfnDestroyFont)	( XUI_IFont* pFont );
 
 	extern pfnDrawText			XUI_DrawText;

@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////
 // CMap
 // 初始化地图
-VOID CMap::InitializeMap( DWORD dwMapWidth, DWORD dwMapHeight, int nRoleID )
+VOID CMap::InitializeMap( uint32 dwMapWidth, uint32 dwMapHeight, int nRoleID )
 {
 	m_pBlockArray = new CMapBlock[dwMapWidth*dwMapHeight];
 
@@ -20,7 +20,7 @@ VOID CMap::InitializeMap( DWORD dwMapWidth, DWORD dwMapHeight, int nRoleID )
 	}
 }
 
-inline CMapBlock* CMap::GetBlock( DWORD x, DWORD y )const
+inline CMapBlock* CMap::GetBlock( uint32 x, uint32 y )const
 {
 	if( x < 0 || x >= m_dwMapWidth || y < 0 || y >= m_dwMapHeight )	return NULL;
 
@@ -33,7 +33,7 @@ struct EnumChildParam
 	float	fDeltaTime;
 };
 
-DWORD	CMap::Update( float fDeltaTime )
+uint32	CMap::Update( float fDeltaTime )
 {
 	// 逻辑控制，包括
 	// 翻帧，真正的帧速率由Animation中的AniSpeed控制。

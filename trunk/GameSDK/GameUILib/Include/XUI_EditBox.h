@@ -37,24 +37,24 @@ namespace UILib
 		//参数说明
 		//keycode，按下的键
 		//sysKeys，各种重要按键的状态，参见MSDN
-		virtual	bool onKeyDown(DWORD keycode, UINT sysKeys);
-		virtual	bool onKeyUp(DWORD keycode, UINT sysKeys);
+		virtual	bool onKeyDown(uint32 keycode, UINT sysKeys);
+		virtual	bool onKeyUp(uint32 keycode, UINT sysKeys);
 
 		//参数说明
 		//c，输入的字符
 		//sysKeys，各种重要按键的状态，参见MSDN
-		virtual bool onChar(DWORD c, UINT sysKeys);
+		virtual bool onChar(uint32 c, UINT sysKeys);
 
 		//输入法
 		//参见MSDN
-		virtual bool onImeComp(DWORD wParam, DWORD lParam);
-		virtual bool onImeEndComp(DWORD wParam, DWORD lParam);
-		virtual bool onImeNotify(DWORD wParam, DWORD lParam);
+		virtual bool onImeComp(uint32 wParam, uint32 lParam);
+		virtual bool onImeEndComp(uint32 wParam, uint32 lParam);
+		virtual bool onImeNotify(uint32 wParam, uint32 lParam);
 
 		virtual unsigned int OnMoveWindow( CRect& rcWindow );
 
 	protected:
-		void RenderCharacter( TCHAR szChar, XUI_IFont* pFont, LONG &x, LONG &y, BOOL bRender );
+		void RenderCharacter( _tchar szChar, XUI_IFont* pFont, LONG &x, LONG &y, BOOL bRender );
 		void DeleteCharacter( size_t nPos );
 		bool CaratTimerUpdate( unsigned int handle, unsigned short& repeat, unsigned int& timer );
 

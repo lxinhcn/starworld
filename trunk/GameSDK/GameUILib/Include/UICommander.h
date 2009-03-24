@@ -17,12 +17,12 @@ namespace UILib
 		// 注册命令
 		//////////////////////////////////////////////////////////////////////////
 		typedef bool (CUICommander::* Command)( Params& param );
-		void RegistCommand( LPCTSTR lpszCommand, Command func, LPCTSTR lpszHelpString );
+		void RegistCommand( _lpctstr lpszCommand, Command func, _lpctstr lpszHelpString );
 
 		//////////////////////////////////////////////////////////////////////////
 		// 处理命令
 		//////////////////////////////////////////////////////////////////////////
-		bool ProcessCommand( LPCTSTR lpszCommand );
+		bool ProcessCommand( _lpctstr lpszCommand );
 	protected:
 		//////////////////////////////////////////////////////////////////////////
 		// 创建对象命令
@@ -42,17 +42,17 @@ namespace UILib
 		bool cmd_lua( Params& param );
 
 	protected:
-		XUI_Wnd* GetElementByPath( LPCTSTR lpszPath );
+		XUI_Wnd* GetElementByPath( _lpctstr lpszPath );
 
 	private:
 		struct cmd
 		{
-			cmd( Command f, LPCTSTR s )
+			cmd( Command f, _lpctstr s )
 				: func( f )
 				, helpString( s )
 			{}
 			Command	func;
-			LPCTSTR	helpString;
+			_lpctstr	helpString;
 		};
 		typedef std::map< _string, cmd >	CCommandMap;
 		CCommandMap		m_cmdMap;

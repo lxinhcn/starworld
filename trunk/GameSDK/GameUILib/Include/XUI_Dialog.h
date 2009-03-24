@@ -10,10 +10,10 @@ namespace UILib
 	DECLARE_UIMSG_MAP()
 	DECLARE_LABLE( DIALOG )
 	public:
-		CXDialog( LPCTSTR lpszTemplate = NULL );
+		CXDialog( _lpctstr lpszTemplate = NULL );
 		~CXDialog();
 
-		bool Create( LPCTSTR strTemplate, XUI_Window* pParent = NULL );
+		bool Create( _lpctstr strTemplate, XUI_Window* pParent = NULL );
 
 		typedef BOOL (*fnModalMsgProc)( BOOL bIdle );
 		UINT DoModal( fnModalMsgProc pfn );
@@ -31,7 +31,7 @@ namespace UILib
 		void		SetFocus( UINT nCtrlID );
 	protected:
 		virtual void	RenderSelf(const CRect& clipper);
-		virtual bool	onKeyUp(DWORD keycode, UINT sysKeys);
+		virtual bool	onKeyUp(uint32 keycode, UINT sysKeys);
 
 		virtual bool	OnInitDialog(){ return true;}
 		virtual void	OnDestroy(){}

@@ -22,7 +22,7 @@ namespace UILib
 		static CUIFactory& GetInstance();
 
 		// 注册一个类型
-		void Regist( LPCTSTR pszLable, pfnCreator pfunc )
+		void Regist( _lpctstr pszLable, pfnCreator pfunc )
 		{
 			CUIFactoryMap::const_iterator citer = m_FactoryMap.find( pszLable );
 			if( citer != m_FactoryMap.end() )	return;
@@ -35,7 +35,7 @@ namespace UILib
 			return m_FactoryMap.size();
 		}
 
-		XUI_Wnd* Creator( LPCTSTR pszLable )
+		XUI_Wnd* Creator( _lpctstr pszLable )
 		{
 			CUIFactoryMap::const_iterator citer = m_FactoryMap.find( pszLable );
 			if( citer != m_FactoryMap.end() )
@@ -54,7 +54,7 @@ namespace UILib
 	class CUIRegister
 	{
 	public:
-		explicit CUIRegister( LPCTSTR pszLable )
+		explicit CUIRegister( _lpctstr pszLable )
 		{
 			CUIFactory::GetInstance().Regist( pszLable, CreateControl );
 		}

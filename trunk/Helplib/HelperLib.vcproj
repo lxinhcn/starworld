@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\;.\Include;&quot;..\Depend\Loki-0.1.6\Include&quot;"
+				AdditionalIncludeDirectories=".\;.\Include;&quot;..\Depend\Loki-0.1.6\Include&quot;;..\..\Helplib\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;TOOLLIB_EXPORTS;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -278,10 +278,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\smart_point.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -348,6 +344,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Include\defines.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Include\dynamic_buffer.h"
 				>
 			</File>
@@ -388,10 +388,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Include\macro_define.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Include\net_helper.h"
 				>
 			</File>
@@ -409,14 +405,6 @@
 			</File>
 			<File
 				RelativePath=".\Include\netstream.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Include\singleton.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Include\smart_point.h"
 				>
 			</File>
 			<File

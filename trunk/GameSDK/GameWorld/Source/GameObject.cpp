@@ -37,7 +37,7 @@ BOOL CGameObject::Think( int nObjID, int nEvent, LPCSTR lpBuf, size_t nSize )
 	return m_pAI->Think( pObj, nEvent, lpBuf, nSize );
 }
 
-DWORD CGameObject::Update( const CMap& Map, float fDeltaTime )
+uint32 CGameObject::Update( const CMap& Map, float fDeltaTime )
 {
 	if( !m_pAI )	return FALSE;
 	//m_pAI->DoAction( Map );

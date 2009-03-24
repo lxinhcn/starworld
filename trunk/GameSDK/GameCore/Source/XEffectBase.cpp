@@ -51,7 +51,7 @@ const EFFECT_ENTRY*	CXEffect::FindEffectEntry( const EFFECT_ENTRY* lpEntry, int 
 
 int CXEffect::DoEffect( CXObject* pObj, bool bRemove )
 {
-	ASSERT_MSG( (m_bEffected && bRemove) || (!m_bEffected && !bRemove), "重复移除作用." );
+	ASSERT_MSG( (m_bEffected && bRemove) || (!m_bEffected && !bRemove), _T("重复移除作用.") );
 	// 重复进行作用,或者移除作用在没有作用前
 	int nEffectID = m_nEffectID;
 	// 当效果作用完成后，可能会引发另一个关联的作用效果。
@@ -80,7 +80,7 @@ int CXEffect::DoEffect( CXObject* pObj, bool bRemove )
 
 					m_bEffected += bRemove?-1:1;	// 标志自己的效果已经被转移了
 
-					ASSERT_MSG( nEffectID != lpEntry->nNextEffID, "引起循环作用，程序可能因此死锁，至崩溃！" );
+					ASSERT_MSG( nEffectID != lpEntry->nNextEffID, _T("引起循环作用，程序可能因此死锁，至崩溃！") );
 					nEffectID = lpEntry->nNextEffID;	// 下一个作用
 					break;
 				}

@@ -41,19 +41,23 @@ LRESULT CALLBACK CApplication::UIDispatchMessage( __in CONST MSG *lpMsg )
 bool CApplication::FrameFunc()
 {
 	float dt=Application::Instance()->Timer_GetDelta();
-	//int i;
-
 	// Process keys
 
 	switch(Application::Instance()->Input_GetKey())
 	{
 	case HGEK_F9:
-		Application::Instance()->System_SetState( HGE_DONTSUSPEND, true );
-		printf( "UICommander start successful.\n" );
+		if( Application::Instance()->System_GetState( HGE_DONTSUSPEND ) )
+		{
+			Application::Instance()->System_SetState( HGE_DONTSUSPEND, true );
+			printf( "UICommander start successful.\n" );
+		}
 		break;
 	case HGEK_F8:
-		Application::Instance()->System_SetState( HGE_DONTSUSPEND, false );
-		printf( "UICommander closed.\n" );
+		if( !Application::Instance()->System_GetState( HGE_DONTSUSPEND ) )
+		{
+			Application::Instance()->System_SetState( HGE_DONTSUSPEND, false );
+			printf( "UICommander closed.\n" );
+		}
 		break;
 		//case HGEK_UP:
 		//	if(nObjects<MAX_OBJECTS) nObjects+=100; break;
@@ -97,13 +101,15 @@ bool CApplication::Initialize()
 	m_hge->System_SetState(HGE_SCREENHEIGHT, SCREEN_HEIGHT);
 	m_hge->System_SetState(HGE_SCREENBPP, 32);
 
+	// m_hge->System_SetState(HGE_DONTSUSPEND, true );
+
 	GuiSystem::Instance();
 	// 挂接窗口消息处理函数
 	HMODULE hUser32 = GetModuleHandle( _T("User32.dll") );
 	if( hUser32 )
 	{
-		m_pRegisterClass = ( pfnRegisterClass )GetProcAddress( hUser32, "RegisterClassA" );
-		m_pDispatchMessage = (pfnDispatchMessage)GetProcAddress( hUser32, "DispatchMessageA" );
+		m_pRegisterClass	= ( pfnRegisterClass )GetProcAddress( hUser32, "RegisterClassA" );
+		m_pDispatchMessage	= (pfnDispatchMessage)GetProcAddress( hUser32, "DispatchMessageA" );
 
 		helper::patchimport( GetModuleHandle( _T("hge.dll") ), "User32.dll", NULL, "RegisterClassA", UIRegisterClass );
 		helper::patchimport( GetModuleHandle( _T("hge.dll") ), "User32.dll", NULL, "DispatchMessageA", UIDispatchMessage );
@@ -113,14 +119,18 @@ bool CApplication::Initialize()
 	{
 		// 初始化回调函数
 		init_canvas();
-		XUI_IFont* pFont = UILib::XUI_CreateFont( _T("宋体"), 18, false, false, false );
-		GuiSystem::Instance().Initialize( m_hge->System_GetState( HGE_HWND ), pFont );
-		TCHAR szPath[1024];
+		_tchar szPath[1024];
 		helper::GetModulePath( NULL, szPath, sizeof( szPath ) );
-		GuiSystem::Instance().SetImagePath( szPath );
+		GuiSystem::Instance().Initialize( 
+			m_hge->System_GetState( HGE_HWND ), 
+			szPath, 
+			XUI_FontAttribute( "宋体", 18, false, false, false ),
+			XUI_SpriteAttribute( "..\\Resource\\cursor.png", 0, 0, 32, 32 )
+			);
 		UICommander::Instance().ProcessCommand( _T("load main.xml") );
 	}
 
+	helper::restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "RegisterClassA",	m_pRegisterClass );
 	return true;
 }
 
@@ -132,38 +142,45 @@ void CApplication::Run()
 
 void CApplication::UnInitialize()
 {
-	helper::restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "DefWindowProcA", m_pDefWindowProc );
+	helper::restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "DefWindowProcA",	m_pDefWindowProc );
+	helper::restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "DispatchMessageA", m_pDispatchMessage );
 	// Clean up and shutdown
+	GuiSystem::Instance().Unitialize();
+
+	TextureManager::Instance().Clear();
 	m_hge->System_Shutdown();
 	m_hge->Release();
 }
 
 bool CApplication::UpdateLogic( float fDelta )
 {
-	int ch = 0;
-	if( _kbhit() )
+	if( m_hge->System_GetState( HGE_DONTSUSPEND ) )
 	{
-		switch( ch = _getch() )
+		int ch = 0;
+		if( _kbhit() )
 		{
-		case 13:
+			switch( ch = _getch() )
 			{
-				TCHAR szCommand[256];
-				DWORD dwRead = 0;
-				while(true)
+			case 13:
 				{
-					_tprintf( _T(">>") );
-					ReadConsole( GetStdHandle( STD_INPUT_HANDLE ), szCommand, _countof(szCommand), &dwRead, NULL  );
-					if( dwRead <= 2 ) break;
-					if( dwRead >= _countof(szCommand) )
+					_tchar szCommand[256];
+					DWORD dwRead = 0;
+					while(true)
 					{
-						ASSERT_MSG( false, _T("超长的输入串，你太牛了。") );
-						break;
+						_tprintf( _T(">>") );
+						ReadConsole( GetStdHandle( STD_INPUT_HANDLE ), szCommand, _countof(szCommand), &dwRead, NULL  );
+						if( dwRead <= 2 ) break;
+						if( dwRead >= _countof(szCommand) )
+						{
+							ASSERT_MSG( false, _T("超长的输入串，你太牛了。") );
+							break;
+						}
+						szCommand[dwRead] = 0;
+						UICommander::Instance().ProcessCommand( szCommand );
 					}
-					szCommand[dwRead] = 0;
-					UICommander::Instance().ProcessCommand( szCommand );
 				}
+				break;
 			}
-			break;
 		}
 	}
 	GuiSystem::Instance().Update( fDelta );

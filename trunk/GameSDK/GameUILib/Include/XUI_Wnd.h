@@ -5,7 +5,7 @@
 #include "XUI_Base.h"
 #include "XUI_Canvas.h"
 #define DECLARE_LABLE( lable )\
-	virtual LPCTSTR GetLable()const { return _T(#lable); }\
+	virtual _lpctstr GetLable()const { return _T(#lable); }\
 
 namespace UILib
 {
@@ -58,18 +58,18 @@ namespace UILib
 		//参数说明
 		//keycode，按下的键
 		//sysKeys，各种重要按键的状态，参见MSDN
-		virtual	bool onKeyDown(DWORD keycode, UINT sysKeys);
-		virtual	bool onKeyUp(DWORD keycode, UINT sysKeys);
+		virtual	bool onKeyDown(uint32 keycode, UINT sysKeys);
+		virtual	bool onKeyUp(uint32 keycode, UINT sysKeys);
 		//参数说明
 		//c，输入的字符
 		//sysKeys，各种重要按键的状态，参见MSDN
-		virtual bool onChar(DWORD c, UINT sysKeys);
+		virtual bool onChar(uint32 c, UINT sysKeys);
 
 		//输入法
 		//参见MSDN
-		virtual bool onImeComp(DWORD wParam, DWORD lParam);
-		virtual bool onImeEndComp(DWORD wParam, DWORD lParam);
-		virtual bool onImeNotify(DWORD wParam, DWORD lParam);
+		virtual bool onImeComp(uint32 wParam, uint32 lParam);
+		virtual bool onImeEndComp(uint32 wParam, uint32 lParam);
+		virtual bool onImeNotify(uint32 wParam, uint32 lParam);
 
 		//获得焦点
 		virtual void onGetFocus() {}
@@ -84,7 +84,7 @@ namespace UILib
 		virtual bool OnCommand( WPARAM wParam, LPARAM lParam );
 		virtual bool OnNotify( WPARAM wParam, LPARAM lParam, HRESULT* lResult );
 	public:
-		virtual LPCTSTR GetLable()const = 0;
+		virtual _lpctstr GetLable()const = 0;
 
 		// 发送消息
 		unsigned int SendMessage( UINT nMsg, WPARAM wParam, LPARAM lParam );
@@ -112,7 +112,7 @@ namespace UILib
 		void SetParent( XUI_Wnd* pParent ){ m_pParent = pParent; }
 		XUI_Wnd* GetParent(){return m_pParent;}
 		XUI_Wnd* FindChildInPoint(const CPoint& pt) const;
-		XUI_Wnd* FindChildByName(LPCTSTR sName) const;
+		XUI_Wnd* FindChildByName(_lpctstr sName) const;
 		XUI_Wnd* FindChildByID( int nID )const;
 
 		typedef bool (*ElementCallback)( XUI_Wnd*, void* );
@@ -124,7 +124,7 @@ namespace UILib
 		//--------------------------------------------------------------------------
 		
 		// 重新设置空间的显示区域
-		void Move(int left, int top, int right, int bottom);
+		void MoveWindow(int left, int top, int right, int bottom);
 		//平移
 		void Offset(int x, int y);
 
@@ -163,6 +163,7 @@ namespace UILib
 		//---------------------------------------------------------------------//
 		bool load_file( TiXmlElement* pNode );
 		bool save_file( TiXmlElement* pNode );
+		void show_members( int indent );
 
 	//--------------------------------------------------------------------------
 	// 控件属性
@@ -186,7 +187,7 @@ namespace UILib
 		float			m_fZ;
 		CRect			m_WindowRect;		// 位置和大小，相对于父控件
 
-		FontAttribute	m_FontAttribute;	// 字体信息
+		XUI_FontAttribute	m_FontAttribute;	// 字体信息
 		XUI_IFont*		m_pFont;
 
 		XUI_Wnd*		m_pChildMouseOver;	// 当前鼠标下的子控件

@@ -27,7 +27,7 @@ namespace UILib
 		}
 	}
 
-	void XUI_Button::SetText( LPCTSTR sText)
+	void XUI_Button::SetText( _lpctstr sText)
 	{
 		if( sText )	m_strCaption = sText;
 	}
@@ -105,7 +105,7 @@ namespace UILib
 		return XUI_Wnd::onButtonUp(button, pt, sysKeys);
 	}
 
-	bool XUI_Button::onKeyDown(DWORD keycode, UINT sysKeys)
+	bool XUI_Button::onKeyDown(uint32 keycode, UINT sysKeys)
 	{
 		if( m_bFocused && keycode == VK_RETURN )
 		{

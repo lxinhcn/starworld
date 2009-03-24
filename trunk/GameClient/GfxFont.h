@@ -4,7 +4,7 @@
 class GfxFont
 {
 public:
-	GfxFont( LPCTSTR lpsFontName, int nFaceSize, BOOL bBold = FALSE, BOOL bItalic = FALSE, BOOL bAntialias = TRUE);
+	GfxFont( _lpctstr lpsFontName, int nFaceSize, BOOL bBold = FALSE, BOOL bItalic = FALSE, BOOL bAntialias = TRUE);
 	~GfxFont(void);
 
 public:
@@ -14,8 +14,8 @@ public:
 	inline void	Render(float x, float y, const wchar_t text );
 
 	// 设置与获取颜色
-	void	SetColor( DWORD dwColor, int i = -1 );
-	DWORD	GetColor( int i = 0 );
+	void	SetColor( uint32 dwColor, int i = -1 );
+	uint32	GetColor( int i = 0 );
 
 	// 获取文本宽高
 	SIZE	GetTextSize( const wchar_t* text );
@@ -57,7 +57,7 @@ private:
 	TENGINEFONTGLYPH	m_Glyphs[font_count];
 	UINT				m_nAntialias;//反锯齿
 	LONG				m_nAscent;//基线
-	DWORD				m_dwFontColor;
+	uint32				m_dwFontColor;
 	float				m_nFontSize;
 	float				m_nKerningWidth;
 	float				m_nKerningHeight;

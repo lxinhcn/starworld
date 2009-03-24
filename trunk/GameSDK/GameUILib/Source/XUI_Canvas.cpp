@@ -13,7 +13,7 @@ namespace UILib
 	pfnCreateFont		XUI_CreateFont		= 0;
 	pfnDestroyFont		XUI_DestroyFont		= 0;
 
-	SpriteAttribute::SpriteAttribute( const char* _path, float _x, float _y, float _w, float _h )
+	XUI_SpriteAttribute::XUI_SpriteAttribute( const char* _path, float _x, float _y, float _w, float _h )
 		: path( _path )
 		, x( _x )
 		, y( _y )
@@ -22,7 +22,7 @@ namespace UILib
 	{
 	}
 
-	SpriteAttribute::SpriteAttribute()
+	XUI_SpriteAttribute::XUI_SpriteAttribute()
 		: path( "" )
 		, x( 0.0f )
 		, y( 0.0f )
@@ -31,7 +31,7 @@ namespace UILib
 	{
 	}
 
-	bool SpriteAttribute::save_file( TiXmlElement* pNode )
+	bool XUI_SpriteAttribute::save_file( TiXmlElement* pNode )
 	{
 		TiXmlElement p( "Path" );
 		p.SetAttribute( "direction", path.c_str() );
@@ -50,7 +50,7 @@ namespace UILib
 		return true;
 	}
 
-	bool SpriteAttribute::load_file( TiXmlElement* pNode )
+	bool XUI_SpriteAttribute::load_file( TiXmlElement* pNode )
 	{
 		TiXmlElement* pElement = pNode->FirstChildElement( "Path" );
 		path = pElement->Attribute( "direction" );
@@ -67,7 +67,7 @@ namespace UILib
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-	FontAttribute::FontAttribute()
+	XUI_FontAttribute::XUI_FontAttribute()
 		: name( "" )
 		, size( 12 )
 		, bold( false )
@@ -78,7 +78,7 @@ namespace UILib
 	}
 
 
-	FontAttribute::FontAttribute( const char* lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias )
+	XUI_FontAttribute::XUI_FontAttribute( const char* lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias )
 		: name( lpszFont )
 		, size( nSize )
 		, bold( bBold )
@@ -88,7 +88,7 @@ namespace UILib
 
 	}
 
-	FontAttribute::FontAttribute( const FontAttribute& src )
+	XUI_FontAttribute::XUI_FontAttribute( const XUI_FontAttribute& src )
 		: name( src.name )
 		, size( src.size )
 		, bold( src.bold )
@@ -98,7 +98,7 @@ namespace UILib
 
 	}
 
-	bool FontAttribute::operator==( const FontAttribute& rsh )const
+	bool XUI_FontAttribute::operator==( const XUI_FontAttribute& rsh )const
 	{ 
 		return 
 			name == rsh.name &&
@@ -108,7 +108,7 @@ namespace UILib
 			antialias == rsh.antialias; 
 	}
 
-	bool FontAttribute::operator<( const FontAttribute& rsh )const
+	bool XUI_FontAttribute::operator<( const XUI_FontAttribute& rsh )const
 	{
 		return 
 			name < rsh.name?true:
@@ -118,7 +118,7 @@ namespace UILib
 			antialias < rsh.antialias;
 	}
 
-	bool FontAttribute::save_file( TiXmlElement* pNode )
+	bool XUI_FontAttribute::save_file( TiXmlElement* pNode )
 	{
 		TiXmlElement* pElement = pNode->ToElement();
 		if( pElement )
@@ -132,7 +132,7 @@ namespace UILib
 		return true;
 	}
 
-	bool FontAttribute::load_file( TiXmlElement* pNode )
+	bool XUI_FontAttribute::load_file( TiXmlElement* pNode )
 	{
 		TiXmlElement* pElement = pNode->ToElement();
 		if( pElement )

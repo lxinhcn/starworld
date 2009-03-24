@@ -2,6 +2,7 @@
 #define _XOBJECT_
 
 #include <comutil.h>
+#include "Defines.h"
 #ifdef _DEBUG
 #pragma comment( lib, "comsuppwd.lib" )
 #else
@@ -13,12 +14,6 @@
 #define CORE_API __declspec(dllimport)
 #endif	//CORE_EXPORTS
 #pragma warning( disable:4251 )
-
-#ifdef _UNICODE
-typedef std::wstring _string;
-#else
-typedef std::string _string;
-#endif
 
 /************************************************************************/
 /* 列表系统，属性系统，以及对象基础类的实现                               */
@@ -201,8 +196,8 @@ private:
 public:
 	static	int		GetPointType()				{ return TYPE; }
 	virtual int		GetType()const				{ return TYPE; }
-	virtual BOOL	IsType( DWORD dwType )const	{ if( GetPointType() == dwType ) return TRUE; else return TBase::IsType( dwType );}
-	static	BOOL	IsTypeOf( DWORD dwType )	{ if( GetPointType() == dwType ) return TRUE; else return TBase::IsTypeOf( dwType );}
+	virtual BOOL	IsType( uint32 dwType )const	{ if( GetPointType() == dwType ) return TRUE; else return TBase::IsType( dwType );}
+	static	BOOL	IsTypeOf( uint32 dwType )	{ if( GetPointType() == dwType ) return TRUE; else return TBase::IsTypeOf( dwType );}
 
 	virtual BOOL SetAttribListener( int nType, int nIndex, AttribValueListener* pListener )
 	{
@@ -279,7 +274,7 @@ public:
 	}
 
 	// 字符串属性表
-	virtual LPCTSTR GetStrAttrib( int nType, LPCTSTR szName )
+	virtual _lpctstr GetStrAttrib( int nType, _lpctstr szName )
 	{
 		if( GetPointType() == nType )
 		{
@@ -293,7 +288,7 @@ public:
 		return TBase::GetStrAttrib( nType, szName );
 	}
 
-	virtual BOOL SetStrAttrib( int nType, LPCTSTR szName, LPCTSTR strValue )
+	virtual BOOL SetStrAttrib( int nType, _lpctstr szName, _lpctstr strValue )
 	{
 		if( strValue == NULL || szName == NULL )	return FALSE;
 		if( GetPointType() == nType )
@@ -305,7 +300,7 @@ public:
 	}
 
 	// 缓冲区属性表
-	virtual LPVOID GetBufAttrib( int nType, LPCTSTR szName )
+	virtual LPVOID GetBufAttrib( int nType, _lpctstr szName )
 	{
 		if( GetPointType() == nType )
 		{
@@ -320,7 +315,7 @@ public:
 		return TBase::GetBufAttrib( nType, szName );
 	}
 
-	virtual BOOL SetBufAttrib( int nType, LPCTSTR szName, LPVOID lpData )
+	virtual BOOL SetBufAttrib( int nType, _lpctstr szName, LPVOID lpData )
 	{
 		if( GetPointType() == nType )
 		{
@@ -357,27 +352,27 @@ private:
 	_string		m_strName;		// 对象名字
 
 public:
-	void			SetName( LPCTSTR lpszName )	{ m_strName = lpszName;			}
-	LPCTSTR			GetName()const				{ return m_strName.c_str();		}
+	void			SetName( _lpctstr lpszName )	{ m_strName = lpszName;			}
+	_lpctstr			GetName()const				{ return m_strName.c_str();		}
 
 	const	int		GetObjID()const				{ return m_nID;					}
 	static	int		GetPointType()				{ return TypeObjectbase;		}
 	virtual int		GetType()const				{ return TypeObjectbase;		}
-	virtual BOOL	IsType( DWORD dwType )const	{ return TypeObjectbase == dwType;}
-	static	BOOL	IsTypeOf( DWORD dwType )	{ return TypeObjectbase == dwType;}
+	virtual BOOL	IsType( uint32 dwType )const	{ return TypeObjectbase == dwType;}
+	static	BOOL	IsTypeOf( uint32 dwType )	{ return TypeObjectbase == dwType;}
 
-	BOOL	IsKindOf( DWORD dwType )			{ if( this == NULL ) return FALSE;else return IsType( dwType ); }
+	BOOL	IsKindOf( uint32 dwType )			{ if( this == NULL ) return FALSE;else return IsType( dwType ); }
 
 	virtual BOOL	SetAttribListener( int nType, int nIndex, AttribValueListener* pListener )	{ return FALSE; }
 	virtual BOOL	GetAttrib( int nType, int nIndex, _variant_t& Value )const					{ return FALSE; }
 	virtual BOOL	SetAttrib( int nType, int nIndex, _variant_t Value )						{ return FALSE; }
 	virtual BOOL	ChangeValue( int nType, int nIndex, _variant_t Value, bool bPersent )		{ return FALSE; }
 
-	virtual LPCTSTR	GetStrAttrib( int nType, LPCTSTR szName )const				{ return NULL; }
-	virtual BOOL	SetStrAttrib( int nType, LPCTSTR szName, LPCTSTR strValue )	{ return FALSE;}
+	virtual _lpctstr	GetStrAttrib( int nType, _lpctstr szName )const				{ return NULL; }
+	virtual BOOL	SetStrAttrib( int nType, _lpctstr szName, _lpctstr strValue )	{ return FALSE;}
 
-	virtual LPVOID	GetBufAttrib( int nType, LPCTSTR szName )const				{ return NULL; }
-	virtual BOOL	SetBufAttrib( int nType, LPCTSTR szName, LPVOID lpData )		{ return FALSE; }
+	virtual LPVOID	GetBufAttrib( int nType, _lpctstr szName )const				{ return NULL; }
+	virtual BOOL	SetBufAttrib( int nType, _lpctstr szName, LPVOID lpData )		{ return FALSE; }
 
 	/************************************************************************/
 	/* 层级关系函数
