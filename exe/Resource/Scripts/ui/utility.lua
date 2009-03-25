@@ -31,7 +31,3 @@ function load( item, name, node )
 		end;
 	end
 end;
-
--- cd ..\Resource\Scripts\ui\
--- open utility.lua
--- bp 2
