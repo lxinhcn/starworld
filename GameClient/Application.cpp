@@ -82,6 +82,7 @@ bool CApplication::RenderFunc()
 	Application::Instance()->Gfx_Clear(0);
 	Application::Instance().Render();
 	GuiSystem::Instance().Render();
+	GuiSystem::Instance().Update( Application::Instance()->Timer_GetDelta() );
 	Application::Instance()->Gfx_EndScene();
 
 	return false;
@@ -184,7 +185,6 @@ bool CApplication::UpdateLogic( float fDelta )
 			}
 		}
 	}
-	GuiSystem::Instance().Update( fDelta );
 	return false;
 }
 

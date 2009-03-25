@@ -41,7 +41,7 @@ namespace UILib
 				m_pButtonSkin[i]->Release();
 				m_pButtonSkin[i] = NULL;
 			}
-			m_pButtonSkin[i] = XUI_CreateSprite( path.c_str(), x + w*i, y, w, h );
+			m_pButtonSkin[i] = XUI_CreateSprite( XT2A(path), x + w*i, y, w, h );
 		}
 	}
 	
@@ -64,7 +64,7 @@ namespace UILib
 			XUI_DrawSprite( m_pButtonSkin[m_enState], pt.x, pt.y, nWidth, nHeight, clipper );
 		}
 		// ÎÄ×Ö
-		XUI_DrawText( m_strCaption.c_str(), m_pFont, pt.x + nWidth/2, pt.y + nHeight/2 );
+		XUI_DrawText( XT2A(m_strCaption), m_pFont, pt.x + nWidth/2, pt.y + nHeight/2 );
 	}
 
 	bool XUI_Button::onMouseEnter()

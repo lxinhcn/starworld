@@ -14,7 +14,7 @@ public:
 	// describe	: 得到路径指定的纹理句柄
 	// return	: 纹理句柄
 	//---------------------------------------------------------------------//
-	HTEXTURE GetTexture( _lpctstr lpszTexpath );
+	HTEXTURE GetTexture( _lpcstr lpszTexpath );
 
 	//---------------------------------------------------------------------//
 	// describe	: 清除所有资源
@@ -23,7 +23,7 @@ public:
 	void Clear();
 
 private:
-	typedef std::map< _string, HTEXTURE >	CTextureMap;
+	typedef std::map< std::string, HTEXTURE >	CTextureMap;
 	CTextureMap		m_TextureMap;	// 纹理映射
 };
 typedef Loki::SingletonHolder< CTextureManager, Loki::CreateStatic >	TextureManager;
@@ -36,7 +36,7 @@ private:
 	~CFontManager();
 
 public:
-	GfxFont* GetFont( _lpctstr lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias );
+	GfxFont* GetFont( _lpcstr lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias );
 
 private:
 	typedef std::map< UILib::XUI_FontAttribute, GfxFont* >	CFontMap;
@@ -69,7 +69,7 @@ class CClientSprite	:	public UILib::XUI_ISprite
 public:
 	CClientSprite();
 	~CClientSprite();
-	bool LoadTexture( _lpctstr lpszFileName, float x, float y, float w, float h );
+	bool LoadTexture( _lpcstr lpszFileName, float x, float y, float w, float h );
 
 	virtual float	GetWidth()const;
 	virtual float	GetHeight()const;
@@ -91,8 +91,8 @@ public:
 
 	virtual void	Release();
 	virtual void	Render( float x, float y );
-	virtual void	Render( float x, float y, float w, float h );
-	virtual void	Render( float x, float y, float rot, float hscale = 1.0f, float vscale = 1.0f );
+	virtual void	RenderStretch( float x, float y, float w, float h );
+	virtual void	RenderEx( float x, float y, float rot, float hscale = 1.0f, float vscale = 1.0f );
 
 	void Render( int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect );
 private:

@@ -4,12 +4,14 @@
 #include <tchar.h>
 #include <string>
 #include "defines.h"
+#include "DataHelper.h"
 class TiXmlElement;
+using namespace XGC;
 namespace UILib
 {
 	struct XUI_SpriteAttribute
 	{
-		XUI_SpriteAttribute( const char* _path, float _x, float _y, float _w, float _h );
+		XUI_SpriteAttribute( _lpcstr _path, float _x, float _y, float _w, float _h );
 		XUI_SpriteAttribute();
 
 		bool operator==( const XUI_SpriteAttribute& rsh )const;
@@ -81,8 +83,8 @@ namespace UILib
 
 		virtual void	Release()					= 0;
 		virtual void	Render( float x, float y )	= 0;
-		virtual void	Render( float x, float y, float w, float h ) = 0;
-		virtual void	Render( float x, float y, float rot, float hscale = 1.0f, float vscale = 1.0f ) = 0;
+		virtual void	RenderStretch( float x, float y, float w, float h ) = 0;
+		virtual void	RenderEx( float x, float y, float rot, float hscale, float vscale ) = 0;
 	};
 
 	struct XUI_IFont	:	protected	XUI_FontAttribute
@@ -96,14 +98,16 @@ namespace UILib
 		virtual INT	GetCharacterHeight() = 0;
 	};
 
-	typedef bool		(*pfnDrawText)		( _lpctstr lpszText, XUI_IFont* pFont, float x, float y );
+	typedef bool		(*pfnDrawText)		( _lpcstr lpszText, XUI_IFont* pFont, float x, float y );
 	typedef bool		(*pfnDrawCharacter)	( _tchar lpszText, XUI_IFont* pFont, float x, float y );
-	typedef bool		(*pfnDrawRect)		( const RECT& rcDest, uint32 dwBorderColor, uint32 dwBkColor );	//没有边框的矩形背景
-	typedef bool		(*pfnDrawPolygon)	( const LPPOINT ptArray, uint32* dwColorArray, int nCount, unsigned short* pTriListArray, int nTriCount );
+	typedef bool		(*pfnDrawRect)		( const CRect& rcDest, uint32 dwBorderColor, uint32 dwBkColor );	//没有边框的矩形背景
+	typedef bool		(*pfnDrawPolygon)	( const CPoint* ptArray, uint32* dwColorArray, uint32 nCount, uint16* pTriListArray, int32 nTriCount );
 	typedef bool		(*pfnDrawSprite)	( const XUI_ISprite* Tex,int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect );
-	typedef XUI_ISprite*(*pfnCreateSprite)	( _lpctstr lpszTexpath, float x, float y, float w, float h );
+	typedef XUI_ISprite*(*pfnCreateSprite)	( _lpcstr filename, float x, float y, float w, float h );
+	typedef XUI_ISprite*(*pfnCreateSpriteEx)( const XUI_SpriteAttribute& SpriteAttribute );
 	typedef void		(*pfnDestroySprite)	( XUI_ISprite* pSprite );
-	typedef XUI_IFont*	(*pfnCreateFont)	( _lpctstr lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias );
+	typedef XUI_IFont*	(*pfnCreateFont)	( _lpcstr lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias );
+	typedef XUI_IFont*	(*pfnCreateFontEx)	( const XUI_FontAttribute& FontAttribute );
 	typedef void		(*pfnDestroyFont)	( XUI_IFont* pFont );
 
 	extern pfnDrawText			XUI_DrawText;
@@ -112,7 +116,9 @@ namespace UILib
 	extern pfnDrawPolygon		XUI_DrawPolygon;
 	extern pfnDrawSprite		XUI_DrawSprite;
 	extern pfnCreateSprite		XUI_CreateSprite;
+	extern pfnCreateSpriteEx	XUI_CreateSpriteEx;
 	extern pfnDestroySprite		XUI_DestroySprite;
 	extern pfnCreateFont		XUI_CreateFont;
+	extern pfnCreateFontEx		XUI_CreateFontEx;
 	extern pfnDestroyFont		XUI_DestroyFont;
 }

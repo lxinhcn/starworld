@@ -9,11 +9,16 @@ namespace UILib
 	pfnDrawPolygon		XUI_DrawPolygon		= 0;
 	pfnDrawSprite		XUI_DrawSprite		= 0;
 	pfnCreateSprite		XUI_CreateSprite	= 0;
+	pfnCreateSpriteEx	XUI_CreateSpriteEx	= 0;
 	pfnDestroySprite	XUI_DestroySprite	= 0;
 	pfnCreateFont		XUI_CreateFont		= 0;
+	pfnCreateFontEx		XUI_CreateFontEx	= 0;
 	pfnDestroyFont		XUI_DestroyFont		= 0;
 
-	XUI_SpriteAttribute::XUI_SpriteAttribute( const char* _path, float _x, float _y, float _w, float _h )
+	//////////////////////////////////////////////////////////////////////////
+	// Sprite Attribute
+	//////////////////////////////////////////////////////////////////////////
+	XUI_SpriteAttribute::XUI_SpriteAttribute( _lpcstr _path, float _x, float _y, float _w, float _h )
 		: path( _path )
 		, x( _x )
 		, y( _y )
@@ -86,6 +91,8 @@ namespace UILib
 			h < rsh.h;
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	// Font Attribute
 	//////////////////////////////////////////////////////////////////////////
 	XUI_FontAttribute::XUI_FontAttribute()
 		: name( "" )
