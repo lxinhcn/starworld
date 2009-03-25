@@ -574,8 +574,11 @@ namespace UILib
 				try
 				{
 					TiXmlElement* pChild = pNode->FirstChildElement( *i );
-					op( this, *i, pChild );
-					OnLoadPropertys( *i, pChild );
+					if( pChild )
+					{
+						op( this, *i, pChild );
+						OnLoadPropertys( *i, pChild );
+					}
 				}
 				catch( std::runtime_error& err )
 				{
@@ -628,6 +631,28 @@ namespace UILib
 		if( strcmp( "window", name ) == 0 )
 		{
 			OnMoveWindow( m_WindowRect );
+		}
+		else if( strcmp( "font", name ) == 0 )
+		{
+			if( m_pFont ) 
+				XUI_DestroyFont( m_pFont );
+
+			if( !m_FontAttribute.name.empty() )
+				m_pFont = XUI_CreateFont( XA2T(m_FontAttribute.name), m_FontAttribute.size, m_FontAttribute.bold, m_FontAttribute.italic, m_FontAttribute.antialias );
+		}
+		else if( strcmp( "background", name ) == 0 )
+		{
+			if( m_pBackGround )
+				XUI_DestroySprite( m_pBackGround );
+
+			if( !m_BackgroundAttribute.path.empty() )
+				m_pBackGround = XUI_CreateSprite( 
+					XA2T( m_BackgroundAttribute.path ),
+					m_BackgroundAttribute.x,
+					m_BackgroundAttribute.y,
+					m_BackgroundAttribute.w,
+					m_BackgroundAttribute.h
+					);
 		}
 	}
 

@@ -102,7 +102,10 @@ namespace UILib
 				try
 				{
 					TiXmlElement* pChild = pNode->FirstChildElement( *i );
-					op( pElement, *i, pChild );
+					if( pChild )
+					{
+						op( pElement, *i, pChild );
+					}
 				}
 				catch( std::runtime_error& err )
 				{
