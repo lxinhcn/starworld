@@ -22,13 +22,13 @@ namespace UILib
 		virtual ~CGuiSystem(void);
 
 	public:
-		bool Initialize( HWND w, _lpctstr p, const XUI_FontAttribute& f, const XUI_SpriteAttribute& c );
+		bool Initialize( HWND w, _lpctstr p, const XUI_FontAttribute& f, XUI_IMouse* pCursor );
 		void Unitialize();
 		// 设置图片路径
 		_lpctstr	GetImagePath();
 
 		XUI_IFont*	GetDefaultFont()const{ return m_pDefaultFont; }
-
+		XUI_IMouse*	GetMouseCursor()const{ return m_pCursor; }
 	protected:
 
 		// 是否初始化
@@ -43,13 +43,13 @@ namespace UILib
 		typedef std::map< int, XUI_Window* >	CDesktopMap;
 		typedef std::list< XUI_Window* >		CModalList;
 
-		XUI_Window*		m_pDesktop;
+		XUI_Window		*m_pDesktop;
 		CDesktopMap		m_DesktopMap;
 		CModalList		m_ModalList;
 
-		XUI_IFont*		m_pDefaultFont;
-		XUI_ISprite*	m_pCursor;
-		CPoint			m_MousePt;
+		XUI_IFont		*m_pDefaultFont;
+		XUI_IMouse		*m_pCursor;
+
 		_string			m_strMediaPath;
 		xtimer			m_timer;
 		float			m_nowtime;
