@@ -631,4 +631,19 @@ namespace UILib
 		}
 	}
 
+	void XUI_Wnd::SetFontAttribute( const XUI_FontAttribute& Font )
+	{ 
+		if( m_FontAttribute == Font ) return;
+		m_FontAttribute = Font;
+		XUI_DestroyFont( m_pFont );
+		m_pFont = XUI_CreateFont( XA2T( Font.name ), Font.size, Font.bold, Font.italic, Font.antialias );
+	}
+
+	void XUI_Wnd::SetBackgroundAttribute( const XUI_SpriteAttribute& Background )
+	{
+		if( m_BackgroundAttribute == Background ) return;
+		XUI_DestroySprite( m_pBackGround );
+		m_pBackGround = XUI_CreateSprite( XA2T( Background.path ), Background.x, Background.y, Background.w, Background.h );
+	}
+
 };

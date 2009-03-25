@@ -105,8 +105,9 @@ namespace UILib
 			.member( "name",		&XUI_Wnd::SetName,		&XUI_Wnd::GetName )
 			.member( "visible",		&XUI_Wnd::ShowWindow,	&XUI_Wnd::IsVisible )
 			.member( "enable",		&XUI_Wnd::EnableWindow, &XUI_Wnd::IsEnable	)
+			.member( "font",		&XUI_Wnd::SetFontAttribute,			&XUI_Wnd::GetFontAttribute )
+			.member( "background",	&XUI_Wnd::SetBackgroundAttribute,	&XUI_Wnd::GetBackgroundAttribute )
 			.member( "transparent",	&XUI_Wnd::m_bTranslateParent )
-			.member_readonly( "font",	&XUI_Wnd::m_FontAttribute )
 			.member_readonly( "window",	&XUI_Wnd::m_WindowRect )
 			;
 

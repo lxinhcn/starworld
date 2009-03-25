@@ -12,6 +12,9 @@ namespace UILib
 		XUI_SpriteAttribute( const char* _path, float _x, float _y, float _w, float _h );
 		XUI_SpriteAttribute();
 
+		bool operator==( const XUI_SpriteAttribute& rsh )const;
+		bool operator<( const XUI_SpriteAttribute& rsh )const;
+
 		bool save_file( TiXmlElement* pNode );
 		bool load_file( TiXmlElement* pNode );
 
