@@ -423,6 +423,13 @@ namespace UILib
 		}
 	}
 
+	void XUI_Wnd::RenderSelf(const CRect& clipper)
+	{
+		if( m_pBackGround )
+		{
+			m_pBackGround->Render( m_WindowRect.left, m_WindowRect.top );
+		}
+	}
 	// 消息处理，在垂直层次上遍历消息映射表
 	bool XUI_Wnd::OnWndMsg( UINT nMsg, WPARAM wParam, LPARAM lParam )
 	{

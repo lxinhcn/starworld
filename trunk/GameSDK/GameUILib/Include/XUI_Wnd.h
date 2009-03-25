@@ -26,7 +26,7 @@ namespace UILib
 		void Render(const CRect& clipper);
 
 		//重绘，通过实现这个方法来表现空间的外观
-		virtual void RenderSelf(const CRect& clipper)=0;
+		virtual void RenderSelf(const CRect& clipper);
 
 		//检查
 		virtual void Validate();
