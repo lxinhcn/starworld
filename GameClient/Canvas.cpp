@@ -136,8 +136,25 @@ void	CClientSprite::SetUV(float U0, float V0, float U1, float V1)
 void CClientSprite::Render( int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect )
 {
 	CRect rc( nX, nY, nX + nWidth, nY + nHeight );
-	rc.IntersectRect( rc, lpClipperRect );
-	m_pSprite->Render( (float)nX, (float)nY );
+	CRect intersect;
+	intersect.IntersectRect( rc, lpClipperRect );
+	if( intersect.IsRectEmpty() ) return;
+	if( intersect != rc )
+	{
+		float x, y, w, h;
+		m_pSprite->GetTextureRect( &x, &y, &w, &h );
+		m_pSprite->SetTextureRect( 
+			float(x + intersect.left - nX),
+			float(y + intersect.top - nY),
+			float(intersect.Width()),
+			float(intersect.Height())
+			);
+		m_pSprite->Render( (float)intersect.left, (float)intersect.top );
+	}
+	else
+	{
+		m_pSprite->Render( (float)nX, (float)nY );
+	}
 }
 
 void CClientSprite::Render( float x, float y )

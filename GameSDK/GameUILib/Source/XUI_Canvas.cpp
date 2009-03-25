@@ -66,6 +66,26 @@ namespace UILib
 		return true;
 	}
 
+	bool XUI_SpriteAttribute::operator==( const XUI_SpriteAttribute& rsh )const
+	{
+		return 
+			path == rsh.path &&
+			x == rsh.x && 
+			y == rsh.y &&
+			w == rsh.w &&
+			h == rsh.h;
+	}
+
+	bool XUI_SpriteAttribute::operator<( const XUI_SpriteAttribute& rsh )const
+	{
+		return 
+			path < rsh.path?true:
+			x < rsh.x?true: 
+			y < rsh.y?true:
+			w < rsh.w?true:
+			h < rsh.h;
+	}
+
 	//////////////////////////////////////////////////////////////////////////
 	XUI_FontAttribute::XUI_FontAttribute()
 		: name( "" )
