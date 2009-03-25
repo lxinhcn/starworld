@@ -42,15 +42,17 @@ namespace UILib
 	struct XUI_IMouse
 	{
 		virtual ~XUI_IMouse(){}
-		virtual void GetMousePos( float &x, float &y );
-		virtual float GetMouseWheel();
-		virtual bool IsPressedLButton()const;
-		virtual bool IsReleaseLButton()const;
-		virtual bool IsPressedRButton()const;
-		virtual bool IsReleaseRButton()const;
-		virtual bool IsPressedMButton()const;
-		virtual bool IsReleaseMButton()const;
-		virtual void RenderMouse();
+		virtual void	GetMousePos( float *x, float *y ) = 0;
+		virtual void	SetMousePos( float x, float y ) = 0;
+		virtual int32	GetMouseWheel() = 0;
+		virtual void	RenderMouse() = 0;
+		virtual bool	IsPressedLButton()const = 0;
+		virtual bool	IsReleaseLButton()const = 0;
+		virtual bool	IsPressedRButton()const = 0;
+		virtual bool	IsReleaseRButton()const = 0;
+		virtual bool	IsPressedMButton()const = 0;
+		virtual bool	IsReleaseMButton()const = 0;
+		virtual bool	IsMouseOver()const = 0;
 	};
 
 	struct XUI_ISprite	:	protected	XUI_SpriteAttribute
@@ -75,6 +77,9 @@ namespace UILib
 		virtual float	GetDiffuse() const			= 0;
 
 		virtual void	Release()					= 0;
+		virtual void	Render( float x, float y )	= 0;
+		virtual void	Render( float x, float y, float w, float h ) = 0;
+		virtual void	Render( float x, float y, float rot, float hscale = 1.0f, float vscale = 1.0f ) = 0;
 	};
 
 	struct XUI_IFont	:	protected	XUI_FontAttribute

@@ -133,13 +133,27 @@ void	CClientSprite::SetUV(float U0, float V0, float U1, float V1)
 	m_pSprite->SetTextureRect( x, y, w, h );
 }
 
-VOID CClientSprite::Render( int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect )
+void CClientSprite::Render( int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect )
 {
 	CRect rc( nX, nY, nX + nWidth, nY + nHeight );
 	rc.IntersectRect( rc, lpClipperRect );
 	m_pSprite->Render( (float)nX, (float)nY );
 }
 
+void CClientSprite::Render( float x, float y )
+{
+	m_pSprite->Render( x, y );
+}
+
+void CClientSprite::Render( float x, float y, float w, float h )
+{
+	m_pSprite->RenderStretch( x, y, x + w, y + h );
+}
+
+void CClientSprite::Render( float x, float y, float rot, float hscale /* = 1.0f */, float vscale /* = 1.0f */ )
+{
+	m_pSprite->RenderEx( x, y, rot, hscale, vscale );
+}
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 CClientFont::CClientFont( const XUI_FontAttribute& FontAttrib, GfxFont* pFont )
@@ -182,6 +196,75 @@ void CClientFont::Render( float x, float y, _tchar szChar )const
 	m_pFont->Render( x, y, szChar );
 }
 
+//////////////////////////////////////////////////////////////////////////
+// 鼠标功能类
+//////////////////////////////////////////////////////////////////////////
+CXMouse::CXMouse( const XUI_SpriteAttribute& sprite )
+{
+	m_pCursor = XUI_CreateSprite( XA2T(sprite.path), sprite.x, sprite.y, sprite.w, sprite.h );
+}
+
+CXMouse::~CXMouse()
+{
+	XUI_DestroySprite( m_pCursor );
+}
+
+void	CXMouse::GetMousePos( float *x, float *y )
+{
+	Application::Instance()->Input_GetMousePos( x, y );
+}
+
+void	CXMouse::SetMousePos( float x, float y )
+{
+	Application::Instance()->Input_SetMousePos( x, y );
+}
+
+int32	CXMouse::GetMouseWheel()
+{
+	return Application::Instance()->Input_GetMouseWheel();
+}
+
+void	CXMouse::RenderMouse()
+{
+	float x, y;
+	GetMousePos( &x, &y );
+	m_pCursor->Render( x, y );
+}
+
+bool	CXMouse::IsPressedLButton()const
+{
+	return Application::Instance()->Input_KeyDown(HGEK_LBUTTON);
+}
+
+bool	CXMouse::IsReleaseLButton()const
+{
+	return Application::Instance()->Input_KeyUp(HGEK_LBUTTON);
+}
+
+bool	CXMouse::IsPressedRButton()const
+{
+	return Application::Instance()->Input_KeyDown(HGEK_RBUTTON);
+}
+
+bool	CXMouse::IsReleaseRButton()const
+{
+	return Application::Instance()->Input_KeyUp(HGEK_RBUTTON);
+}
+
+bool	CXMouse::IsPressedMButton()const
+{
+	return Application::Instance()->Input_KeyDown(HGEK_MBUTTON);
+}
+
+bool	CXMouse::IsReleaseMButton()const
+{
+	return Application::Instance()->Input_KeyUp(HGEK_MBUTTON);
+}
+
+bool	CXMouse::IsMouseOver()const
+{
+	return Application::Instance()->Input_IsMouseOver();
+}
 //////////////////////////////////////////////////////////////////////////
 
 static bool _DrawText( _lpctstr lpszText, UILib::XUI_IFont* pFont, float x, float y )

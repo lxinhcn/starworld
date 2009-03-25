@@ -44,6 +44,26 @@ private:
 };
 typedef Loki::SingletonHolder< CFontManager, Loki::CreateStatic >	FontManager;
 
+struct CXMouse	:	public XUI_IMouse
+{
+	CXMouse( const XUI_SpriteAttribute& sprite );
+	virtual ~CXMouse();
+	virtual void	GetMousePos( float *x, float *y );
+	virtual void	SetMousePos( float x, float y );
+	virtual int32	GetMouseWheel();
+	virtual void	RenderMouse();
+	virtual bool	IsPressedLButton()const;
+	virtual bool	IsReleaseLButton()const;
+	virtual bool	IsPressedRButton()const;
+	virtual bool	IsReleaseRButton()const;
+	virtual bool	IsPressedMButton()const;
+	virtual bool	IsReleaseMButton()const;
+	virtual bool	IsMouseOver()const;
+
+private:
+	XUI_ISprite*	m_pCursor;
+};
+
 class CClientSprite	:	public UILib::XUI_ISprite
 {
 public:
@@ -70,6 +90,9 @@ public:
 	virtual float	GetDiffuse()const{ return m_diffuse; }
 
 	virtual void	Release();
+	virtual void	Render( float x, float y );
+	virtual void	Render( float x, float y, float w, float h );
+	virtual void	Render( float x, float y, float rot, float hscale = 1.0f, float vscale = 1.0f );
 
 	void Render( int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect );
 private:

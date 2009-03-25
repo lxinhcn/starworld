@@ -125,7 +125,7 @@ bool CApplication::Initialize()
 			m_hge->System_GetState( HGE_HWND ), 
 			szPath, 
 			XUI_FontAttribute( "ËÎÌו", 18, false, false, false ),
-			XUI_SpriteAttribute( "..\\Resource\\cursor.png", 0, 0, 32, 32 )
+			new CXMouse( XUI_SpriteAttribute( "..\\Resource\\cursor.png", 0, 0, 32, 32 ) )
 			);
 		UICommander::Instance().ProcessCommand( _T("load main.xml") );
 	}
@@ -146,6 +146,7 @@ void CApplication::UnInitialize()
 	helper::restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "DispatchMessageA", m_pDispatchMessage );
 	// Clean up and shutdown
 
+	delete GuiSystem::Instance().GetMouseCursor();
 	GuiSystem::Instance().Unitialize();
 	TextureManager::Instance().Clear();
 	m_hge->System_Shutdown();

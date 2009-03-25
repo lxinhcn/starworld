@@ -30,10 +30,10 @@ namespace UILib
 		m_pDesktop = NULL;
 	}
 
-	bool CGuiSystem::Initialize( HWND w, _lpctstr p, const XUI_FontAttribute& f, const XUI_SpriteAttribute& c )
+	bool CGuiSystem::Initialize( HWND w, _lpctstr p, const XUI_FontAttribute& f, XUI_IMouse* pCursor )
 	{
 		m_strMediaPath			= p;
-		m_pCursor				= XUI_CreateSprite( XA2T(c.path), c.x, c.y, c.w, c.h );	// 设置鼠标
+		m_pCursor				= pCursor;
 		m_pDefaultFont			= XUI_CreateFont( XA2T(f.name), f.size, f.bold, f.italic, f.antialias );	// 设置字体
 		if( m_bInitialized )	return TRUE;
 
@@ -55,7 +55,7 @@ namespace UILib
 	void CGuiSystem::Unitialize()
 	{
 		XUI_DestroyFont( m_pDefaultFont );
-		XUI_DestroySprite( m_pCursor );
+		m_pCursor = NULL;
 	}
 
 	void CGuiSystem::Render()
@@ -63,7 +63,10 @@ namespace UILib
 		if ( m_pDesktop )
 		{
 			m_pDesktop->Render( m_pDesktop->GetWindowRect() );
-			XUI_DrawSprite( m_pCursor, m_MousePt.x, m_MousePt.y, m_pCursor->GetWidth(), m_pCursor->GetHeight(), m_pDesktop->GetWindowRect() );
+			if( m_pCursor->IsMouseOver() )
+			{
+				m_pCursor->RenderMouse();
+			}
 		}
 	}
 
@@ -79,7 +82,6 @@ namespace UILib
 
 	bool CGuiSystem::onMouseMove(XUI_Wnd* pElement, const CPoint& pt, UINT sysKeys)
 	{
-		m_MousePt = pt;
 		if( !pElement->IsEnable() )	return false;
 
 		XUI_Wnd *pEnterElement=pElement->FindChildInPoint(pt);
