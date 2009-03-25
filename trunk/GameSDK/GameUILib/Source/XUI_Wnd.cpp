@@ -427,9 +427,10 @@ namespace UILib
 	{
 		if( m_pBackGround )
 		{
-			m_pBackGround->Render( m_WindowRect.left, m_WindowRect.top );
+			XUI_DrawSprite( m_pBackGround, m_WindowRect.left, m_WindowRect.top, m_WindowRect.Width(), m_WindowRect.Height(), clipper );
 		}
 	}
+
 	// 消息处理，在垂直层次上遍历消息映射表
 	bool XUI_Wnd::OnWndMsg( UINT nMsg, WPARAM wParam, LPARAM lParam )
 	{
@@ -645,7 +646,7 @@ namespace UILib
 				XUI_DestroyFont( m_pFont );
 
 			if( !m_FontAttribute.name.empty() )
-				m_pFont = XUI_CreateFont( XA2T(m_FontAttribute.name), m_FontAttribute.size, m_FontAttribute.bold, m_FontAttribute.italic, m_FontAttribute.antialias );
+				m_pFont = XUI_CreateFontEx( m_FontAttribute );
 		}
 		else if( strcmp( "background", name ) == 0 )
 		{
@@ -653,13 +654,7 @@ namespace UILib
 				XUI_DestroySprite( m_pBackGround );
 
 			if( !m_BackgroundAttribute.path.empty() )
-				m_pBackGround = XUI_CreateSprite( 
-					XA2T( m_BackgroundAttribute.path ),
-					m_BackgroundAttribute.x,
-					m_BackgroundAttribute.y,
-					m_BackgroundAttribute.w,
-					m_BackgroundAttribute.h
-					);
+				m_pBackGround = XUI_CreateSpriteEx( m_BackgroundAttribute );
 		}
 	}
 
@@ -668,14 +663,14 @@ namespace UILib
 		if( m_FontAttribute == Font ) return;
 		m_FontAttribute = Font;
 		XUI_DestroyFont( m_pFont );
-		m_pFont = XUI_CreateFont( XA2T( Font.name ), Font.size, Font.bold, Font.italic, Font.antialias );
+		m_pFont = XUI_CreateFontEx( m_FontAttribute );
 	}
 
 	void XUI_Wnd::SetBackgroundAttribute( const XUI_SpriteAttribute& Background )
 	{
 		if( m_BackgroundAttribute == Background ) return;
 		XUI_DestroySprite( m_pBackGround );
-		m_pBackGround = XUI_CreateSprite( XA2T( Background.path ), Background.x, Background.y, Background.w, Background.h );
+		m_pBackGround = XUI_CreateSpriteEx( m_BackgroundAttribute );
 	}
 
 };

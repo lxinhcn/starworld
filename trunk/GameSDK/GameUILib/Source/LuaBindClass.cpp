@@ -80,6 +80,22 @@ namespace UILib
 			.set( "load",	&XUI_SpriteAttribute::load_file )
 			;
 
+		Class< XUI_ISprite, Instance::NoCopy >( "ui::XUI_ISprite" )
+			.set( "Render", &XUI_ISprite::Render )
+			.set( "RenderStretch", &XUI_ISprite::RenderStretch )
+			.set( "RenderEx", &XUI_ISprite::RenderEx )
+			.set( "GetWidth",	&XUI_ISprite::GetWidth )
+			.set( "GetHeight",	&XUI_ISprite::GetHeight )
+			.set( "SetUV",		&XUI_ISprite::SetUV )
+			.set( "GetU0",		&XUI_ISprite::GetU0 )
+			.set( "GetU1",		&XUI_ISprite::GetU1 )
+			.set( "GetV0",		&XUI_ISprite::GetV0 )
+			.set( "GetV1",		&XUI_ISprite::GetV1 )
+			.member( "alpha",	&XUI_ISprite::SetAlpha,		&XUI_ISprite::GetAlpha )
+			.member( "angle",	&XUI_ISprite::SetAngle,		&XUI_ISprite::GetAngle )
+			.member( "diffuse", &XUI_ISprite::SetDiffuse,	&XUI_ISprite::GetDiffuse )
+			;
+
 		Class< XUI_FontAttribute >( "ui::XUI_FontAttribute" )
 			.constructor< const char*, int, bool, bool, bool >()
 			.member_readonly( "name", &XUI_FontAttribute::name )
@@ -92,7 +108,10 @@ namespace UILib
 			.set( "load",	&XUI_FontAttribute::load_file )
 			;
 
-		Class< XUI_Wnd, SLB::Instance::NoCopyNoDestroy >( "ui::Wnd" )
+		Class< XUI_IFont, Instance::NoCopy >( "ui::XUI_IFont" )
+			;
+
+		Class< XUI_Wnd, Instance::NoCopyNoDestroy >( "ui::Wnd" )
 			.set( "MoveWindow",		&XUI_Wnd::MoveWindow )
 			.set( "OffsetWindow",	&XUI_Wnd::Offset )
 			.set( "SendMessage",	&XUI_Wnd::SendMessage )
@@ -112,11 +131,11 @@ namespace UILib
 			;
 
 		Class< XUI_Window >( "ui:Window" )
+			.static_inherits< XUI_Wnd >()
 			.set( "Width",	&XUI_Window::GetWidth )
 			.set( "Height", &XUI_Window::GetHeight )
 			.member( "x",	&XUI_Window::m_nOffsetX )
 			.member( "y",	&XUI_Window::m_nOffsetY )
-			.static_inherits< XUI_Wnd >()
 			;
 
 		Class< XUI_Button >( "ui::Button" )
@@ -139,8 +158,22 @@ namespace UILib
 			.member( "warp", &XUI_EditBox::m_bWarpText )
 			;
 
+
 		try
 		{
+			Manager::getInstance().set( "CreateSprite",		FuncCall::create( XUI_CreateSprite ) );
+			Manager::getInstance().set( "CreateSpriteEx",	FuncCall::create( XUI_CreateSpriteEx ) );
+			Manager::getInstance().set( "DestroySprite",	FuncCall::create( XUI_DestroySprite ) );
+
+			Manager::getInstance().set( "CreateFont",	FuncCall::create( XUI_CreateFont ) );
+			Manager::getInstance().set( "CreateFontEx",	FuncCall::create( XUI_CreateFontEx ) );
+			Manager::getInstance().set( "DestroyFont",	FuncCall::create( XUI_DestroyFont ) );
+
+			Manager::getInstance().set( "DrawText",		FuncCall::create( XUI_DrawText ) );
+			Manager::getInstance().set( "DrawCharacter",FuncCall::create( XUI_DrawCharacter ) );
+			Manager::getInstance().set( "DrawSprite",	FuncCall::create( XUI_DrawSprite ) );
+			Manager::getInstance().set( "DrawRect",		FuncCall::create( XUI_DrawRect ) );
+
 			_tchar path[_MAX_PATH+_MAX_FNAME];
 			helper::NormalizePath(  _T("..\\Resource\\Scripts\\"), path, _countof( path ) );
 			// 设置脚本根目录

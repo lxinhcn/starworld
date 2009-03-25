@@ -36,6 +36,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{4FD6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ui script", "ui script", "{70B08D30-AE70-4D4C-A362-6049ADCF030F}"
 	ProjectSection(SolutionItems) = preProject
+		exe\Resource\Scripts\ui\ui.lua = exe\Resource\Scripts\ui\ui.lua
 		exe\Resource\Scripts\ui\utility.lua = exe\Resource\Scripts\ui\utility.lua
 	EndProjectSection
 EndProject

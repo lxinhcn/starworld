@@ -18,7 +18,7 @@ CTextureManager::~CTextureManager()
 // describe	: 得到路径指定的纹理句柄
 // return	: 纹理句柄
 //---------------------------------------------------------------------//
-HTEXTURE CTextureManager::GetTexture( _lpctstr lpszTexpath )
+HTEXTURE CTextureManager::GetTexture( _lpcstr lpszTexpath )
 {
 	if( lpszTexpath == NULL ) return NULL;
 	CTextureMap::iterator iter = m_TextureMap.find( lpszTexpath );
@@ -27,10 +27,8 @@ HTEXTURE CTextureManager::GetTexture( _lpctstr lpszTexpath )
 		return iter->second;
 	}
 
-	USES_CONVERSION;
-	char* p = T2A( lpszTexpath );
 	HGE* hge = Application::Instance().getEngine();
-	HTEXTURE h = hge->Texture_Load( p );
+	HTEXTURE h = hge->Texture_Load( lpszTexpath );
 	m_TextureMap[lpszTexpath] = h;
 	return h;
 }
@@ -65,17 +63,16 @@ CFontManager::~CFontManager()
 	m_FontMap.clear();
 }
 
-GfxFont* CFontManager::GetFont( _lpctstr lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias )
+GfxFont* CFontManager::GetFont( _lpcstr lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias )
 {
-	USES_CONVERSION;
-	UILib::XUI_FontAttribute font( T2A( lpszFont ), nSize, bBold, bItalic, bAntialias );
+	UILib::XUI_FontAttribute font( lpszFont, nSize, bBold, bItalic, bAntialias );
 	CFontMap::iterator iter = m_FontMap.find( font );
 	if( iter != m_FontMap.end() )
 	{
 		return iter->second;
 	}
 
-	GfxFont* pFont = new GfxFont( lpszFont, nSize, bBold, bItalic, bAntialias );
+	GfxFont* pFont = new GfxFont( XA2T(lpszFont), nSize, bBold, bItalic, bAntialias );
 	m_FontMap[font] = pFont;
 	return pFont;
 }
@@ -100,7 +97,7 @@ void CClientSprite::Release()
 	delete this;
 }
 
-bool CClientSprite::LoadTexture( _lpctstr lpszFileName, float x, float y, float w, float h )
+bool CClientSprite::LoadTexture( _lpcstr lpszFileName, float x, float y, float w, float h )
 {
 	if( lpszFileName == NULL ) return FALSE;
 
@@ -162,12 +159,12 @@ void CClientSprite::Render( float x, float y )
 	m_pSprite->Render( x, y );
 }
 
-void CClientSprite::Render( float x, float y, float w, float h )
+void CClientSprite::RenderStretch( float x, float y, float w, float h )
 {
 	m_pSprite->RenderStretch( x, y, x + w, y + h );
 }
 
-void CClientSprite::Render( float x, float y, float rot, float hscale /* = 1.0f */, float vscale /* = 1.0f */ )
+void CClientSprite::RenderEx( float x, float y, float rot, float hscale /* = 1.0f */, float vscale /* = 1.0f */ )
 {
 	m_pSprite->RenderEx( x, y, rot, hscale, vscale );
 }
@@ -218,7 +215,7 @@ void CClientFont::Render( float x, float y, _tchar szChar )const
 //////////////////////////////////////////////////////////////////////////
 CXMouse::CXMouse( const XUI_SpriteAttribute& sprite )
 {
-	m_pCursor = XUI_CreateSprite( XA2T(sprite.path), sprite.x, sprite.y, sprite.w, sprite.h );
+	m_pCursor = XUI_CreateSprite( sprite.path.c_str(), sprite.x, sprite.y, sprite.w, sprite.h );
 }
 
 CXMouse::~CXMouse()
@@ -284,13 +281,13 @@ bool	CXMouse::IsMouseOver()const
 }
 //////////////////////////////////////////////////////////////////////////
 
-static bool _DrawText( _lpctstr lpszText, UILib::XUI_IFont* pFont, float x, float y )
+static bool _DrawText( _lpcstr lpszText, UILib::XUI_IFont* pFont, float x, float y )
 {
 	if( pFont == NULL ) pFont = GuiSystem::Instance().GetDefaultFont();
 	CClientFont* pF = static_cast< CClientFont* >( pFont );
 	if( pF )
 	{
-		pF->Render( x, y, lpszText );
+		pF->Render( x, y, XA2T(lpszText) );
 	}
 	return true;
 }
@@ -307,7 +304,7 @@ static bool _DrawCharacter( _tchar szChar, UILib::XUI_IFont* pFont, float x, flo
 }
 
 //没有边框的矩形背景
-static bool _DrawRect( const RECT& rcDest, uint32 dwBorderColor, uint32 dwBkColor/* = -1*/ )
+static bool _DrawRect( const CRect& rcDest, uint32 dwBorderColor, uint32 dwBkColor/* = -1*/ )
 {
 	Application::Instance()->Gfx_RenderLine( (float)rcDest.left, (float)rcDest.top, (float)rcDest.right, (float)rcDest.top, dwBorderColor );
 	Application::Instance()->Gfx_RenderLine( (float)rcDest.right, (float)rcDest.top, (float)rcDest.right, (float)rcDest.bottom, dwBorderColor );
@@ -316,7 +313,7 @@ static bool _DrawRect( const RECT& rcDest, uint32 dwBorderColor, uint32 dwBkColo
 	return true;
 }
 
-static bool _DrawPolygon( const LPPOINT ptArray, uint32* dwColorArray, int nCount, unsigned short* pTriListArray, int nTriCount )
+static bool _DrawPolygon( const CPoint* ptArray, uint32* dwColorArray, uint32 nCount, uint16* pTriListArray, int32 nTriCount )
 {
 	return true;
 }
@@ -328,10 +325,10 @@ static bool _DrawSprite( const XUI_ISprite* Tex, int nX, int nY, int nWidth, int
 	return true;
 }
 
-static XUI_ISprite* _CreateSprite( _lpctstr lpszPathname, float x, float y, float w, float h )
+static XUI_ISprite* _CreateSprite( _lpcstr filename, float x, float y, float w, float h )
 {
 	CClientSprite* pTexture = new CClientSprite();
-	if( pTexture->LoadTexture( lpszPathname, x, y, w, h ) )
+	if( pTexture->LoadTexture( filename, x, y, w, h ) )
 	{
 		return pTexture;
 	}
@@ -339,20 +336,29 @@ static XUI_ISprite* _CreateSprite( _lpctstr lpszPathname, float x, float y, floa
 	return NULL;
 }
 
+static XUI_ISprite* _CreateSpriteEx( const XUI_SpriteAttribute& SpriteAttribute )
+{
+	return _CreateSprite( SpriteAttribute.path.c_str(), SpriteAttribute.x, SpriteAttribute.y, SpriteAttribute.w, SpriteAttribute.h );
+}
+
 static void _DestroySprite( XUI_ISprite* pTexture )
 {
 	delete pTexture;
 }
 
-static XUI_IFont* _CreateFont( _lpctstr lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias )
+static XUI_IFont* _CreateFont( _lpcstr lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias )
 {
 	GfxFont* pGfxFont = FontManager::Instance().GetFont( lpszFontName, nSize, bBold, bItalic, bAntialias );
 	if( pGfxFont )
 	{
-		USES_CONVERSION;
-		return new CClientFont( XUI_FontAttribute( T2A(lpszFontName), nSize, bBold, bItalic, bAntialias ), pGfxFont );
+		return new CClientFont( XUI_FontAttribute( lpszFontName, nSize, bBold, bItalic, bAntialias ), pGfxFont );
 	}
 	return NULL;
+}
+
+static XUI_IFont* _CreateFontEx( const XUI_FontAttribute& FontAttribute )
+{
+	return _CreateFont( FontAttribute.name.c_str(), FontAttribute.size, FontAttribute.bold, FontAttribute.italic, FontAttribute.antialias );
 }
 
 static void _DestroyFont( XUI_IFont* pFont )
@@ -368,7 +374,9 @@ void init_canvas()
 	UILib::XUI_DrawPolygon		= _DrawPolygon;
 	UILib::XUI_DrawSprite		= _DrawSprite;
 	UILib::XUI_CreateSprite		= _CreateSprite;
+	UILib::XUI_CreateSpriteEx	= _CreateSpriteEx;
 	UILib::XUI_DestroySprite	= _DestroySprite;
 	UILib::XUI_CreateFont		= _CreateFont;
+	UILib::XUI_CreateFontEx		= _CreateFontEx;
 	UILib::XUI_DestroyFont		= _DestroyFont;
 }

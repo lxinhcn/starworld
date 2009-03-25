@@ -34,7 +34,7 @@ namespace UILib
 	{
 		m_strMediaPath			= p;
 		m_pCursor				= pCursor;
-		m_pDefaultFont			= XUI_CreateFont( XA2T(f.name), f.size, f.bold, f.italic, f.antialias );	// 设置字体
+		m_pDefaultFont			= XUI_CreateFont( f.name.c_str(), f.size, f.bold, f.italic, f.antialias );	// 设置字体
 		if( m_bInitialized )	return TRUE;
 
 		// 初始化lua脚本系统
@@ -78,6 +78,7 @@ namespace UILib
 			m_timer_anchor += 0.1f;
 			m_timer.timer();
 		}
+		SLB::LuaCall< void(float, float) >( Lua::Instance().getState(), "UIUpdateEntry" )( m_nowtime, fDelta );
 	}
 
 	bool CGuiSystem::onMouseMove(XUI_Wnd* pElement, const CPoint& pt, UINT sysKeys)
