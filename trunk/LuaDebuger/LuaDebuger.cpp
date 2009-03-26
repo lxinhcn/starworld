@@ -180,14 +180,13 @@ void LuaDebuger::run( int mode )
 bool LuaDebuger::judgeBreak( const char* name, int line )
 {
 	CCriticalLock _l( m_pImpl->breakmap_lock);
-#if defined( _UNICODE )
-	LPTSTR path = (TCHAR*)_alloca( (_MAX_DIR + _MAX_FNAME + _MAX_EXT)*sizeof(wchar_t) );
-	mbstowcs( path, name, (_MAX_DIR + _MAX_FNAME + _MAX_EXT) );
-	_string filename = path;
-#else
-	_string filename = name;
-#endif
+	char szFull[_MAX_DIR + _MAX_FNAME + _MAX_EXT];
+	if( _fullpath( szFull, name, _countof(szFull) ) == 0 )
+	{
+		return false;
+	}
 
+	_string filename = XA2T( szFull );
 	std::transform( filename.begin(), filename.end(), filename.begin(), tolower );
 	Impl::break_map::const_iterator citer = m_pImpl->breakpoints.find( filename );
 	if( citer != m_pImpl->breakpoints.end() )
@@ -617,7 +616,7 @@ void LuaDebuger::cmd_open( LPCTSTR lpszParam )
 	else if( _taccess( lpszParam, 0 ) != -1 )
 	{
 		TCHAR szFull[_MAX_PATH];
-		if( _tfullpath( szFull, lpszParam, _MAX_PATH ) )
+		if( _tfullpath( szFull, lpszParam, _countof(szFull) ) )
 		{
 			_tcslwr( szFull );
 			Impl::break_map::const_iterator c = m_pImpl->breakpoints.find( szFull );
