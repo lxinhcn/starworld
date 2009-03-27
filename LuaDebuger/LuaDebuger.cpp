@@ -309,19 +309,20 @@ void LuaDebuger::makestack( lua_State *L, lua_Debug *ar )
 	m_pImpl->lstack.L = L;
 	m_pImpl->stop_level = m_pImpl->call_level;
 
-	lua_Debug d;
-	for ( int level = 0; lua_getstack(L, level, &d ); level++)
+	char szFull[_MAX_DIR+_MAX_PATH+_MAX_FNAME+_MAX_EXT];
+	for ( int level = 0; lua_getstack(L, level, ar ); level++)
 	{
-		lua_getinfo( L, "Slnu", &d );
+		lua_getinfo( L, "Slnu", ar );
 		Impl::stackframe* sf = new Impl::stackframe();
-		sf->currentline	= d.currentline;
-		sf->funcname	= d.name?XA2T( d.name ):_T("");
-		sf->filename	= d.source[0] == '@'?XA2T(d.source+1):_T("");
+		sf->currentline	= ar->currentline;
+		sf->funcname	= ar->name?XA2T( ar->name ):_T("");
+		if( ar->source[0] != '@' || _fullpath(szFull, ar->source+1, _countof(szFull) ) == 0 ) szFull[0] = 0;
+		sf->filename	= XA2T(szFull);
 		std::transform( sf->filename.begin(), sf->filename.end(), sf->filename.begin(), tolower );
-		sf->what		= d.what?XA2T( d.what ):_T("");
+		sf->what		= ar->what?XA2T( ar->what ):_T("");
 		const char* varname		= NULL;
 		std::string varvalue;
-		for( int index = 1; varname = lua_getlocal( L, &d, index ); ++index )
+		for( int index = 1; varname = lua_getlocal( L, ar, index ); ++index )
 		{
 			int top = lua_gettop(L);
 			int t = lua_type( L, top );
