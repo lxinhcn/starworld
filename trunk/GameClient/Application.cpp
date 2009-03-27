@@ -190,5 +190,5 @@ bool CApplication::UpdateLogic( float fDelta )
 
 void CApplication::Render()
 {
-	XUI_DrawRect( CRect( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT ), -1, 0 );
+	XUI_DrawRect( CRect( 1, 1, SCREEN_WIDTH, SCREEN_HEIGHT ), -1, 0 );
 }

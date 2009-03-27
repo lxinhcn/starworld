@@ -83,19 +83,23 @@ namespace UILib
 					{
 						if( m_LineRecorder[drawline] != i )
 						{
+							// 没有折行标志则添加一个。
 							m_LineRecorder.insert( m_LineRecorder.begin() + drawline, i );
 							SetCurLineNumber( m_nCurLineNumber + 1 );
 						}
+						// 当前绘制行
 						++drawline;
 					}
 					else
 					{
+						// 最后一行则添加一个。
 						m_LineRecorder.push_back( i );
 						SetCurLineNumber( m_nCurLineNumber + 1 );
 					}
 				}
 				else
 				{
+					// 不折行从下一行开始
 					i = drawline?m_LineRecorder[drawline-1]:m_strText.length();
 					CharPos.x = pt.x;
 				}
@@ -103,14 +107,17 @@ namespace UILib
 
 			if( drawline != m_FirstLineNumber && (drawline>0?m_LineRecorder[drawline-1]:0) == i )
 			{
+				// 第一行行首永不折行，当前位置是否行首。
 				// 位置为行首，则折行。
 				CharPos.x = pt.x;
 				CharPos.y += pFont->GetCharacterHeight();
 			}
 
+			// 判断是否被绘制。
 			BOOL bRender = rc.PtInRect( CharPos + CPoint( pFont->GetCharacterWidth( c ), pFont->GetCharacterHeight() ) );
 			if( _istprint( c ) )
 			{
+				// 是显示字符
 				RenderCharacter( c, pFont, CharPos.x, CharPos.y, bRender );
 			}
 			else
@@ -119,6 +126,7 @@ namespace UILib
 				{
 				case '\t':
 					{
+						// 制表对齐
 						size_t CharCount = i - begin;
 						size_t NextTab = CharPos.x + (4 - CharCount%4)*pFont->GetCharacterWidth( _T(' ') );
 						if( (long)NextTab > pt.x + m_WindowRect.Width() ) NextTab = pt.x + m_WindowRect.Width();
@@ -129,8 +137,10 @@ namespace UILib
 					}
 					break;
 				case '\n':
+					// 当前绘制行增加一行。
 					++drawline;
 				case '\0':
+					// 为绘制光标占位置。
 					RenderCharacter( _T(' '), pFont, CharPos.x, CharPos.y, bRender );
 					break;
 				default:
@@ -141,6 +151,7 @@ namespace UILib
 
 			if( i == m_CaratPos && m_bShowCarat )
 			{
+				// 是否绘制光标
 				long x = CharPos.x - long( pFont->GetCharacterWidth( _T('|') )*1.5f );
 				long y = CharPos.y;
 				RenderCharacter( _T('|'), pFont, x, y, bRender );
@@ -244,13 +255,13 @@ namespace UILib
 	void XUI_EditBox::DeleteCharacter( size_t nPos )
 	{
 		// 从第一个可见行开始查找
-		if( m_nCurLineNumber > 0 )
+		if( m_nCurLineNumber > 0 && m_nCurLineNumber < m_LineRecorder.size() )
 		{
 			line_recorder::iterator i = m_LineRecorder.begin() + m_nCurLineNumber - 1;
 			if( *i == nPos+1 )
 			{
-				m_LineRecorder.erase( i );
-				SetCurLineNumber( m_nCurLineNumber - 1 );
+				i = m_LineRecorder.erase( i );
+				SetCurLineNumber( i - m_LineRecorder.begin() + 1 );
 			}
 		}
 		m_strText.erase( nPos, 1 );
@@ -339,7 +350,7 @@ namespace UILib
 			XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
 
 			size_t h = m_LineRecorder[m_nCurLineNumber-1];
-			long width = m_pFont->GetStringSize( m_strText.substr( h, m_CaratPos - h ).c_str() ).cx;
+			long width = pFont->GetStringSize( m_strText.substr( h, m_CaratPos - h ).c_str() ).cx;
 			SetCurLineNumber( m_nCurLineNumber - 1 );
 		}
 	}

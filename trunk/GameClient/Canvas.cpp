@@ -310,6 +310,8 @@ static bool _DrawRect( const CRect& rcDest, uint32 dwBorderColor, uint32 dwBkCol
 	Application::Instance()->Gfx_RenderLine( (float)rcDest.right, (float)rcDest.top, (float)rcDest.right, (float)rcDest.bottom, dwBorderColor );
 	Application::Instance()->Gfx_RenderLine( (float)rcDest.right, (float)rcDest.bottom, (float)rcDest.left, (float)rcDest.bottom, dwBorderColor );
 	Application::Instance()->Gfx_RenderLine( (float)rcDest.left, (float)rcDest.top, (float)rcDest.left, (float)rcDest.bottom, dwBorderColor );
+
+	// Application::Instance()->Gfx_RenderQuad( );
 	return true;
 }
 
