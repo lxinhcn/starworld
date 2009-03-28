@@ -252,31 +252,37 @@ namespace UILib
 		return true;
 	}
 
-	void XUI_EditBox::DeleteCharacter( size_t nPos )
+	void XUI_EditBox::HandleBack()
 	{
-		// 从第一个可见行开始查找
+		if( m_CaratPos <= 0 ) return;
+		size_t nPos = --m_CaratPos;
+
 		if( m_nCurLineNumber > 0 && m_nCurLineNumber < m_LineRecorder.size() )
 		{
 			line_recorder::iterator i = m_LineRecorder.begin() + m_nCurLineNumber - 1;
-			if( *i == nPos+1 )
+			if( m_strText[nPos] == _T('\n') && *i == nPos )
 			{
 				i = m_LineRecorder.erase( i );
-				SetCurLineNumber( i - m_LineRecorder.begin() + 1 );
+				SetCurLineNumber( m_nCurLineNumber - 1 );
 			}
 		}
 		m_strText.erase( nPos, 1 );
 	}
 
-	void XUI_EditBox::HandleBack()
-	{
-		if( m_CaratPos <= 0 ) return;
-		DeleteCharacter( --m_CaratPos );
-	}
-
 	void XUI_EditBox::HandleDelete()
 	{
 		if( m_CaratPos >= m_strText.length() ) return;
-		DeleteCharacter( m_CaratPos );
+
+		size_t nPos = m_CaratPos;
+		if( m_nCurLineNumber > 0 && m_nCurLineNumber < m_LineRecorder.size() )
+		{
+			line_recorder::iterator i = m_LineRecorder.begin() + m_nCurLineNumber;
+			if( m_strText[nPos] == _T('\n') && *i == nPos )
+			{
+				i = m_LineRecorder.erase( i );
+			}
+		}
+		m_strText.erase( nPos, 1 );
 	}
 
 	void XUI_EditBox::HandleHome()
