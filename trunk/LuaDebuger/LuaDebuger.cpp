@@ -76,8 +76,9 @@ struct LuaDebuger::Impl
 
 struct LuaDebuger::ThreadParam
 {
-	ThreadParam( LuaDebuger* p, bool (LuaDebuger::* c)( LPCTSTR lpszCmd ) )
+	ThreadParam( LuaDebuger* p, LPCTSTR lpszPipename, bool (LuaDebuger::* c)( LPCTSTR lpszCmd ) )
 		: pThis( p )
+		, strPipename( lpszPipename )
 		, command( c )
 	{
 		debug_signal = CreateEvent( NULL, FALSE, FALSE, NULL );
@@ -128,6 +129,7 @@ struct LuaDebuger::ThreadParam
 	HANDLE	debug_signal;
 	HANDLE	pipe;
 	bool	bWork;
+	_string strPipename;
 	static instruct_map	instructs;	// Ö¸ÁîÓ³Éä±í
 
 private:
@@ -397,7 +399,7 @@ unsigned int __stdcall LuaDebuger::guard( void *param )
 
 	BYTE	buffer[BUFSIZE];
 	DWORD	dwRead, dwWrite;
-	LPTSTR	lpszPipename = TEXT("\\\\.\\pipe\\lua_debuger"); 
+	_string strPipename = TEXT("\\\\.\\pipe\\lua") + p->strPipename;
 
 	p->bWork = true;
 	// The main loop creates an instance of the named pipe and 
@@ -408,7 +410,7 @@ unsigned int __stdcall LuaDebuger::guard( void *param )
 	while( p->bWork )
 	{ 
 		p->pipe = CreateNamedPipe( 
-			lpszPipename,             // pipe name 
+			strPipename.c_str(),      // pipe name 
 			PIPE_ACCESS_DUPLEX,       // read/write access 
 			PIPE_TYPE_MESSAGE |       // message type pipe 
 			PIPE_READMODE_MESSAGE |   // message-read mode 
@@ -464,9 +466,9 @@ unsigned int __stdcall LuaDebuger::guard( void *param )
 	return 0;
 }
 
-bool LuaDebuger::initialize( lua_State* L )
+bool LuaDebuger::initialize( lua_State* L, LPCTSTR lpszPipename )
 {
-	m_thread_param = new ThreadParam( this, &LuaDebuger::command );
+	m_thread_param = new ThreadParam( this, lpszPipename, &LuaDebuger::command );
 	
 	lua_sethook( L, Debug, LUA_MASKCALL|LUA_MASKLINE|LUA_MASKRET|LUA_MASKCOUNT, 1 );
 	lua_pushlightuserdata( L, this );
@@ -474,7 +476,6 @@ bool LuaDebuger::initialize( lua_State* L )
 
 	m_thread_param->thread = (HANDLE)_beginthreadex( NULL, 0, guard, m_thread_param, 0, NULL );
 
-	// _tsystem( _T("LuaDebugConsole.exe") );
 	return true;
 }
 
