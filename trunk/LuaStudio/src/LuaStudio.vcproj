@@ -999,6 +999,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\lua-code.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\lua-source-file.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\lua-studio.ico"
 				>
 			</File>
