@@ -117,3 +117,20 @@ unsigned int __stdcall LuaDebugCommander::pipe( void* param )
 	}
 	return 0;
 }
+
+LuaDebugCommander* Create_Commander( const char* pipe, ProcessRetCmd fn )
+{
+	LuaDebugCommander* pCommander = new LuaDebugCommander();
+	pCommander->initialize( XA2T(pipe), fn );
+	return pCommander;
+}
+
+void Debug_Command( LuaDebugCommander* Debuger, const char* Cmd )
+{
+	Debuger->command( XA2T(Cmd) );
+}
+
+void Destroy_Commander( LuaDebugCommander* Debuger )
+{
+	delete Debuger;
+}

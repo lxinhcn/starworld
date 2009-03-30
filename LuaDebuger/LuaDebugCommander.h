@@ -1,5 +1,4 @@
 #pragma once
-
 typedef void (*ProcessRetCmd)( LPBYTE lpszCommand );
 
 class LuaDebugCommander
@@ -10,10 +9,10 @@ public:
 
 	bool	initialize( LPCTSTR lpszPipename, ProcessRetCmd fn );
 	bool	command( LPCTSTR cmd );
-	bool	waitSignal();
-	void	Signal();
 
 protected:
+	bool	waitSignal();
+	void	Signal();
 	void	command();
 	bool	result();
 

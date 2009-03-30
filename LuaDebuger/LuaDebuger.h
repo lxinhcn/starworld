@@ -8,7 +8,7 @@ public:
 	LuaDebuger();
 	~LuaDebuger();
 
-	bool initialize( lua_State* L );
+	bool initialize( lua_State* L, LPCTSTR lpszPipename );
 	void terminal();
 
 protected:

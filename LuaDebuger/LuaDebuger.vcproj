@@ -43,7 +43,7 @@
 				AdditionalIncludeDirectories="&quot;..\GameSDK\lua-5.1.4\src&quot;;..\Helplib;..\Depend\Loki-0.1.6\Include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
+				BasicRuntimeChecks="1"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -185,6 +185,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\DebugerInterface.h"
+				>
+			</File>
 			<File
 				RelativePath=".\LuaDebugCommander.h"
 				>
