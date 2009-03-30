@@ -5,6 +5,7 @@ LuaDebugCommander::LuaDebugCommander(void)
 : m_hPipe( INVALID_HANDLE_VALUE )
 , m_hThread( INVALID_HANDLE_VALUE )
 , m_bWork( TRUE )
+, m_RetFunc( NULL )
 {
 	szBuffer = new BYTE[BUFSIZE];
 }
@@ -16,9 +17,10 @@ LuaDebugCommander::~LuaDebugCommander(void)
 	delete[] szBuffer;
 }
 
-bool LuaDebugCommander::initialize( LPCTSTR lpszPipename )
+bool LuaDebugCommander::initialize( LPCTSTR lpszPipename, ProcessRetCmd fn )
 {
 	int retry = 10;
+	m_RetFunc = fn;
 	while( retry )
 	{
 		m_hPipe = CreateFile( lpszPipename, GENERIC_READ|GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL );
@@ -103,9 +105,9 @@ unsigned int __stdcall LuaDebugCommander::pipe( void* param )
 	{
 		while( pCommander->m_bWork )
 		{
-			if( pCommander->result() )
+			if( pCommander->result() && pCommander->m_RetFunc != NULL )
 			{
-				_tprintf( (LPCTSTR)pCommander->buffer() );
+				pCommander->m_RetFunc( pCommander->buffer() );
 			}
 			else
 			{
