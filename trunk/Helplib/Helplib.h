@@ -50,4 +50,8 @@
 
 #pragma comment( lib, "ws2_32.lib" )
 #pragma comment( lib, "winmm.lib" )
-#pragma comment( lib, "atls.lib" )
+#ifdef _DEBUG
+	#pragma comment( lib, "atlsd.lib" )
+#else
+	#pragma comment( lib, "atls.lib" )
+#endif
