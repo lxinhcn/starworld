@@ -262,7 +262,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="../Release/Res.dll"
+				OutputFile="$(SolutionDir)Exe\$(ConfigurationName)\Res.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreAllDefaultLibraries="true"
@@ -356,7 +356,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="../Debug/Res.dll"
+				OutputFile="$(SolutionDir)Exe\$(ConfigurationName)\Res.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				IgnoreAllDefaultLibraries="true"
@@ -494,6 +494,18 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\src\res\lua-code.ico"
+			>
+		</File>
+		<File
+			RelativePath="..\src\res\lua-source-file.ico"
+			>
+		</File>
+		<File
+			RelativePath="..\src\res\lua-studio.ico"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

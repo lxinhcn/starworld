@@ -111,17 +111,6 @@ BOOL StudioApp::InitInstance()
 
 	AddDocTemplate(doc_template);
 
-	// TODO: "disassembly" for Lua intermediate code
-	//doc_template = new CXMultiDocTemplate(
-	//	IDR_DEASM_TYPE,
-	//	RUNTIME_CLASS(CDeasmDoc),
-	//	RUNTIME_CLASS(CChildFrameDeAsm), // custom MDI child frame
-	//	RUNTIME_CLASS(CDeasmView),
-	//	false);
-
-	//AddDocTemplate(doc_template);
-	//doc_deasm_template_ = doc_template;
-
 	// create main MDI Frame window
 	CMainFrame* main_frame = new CMainFrame;
 	if (!main_frame->LoadFrame(IDR_MAINFRAME))

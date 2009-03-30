@@ -9,9 +9,7 @@ Copyright (c) 1996-2008 Michal Kowalski
 #include "ConfigSettings.h"
 #include "Broadcast.h"
 #include "FlatBar.h"
-//#include "LogWindow.h"
 #include "DynamicHelp.h"
-//#include "WatchBar.h"
 #include "ValueStackWnd.h"
 #include "LocalVarsWnd.h"
 #include "GlobalVarsWnd.h"
@@ -20,9 +18,7 @@ Copyright (c) 1996-2008 Michal Kowalski
 
 class LuaSrcDoc;
 class LuaSrcView;
-class Debugger;
-
-
+class LuaDebugCommander;
 class CMainFrame : public CMDIFrameWnd, CBroadcast, CConfigSettings
 {
 	static const TCHAR REG_ENTRY_LAYOUT[];
@@ -91,7 +87,7 @@ public:
 	CStatusBar status_bar_wnd_;
 protected:
 	CFlatToolBar tool_bar_wnd_;
-
+	LuaDebugCommander*	m_pDebuger;
 protected:
 	afx_msg int OnCreate(LPCREATESTRUCT create_struct);
 	afx_msg void OnClose();
