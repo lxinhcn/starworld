@@ -16,6 +16,9 @@ Copyright (c) 1996-2008 Michal Kowalski
 #include "DockBarEx.h"
 #include "App.h"
 
+#include "NamepipeSelectDlg.h"
+#include "DebugerInterface.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -381,6 +384,7 @@ static UINT indicators[] =
 // CMainFrame construction/destruction
 
 CMainFrame::CMainFrame()
+: m_pDebuger( NULL )
 {
 	// TODO: add member initialization code here
 	last_page_ = 0;	// ostatnio wywo³ana strona (zak³adka) w pude³ku opcji
@@ -880,7 +884,6 @@ void CMainFrame::StartDebuggerSession()
 
 void CMainFrame::ExitDebuggerSession()
 {
-	// GetDebugger().AbortProg();
 	SendMessageToViews(WM_USER_EXIT_DEBUGGER);
 	SendMessageToPopups(WM_USER_EXIT_DEBUGGER);
 }
@@ -1018,36 +1021,15 @@ void CMainFrame::OnUpdateSymDebug(CCmdUI* cmd_ui)
 	// cmd_ui->SetCheck(GetDebugger().GetLua() != 0);
 }
 
-void CMainFrame::OnSimDebug()		// uruchomienie debuggera
+void CMainFrame::OnSimDebug()
 {
-	//if (GetDebugger().IsActive())   // ju?uruchomiony?
-	//{
-	//	OnSimDebugStop();
-	//}
-	//else
-	//{
-	//	//		if (!theApp.global_.IsCodePresent())
-	//	//			return;
-	//	//		theApp.global_.StartDebug();
-	//	//		tool_bar_wnd_.OnInitialUpdate();
-	//	//		DelayedUpdateAll();
-	//	//		StartIntGenerator();
-	//}
-	/*
-	if (theApp.global_.GetDebugger() == NULL)
-	return;
-	register_bar_wnd_.Update( theApp.global_.GetDebugger().GetContext(), theApp.global_.GetStatMsg() );
-
-	if (IO_window_.m_hWnd != 0)
+	CNamepipeSelectDlg dlg;
+	if( dlg.DoModal() == IDOK )
 	{
-	IO_window_.SendMessage(CBroadcast::WM_USER_START_DEBUGGER,0,0);
-	IO_window_.SendMessage(CIOWindow::CMD_CLS);
+		CString pipe;
+		dlg.GetPipeName( pipe );
+		m_pDebuger = Create_Commander( pipe, NULL );
 	}
-	if (register_bar_wnd_.m_hWnd != 0)
-	register_bar_wnd_.PostMessage(CBroadcast::WM_USER_START_DEBUGGER,0,0);
-	if (idents_.m_hWnd != 0)
-	idents_.PostMessage(CBroadcast::WM_USER_START_DEBUGGER,0,0);
-	*/
 }
 
 //-----------------------------------------------------------------------------
@@ -1306,9 +1288,7 @@ void CMainFrame::OnUpdateSymStepInto(CCmdUI* cmd_ui)
 
 void CMainFrame::OnSimStepOver()
 {
-	//if (!GetDebugger().IsStopped())
-	//	return;
-	//GetDebugger().StepOver();
+	Debug_Command( m_pDebuger, "step" );
 }
 
 void CMainFrame::OnUpdateSymStepOver(CCmdUI* cmd_ui)
@@ -1320,10 +1300,8 @@ void CMainFrame::OnUpdateSymStepOver(CCmdUI* cmd_ui)
 
 void CMainFrame::OnSimRestart()
 {
-	//if (!theApp.global_.IsDebugger() || theApp.global_.IsProgramRunning() )
-	//  return;
-	//theApp.global_.RestartProgram();
-	//DelayedUpdateAll();
+	Debug_Command( m_pDebuger, "stop" );
+	Debug_Command( m_pDebuger, "run" );
 }
 
 void CMainFrame::OnUpdateSymRestart(CCmdUI* cmd_ui) 
@@ -1336,12 +1314,12 @@ void CMainFrame::OnUpdateSymRestart(CCmdUI* cmd_ui)
 
 void CMainFrame::OnSimDebugStop()
 {
+	Debug_Command( m_pDebuger, "stop" );
 	ExitDebuggerSession();
 }
 
 void CMainFrame::OnUpdateSymDebugStop(CCmdUI* cmd_ui)
 {
-	//cmd_ui->Enable(GetDebugger().IsActive());
 }
 
 //=============================================================================

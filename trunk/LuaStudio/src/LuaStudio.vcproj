@@ -50,7 +50,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="./CtrlBar;../scintilla/include"
+				AdditionalIncludeDirectories="./CtrlBar;../scintilla/include;&quot;$(SolutionDir)LuaDebuger&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;USE_SCINTILLA;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_SCB_REPLACE_MINIFRAME;LUA_BUILD_AS_DLL"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -75,10 +75,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Shlwapi.lib"
+				AdditionalDependencies="Shlwapi.lib LuaDebuger.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="$(SolutionDir)$(ConfigurationName)\Lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=""
 				GenerateMapFile="false"
@@ -148,7 +149,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="./CtrlBar;../scintilla/include"
+				AdditionalIncludeDirectories="./CtrlBar;../scintilla/include;&quot;$(SolutionDir)LuaDebuger&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_SCINTILLA;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_SCB_REPLACE_MINIFRAME;LUA_USE_APICHECK"
 				MinimalRebuild="true"
 				RuntimeLibrary="3"
@@ -172,9 +173,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Shlwapi.lib"
+				AdditionalDependencies="LuaDebuger.lib Helperlib.lib"
+				ShowProgress="2"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="$(SolutionDir)lib/$(ConfigurationName)"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -184,8 +187,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				AdditionalManifestFiles="res\manifest.txt"
-				EmbedManifest="true"
+				EmbedManifest="false"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -677,6 +679,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\NamepipeSelectDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath="Options.cpp"
 				>
 				<FileConfiguration
@@ -911,6 +917,10 @@
 			</File>
 			<File
 				RelativePath="MemoryDC.h"
+				>
+			</File>
+			<File
+				RelativePath=".\NamepipeSelectDlg.h"
 				>
 			</File>
 			<File

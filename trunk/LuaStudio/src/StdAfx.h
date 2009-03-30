@@ -25,7 +25,7 @@ Copyright (c) 1996-2008 Michal Kowalski
 #include <afxole.h>
 
 #include <AFXMT.H>
-
+#include "resource.h"
 #pragma warning(disable : 4800)
 
 #include <Shlwapi.h>
