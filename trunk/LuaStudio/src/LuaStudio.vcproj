@@ -149,7 +149,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="./CtrlBar;../scintilla/include;&quot;$(SolutionDir)LuaDebuger&quot;"
+				AdditionalIncludeDirectories="./CtrlBar;../scintilla/include;&quot;$(SolutionDir)LuaDebuger&quot;;&quot;$(SolutionDir)Depend\Visual Leak Detector\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_SCINTILLA;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_SCB_REPLACE_MINIFRAME;LUA_USE_APICHECK"
 				MinimalRebuild="true"
 				RuntimeLibrary="3"

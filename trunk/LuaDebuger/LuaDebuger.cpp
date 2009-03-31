@@ -4,6 +4,7 @@
 #include <vector>
 #include <deque>
 #include <algorithm>
+#include <direct.h>
 
 struct LuaDebuger::Impl
 {
@@ -33,7 +34,7 @@ struct LuaDebuger::Impl
 
 	struct variant
 	{
-		variant( LPCTSTR n, LPCTSTR v, int i )
+		variant( const char* n, const char* v, int i )
 			: name( n )		// 变量名
 			, value( v )	// 变量值
 			, idx( i )		// 变量索引
@@ -76,20 +77,31 @@ struct LuaDebuger::Impl
 
 struct LuaDebuger::ThreadParam
 {
-	ThreadParam( LuaDebuger* p, LPCTSTR lpszPipename, bool (LuaDebuger::* c)( LPCTSTR lpszCmd ) )
+	ThreadParam( LuaDebuger* p, const char* lpszPipename, bool (LuaDebuger::* c)( const char* lpszCmd ) )
 		: pThis( p )
 		, strPipename( lpszPipename )
 		, command( c )
 	{
 		debug_signal = CreateEvent( NULL, FALSE, FALSE, NULL );
+		owner_thread_id		= GetCurrentThreadId();
+		owner_process_id	= GetCurrentProcessId();
 	}
 
 	~ThreadParam()
 	{
 		if( bWork )
 		{
+			char buffer[2048];
+			_string strPipename = 
+				"\\\\.\\pipe\\lua\\" + 
+				strPipename + 
+				"." +
+				_itoa( owner_process_id, (char*)buffer, 10 ) + 
+				"." +
+				_itoa( owner_thread_id, (char*)buffer+1024, 10 );
+
 			bWork = false;
-			HANDLE p = CreateFile( TEXT("\\\\.\\pipe\\lua_debuger"), GENERIC_READ|GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL );
+			HANDLE p = CreateFile( strPipename.c_str(), GENERIC_READ|GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL );
 			DisconnectNamedPipe( p );
 			CloseHandle( p );
 		}
@@ -99,12 +111,12 @@ struct LuaDebuger::ThreadParam
 		CloseHandle( debug_signal );
 	}
 
-	bool _call( LPCTSTR lpszCmd )
+	bool _call( const char* lpszCmd )
 	{
 		return (pThis->*command)( lpszCmd );
 	}
 
-	typedef void (LuaDebuger::* instruct)( LPCTSTR lpszParams );
+	typedef void (LuaDebuger::* instruct)( const char* lpszParams );
 	typedef struct instruct_map : public std::map< _string, instruct >
 	{
 		instruct_map()
@@ -128,13 +140,14 @@ struct LuaDebuger::ThreadParam
 	HANDLE	thread;
 	HANDLE	debug_signal;
 	HANDLE	pipe;
+	int		owner_thread_id, owner_process_id;
 	bool	bWork;
 	_string strPipename;
 	static instruct_map	instructs;	// 指令映射表
 
 private:
 	LuaDebuger*	pThis;
-	bool (LuaDebuger::* command)( LPCTSTR lpszCmd )	;
+	bool (LuaDebuger::* command)( const char* lpszCmd )	;
 };
 
 LuaDebuger::ThreadParam::instruct_map	LuaDebuger::ThreadParam::instructs;	// 指令映射表
@@ -152,7 +165,7 @@ LuaDebuger::~LuaDebuger()
 	m_pImpl = NULL;
 }
 
-void LuaDebuger::bp( LPCTSTR name, int line )
+void LuaDebuger::bp( const char* name, int line )
 {
 	if( name != NULL && line >= 0 )
 	{
@@ -399,7 +412,13 @@ unsigned int __stdcall LuaDebuger::guard( void *param )
 
 	BYTE	buffer[BUFSIZE];
 	DWORD	dwRead, dwWrite;
-	_string strPipename = TEXT("\\\\.\\pipe\\lua") + p->strPipename;
+	_string strPipename = 
+		"\\\\.\\pipe\\lua\\" + 
+		p->strPipename + 
+		"." +
+		_itoa( p->owner_process_id, (char*)buffer, 10 ) + 
+		"." +
+		_itoa( p->owner_thread_id, (char*)buffer+1024, 10 );
 
 	p->bWork = true;
 	// The main loop creates an instance of the named pipe and 
@@ -441,7 +460,7 @@ unsigned int __stdcall LuaDebuger::guard( void *param )
 				BOOL ret = ReadFile( p->pipe, buffer, sizeof(buffer), &dwRead, NULL);
 				if( ret )
 				{
-					p->_call( (LPCTSTR)buffer );
+					p->_call( (const char*)buffer );
 					WriteFile( p->pipe, "~!@#$%^&*()?", 12, &dwWrite, NULL );
 				}
 			}
@@ -466,7 +485,7 @@ unsigned int __stdcall LuaDebuger::guard( void *param )
 	return 0;
 }
 
-bool LuaDebuger::initialize( lua_State* L, LPCTSTR lpszPipename )
+bool LuaDebuger::initialize( lua_State* L, const char* lpszPipename )
 {
 	m_thread_param = new ThreadParam( this, lpszPipename, &LuaDebuger::command );
 	
@@ -479,9 +498,9 @@ bool LuaDebuger::initialize( lua_State* L, LPCTSTR lpszPipename )
 	return true;
 }
 
-bool LuaDebuger::command( LPCTSTR lpszCmd )
+bool LuaDebuger::command( const char* lpszCmd )
 {
-	LPCTSTR pCmd = lpszCmd;
+	const char* pCmd = lpszCmd;
 	while( *pCmd && _istalnum( *pCmd ) ) ++pCmd;
 
 	_string strCmd( lpszCmd, pCmd - lpszCmd );
@@ -499,7 +518,7 @@ bool LuaDebuger::command( LPCTSTR lpszCmd )
 	return true;
 }
 
-int	 LuaDebuger::output( LPCTSTR szFmt, ... )
+int	 LuaDebuger::output( const char* szFmt, ... )
 {
 	TCHAR tszLog[4096];
 	va_list args;
@@ -515,14 +534,14 @@ int	 LuaDebuger::output( LPCTSTR szFmt, ... )
 	return size;
 }
 
-void LuaDebuger::cmd_breakpoint( LPCTSTR lpszParam )
+void LuaDebuger::cmd_breakpoint( const char* lpszParam )
 {
 	int		line;
 	_stscanf( lpszParam, _T("%d"), &line );
 	bp( m_pImpl->strFilename.c_str(), line );
 }
 
-void LuaDebuger::cmd_clearpoint( LPCTSTR lpszParam )
+void LuaDebuger::cmd_clearpoint( const char* lpszParam )
 {
 	if( _tcsicmp( lpszParam, _T("all") ) == 0 )
 	{
@@ -547,27 +566,27 @@ void LuaDebuger::cmd_clearpoint( LPCTSTR lpszParam )
 	}
 }
 
-void LuaDebuger::cmd_step( LPCTSTR lpszParam )
+void LuaDebuger::cmd_step( const char* lpszParam )
 {
 	run( Impl::step );
 }
 
-void LuaDebuger::cmd_stepout( LPCTSTR lpszParam )
+void LuaDebuger::cmd_stepout( const char* lpszParam )
 {
 	run( Impl::stepout );
 }
 
-void LuaDebuger::cmd_stepin( LPCTSTR lpszParam )
+void LuaDebuger::cmd_stepin( const char* lpszParam )
 {
 	run( Impl::stepin );
 }
 
-void LuaDebuger::cmd_run( LPCTSTR lpszParam )
+void LuaDebuger::cmd_run( const char* lpszParam )
 {
 	run( Impl::run );
 }
 
-void LuaDebuger::cmd_stack( LPCTSTR lpszParam )
+void LuaDebuger::cmd_stack( const char* lpszParam )
 {
 	size_t idx = 0;
 	size_t n = _stscanf( lpszParam, _T("%d"), &idx );
@@ -600,7 +619,7 @@ void LuaDebuger::cmd_stack( LPCTSTR lpszParam )
 	}
 }
 
-void LuaDebuger::cmd_open( LPCTSTR lpszParam )
+void LuaDebuger::cmd_open( const char* lpszParam )
 {
 	if( _tcslen( lpszParam ) == 0 )
 	{
@@ -651,7 +670,7 @@ void LuaDebuger::cmd_open( LPCTSTR lpszParam )
 	}
 	else
 	{
-		LPCTSTR p = lpszParam;
+		const char* p = lpszParam;
 		while( _istdigit( *p ) ) ++p;
 		if( *p == 0 && p != lpszParam )
 		{
@@ -673,7 +692,7 @@ void LuaDebuger::cmd_open( LPCTSTR lpszParam )
 	}
 }
 
-void LuaDebuger::cmd_cd( LPCTSTR lpszParam )
+void LuaDebuger::cmd_cd( const char* lpszParam )
 {
 	TCHAR szFull[_MAX_PATH];
 	if( _tfullpath( szFull, lpszParam, _MAX_PATH ) != NULL )
@@ -683,7 +702,7 @@ void LuaDebuger::cmd_cd( LPCTSTR lpszParam )
 	}
 }
 
-void LuaDebuger::cmd_dir( LPCTSTR lpszParam )
+void LuaDebuger::cmd_dir( const char* lpszParam )
 {
 	struct _tfinddata_t c_file;
 	intptr_t hFile;
@@ -707,7 +726,7 @@ void LuaDebuger::cmd_dir( LPCTSTR lpszParam )
 	}
 }
 
-void LuaDebuger::cmd_list( LPCTSTR lpszParam )
+void LuaDebuger::cmd_list( const char* lpszParam )
 {
 	Impl::break_map::const_iterator c = m_pImpl->breakpoints.find( m_pImpl->strFilename );
 	if( c != m_pImpl->breakpoints.end() )

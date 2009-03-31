@@ -12,17 +12,21 @@ public:
 	CNamepipeSelectDlg(CWnd* pParent = NULL);   // standard constructor
 	virtual ~CNamepipeSelectDlg();
 
-	void GetPipeName( CString& str )const;
+	CString GetPipeName()const;
 
 // Dialog Data
-	enum { IDD = IDD_DIALOG_SELECT_DEBUG_NAMEPIPE };
+	enum { IDD = IDD_SELECT_DEBUGER };
 
+protected:
+	CListCtrl	m_NamepipeListCtrl;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
-public:
+
+protected:
 	virtual BOOL OnInitDialog();
-public:
-	CComboBox m_NamepipeListCtrl;
+	virtual void OnOK();
+
+	CString m_strPipename;
 };

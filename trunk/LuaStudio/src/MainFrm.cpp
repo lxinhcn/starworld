@@ -1026,9 +1026,7 @@ void CMainFrame::OnSimDebug()
 	CNamepipeSelectDlg dlg;
 	if( dlg.DoModal() == IDOK )
 	{
-		CString pipe;
-		dlg.GetPipeName( pipe );
-		m_pDebuger = Create_Commander( pipe, NULL );
+		m_pDebuger = Create_Commander( dlg.GetPipeName(), NULL );
 	}
 }
 
@@ -1066,10 +1064,9 @@ SetPositionText(row+1,0);
 void CMainFrame::OnSimBreakpoint() 
 {
 	LuaSrcView* view= (LuaSrcView*)(GetActiveFrame()->GetActiveView());
-	//  ASSERT(view==NULL || view->IsKindOf(RUNTIME_CLASS(LuaSrcView)));
 
-	//if (!GetDebugger().IsActive() || view==NULL)
-	//	return;
+	if (!m_pDebuger || view==NULL)
+		return;
 
 	//if (view->IsKindOf(RUNTIME_CLASS(LuaSrcView)))
 	//{
@@ -1105,9 +1102,8 @@ void CMainFrame::OnSimBreakpoint()
 
 void CMainFrame::OnUpdateSymBreakpoint(CCmdUI* cmd_ui) 
 {  
-	// cmd_ui->Enable(GetDebugger().IsActive() && GetActiveFrame()->GetActiveView() != 0);
+	cmd_ui->Enable(m_pDebuger && GetActiveFrame()->GetActiveView() != 0);
 }
-
 
 void CMainFrame::AddBreakpoint(LuaSrcView* view, int line, Defs::Breakpoint bp)
 {
@@ -1146,10 +1142,10 @@ void CMainFrame::OnUpdateSymEditBreakpoint(CCmdUI* cmd_ui)
 
 void CMainFrame::OnSimBreak()		// stop execution
 {
-	//if (!GetDebugger().IsRunning())
-	//	return;	
+	if (!m_pDebuger)
+		return;	
 
-	//GetDebugger().Break();		// przerwanie dzia³aj¹cego programu
+	//GetDebugger().Break();
 	DelayedUpdateAll();
 
 	AfxGetMainWnd()->SetFocus();		// restore focus (so it's not in i/o window)
@@ -1157,7 +1153,7 @@ void CMainFrame::OnSimBreak()		// stop execution
 
 void CMainFrame::OnUpdateSymBreak(CCmdUI* cmd_ui) 
 {
-	// cmd_ui->Enable(GetDebugger().IsRunning());
+	cmd_ui->Enable( m_pDebuger&&Debug_CheckMode( m_pDebuger, lua_run ) );
 }
 
 //-----------------------------------------------------------------------------
@@ -1174,13 +1170,12 @@ void CMainFrame::OnUpdateSymSkipInstr(CCmdUI* cmd_ui)
 
 void CMainFrame::OnSimGo()		// run program
 {
-	//if (GetDebugger().IsStopped())
-	//	GetDebugger().Run();
+	Debug_Command( m_pDebuger, "run" );
 }
 
 void CMainFrame::OnUpdateSymGo(CCmdUI* cmd_ui) 
 {
-	//cmd_ui->Enable(GetDebugger().IsStopped());
+	cmd_ui->Enable(m_pDebuger&&( Debug_CheckMode( m_pDebuger, lua_debug ) || Debug_CheckMode( m_pDebuger, lua_stop ) ) );
 }
 
 //-----------------------------------------------------------------------------
@@ -1259,29 +1254,25 @@ void CMainFrame::OnUpdateSymSkipToLine(CCmdUI* cmd_ui)
 
 void CMainFrame::OnSimStepOut()
 {
-	//if (!GetDebugger().IsStopped())
-	//	return;
-	//GetDebugger().StepOut();
+	Debug_Command( m_pDebuger, "stepout" );
 }
 
 void CMainFrame::OnUpdateSymStepOut(CCmdUI* cmd_ui) 
 {
-	//cmd_ui->Enable(GetDebugger().IsStopped());
+	cmd_ui->Enable( m_pDebuger && Debug_CheckMode( m_pDebuger, lua_debug ) );
 }
 
 //-----------------------------------------------------------------------------
 
 void CMainFrame::OnSimStepInto()	// wykonanie bie¿¹cej instrukcji
 {
-	//if (!GetDebugger().IsStopped())
-	//	return;
-	//GetDebugger().StepInto();
-	//	DelayedUpdateAll();
+	Debug_Command( m_pDebuger, "stepin" );
+	DelayedUpdateAll();
 }
 
 void CMainFrame::OnUpdateSymStepInto(CCmdUI* cmd_ui)
 {
-	//cmd_ui->Enable(GetDebugger().IsStopped());
+	cmd_ui->Enable( Debug_CheckMode( m_pDebuger, lua_debug ) );
 }
 
 //-----------------------------------------------------------------------------
@@ -1293,7 +1284,7 @@ void CMainFrame::OnSimStepOver()
 
 void CMainFrame::OnUpdateSymStepOver(CCmdUI* cmd_ui)
 {
-	//cmd_ui->Enable(GetDebugger().IsStopped());
+	cmd_ui->Enable( Debug_CheckMode( m_pDebuger, lua_debug ) );
 }
 
 //-----------------------------------------------------------------------------
@@ -1306,8 +1297,7 @@ void CMainFrame::OnSimRestart()
 
 void CMainFrame::OnUpdateSymRestart(CCmdUI* cmd_ui) 
 {
-	//cmd_ui->Enable( theApp.global_.IsDebugger() &&	// jest dzia³aj¹cy debugger
-	//  !theApp.global_.IsProgramRunning() );		// oraz zatrzymany program?
+	cmd_ui->Enable( Debug_CheckMode( m_pDebuger, lua_debug ) );
 }
 
 //-----------------------------------------------------------------------------
@@ -1320,6 +1310,7 @@ void CMainFrame::OnSimDebugStop()
 
 void CMainFrame::OnUpdateSymDebugStop(CCmdUI* cmd_ui)
 {
+	cmd_ui->Enable( Debug_CheckMode( m_pDebuger, lua_run ) || Debug_CheckMode( m_pDebuger, lua_debug ) );
 }
 
 //=============================================================================
@@ -1335,7 +1326,6 @@ void CMainFrame::OnOptions()
 {
 	last_page_ = Options(last_page_);
 }
-
 
 void CMainFrame::OnUpdateOptions(CCmdUI* cmd_ui) 
 {

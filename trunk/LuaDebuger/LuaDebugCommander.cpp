@@ -5,6 +5,7 @@ LuaDebugCommander::LuaDebugCommander(void)
 : m_hPipe( INVALID_HANDLE_VALUE )
 , m_hThread( INVALID_HANDLE_VALUE )
 , m_bWork( TRUE )
+, m_mode( lua_stop )
 , m_RetFunc( NULL )
 {
 	szBuffer = new BYTE[BUFSIZE];
@@ -17,13 +18,15 @@ LuaDebugCommander::~LuaDebugCommander(void)
 	delete[] szBuffer;
 }
 
-bool LuaDebugCommander::initialize( LPCTSTR lpszPipename, ProcessRetCmd fn )
+bool LuaDebugCommander::initialize( const char* lpszPipename, ProcessRetCmd fn )
 {
 	int retry = 10;
 	m_RetFunc = fn;
+	std::string strPipename( "\\\\.\\pipe\\" );
+	strPipename.append( lpszPipename );
 	while( retry )
 	{
-		m_hPipe = CreateFile( lpszPipename, GENERIC_READ|GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL );
+		m_hPipe = CreateFile( strPipename.c_str(), GENERIC_READ|GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL );
 		if( m_hPipe != INVALID_HANDLE_VALUE )
 		{
 			break;
@@ -70,7 +73,7 @@ void LuaDebugCommander::Signal()
 	SetEvent( m_hSignal );
 }
 
-bool LuaDebugCommander::command( LPCTSTR cmd )
+bool LuaDebugCommander::command( const char* cmd )
 {
 	DWORD dwWrite = 0;
 	return WriteFile( m_hPipe, cmd, (DWORD)(_tcslen(cmd)+1)*sizeof(TCHAR), &dwWrite, NULL ) == TRUE;
@@ -121,13 +124,24 @@ unsigned int __stdcall LuaDebugCommander::pipe( void* param )
 LuaDebugCommander* Create_Commander( const char* pipe, ProcessRetCmd fn )
 {
 	LuaDebugCommander* pCommander = new LuaDebugCommander();
-	pCommander->initialize( XA2T(pipe), fn );
+	if( !pCommander->initialize( XA2T(pipe), fn ) )
+	{
+		Destroy_Commander( pCommander );
+		return NULL;
+	}
 	return pCommander;
 }
 
 void Debug_Command( LuaDebugCommander* Debuger, const char* Cmd )
 {
+	if( !Debuger ) return;
 	Debuger->command( XA2T(Cmd) );
+}
+
+bool Debug_CheckMode( LuaDebugCommander* pDebuger, run_mode m )
+{
+	if( !pDebuger ) return false;
+	return ( pDebuger->m_mode == m );
 }
 
 void Destroy_Commander( LuaDebugCommander* Debuger )
