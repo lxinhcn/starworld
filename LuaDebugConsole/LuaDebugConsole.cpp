@@ -17,6 +17,11 @@ BOOL WINAPI HandlerRoutine( DWORD dwCtrlType )
 	return TRUE;
 }
 
+void PrintResult( LPBYTE data )
+{
+	printf( (const char*)data );
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	SetConsoleCtrlHandler( HandlerRoutine, TRUE );
@@ -34,17 +39,17 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	LuaDebugCommander commander;
 	setlocale( LC_ALL, "chs");
-	LPTSTR	lpszPipename = TEXT("\\\\.\\pipe\\lua_debuger"); 
-	commander.initialize( lpszPipename );
+	const char*	lpszPipename = "\\\\.\\pipe\\lua\\ui";
+	commander.initialize( lpszPipename, PrintResult );
 
 	_tprintf( _T("连接LuaDebuger成功。\n") );
 	TCHAR szCommand[256];
 	DWORD dwSize = 0;
-	commander.command( _T("cd ..\\Resource\\Scripts\\ui") );
+	commander.command( "cd ..\\Resource\\Scripts\\ui" );
 	commander.waitSignal();
-	commander.command( _T("open utility.lua") );
+	commander.command( "open utility.lua" );
 	commander.waitSignal();
-	commander.command( _T("list") );
+	commander.command( "list" );
 	commander.waitSignal();
 	while(work)
 	{

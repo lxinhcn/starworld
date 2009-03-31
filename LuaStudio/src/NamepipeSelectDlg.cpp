@@ -19,6 +19,22 @@ CNamepipeSelectDlg::~CNamepipeSelectDlg()
 {
 }
 
+BEGIN_MESSAGE_MAP(CNamepipeSelectDlg, CDialog)
+	ON_WM_DESTROY()
+END_MESSAGE_MAP()
+
+void CNamepipeSelectDlg::DoDataExchange(CDataExchange* pDX)
+{
+	CDialog::DoDataExchange(pDX);
+	DDX_Control( pDX, IDC_LIST_LUAPIPE, m_NamepipeListCtrl );
+}
+
+// CNamepipeSelectDlg message handlers
+CString CNamepipeSelectDlg::GetPipeName()const
+{	
+	return m_strPipename;
+}
+
 #define FileDirectoryInformation 1
 #define STATUS_NO_MORE_FILES 0x80000006L
 
@@ -92,36 +108,26 @@ typedef LONG (WINAPI *PROCNTQDF)( HANDLE,HANDLE,PVOID,PVOID,PIO_STATUS_BLOCK,PVO
 
 PROCNTQDF NtQueryDirectoryFile;
 
-void CNamepipeSelectDlg::DoDataExchange(CDataExchange* pDX)
-{
-	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_COMBO_NAMEPIPE, m_NamepipeListCtrl);
-}
-
-
-BEGIN_MESSAGE_MAP(CNamepipeSelectDlg, CDialog)
-END_MESSAGE_MAP()
-
-
-// CNamepipeSelectDlg message handlers
-void CNamepipeSelectDlg::GetPipeName( CString& name )const
-{
-	LPTSTR szText = name.GetBufferSetLength( 1024 );
-	::GetWindowText( m_NamepipeListCtrl.GetSafeHwnd(), szText, name.GetLength() );
-}
-
 BOOL CNamepipeSelectDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
 	// TODO:  Add extra initialization here
+	DWORD dwStyle = ListView_GetExtendedListViewStyle( m_NamepipeListCtrl );
+	//Add the full row select and grid line style to the existing extended styles
+	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES | LVS_EX_HEADERDRAGDROP | LVS_EX_TRACKSELECT;
+	ListView_SetExtendedListViewStyle ( m_NamepipeListCtrl, dwStyle );
+
+	m_NamepipeListCtrl.InsertColumn( 0, _T("Name"), LVCFMT_LEFT, 100 );
+	m_NamepipeListCtrl.InsertColumn( 1, _T("Process"), LVCFMT_LEFT, 80 );
+	m_NamepipeListCtrl.InsertColumn( 2, _T("Thread"), LVCFMT_LEFT, 80 );
+
 	LONG ntStatus;
 	IO_STATUS_BLOCK IoStatus;
 	HANDLE hPipe;
 	BOOL bReset = TRUE;
 	PFILE_QUERY_DIRECTORY DirInfo,
 		TmpInfo;
-
 
 	NtQueryDirectoryFile = (PROCNTQDF)GetProcAddress(
 		GetModuleHandle("ntdll"),
@@ -131,7 +137,7 @@ BOOL CNamepipeSelectDlg::OnInitDialog()
 	if (!NtQueryDirectoryFile)
 		return TRUE;
 
-	hPipe = CreateFile("\\\\.\\Pipe\\Lua\\",GENERIC_READ,
+	hPipe = CreateFile("\\\\.\\Pipe\\",GENERIC_READ,
 		FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,
 		NULL,OPEN_EXISTING,0,NULL);
 
@@ -157,16 +163,31 @@ BOOL CNamepipeSelectDlg::OnInitDialog()
 		TmpInfo = DirInfo;
 		while(1)
 		{
-			if(TmpInfo->NextEntryOffset==0)
-				break;
 
 			TmpInfo->FileDirectoryInformationClass.FileName[TmpInfo->FileNameLength/sizeof(WCHAR)] = NULL;
 
-			/*wprintf(L"%s (%d, %d)\n",TmpInfo->FileDirectoryInformationClass.FileName,
-				TmpInfo->EndOfFile.LowPart,
-				TmpInfo->AllocationSize.LowPart );*/
+			LPCTSTR pipename = W2T(TmpInfo->FileDirectoryInformationClass.FileName);
+			LPSTR name = _tcsdup( pipename );
+			if( _tcsnicmp( _T("lua\\"), pipename, 4 ) == 0 || _tcsnicmp( _T("win32pipes"), pipename, 10 ) == 0)
+			{
+				LPSTR tok = _tcstok( name, _T(".") );
 
-			m_NamepipeListCtrl.AddString( W2A( TmpInfo->FileDirectoryInformationClass.FileName ) );
+				if( tok == NULL ) break;
+				int i = m_NamepipeListCtrl.InsertItem( 0, tok );
+
+				tok = _tcstok( NULL, _T(".") );
+				if( tok == NULL ) break;
+				m_NamepipeListCtrl.SetItemText( i, 1, tok );
+
+				tok = _tcstok( NULL, _T(".") );
+				if( tok == NULL ) break;
+				m_NamepipeListCtrl.SetItemText( i, 2, tok );
+				free( name );
+			}
+			
+			if(TmpInfo->NextEntryOffset==0)
+				break;
+
 			TmpInfo = (PFILE_QUERY_DIRECTORY)((DWORD)TmpInfo+TmpInfo->NextEntryOffset);
 		}
 
@@ -178,4 +199,30 @@ BOOL CNamepipeSelectDlg::OnInitDialog()
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
+}
+
+void CNamepipeSelectDlg::OnOK()
+{
+	// TODO: Add your specialized code here and/or call the base class
+	POSITION pos = m_NamepipeListCtrl.GetFirstSelectedItemPosition();
+	if( pos )
+	{
+		int sel = m_NamepipeListCtrl.GetNextSelectedItem( pos );
+		if( sel < 0 )
+		{
+			MessageBox( _T("必须选择一个调试管道。"), _T("错误") );
+			return;
+		}
+		m_strPipename.Empty();
+		CString item[3];
+		for( int i = 0; i < 3; ++i )
+			item[i] = m_NamepipeListCtrl.GetItemText( sel, i );
+		m_strPipename = item[0] + _T(".") + item[1] + _T(".") + item[2];
+	}
+	else
+	{
+		MessageBox( _T("必须选择一个调试管道。"), _T("错误") );
+		return;
+	}
+	CDialog::OnOK();
 }

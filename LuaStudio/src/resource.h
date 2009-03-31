@@ -24,7 +24,6 @@
 #define IDC_LINK                        176
 #define IDC_LINK_LUA                    177
 #define IDR_ACCELERATOR1                178
-#define IDD_DIALOG_SELECT_DEBUG_NAMEPIPE 182
 #define IDD_SELECT_DEBUGER              182
 #define IDD_ABOUTBOX                    1000
 #define IDB_CLOSE_TB                    1001
@@ -200,7 +199,8 @@
 #define IDC_OPT_ED_BOLD_FONT            2113
 #define IDC_OPT_ED_COLOR                2114
 #define IDC_TITLE                       2115
-#define IDC_COMBO_NAMEPIPE              2116
+#define IDC_LIST3                       2119
+#define IDC_LIST_LUAPIPE                2119
 #define IDC_OPT_ED_AUTO_SYNTAX          2303
 #define IDC_OPT_ED_AUTO_UPPER_CASE      2306
 #define IDC_OPT_ED_NEW_FILE             2307
@@ -361,7 +361,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        183
 #define _APS_NEXT_COMMAND_VALUE         3017
-#define _APS_NEXT_CONTROL_VALUE         2117
+#define _APS_NEXT_CONTROL_VALUE         2120
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

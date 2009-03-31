@@ -29,7 +29,7 @@ namespace UILib
 	void LuaBindClass::Initialize()
 	{
 		m_pLuaDebuger = new LuaDebuger();
-		m_pLuaDebuger->initialize( Lua::Instance().getState() );
+		m_pLuaDebuger->initialize( Lua::Instance().getState(), "ui"  );
 
 		Class< TiXmlElement >( "xml::Element" )
 			.constructor< const char* >()
