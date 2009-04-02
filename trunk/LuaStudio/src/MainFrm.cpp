@@ -362,7 +362,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
 	ON_MESSAGE(CBroadcast::WM_USER_EXIT_DEBUGGER, OnExitDebugger)
 	ON_MESSAGE(CBroadcast::WM_USER_PROG_MEM_CHANGED, OnChangeCode)
 
-	ON_MESSAGE(CBroadcast::WM_USER_NEW_LINE, OnExecEvent)
+	ON_MESSAGE(CBroadcast::WM_USER_EVENT, OnExecEvent)
 END_MESSAGE_MAP()
 
 
@@ -385,6 +385,7 @@ static UINT indicators[] =
 
 CMainFrame::CMainFrame()
 : m_pDebuger( NULL )
+, m_bRun( false )
 {
 	// TODO: add member initialization code here
 	last_page_ = 0;	// ostatnio wywo³ana strona (zak³adka) w pude³ku opcji
@@ -612,12 +613,7 @@ LRESULT CALLBACK CMainFrame::StatusBarWndProc(HWND wnd, UINT msg, WPARAM wParam,
 			LRESULT ret= (*CMainFrame::pfn_old_proc_)(wnd,msg,wParam,lParam);
 			if (ret == 0)
 			{
-				//if (!GetDebugger().IsActive())
-				//	return ret;
-
-				//// active program available?
-				//bool active= !GetDebugger().IsFinished();
-				bool active = true;
+				bool active = ((CMainFrame*)AfxGetMainWnd())->m_pDebuger != NULL;
 
 				CRect rect;
 				(*pfn_old_proc_)(wnd,SB_GETRECT,2,(LPARAM)(RECT*)rect);
@@ -708,9 +704,30 @@ int ParseLine(const CString& path, const char* msg)
 	return 0;
 }
 
-
 LRESULT CMainFrame::OnExecEvent(WPARAM ev, LPARAM data)
 {
+	switch( ev )
+	{
+	case CBroadcast::Event_Break:
+		{
+			buffer* ret = Debug_Command( m_pDebuger, "stack" );
+			buffer* head = ret;
+			Params params;
+			while( CHECKBUF( ret, cmd_buffer, "" ) )
+			{
+				params.clear();
+				PraseString( ret->data, params );
+				if( ret == head )
+					if( LuaSrcView* view = OpenView( params[4].c_str() ) )
+					{
+						SetPointer( view, atoi( params[3].c_str() ) - 1, true );
+					}
+				ret = ret->next;
+			}
+			Debug_ReleaseBuffer( m_pDebuger, head );
+		}
+		break;
+	}
 	//if (ev == Lua::Start)
 	//{
 	//	if (LuaSrcView* view= GetCurrentView())
@@ -827,27 +844,6 @@ void CMainFrame::Dump(CDumpContext& dc) const
 
 void CMainFrame::OnClose()
 {
-	//if (GetDebugger().IsRunning())
-	//{
-	//	if (IO_window_.IsWaiting())
-	//	{
-	//		IO_window_.ExitModalLoop();
-	//		return;
-	//	}
-	//	if (AfxMessageBox(IDS_MAINFRM_PROG_RUNNING,MB_YESNO) == IDYES)
-	//	{
-	//		GetDebugger().AbortProg();
-	//		if (IO_window_.m_hWnd != 0)
-	//			IO_window_.SendMessage(CBroadcast::WM_USER_EXIT_DEBUGGER,0,0);
-	//		//if (register_bar_wnd_.m_hWnd != 0)
-	//		//	register_bar_wnd_.SendMessage(CBroadcast::WM_USER_EXIT_DEBUGGER,0,0);
-	//		//if (idents_.m_hWnd != 0)
-	//		//	idents_.SendMessage(CBroadcast::WM_USER_EXIT_DEBUGGER,0,0);
-	//	}
-	//	else
-	//		return;
-	//}
-
 	CWinApp* app = AfxGetApp();
 
 	WINDOWPLACEMENT wp;
@@ -869,6 +865,7 @@ void CMainFrame::OnDestroy()
 {
 	if (timer_)
 		KillTimer(timer_);
+	Destroy_Commander( m_pDebuger );
 	ConfigSettings(false);		// save settings
 	CMDIFrameWnd::OnDestroy();
 }
@@ -1005,7 +1002,7 @@ LuaSrcView* CMainFrame::GetCurrentView()
 	if (wnd==NULL)
 		return NULL;
 
-	CView* view= wnd->GetActiveView();	// aktywne okno 'view'
+	CView* view= wnd->GetActiveView();
 	if (view==NULL || !view->IsKindOf( RUNTIME_CLASS(LuaSrcView) ))
 		return NULL;
 
@@ -1016,17 +1013,22 @@ LuaSrcView* CMainFrame::GetCurrentView()
 
 void CMainFrame::OnUpdateSymDebug(CCmdUI* cmd_ui)
 {
-	//	cmd_ui->Enable(theApp.global_.IsCodePresent());	// jest zasemblowany program?
-	cmd_ui->Enable();
-	// cmd_ui->SetCheck(GetDebugger().GetLua() != 0);
+	cmd_ui->Enable( m_pDebuger == NULL );
+	cmd_ui->SetCheck( m_pDebuger == NULL );
 }
 
+extern bool ProcessRetCommand( char* data, size_t size, size_t maxsize );
 void CMainFrame::OnSimDebug()
 {
 	CNamepipeSelectDlg dlg;
 	if( dlg.DoModal() == IDOK )
 	{
-		m_pDebuger = Create_Commander( dlg.GetPipeName(), NULL );
+		Destroy_Commander( m_pDebuger );
+		m_pDebuger = Create_Commander( dlg.GetPipeName(), ProcessRetCommand );
+		if( m_pDebuger )
+		{
+			m_bRun = true;
+		}
 	}
 }
 
@@ -1068,36 +1070,34 @@ void CMainFrame::OnSimBreakpoint()
 	if (!m_pDebuger || view==NULL)
 		return;
 
-	//if (view->IsKindOf(RUNTIME_CLASS(LuaSrcView)))
-	//{
-	//	int line= view->GetCurrLineNo();	// bie¿¹cy wiersz
+	if (view->IsKindOf(RUNTIME_CLASS(LuaSrcView)))
+	{
+		int line= view->GetCurrLineNo();
 
-	//	if (GetDebugger().ToggleBreakpoint(line, view->GetDocument()->GetPathName()))
-	//		AddBreakpoint(view, line, Defs::BPT_EXECUTE);
-	//	else
-	//		view->RemoveBreakpoint(line);
-	//	/*
-	//	// ustawienie miejsca przerwania w kodzie wynikowym odpowiadaj¹cym bie¿¹cemu wierszowi
-	//	Defs::Breakpoint bp= theApp.global_.SetBreakpoint( line, view->GetDocument()->GetPathName() );
-	//	if (bp != Defs::BPT_NO_CODE)
-	//	{
-	//	if (bp != Defs::BPT_NONE)
-	//	AddBreakpoint(view, line, bp);
-	//	else
-	//	RemoveBreakpoint(view, line);
-	//	}
-	//	else
-	//	AfxMessageBox(IDS_SRC_NO_CODE); */
-	//}
-	////else if (view->IsKindOf(RUNTIME_CLASS(CDeasm6502View)))
-	////{
-	////	;
-	////}
-	//else
-	//{
-	//	ASSERT(false);	// aktywne okno nierozpoznane
-	//	return;
-	//}
+		CString str;
+		str.Format( "open %s", view->GetDocument()->GetPathName() );
+		buffer* ret_open = Debug_Command( m_pDebuger, str );
+		if( CHECKBUF( ret_open, cmd_buffer, "success" ) )
+		{
+			str.Format( "check \"%s\", %d", view->GetDocument()->GetPathName(), line+1 );
+			buffer* ret_check = Debug_Command( m_pDebuger, str );
+			if( CHECKBUF( ret_check, cmd_buffer, "false" ) )
+			{
+				AddBreakpoint(view, line, Defs::BPT_EXECUTE);
+			}
+			else if( CHECKBUF( ret_check, cmd_buffer, "true" ) )
+			{
+				RemoveBreakpoint( view, line );
+			}
+			Debug_ReleaseBuffer( m_pDebuger, ret_check );
+		}
+		Debug_ReleaseBuffer( m_pDebuger, ret_open );
+	}
+	else
+	{
+		ASSERT(false);	// aktywne okno nierozpoznane
+		return;
+	}
 }
 
 void CMainFrame::OnUpdateSymBreakpoint(CCmdUI* cmd_ui) 
@@ -1114,7 +1114,15 @@ void CMainFrame::AddBreakpoint(LuaSrcView* view, int line, Defs::Breakpoint bp)
 	POSITION pos= doc->GetFirstViewPosition();
 	while (pos != NULL)
 		if (LuaSrcView* src_view= dynamic_cast<LuaSrcView*>(doc->GetNextView(pos)))
-			src_view->AddBreakpoint(line, bp);
+		{
+			buffer* ret = Debug_Command( m_pDebuger, "bp %d", src_view->GetCurrLineNo() + 1 );
+			if( CHECKBUF( ret, cmd_buffer, "success" ) )
+			{
+				src_view->AddBreakpoint(line, bp);
+			}
+
+			Debug_ReleaseBuffer( m_pDebuger, ret );
+		}
 }
 
 void CMainFrame::RemoveBreakpoint(LuaSrcView* view, int line)
@@ -1126,7 +1134,14 @@ void CMainFrame::RemoveBreakpoint(LuaSrcView* view, int line)
 	POSITION pos= doc->GetFirstViewPosition();
 	while (pos != NULL)
 		if (LuaSrcView* src_view= dynamic_cast<LuaSrcView*>(doc->GetNextView(pos)))
-			src_view->RemoveBreakpoint(line);
+		{
+			buffer* ret = Debug_Command( m_pDebuger, "clr %d", src_view->GetCurrLineNo() + 1 );
+			if( CHECKBUF( ret, cmd_buffer, "success" ) )
+			{
+				src_view->RemoveBreakpoint(line);
+			}
+			Debug_ReleaseBuffer( m_pDebuger, ret );
+		}
 }
 
 
@@ -1145,7 +1160,11 @@ void CMainFrame::OnSimBreak()		// stop execution
 	if (!m_pDebuger)
 		return;	
 
-	//GetDebugger().Break();
+	Debug_Command( m_pDebuger, "run" );
+
+	Destroy_Commander( m_pDebuger );
+	m_pDebuger = NULL;
+
 	DelayedUpdateAll();
 
 	AfxGetMainWnd()->SetFocus();		// restore focus (so it's not in i/o window)
@@ -1153,7 +1172,7 @@ void CMainFrame::OnSimBreak()		// stop execution
 
 void CMainFrame::OnUpdateSymBreak(CCmdUI* cmd_ui) 
 {
-	cmd_ui->Enable( m_pDebuger&&Debug_CheckMode( m_pDebuger, lua_run ) );
+	cmd_ui->Enable( m_pDebuger&&m_bRun );
 }
 
 //-----------------------------------------------------------------------------
@@ -1171,11 +1190,12 @@ void CMainFrame::OnUpdateSymSkipInstr(CCmdUI* cmd_ui)
 void CMainFrame::OnSimGo()		// run program
 {
 	Debug_Command( m_pDebuger, "run" );
+	m_bRun = true;
 }
 
 void CMainFrame::OnUpdateSymGo(CCmdUI* cmd_ui) 
 {
-	cmd_ui->Enable(m_pDebuger&&( Debug_CheckMode( m_pDebuger, lua_debug ) || Debug_CheckMode( m_pDebuger, lua_stop ) ) );
+	cmd_ui->Enable(m_pDebuger&&!m_bRun );
 }
 
 //-----------------------------------------------------------------------------
@@ -1259,7 +1279,7 @@ void CMainFrame::OnSimStepOut()
 
 void CMainFrame::OnUpdateSymStepOut(CCmdUI* cmd_ui) 
 {
-	cmd_ui->Enable( m_pDebuger && Debug_CheckMode( m_pDebuger, lua_debug ) );
+	cmd_ui->Enable( m_pDebuger && !m_bRun );
 }
 
 //-----------------------------------------------------------------------------
@@ -1272,7 +1292,7 @@ void CMainFrame::OnSimStepInto()	// wykonanie bie¿¹cej instrukcji
 
 void CMainFrame::OnUpdateSymStepInto(CCmdUI* cmd_ui)
 {
-	cmd_ui->Enable( Debug_CheckMode( m_pDebuger, lua_debug ) );
+	cmd_ui->Enable( m_pDebuger&&!m_bRun );
 }
 
 //-----------------------------------------------------------------------------
@@ -1284,7 +1304,7 @@ void CMainFrame::OnSimStepOver()
 
 void CMainFrame::OnUpdateSymStepOver(CCmdUI* cmd_ui)
 {
-	cmd_ui->Enable( Debug_CheckMode( m_pDebuger, lua_debug ) );
+	cmd_ui->Enable( m_pDebuger&&!m_bRun );
 }
 
 //-----------------------------------------------------------------------------
@@ -1297,7 +1317,7 @@ void CMainFrame::OnSimRestart()
 
 void CMainFrame::OnUpdateSymRestart(CCmdUI* cmd_ui) 
 {
-	cmd_ui->Enable( Debug_CheckMode( m_pDebuger, lua_debug ) );
+	cmd_ui->Enable( m_pDebuger&&m_bRun );
 }
 
 //-----------------------------------------------------------------------------
@@ -1310,7 +1330,7 @@ void CMainFrame::OnSimDebugStop()
 
 void CMainFrame::OnUpdateSymDebugStop(CCmdUI* cmd_ui)
 {
-	cmd_ui->Enable( Debug_CheckMode( m_pDebuger, lua_run ) || Debug_CheckMode( m_pDebuger, lua_debug ) );
+	cmd_ui->Enable( m_pDebuger&&m_bRun );
 }
 
 //=============================================================================
@@ -1485,8 +1505,8 @@ void CMainFrame::OnUpdateEditorOpt(CCmdUI* cmd_ui)
 
 void CMainFrame::OnViewIOWindow() 
 {
-	//if (!GetDebugger().IsActive())
-	//	return;
+	if ( m_pDebuger )
+		return;
 
 	if (!IO_window_.m_hWnd)	// nie ma okna?
 	{

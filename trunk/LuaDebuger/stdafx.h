@@ -29,7 +29,6 @@ extern "C"
 
 #include <process.h>
 #include "helplib.h"
-#define BUFSIZE 1024*32
 
 #ifdef _UNICODE
 typedef std::wstring		_string;

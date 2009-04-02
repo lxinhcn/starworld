@@ -10,8 +10,8 @@ Copyright (c) 1996-2008 Michal Kowalski
 
 struct CConfigSettings
 {
-  static LOGFONT* const fonts[];	// struktury LOGFONT w ca³ym programie
-  static CFont* const cfonts[];	// struktury CFont w ca³ym programie
+  static LOGFONT* const fonts[];
+  static CFont* const cfonts[];
   static COLORREF* text_color[];
   static COLORREF* bkgnd_color[];
   static COLORREF* color_syntax[];

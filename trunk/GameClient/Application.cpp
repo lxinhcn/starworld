@@ -46,18 +46,12 @@ bool CApplication::FrameFunc()
 	switch(Application::Instance()->Input_GetKey())
 	{
 	case HGEK_F9:
-		if( Application::Instance()->System_GetState( HGE_DONTSUSPEND ) )
-		{
-			Application::Instance()->System_SetState( HGE_DONTSUSPEND, true );
-			printf( "UICommander start successful.\n" );
-		}
+		Application::Instance()->System_SetState( HGE_DONTSUSPEND, true );
+		printf( "UICommander start successful.\n" );
 		break;
 	case HGEK_F8:
-		if( !Application::Instance()->System_GetState( HGE_DONTSUSPEND ) )
-		{
-			Application::Instance()->System_SetState( HGE_DONTSUSPEND, false );
-			printf( "UICommander closed.\n" );
-		}
+		Application::Instance()->System_SetState( HGE_DONTSUSPEND, false );
+		printf( "UICommander closed.\n" );
 		break;
 		//case HGEK_UP:
 		//	if(nObjects<MAX_OBJECTS) nObjects+=100; break;

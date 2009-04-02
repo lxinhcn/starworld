@@ -19,8 +19,13 @@ public:
     WM_USER_UPDATE_REG_WND,
     WM_USER_PROG_MEM_CHANGED,
     WM_USER_REMOVE_ERR_MARK,
-	WM_USER_NEW_LINE,
+	WM_USER_EVENT,
 	WM_APP_OUTPUT
+  };
+
+  enum EventCode
+  {
+	  Event_Break,
   };
 
   static void SendMessageToViews(UINT msg, WPARAM wParam= 0, LPARAM lParam= 0);
