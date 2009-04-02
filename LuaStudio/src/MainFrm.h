@@ -55,7 +55,6 @@ public:
 // Attributes
 public:
 	CIOWindow IO_window_;
-//	CDynamicHelp help_bar_wnd_;
 	ValueStackWnd value_stack_wnd_;
 	LocalVarsWnd local_vars_wnd_;
 	GlobalVarsWnd global_vars_wnd_;
@@ -88,6 +87,7 @@ public:
 protected:
 	CFlatToolBar tool_bar_wnd_;
 	LuaDebugCommander*	m_pDebuger;
+	bool m_bRun;
 protected:
 	afx_msg int OnCreate(LPCREATESTRUCT create_struct);
 	afx_msg void OnClose();

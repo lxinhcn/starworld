@@ -2,9 +2,12 @@
 //
 
 #include "stdafx.h"
-#include "LuaDebugCommander.h"
+#include <string>
+#include <vector>
 #include <stdlib.h>
 #include <locale>
+
+#include "LuaDebugCommander.h"
 bool work = true;
 
 BOOL WINAPI HandlerRoutine( DWORD dwCtrlType )
@@ -17,9 +20,10 @@ BOOL WINAPI HandlerRoutine( DWORD dwCtrlType )
 	return TRUE;
 }
 
-void PrintResult( LPBYTE data )
+bool PrintResult( char* data, size_t size, size_t maxsize )
 {
 	printf( (const char*)data );
+	return false;
 }
 
 int _tmain(int argc, _TCHAR* argv[])

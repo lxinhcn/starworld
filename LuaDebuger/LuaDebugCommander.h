@@ -10,20 +10,24 @@ public:
 	bool	initialize( const char* lpszPipename, ProcessRetCmd fn );
 	bool	command( const char* cmd );
 
-	bool	waitSignal();
+	buffer*	getBuffer();
+	void	releaseBuffer( buffer* buf );
+	bool	waitSignal( DWORD dwTimer = INFINITE );
 protected:
 	void	Signal();
 	void	command();
-	bool	result();
+	buffer*	result();
 
-	LPBYTE	buffer()const{ return szBuffer; }
 private:
 	static unsigned int __stdcall pipe( void* param );
+
 	HANDLE		m_hPipe;
 	HANDLE		m_hThread;
 	HANDLE		m_hSignal;
-	LPBYTE		szBuffer;
-	BOOL		m_bWork;
+	buffer		*m_buffer_head;
+	buffer		*m_buffer_tail;
+
+	bool		m_bWork;
 	run_mode	m_mode;
 	ProcessRetCmd	m_RetFunc;
 

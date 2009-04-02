@@ -24,6 +24,7 @@ protected:
 	void run( int mode );
 
 	void cmd_breakpoint( const char* lpszParam );
+	void cmd_checkpoint( const char* lpszParam );
 	void cmd_clearpoint( const char* lpszParam );
 	void cmd_step( const char* lpszParam );
 	void cmd_stepout( const char* lpszParam );

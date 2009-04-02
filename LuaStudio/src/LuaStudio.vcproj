@@ -395,6 +395,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Debuger.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Defs.cpp"
 				>
 			</File>
@@ -837,6 +841,10 @@
 			</File>
 			<File
 				RelativePath="CXMultiDocTemplate.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Debuger.h"
 				>
 			</File>
 			<File
