@@ -107,7 +107,6 @@ struct LuaDebuger::ThreadParam
 			DisconnectNamedPipe( p );
 			CloseHandle( p );
 		}
-		CloseHandle( pipe );
 		WaitForSingleObject( thread, INFINITE );
 		CloseHandle( thread );
 		CloseHandle( debug_signal );

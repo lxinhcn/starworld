@@ -38,6 +38,30 @@ namespace UILib
 		return true;
 	}
 
+	void XUI_EditBox::SetText( const std::string &t )
+	{
+		m_text.clear();
+		std::string::size_type begin = 0, end = 0;
+		while( ( end = t.find( _T('\n'), begin ) ) != std::string::npos )
+		{
+			m_text.push_back( XA2T( t.substr( begin, end ) ) );
+			++begin;
+		}
+	}
+
+	std::string XUI_EditBox::GetText()const
+	{
+		std::string t;
+		text::const_iterator i = m_text.begin();
+		while( i != m_text.end() )
+		{
+			t.append( XT2A( *i ) );
+			++i;
+		}
+
+		return t;
+	}
+
 	void XUI_EditBox::RenderCharacter( _tchar szChar, XUI_IFont* pFont, LONG &x, LONG &y, BOOL bRender )
 	{
 		if( bRender )
@@ -62,11 +86,10 @@ namespace UILib
 		CPoint CharPos = pt;
 		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
 
-		Position begin = m_FirstLineNumber?m_LineRecorder[m_FirstLineNumber-1]:0;
-		Position drawline = m_FirstLineNumber;
-		for( size_t i = begin; i < m_strText.length()+1; ++i )
+		for( Position i = m_FirstLineNumber; i < m_text.size(); ++i )
 		{
-			_tchar c = m_strText[i];
+			line& l = m_text[i];
+			end_type t = l.type;
 
 			if( CharPos.y > rc.bottom - pFont->GetCharacterHeight() )
 			{
@@ -74,88 +97,77 @@ namespace UILib
 				break;
 			}
 
-			if( pFont->GetCharacterWidth( c ) + CharPos.x > rc.right )
+			for( size_t cursor = 0; cursor < l.size(); ++cursor )
 			{
-				if( m_bWarpText )
+				_tchar c = l[cursor];
+
+				if( pFont->GetCharacterWidth( c ) + CharPos.x > rc.right )
 				{
-					// 字符显示超出宽度，则折行显示
-					if( drawline < m_LineRecorder.size() )
+					if( m_bWarpText )
 					{
-						if( m_LineRecorder[drawline] != i )
-						{
-							// 没有折行标志则添加一个。
-							m_LineRecorder.insert( m_LineRecorder.begin() + drawline, i );
-							SetCurLineNumber( m_nCurLineNumber + 1 );
-						}
-						// 当前绘制行
-						++drawline;
+						// 字符显示超出宽度，则折行显示
+						// 将没有画的作为独立的串添加到下一行
+						m_text.insert( m_text.begin() + i + 1, line( l.substr( cursor, -1 ), type_r ) );
+						SetCurLineNumber( m_nCurLineNumber + 1 );
+						break;
 					}
 					else
 					{
-						// 最后一行则添加一个。
-						m_LineRecorder.push_back( i );
-						SetCurLineNumber( m_nCurLineNumber + 1 );
+						// 不折行从下一行开始
+						CharPos.x = pt.x;
+						break;
 					}
+				}
+
+				// 判断是否被绘制。
+				BOOL bRender = rc.PtInRect( CharPos + CPoint( pFont->GetCharacterWidth( c ), pFont->GetCharacterHeight() ) );
+				if( _istprint( c ) )
+				{
+					// 是显示字符
+					RenderCharacter( c, pFont, CharPos.x, CharPos.y, bRender );
+				}
+				else if( c == _T('\n') )
+				{
+					break;
 				}
 				else
 				{
-					// 不折行从下一行开始
-					i = drawline?m_LineRecorder[drawline-1]:m_strText.length();
-					CharPos.x = pt.x;
-				}
-			}
-
-			if( drawline != m_FirstLineNumber && (drawline>0?m_LineRecorder[drawline-1]:0) == i )
-			{
-				// 第一行行首永不折行，当前位置是否行首。
-				// 位置为行首，则折行。
-				CharPos.x = pt.x;
-				CharPos.y += pFont->GetCharacterHeight();
-			}
-
-			// 判断是否被绘制。
-			BOOL bRender = rc.PtInRect( CharPos + CPoint( pFont->GetCharacterWidth( c ), pFont->GetCharacterHeight() ) );
-			if( _istprint( c ) )
-			{
-				// 是显示字符
-				RenderCharacter( c, pFont, CharPos.x, CharPos.y, bRender );
-			}
-			else
-			{
-				switch( c )
-				{
-				case '\t':
+					switch( c )
 					{
-						// 制表对齐
-						size_t CharCount = i - begin;
-						size_t NextTab = CharPos.x + (4 - CharCount%4)*pFont->GetCharacterWidth( _T(' ') );
-						if( (long)NextTab > pt.x + m_WindowRect.Width() ) NextTab = pt.x + m_WindowRect.Width();
-						while( CharPos.x < (long)NextTab )
+					case '\t':
 						{
-							RenderCharacter( _T(' '), pFont, CharPos.x, CharPos.y, bRender );
+							// 制表对齐
+							size_t NextTab = CharPos.x + (4 - cursor%4)*pFont->GetCharacterWidth( _T(' ') );
+							if( (long)NextTab > pt.x + m_WindowRect.Width() ) NextTab = pt.x + m_WindowRect.Width();
+							while( CharPos.x < (long)NextTab )
+							{
+								RenderCharacter( _T(' '), pFont, CharPos.x, CharPos.y, bRender );
+							}
 						}
+						break;
+					case '\0':
+						// 为绘制光标占位置。
+						RenderCharacter( _T(' '), pFont, CharPos.x, CharPos.y, bRender );
+						break;
+					default:
+						RenderCharacter( _T('?'), pFont, CharPos.x, CharPos.y, bRender );
+						break;
 					}
-					break;
-				case '\n':
-					// 当前绘制行增加一行。
-					++drawline;
-				case '\0':
-					// 为绘制光标占位置。
-					RenderCharacter( _T(' '), pFont, CharPos.x, CharPos.y, bRender );
-					break;
-				default:
-					RenderCharacter( _T('?'), pFont, CharPos.x, CharPos.y, bRender );
-					break;
 				}
+
+				if( cursor == m_CaratPos && m_bShowCarat )
+				{
+					// 是否绘制光标
+					long x = CharPos.x - long( pFont->GetCharacterWidth( _T('|') )*1.5f );
+					long y = CharPos.y;
+					RenderCharacter( _T('|'), pFont, x, y, bRender );
+				}
+
 			}
 
-			if( i == m_CaratPos && m_bShowCarat )
-			{
-				// 是否绘制光标
-				long x = CharPos.x - long( pFont->GetCharacterWidth( _T('|') )*1.5f );
-				long y = CharPos.y;
-				RenderCharacter( _T('|'), pFont, x, y, bRender );
-			}
+			// 折行。
+			CharPos.x = pt.x;
+			CharPos.y += pFont->GetCharacterHeight();
 		}
 	}
 
@@ -245,66 +257,82 @@ namespace UILib
 			HandleLineDown();
 			break;
 		case VK_RETURN:
-			m_strText.insert( m_CaratPos++, 1, _T('\n') );
 			HandleReturn();
 			break;
 		}
 		return true;
 	}
 
+	void XUI_EditBox::DeleteCharacter( size_t nLine, size_t nPos, size_t nCount )
+	{
+		Position n = nLine;
+		Position p = nPos;
+		while( nCount )
+		{
+			line& l = m_text.at( n );
+
+			size_t del = __min( nCount, l.size() - m_CaratPos );
+			l.erase( p, del );
+			if( l.empty() )
+			{
+				// 空行则删除掉
+				if( l.type == type_n )
+				{
+					line& ln = m_text.at( nLine );
+					ln.type = type_n;
+				}
+				m_text.erase( m_text.begin() + n );
+			}
+			else
+			{
+				++n;
+			}
+			nCount -= del;
+		}
+
+
+	}
+
 	void XUI_EditBox::HandleBack()
 	{
-		if( m_CaratPos <= 0 ) return;
-		size_t nPos = --m_CaratPos;
-
-		if( m_nCurLineNumber > 0 && m_nCurLineNumber < m_LineRecorder.size() )
+		if( m_CaratPos <= 0 )
 		{
-			line_recorder::iterator i = m_LineRecorder.begin() + m_nCurLineNumber - 1;
-			if( m_strText[nPos] == _T('\n') && *i == nPos )
-			{
-				i = m_LineRecorder.erase( i );
-				SetCurLineNumber( m_nCurLineNumber - 1 );
-			}
+			if( m_nCurLineNumber == 0 ) return;
+			SetCurLineNumber( m_nCurLineNumber - 1 );
+			m_CaratPos = m_text.at( m_nCurLineNumber ).size() - 1;
 		}
-		m_strText.erase( nPos, 1 );
+		else
+		{
+			--m_CaratPos;
+		}
+		DeleteCharacter( m_nCurLineNumber, m_CaratPos, 1 );
 	}
 
 	void XUI_EditBox::HandleDelete()
 	{
-		if( m_CaratPos >= m_strText.length() ) return;
-
-		size_t nPos = m_CaratPos;
-		if( m_nCurLineNumber > 0 && m_nCurLineNumber < m_LineRecorder.size() )
-		{
-			line_recorder::iterator i = m_LineRecorder.begin() + m_nCurLineNumber;
-			if( m_strText[nPos] == _T('\n') && *i == nPos )
-			{
-				i = m_LineRecorder.erase( i );
-			}
-		}
-		m_strText.erase( nPos, 1 );
+		DeleteCharacter( m_nCurLineNumber, m_CaratPos, 1 );
 	}
 
 	void XUI_EditBox::HandleHome()
 	{
-		m_CaratPos = m_nCurLineNumber > 0?m_LineRecorder[m_nCurLineNumber-1]:0;
+		m_CaratPos = 0;
 	}
 
 	void XUI_EditBox::HandleEnd()
 	{
-		m_CaratPos = m_nCurLineNumber < m_LineRecorder.size()?m_LineRecorder[m_nCurLineNumber]-1:m_strText.length();
+		m_CaratPos = m_text.at( m_nCurLineNumber ).size() - 1;
 	}
 
 	void XUI_EditBox::HandleWordLeft()
 	{
-		while( m_CaratPos > 0 && m_strText[m_CaratPos] != _T(' ') )
-		{
-			--m_CaratPos;
-			if( m_nCurLineNumber > 0 && m_CaratPos < m_LineRecorder[m_nCurLineNumber-1] )
-			{
-				SetCurLineNumber( m_nCurLineNumber - 1 );
-			}
-		}
+		//while( m_CaratPos > 0 && m_strText[m_CaratPos] != _T(' ') )
+		//{
+		//	--m_CaratPos;
+		//	if( m_nCurLineNumber > 0 && m_CaratPos < m_LineRecorder[m_nCurLineNumber-1] )
+		//	{
+		//		SetCurLineNumber( m_nCurLineNumber - 1 );
+		//	}
+		//}
 	}
 
 	void XUI_EditBox::HandleCharLeft()
@@ -312,40 +340,44 @@ namespace UILib
 		if( m_CaratPos > 0 )
 		{
 			--m_CaratPos; 
-			if( m_nCurLineNumber > 0 && m_CaratPos < m_LineRecorder[m_nCurLineNumber-1] )
-			{
-				SetCurLineNumber( m_nCurLineNumber - 1 );
-			}
+		}
+		else
+		{
+			SetCurLineNumber( m_nCurLineNumber - 1 );
+			HandleEnd();
 		}
 	}
 
 	void XUI_EditBox::HandleWordRight()
 	{
-		while( m_CaratPos < m_strText.length() && m_strText[m_CaratPos] != _T(' ') )
-		{
-			++m_CaratPos;
-			if( m_nCurLineNumber < m_LineRecorder.size() && m_CaratPos >= m_LineRecorder[m_nCurLineNumber] )
-			{
-				SetCurLineNumber( m_nCurLineNumber + 1 );
-			}
-		}
+		//while( m_CaratPos < m_strText.length() && m_strText[m_CaratPos] != _T(' ') )
+		//{
+		//	++m_CaratPos;
+		//	if( m_nCurLineNumber < m_LineRecorder.size() && m_CaratPos >= m_LineRecorder[m_nCurLineNumber] )
+		//	{
+		//		SetCurLineNumber( m_nCurLineNumber + 1 );
+		//	}
+		//}
 	}
 
 	void XUI_EditBox::HandleCharRight()
 	{
-		if( m_CaratPos < m_strText.length() )
+		line &l = m_text.at( m_nCurLineNumber );
+		if( m_CaratPos < l.size() )
 		{
 			++m_CaratPos;
-			if( m_nCurLineNumber < m_LineRecorder.size() && m_CaratPos >= m_LineRecorder[m_nCurLineNumber] )
-			{
-				SetCurLineNumber( m_nCurLineNumber + 1 );
-			}
+		}
+		else
+		{
+			SetCurLineNumber( m_nCurLineNumber + 1 );
+			HandleHome();
 		}
 	}
 
 	void XUI_EditBox::HandleReturn()
 	{
-		m_LineRecorder.insert( m_LineRecorder.begin() + m_nCurLineNumber, m_CaratPos );
+		m_text.insert( m_text.begin() + m_nCurLineNumber + 1, _T("") );
+		m_CaratPos = 0;
 		SetCurLineNumber( m_nCurLineNumber + 1 );
 	}
 
@@ -353,17 +385,13 @@ namespace UILib
 	{
 		if( m_nCurLineNumber > 0 )
 		{
-			XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
-
-			size_t h = m_LineRecorder[m_nCurLineNumber-1];
-			long width = pFont->GetStringSize( m_strText.substr( h, m_CaratPos - h ).c_str() ).cx;
 			SetCurLineNumber( m_nCurLineNumber - 1 );
 		}
 	}
 
 	void XUI_EditBox::HandleLineDown()
 	{
-
+		SetCurLineNumber( m_nCurLineNumber + 1 );
 	}
 
 	bool XUI_EditBox::onKeyUp( uint32 keycode, UINT sysKeys )
@@ -388,7 +416,7 @@ namespace UILib
 	{
 		if( _istprint( LOWORD(c) ) )
 		{
-			m_strText.insert( m_CaratPos++, 1, (wchar_t)c );
+			m_text.at(m_nCurLineNumber).insert( m_CaratPos++, 1, (wchar_t)c );
 		}
 		return true;
 	}
@@ -423,37 +451,6 @@ namespace UILib
 	}
 
 	//---------------------------------------------------------------------//
-	// describe	: 根据字符位置获得行号
-	// nPos		: 字符索引
-	// return	: 行号
-	//---------------------------------------------------------------------//
-	size_t XUI_EditBox::GetLineFromCharaterPos( size_t nPos )const
-	{
-		struct _compare
-		{
-			explicit _compare( size_t _nPos ) 
-				: nPos( _nPos )
-			{
-			}
-
-			bool operator()( size_t nLineIndex )
-			{
-				return nPos < nLineIndex;
-			}
-
-			const size_t nPos;
-		};
-		
-		line_recorder::const_iterator i = std::find_if( m_LineRecorder.begin(), m_LineRecorder.end(), _compare( nPos ) );
-		if( i != m_LineRecorder.end() )
-		{
-			return i - m_LineRecorder.begin();
-		}
-
-		return -1;
-	}
-
-	//---------------------------------------------------------------------//
 	// describe	: 分析当前串，刷新LineRecorder对象。
 	//---------------------------------------------------------------------//
 	void XUI_EditBox::Analyse()
@@ -465,9 +462,14 @@ namespace UILib
 	// describe	: 设置当前行
 	// line		: 行索引
 	//---------------------------------------------------------------------//
-	void XUI_EditBox::SetCurLineNumber( size_t line )
+	void XUI_EditBox::SetCurLineNumber( size_t nLine )
 	{
-		m_nCurLineNumber = line;
+		if( nLine >= m_text.size() ) return;
+
+		line &l = m_text.at( m_nCurLineNumber );
+		l.cursor_position = m_CaratPos;
+
+		m_nCurLineNumber = nLine;
 		if( m_nCurLineNumber < m_FirstLineNumber )
 		{
 			m_FirstLineNumber = ( m_FirstLineNumber <= (size_t)m_WindowSize.cy?0:(m_FirstLineNumber - m_WindowSize.cy) );
