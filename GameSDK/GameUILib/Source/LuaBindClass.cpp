@@ -154,7 +154,7 @@ namespace UILib
 		Class< XUI_EditBox >( "ui::EditCtrl" )
 			.static_inherits< XUI_Wnd >()
 			.constructor()
-			.member( "text", &XUI_EditBox::m_strText )
+			.member( "text", &XUI_EditBox::SetText, &XUI_EditBox::GetText )
 			.member( "warp", &XUI_EditBox::m_bWarpText )
 			;
 

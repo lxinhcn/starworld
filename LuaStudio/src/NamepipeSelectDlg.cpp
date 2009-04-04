@@ -144,12 +144,12 @@ BOOL CNamepipeSelectDlg::OnInitDialog()
 	if(hPipe == INVALID_HANDLE_VALUE)
 		return TRUE;
 
-	DirInfo = (PFILE_QUERY_DIRECTORY) new BYTE[1024];
+	DirInfo = (PFILE_QUERY_DIRECTORY) new BYTE[0x1000];
 	
 	USES_CONVERSION;
 	while(1)
 	{
-		ntStatus = NtQueryDirectoryFile(hPipe,NULL,NULL,NULL,&IoStatus,DirInfo,1024,
+		ntStatus = NtQueryDirectoryFile(hPipe,NULL,NULL,NULL,&IoStatus,DirInfo,0x1000,
 			FileDirectoryInformation,FALSE,NULL,bReset);
 
 		if (ntStatus!=NO_ERROR)
@@ -163,14 +163,11 @@ BOOL CNamepipeSelectDlg::OnInitDialog()
 		TmpInfo = DirInfo;
 		while(1)
 		{
-
-			TmpInfo->FileDirectoryInformationClass.FileName[TmpInfo->FileNameLength/sizeof(WCHAR)] = NULL;
-
-			LPCTSTR pipename = W2T(TmpInfo->FileDirectoryInformationClass.FileName);
-			LPSTR name = _tcsdup( pipename );
-			if( _tcsnicmp( _T("lua\\"), pipename, 4 ) == 0 || _tcsnicmp( _T("win32pipes"), pipename, 10 ) == 0)
+			if( wcsnicmp( L"lua\\", TmpInfo->FileDirectoryInformationClass.FileName, 4 ) == 0 )
 			{
-				LPSTR tok = _tcstok( name, _T(".") );
+				LPWSTR name = (wchar_t*)malloc( TmpInfo->FileNameLength * sizeof(wchar_t) );
+				wcsncpy( name, TmpInfo->FileDirectoryInformationClass.FileName, TmpInfo->FileNameLength );
+				LPSTR tok = _tcstok( W2T(name), _T(".") );
 
 				if( tok == NULL ) break;
 				int i = m_NamepipeListCtrl.InsertItem( 0, tok );
