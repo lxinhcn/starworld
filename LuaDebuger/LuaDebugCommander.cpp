@@ -19,13 +19,17 @@ bool PraseString( const char* lpszCommand, Params& param )
 		) ++pCmd;
 	while( *pCmd )
 	{
-		if( *pCmd == '[' || *pCmd == '"' )
+		if( *pCmd == '[' || (!bString&&*pCmd == '"') )
 		{
 			++pCmd;
 			bString = true;
 		}
-		szParam[nPos++] = *pCmd++;
-		if( *pCmd == 0 || ( bString?( (']'==*pCmd)||('"'==*pCmd) ):
+		else
+		{
+			szParam[nPos++] = *pCmd++;
+		}
+
+		if( *pCmd == 0 || ( bString?( ( (']'==*pCmd)||('"'==*pCmd) ) && ++pCmd ):
 
 			( 
 			*pCmd != '.' &&
@@ -39,8 +43,9 @@ bool PraseString( const char* lpszCommand, Params& param )
 			szParam[nPos] = 0;
 			param.push_back( szParam );
 			nPos = 0;
+			while( *pCmd && !isalnum( *pCmd ) && *pCmd != '[' && *pCmd != '"' ) ++pCmd;
 			bString = false;
-			while( *pCmd && !isalnum( *pCmd ) && (*pCmd != '['||*pCmd != '"' ) ) ++pCmd;
+			continue;
 		}
 	}
 

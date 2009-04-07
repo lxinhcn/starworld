@@ -20,7 +20,7 @@ extern bool PraseString( const char* lpszCommand, Params& param );
 
 #define cmd_buffer	1
 #define dsp_buffer	2
-#define CHECKBUF( B, T, V ) (B?(T==dsp_buffer?( B->data[0] == '$' || B->data[0] == '#' ):( ( B->data[0] == '@' && _stricmp( V, B->data+1 ) == 0 ) || ( B->data[0] == '#' && (_strnicmp( V, B->data+1, strlen( V ) ) == 0 ) ) ) ):false)
+#define CHECKBUF( B, T, V ) (B?(T==dsp_buffer?( B->data[0] == '$' || B->data[0] == '#' ):( ( B->data[0] == '@' && _strnicmp( V, B->data+1, strlen(V) ) == 0 ) || ( B->data[0] == '#' && (_strnicmp( V, B->data+1, strlen( V ) ) == 0 ) ) ) ):false)
 
 extern LuaDebugCommander* Create_Commander( const char* pipe, ProcessRetCmd fn );
 extern buffer* Debug_Command( LuaDebugCommander* Debuger, const char* szFmt, ... );

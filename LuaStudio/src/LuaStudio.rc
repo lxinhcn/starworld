@@ -183,7 +183,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Step Into\tF11",             ID_SIM_STEP_INTO
         MENUITEM "Step O&ver\tF10",             ID_SIM_STEP_OVER
-        MENUITEM "Step &Out\tCtrl+F11",         ID_SIM_GO_RTS
+        MENUITEM "Step &Out\tCtrl+F11",         ID_SIM_STEP_OUT
         MENUITEM "Run to &Cursor\tCtrl+F10",    ID_SIM_GO_TO_CURSOR
         MENUITEM SEPARATOR
         MENUITEM "Toggle Breakpoint\tF9",       ID_SIM_BREAKPOINT
@@ -279,7 +279,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Step Into\tF11",             ID_SIM_STEP_INTO
         MENUITEM "Step O&ver\tF10",             ID_SIM_STEP_OVER
-        MENUITEM "Step &Out\tCtrl+F11",         ID_SIM_GO_RTS
+        MENUITEM "Step &Out\tCtrl+F11",         ID_SIM_STEP_OUT
         MENUITEM "Run to &Cursor\tCtrl+F10",    ID_SIM_GO_TO_CURSOR
         MENUITEM SEPARATOR
         MENUITEM "Toggle Breakpoint\tF9",       ID_SIM_BREAKPOINT
@@ -355,7 +355,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Step Into\tF11",             ID_SIM_STEP_INTO
         MENUITEM "Step O&ver\tF10",             ID_SIM_STEP_OVER
-        MENUITEM "Step &Out\tCtrl+F11",         ID_SIM_GO_RTS
+        MENUITEM "Step &Out\tCtrl+F11",         ID_SIM_STEP_OUT
         MENUITEM "Run to &Cursor\tCtrl+F10",    ID_SIM_GO_TO_CURSOR
         MENUITEM SEPARATOR
         MENUITEM "Toggle Breakpoint\tF9",       ID_SIM_BREAKPOINT

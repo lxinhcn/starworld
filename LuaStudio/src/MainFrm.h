@@ -69,6 +69,8 @@ public:
 
 	void ShowDynamicHelp(const CString& line, int word_start, int word_end);
 
+	LuaDebugCommander* GetDebuger()const{ return m_pDebuger; }
+
 // Overrides
 public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);

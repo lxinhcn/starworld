@@ -713,29 +713,31 @@ LRESULT CMainFrame::OnExecEvent(WPARAM ev, LPARAM data)
 			buffer* ret = Debug_Command( m_pDebuger, "stack" );
 			buffer* head = ret;
 			Params params;
-			while( CHECKBUF( ret, cmd_buffer, "" ) )
+			if( CHECKBUF( ret, cmd_buffer, "" ) )
 			{
 				params.clear();
 				PraseString( ret->data, params );
-				if( ret == head )
-					if( LuaSrcView* view = OpenView( params[4].c_str() ) )
-					{
-						SetPointer( view, atoi( params[3].c_str() ) - 1, true );
-					}
-				ret = ret->next;
+				if( LuaSrcView* view = OpenView( params[4].c_str() ) )
+				{
+					SetPointer( view, atoi( params[3].c_str() ) - 1, true );
+				}
+				call_stack_wnd_.Notify( ret );
 			}
 			Debug_ReleaseBuffer( m_pDebuger, head );
+			m_bRun = false;
+			DelayedUpdateAll();
+		}
+		break;
+	case CBroadcast::Event_Start:
+		{
+			if (LuaSrcView* view= GetCurrentView())
+			{
+				SetPointer(view, -1, false);	// hide pointer
+				//			status_bar_wnd_.SetPaneText(0, "Ready to run");
+			}
 		}
 		break;
 	}
-	//if (ev == Lua::Start)
-	//{
-	//	if (LuaSrcView* view= GetCurrentView())
-	//	{
-	//		SetPointer(view, -1, false);	// hide pointer
-	//		//			status_bar_wnd_.SetPaneText(0, "Ready to run");
-	//	}
-	//}
 	//else if (ev == Lua::NewLine)
 	//{
 	//	int cur_line= data;
@@ -1079,8 +1081,7 @@ void CMainFrame::OnSimBreakpoint()
 		buffer* ret_open = Debug_Command( m_pDebuger, str );
 		if( CHECKBUF( ret_open, cmd_buffer, "success" ) )
 		{
-			str.Format( "check \"%s\", %d", view->GetDocument()->GetPathName(), line+1 );
-			buffer* ret_check = Debug_Command( m_pDebuger, str );
+			buffer* ret_check = Debug_Command( m_pDebuger, "check \"%s\", %d", view->GetDocument()->GetPathName(), line + 1 );
 			if( CHECKBUF( ret_check, cmd_buffer, "false" ) )
 			{
 				AddBreakpoint(view, line, Defs::BPT_EXECUTE);
@@ -1275,19 +1276,21 @@ void CMainFrame::OnUpdateSymSkipToLine(CCmdUI* cmd_ui)
 void CMainFrame::OnSimStepOut()
 {
 	Debug_Command( m_pDebuger, "stepout" );
+	SendMessage( CBroadcast::WM_USER_EVENT, CBroadcast::Event_Start, 0 );
 }
 
 void CMainFrame::OnUpdateSymStepOut(CCmdUI* cmd_ui) 
 {
-	cmd_ui->Enable( m_pDebuger && !m_bRun );
+	cmd_ui->Enable( m_pDebuger&&!m_bRun );
 }
 
 //-----------------------------------------------------------------------------
 
-void CMainFrame::OnSimStepInto()	// wykonanie bie¿¹cej instrukcji
+void CMainFrame::OnSimStepInto()
 {
 	Debug_Command( m_pDebuger, "stepin" );
-	DelayedUpdateAll();
+	SendMessage( CBroadcast::WM_USER_EVENT, CBroadcast::Event_Start, 0 );
+	// DelayedUpdateAll();
 }
 
 void CMainFrame::OnUpdateSymStepInto(CCmdUI* cmd_ui)
@@ -1300,6 +1303,7 @@ void CMainFrame::OnUpdateSymStepInto(CCmdUI* cmd_ui)
 void CMainFrame::OnSimStepOver()
 {
 	Debug_Command( m_pDebuger, "step" );
+	SendMessage( CBroadcast::WM_USER_EVENT, CBroadcast::Event_Start, 0 );
 }
 
 void CMainFrame::OnUpdateSymStepOver(CCmdUI* cmd_ui)
@@ -1317,7 +1321,7 @@ void CMainFrame::OnSimRestart()
 
 void CMainFrame::OnUpdateSymRestart(CCmdUI* cmd_ui) 
 {
-	cmd_ui->Enable( m_pDebuger&&m_bRun );
+	cmd_ui->Enable( m_pDebuger&&!m_bRun );
 }
 
 //-----------------------------------------------------------------------------
