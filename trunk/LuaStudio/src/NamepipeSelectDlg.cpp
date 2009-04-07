@@ -165,8 +165,9 @@ BOOL CNamepipeSelectDlg::OnInitDialog()
 		{
 			if( wcsnicmp( L"lua\\", TmpInfo->FileDirectoryInformationClass.FileName, 4 ) == 0 )
 			{
-				LPWSTR name = (wchar_t*)malloc( TmpInfo->FileNameLength * sizeof(wchar_t) );
+				LPWSTR name = (wchar_t*)malloc( ( TmpInfo->FileNameLength + 1 )* sizeof(wchar_t) );
 				wcsncpy( name, TmpInfo->FileDirectoryInformationClass.FileName, TmpInfo->FileNameLength );
+				name[TmpInfo->FileNameLength/2] = 0;
 				LPSTR tok = _tcstok( W2T(name), _T(".") );
 
 				if( tok == NULL ) break;
@@ -184,8 +185,8 @@ BOOL CNamepipeSelectDlg::OnInitDialog()
 			
 			if(TmpInfo->NextEntryOffset==0)
 				break;
-
-			TmpInfo = (PFILE_QUERY_DIRECTORY)((DWORD)TmpInfo+TmpInfo->NextEntryOffset);
+			else
+				TmpInfo = (PFILE_QUERY_DIRECTORY)((DWORD)TmpInfo+TmpInfo->NextEntryOffset);
 		}
 
 		bReset = FALSE;

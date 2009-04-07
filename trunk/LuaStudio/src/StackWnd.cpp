@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "StackWnd.h"
-
+#include "MainFrm.h"
 
 StackWnd::StackWnd()
 {
@@ -9,78 +9,66 @@ StackWnd::StackWnd()
 
 StackWnd::~StackWnd()
 {
-
+	Clear();
 }
 
+void StackWnd::Clear()
+{
+	CallStackVec::const_iterator c = m_callstack.begin();
+	while( c != m_callstack.end() )
+	{
+		delete *c;
+		++c;
+	}
 
-//void StackWnd::Notify(int event, int data, const Lua* lua)
-//{
-//	if (event == Lua::NewLine)
-//	{
-//		if (lua->GetCallStack(stack_))
-//			ResetItems(stack_.size());
-//	}
-//}
+	m_callstack.clear();
+}
+
+void StackWnd::Notify( buffer* callstack )
+{
+	Clear();
+	while( callstack )
+	{
+		Params* p = new Params;
+		PraseString( callstack->data, *p );
+		if( p->size() == 5 )
+		{
+			m_callstack.push_back( p );
+		}
+		callstack = callstack->next;
+	}
+	ResetItems( m_callstack.size() );
+
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+
+	buffer* ret = Debug_Command( pFrame->GetDebuger(), "stack 0" );
+	pFrame->local_vars_wnd_.Notify( ret );
+
+}
 
 void StackWnd::GetDispInfo(size_t item, int column, std::string& buffer)
 {
-	//if (item < stack_.size())
-	//{
-	//	const Lua::StackFrame& e= stack_[item];
-
-	//	switch (column)
-	//	{
-	//	case 0:	// src
-	//		buffer = e.source;
-	//		break;
-
-	//	case 1:	// line
-	//		{
-	//			char buf[100];
-	//			if (e.current_line > 0)
-	//				_itoa(e.current_line, buf, 10);
-	//			else
-	//				strcpy(buf, "-");
-
-	//			buffer = buf;
-	//		}
-	//		break;
-
-	//	case 2:	// name
-	//		buffer = e.name_what;
-	//		break;
-
-	//	case 3:	// type
-	//		switch (e.type)
-	//		{
-	//		case Lua::StackFrame::Err:
-	//			buffer = "Error";
-	//			break;
-	//		case Lua::StackFrame::LuaFun:
-	//			buffer = "Lua";
-	//			break;
-	//		case Lua::StackFrame::MainChunk:
-	//			buffer = "Main";
-	//			break;
-	//		case Lua::StackFrame::CFun:
-	//			buffer = "C";
-	//			break;
-	//		case Lua::StackFrame::TailCall:
-	//			buffer = "Tail Call";
-	//			break;
-	//		default:
-	//			ASSERT(false);
-	//			break;
-	//		}
-	//	}
-	//}
+	if( item < m_callstack.size() )
+	{
+		buffer = m_callstack[item]->at(column);
+	}
 }
-
 
 void StackWnd::CreateColumns(CListCtrl& ctrl)
 {
-	ctrl.InsertColumn(0, "File", LVCFMT_LEFT, 200);
-	ctrl.InsertColumn(1, "Line", LVCFMT_LEFT, 40);
-	ctrl.InsertColumn(2, "Name", LVCFMT_LEFT, 100);
-	ctrl.InsertColumn(3, "What", LVCFMT_LEFT, 60);
+	ctrl.InsertColumn(0, "Index", LVCFMT_LEFT, 80);
+	ctrl.InsertColumn(1, "Name", LVCFMT_LEFT, 100);
+	ctrl.InsertColumn(2, "What", LVCFMT_LEFT, 60);
+	ctrl.InsertColumn(3, "Line", LVCFMT_LEFT, 40);
+	ctrl.InsertColumn(4, "File", LVCFMT_LEFT, 200);
+}
+
+void StackWnd::ItemChanged( int nItem )
+{
+	CMainFrame* pFrame = (CMainFrame*)AfxGetMainWnd();
+	if( nItem >= 0 && nItem < m_callstack.size() )
+	{
+		buffer* ret = Debug_Command( pFrame->GetDebuger(), "stack %s", m_callstack[nItem]->at(0).c_str() );
+		pFrame->local_vars_wnd_.Notify( ret );
+	}
 }

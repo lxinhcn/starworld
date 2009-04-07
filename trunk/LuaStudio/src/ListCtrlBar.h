@@ -19,7 +19,7 @@ protected:
 private:
 	afx_msg int OnCreate(LPCREATESTRUCT cs);
 	afx_msg void OnGetDispInfo(NMHDR* nmhdr, LRESULT* result);
-
+	afx_msg void OnItemChanged(NMHDR* pNmhdr, LRESULT* result);
 	DECLARE_MESSAGE_MAP()
 
 private:
@@ -27,4 +27,5 @@ private:
 
 	virtual void CreateColumns(CListCtrl& ctrl) = 0;
 	virtual void GetDispInfo(size_t item, int column, std::string& buffer) = 0;
+	virtual void ItemChanged( int nItem ){}
 };

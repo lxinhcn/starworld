@@ -26,6 +26,7 @@ public:
   enum EventCode
   {
 	  Event_Break,
+	  Event_Start,
   };
 
   static void SendMessageToViews(UINT msg, WPARAM wParam= 0, LPARAM lParam= 0);
