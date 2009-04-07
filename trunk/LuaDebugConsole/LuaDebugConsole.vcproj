@@ -184,6 +184,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Pipelist.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration

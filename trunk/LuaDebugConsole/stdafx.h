@@ -13,8 +13,13 @@
 
 #include <Windows.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
 #include <tchar.h>
+#include <list>
+#include <string>
+#include <vector>
+#include <locale>
 
-
-
+typedef std::vector< std::string >	CStringList;
 // TODO: 在此处引用程序需要的其他头文件
