@@ -2,10 +2,6 @@
 //
 
 #include "stdafx.h"
-#include <string>
-#include <vector>
-#include <stdlib.h>
-#include <locale>
 
 #include "LuaDebugCommander.h"
 bool work = true;
@@ -35,7 +31,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	HANDLE hStd = GetStdHandle(STD_OUTPUT_HANDLE);
 	COORD size;
 	size.X = ConsoleWidth;
-	size.Y = ConsoleHeight;
+	size.Y = ConsoleHeight*3;
 	SetConsoleScreenBufferSize(hStd, size);
 	SMALL_RECT rc = { 0, 0, ConsoleWidth -1, ConsoleHeight -1 };
 
@@ -44,6 +40,30 @@ int _tmain(int argc, _TCHAR* argv[])
 	LuaDebugCommander commander;
 	setlocale( LC_ALL, "chs");
 	const char*	lpszPipename = "\\\\.\\pipe\\lua\\ui";
+	CStringList l;
+	extern bool pipelist( CStringList& l );
+	if( pipelist( l ) )
+	{
+		int i = 0;
+		CStringList::const_iterator c = l.begin();
+		while( l.end() != c )
+		{
+			printf( "%03d %s\n", i++, c->c_str() );
+			++c;
+		}
+
+		printf( "choice pipe ( 0 ~ %d ) :", i - 1 );
+		char ch = _getch();
+		int sel = ch - '0';
+		if( sel >= 0 && sel < i )
+		{
+			lpszPipename = l[sel].c_str();
+		}
+	}
+	else
+	{
+		puts( "no debug pipe" );
+	}
 	commander.initialize( lpszPipename, PrintResult );
 
 	_tprintf( _T("连接LuaDebuger成功。\n") );
