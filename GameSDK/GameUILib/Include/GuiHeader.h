@@ -13,6 +13,7 @@
 	#include <sstream>
 	#include <malloc.h>
 	#include <tchar.h>
+	#include <conio.h>
 
 	#include "GuiMacroDefine.h"
 	#include "EventDefine.h"

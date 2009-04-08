@@ -42,13 +42,14 @@ namespace UILib
 			{
 				try
 				{
+					_putch( '\n' );
 					for( int n = 0; n < indent; ++n ) printf( "  " );
 					printf( "|->");
 					SLB::LuaCall< const char*( const T*, const char*, int ) > op( Lua::Instance(), "class_attrib" );
 					const char* attrib = op( item, *i, indent );
 					if( attrib )
 					{
-						printf( " %s = %s\n", *i, attrib );
+						printf( " %s = %s", *i, attrib );
 					}
 				}
 				catch( std::runtime_error& err )

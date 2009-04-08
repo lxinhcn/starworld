@@ -612,12 +612,13 @@ namespace UILib
 			{
 				try
 				{
+					_putch( '\n' );
 					for( int n = 0; n < indent; ++n ) printf( "  " );
-					printf( "|->");
+					printf( "|-> %s", *i);
 					const char* attrib = op( this, *i, indent );
 					if( attrib )
 					{
-						printf( " %s = %s\n", *i, attrib );
+						printf( " = %s", *i, attrib );
 					}
 				}
 				catch( std::runtime_error& err )
@@ -627,6 +628,7 @@ namespace UILib
 				++i;
 			}
 		}
+		_putch( '\n' );
 	}
 
 	// ±£¥Ê,‘ÿ»Î
