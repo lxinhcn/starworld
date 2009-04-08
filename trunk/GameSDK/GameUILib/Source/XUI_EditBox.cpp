@@ -24,6 +24,7 @@ namespace UILib
 		}
 
 		m_CaratTimerHandler = GuiSystem::Instance().SetTimer( event_function( this, &XUI_EditBox::CaratTimerUpdate ), 1, TIMER_SECOND(0.5f) );
+		m_text.push_back(_T(""));
 	}
 
 	XUI_EditBox::~XUI_EditBox(void)
@@ -41,6 +42,7 @@ namespace UILib
 	void XUI_EditBox::SetText( const std::string &t )
 	{
 		m_text.clear();
+		m_text.push_back(_T(""));
 		std::string::size_type begin = 0, end = 0;
 		while( ( end = t.find( _T('\n'), begin ) ) != std::string::npos )
 		{
@@ -97,7 +99,7 @@ namespace UILib
 				break;
 			}
 
-			for( size_t cursor = 0; cursor < l.size(); ++cursor )
+			for( size_t cursor = 0; cursor <= l.size(); ++cursor )
 			{
 				_tchar c = l[cursor];
 
