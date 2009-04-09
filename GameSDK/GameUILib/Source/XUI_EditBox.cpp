@@ -109,8 +109,10 @@ namespace UILib
 					{
 						// 字符显示超出宽度，则折行显示
 						// 将没有画的作为独立的串添加到下一行
-						m_text.insert( m_text.begin() + i + 1, line( l.substr( cursor, -1 ), type_r ) );
-						SetCurLineNumber( m_nCurLineNumber + 1 );
+						line ll( l.substr( cursor, -1 ), type_r );
+						l.erase( cursor, -1 );
+						m_text.insert( m_text.begin() + i + 1, ll );
+						//SetCurLineNumber( m_nCurLineNumber + 1 );
 						break;
 					}
 					else
@@ -157,7 +159,7 @@ namespace UILib
 					}
 				}
 
-				if( cursor == m_CaratPos && m_bShowCarat )
+				if( i == m_nCurLineNumber && cursor == m_CaratPos && m_bShowCarat )
 				{
 					// 是否绘制光标
 					long x = CharPos.x - long( pFont->GetCharacterWidth( _T('|') )*1.5f );
@@ -272,27 +274,25 @@ namespace UILib
 		while( nCount )
 		{
 			line& l = m_text.at( n );
-
-			size_t del = __min( nCount, l.size() - m_CaratPos );
-			l.erase( p, del );
-			if( l.empty() )
+			if( l.size() - p < nCount )
 			{
-				// 空行则删除掉
-				if( l.type == type_n )
+				l.erase( p, l.size() - p );
+				nCount -= ( l.size() - p );
+				if( m_text.size() > n + 1 )
 				{
-					line& ln = m_text.at( nLine );
-					ln.type = type_n;
+					line& ll = m_text.at(n+1);
+					l.append( ll );
+					l.type = ll.type;
+					m_text.erase(m_text.begin() + n + 1);
+					--nCount;
 				}
-				m_text.erase( m_text.begin() + n );
 			}
 			else
 			{
-				++n;
+				l.erase( p, nCount );
+				nCount = 0;
 			}
-			nCount -= del;
 		}
-
-
 	}
 
 	void XUI_EditBox::HandleBack()
@@ -301,7 +301,7 @@ namespace UILib
 		{
 			if( m_nCurLineNumber == 0 ) return;
 			SetCurLineNumber( m_nCurLineNumber - 1 );
-			m_CaratPos = m_text.at( m_nCurLineNumber ).size() - 1;
+			m_CaratPos = m_text.at( m_nCurLineNumber ).size();
 		}
 		else
 		{
@@ -322,7 +322,7 @@ namespace UILib
 
 	void XUI_EditBox::HandleEnd()
 	{
-		m_CaratPos = m_text.at( m_nCurLineNumber ).size() - 1;
+		m_CaratPos = m_text.at( m_nCurLineNumber ).size();
 	}
 
 	void XUI_EditBox::HandleWordLeft()
@@ -378,7 +378,14 @@ namespace UILib
 
 	void XUI_EditBox::HandleReturn()
 	{
-		m_text.insert( m_text.begin() + m_nCurLineNumber + 1, _T("") );
+		line& l = m_text.at( m_nCurLineNumber );
+		line ll = l.substr( m_CaratPos, l.size() - m_CaratPos );
+		ll.type = (m_CaratPos==l.size()?type_n:l.type);
+
+		l.erase( l.begin() + m_CaratPos, l.end() );
+		l.type = type_n;
+
+		m_text.insert( m_text.begin() + m_nCurLineNumber + 1, ll );
 		m_CaratPos = 0;
 		SetCurLineNumber( m_nCurLineNumber + 1 );
 	}
@@ -472,6 +479,10 @@ namespace UILib
 		l.cursor_position = m_CaratPos;
 
 		m_nCurLineNumber = nLine;
+		line &curline = m_text.at( m_nCurLineNumber );
+		m_CaratPos = curline.cursor_position;
+
+
 		if( m_nCurLineNumber < m_FirstLineNumber )
 		{
 			m_FirstLineNumber = ( m_FirstLineNumber <= (size_t)m_WindowSize.cy?0:(m_FirstLineNumber - m_WindowSize.cy) );
