@@ -306,29 +306,20 @@ static bool _DrawCharacter( _tchar szChar, UILib::XUI_IFont* pFont, float x, flo
 //没有边框的矩形背景
 static bool _DrawRect( const CRect& rcDest, uint32 dwBorderColor, uint32 dwBkColor/* = -1*/ )
 {
-	Application::Instance()->Gfx_RenderLine( (float)rcDest.left, (float)rcDest.top, (float)rcDest.right, (float)rcDest.top, dwBorderColor );
-	Application::Instance()->Gfx_RenderLine( (float)rcDest.right, (float)rcDest.top, (float)rcDest.right, (float)rcDest.bottom, dwBorderColor );
-	Application::Instance()->Gfx_RenderLine( (float)rcDest.right, (float)rcDest.bottom, (float)rcDest.left, (float)rcDest.bottom, dwBorderColor );
-	Application::Instance()->Gfx_RenderLine( (float)rcDest.left, (float)rcDest.top, (float)rcDest.left, (float)rcDest.bottom, dwBorderColor );
+	if( GETA(dwBorderColor) != 0 )
+	{
+		Application::Instance()->Gfx_RenderLine( (float)rcDest.left, (float)rcDest.top, (float)rcDest.right, (float)rcDest.top, dwBorderColor );
+		Application::Instance()->Gfx_RenderLine( (float)rcDest.right, (float)rcDest.top, (float)rcDest.right, (float)rcDest.bottom, dwBorderColor );
+		Application::Instance()->Gfx_RenderLine( (float)rcDest.right, (float)rcDest.bottom, (float)rcDest.left, (float)rcDest.bottom, dwBorderColor );
+		Application::Instance()->Gfx_RenderLine( (float)rcDest.left, (float)rcDest.top, (float)rcDest.left, (float)rcDest.bottom, dwBorderColor );
+	}
 
-	hgeQuad quad;
-	quad.blend = BLEND_DEFAULT;
-	quad.tex = 0;
-	quad.v[0].col = quad.v[1].col = quad.v[2].col = quad.v[3].col = dwBkColor;
-	quad.v[0].tx = quad.v[1].tx = quad.v[2].tx = quad.v[3].tx = 0.0f;
-	quad.v[0].ty = quad.v[1].ty = quad.v[2].ty = quad.v[3].ty = 0.0f;
-
-	float tempx1 = rcDest.left * 1.0f;
-	float tempx2 = rcDest.right * 1.0f;
-	float tempy1 = rcDest.top * 1.0f;
-	float tempy2 = rcDest.bottom * 1.0f;
-
-	quad.v[0].x = tempx1; quad.v[0].y = tempy1;
-	quad.v[1].x = tempx2; quad.v[1].y = tempy1;
-	quad.v[2].x = tempx2; quad.v[2].y = tempy2;
-	quad.v[3].x = tempx1; quad.v[3].y = tempy2;
-
-	Application::Instance()->Gfx_RenderQuad( &quad );
+	if( GETA(dwBkColor) != 0 )
+	{
+		hgeSprite sprite( 0, 0, 0, 0, 0 );
+		sprite.SetColor( dwBkColor );
+		sprite.RenderStretch( rcDest.left, rcDest.top, rcDest.right, rcDest.bottom );
+	}
 	return true;
 }
 

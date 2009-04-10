@@ -92,6 +92,8 @@ namespace UILib
 		XUI_IFont(){}
 		XUI_IFont( const XUI_FontAttribute& FontAttrib ): XUI_FontAttribute( FontAttrib ){}
 		virtual ~XUI_IFont(){}
+
+		virtual VOID SetColor( uint32 color ) = 0;
 		virtual SIZE GetStringSize( _lpctstr lpszString ) = 0;
 
 		virtual INT GetCharacterWidth( _tchar szChar ) = 0;
