@@ -73,6 +73,20 @@ namespace UILib
 		void HandleLineUp();
 		void HandleLineDown();
 
+		struct CCandList
+		{
+			WCHAR awszCandidate[MAX_CANDLIST][256];
+			_string strBuffer;
+			int   nFirstSelected; // First character position of the selected string in HoriCand
+			int   nHoriSelectedLen; // Length of the selected string in HoriCand
+			DWORD dwCount;       // Number of valid entries in the candidate list
+			DWORD dwSelection;   // Currently selected candidate entry relative to page top
+			DWORD dwPageSize;
+			int   nReadingError; // Index of the error character
+			bool  bShowWindow;   // Whether the candidate list window is visible
+			RECT  rcCandidate;   // Candidate rectangle computed and filled each time before rendered
+		};
+
 		//---------------------------------------------------------------------//
 		// describe	: 分析当前串，刷新LineRecorder对象。
 		//---------------------------------------------------------------------//

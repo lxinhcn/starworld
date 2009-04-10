@@ -94,7 +94,7 @@ namespace UILib
 		CPoint pt = m_WindowRect.TopLeft();
 		AdjustPoint( pt, true );
 
-		XUI_DrawRect( m_WindowRect, 0xff00ff00, 0xff00ff00 );
+		XUI_DrawRect( m_WindowRect, 0xffffffff, 0xaa111111 );
 
 		CRect rc;
 		rc.IntersectRect( m_WindowRect, clipper );
