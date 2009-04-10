@@ -59,6 +59,7 @@ namespace UILib
 		void RenderCharacter( _tchar szChar, XUI_IFont* pFont, LONG &x, LONG &y, BOOL bRender );
 		void DeleteCharacter( size_t nLine, size_t nPos, size_t nCount );
 		bool CaratTimerUpdate( unsigned int handle, unsigned short& repeat, unsigned int& timer );
+		void NaturalLine( size_t nLine );
 
 		void HandleBack();
 		void HandleDelete();
