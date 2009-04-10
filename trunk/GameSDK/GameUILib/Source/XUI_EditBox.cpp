@@ -39,6 +39,20 @@ namespace UILib
 		return true;
 	}
 
+	void XUI_EditBox::NaturalLine( size_t nLine )
+	{
+		if( nLine >= m_text.size() ) return;
+
+		line& l = m_text[nLine];
+		text::iterator i = m_text.begin() + nLine + 1;
+		while( l.type == type_r && i != m_text.end() )
+		{
+			l.append( *i );
+			l.type = (*i).type;
+			i = m_text.erase( i );
+		}
+	}
+
 	void XUI_EditBox::SetText( const std::string &t )
 	{
 		m_text.clear();
@@ -109,10 +123,20 @@ namespace UILib
 					{
 						// 字符显示超出宽度，则折行显示
 						// 将没有画的作为独立的串添加到下一行
-						line ll( l.substr( cursor, -1 ), type_r );
-						l.erase( cursor, -1 );
+						line ll( l.substr( cursor - 1, -1 ), l.type );
+						l.erase( cursor - 1, -1 );
+						l.type = type_r;
+						l.cursor_position = l.size();
+
+						size_t lsize = l.size();
 						m_text.insert( m_text.begin() + i + 1, ll );
-						//SetCurLineNumber( m_nCurLineNumber + 1 );
+
+						// 根据光标位置判断是否要重新设定光标所在行。
+						if( m_nCurLineNumber == i && m_CaratPos > lsize )
+						{
+							SetCurLineNumber( m_nCurLineNumber + 1 );
+							m_CaratPos = cursor - lsize;
+						}
 						break;
 					}
 					else
@@ -278,13 +302,35 @@ namespace UILib
 			{
 				l.erase( p, l.size() - p );
 				nCount -= ( l.size() - p );
+
+				// 有后续行，将下一行和当前行合并
+				if( m_text.size() > n + 1 )
+				{
+					if( l.type == type_n ) --nCount;
+
+					line& ll = m_text.at(n+1);
+					l.append( ll );
+					l.type = ll.type;
+					m_text.erase(m_text.begin() + n + 1);
+				}
+				else
+				{
+					break;
+				}
+			}
+			else if( l.type == type_r )
+			{
 				if( m_text.size() > n + 1 )
 				{
 					line& ll = m_text.at(n+1);
 					l.append( ll );
 					l.type = ll.type;
 					m_text.erase(m_text.begin() + n + 1);
-					--nCount;
+				}
+				else
+				{
+					ASSERT_MSG(FALSE, _T("串分析过程中出现错误。") );
+					break;
 				}
 			}
 			else
@@ -378,7 +424,8 @@ namespace UILib
 
 	void XUI_EditBox::HandleReturn()
 	{
-		line& l = m_text.at( m_nCurLineNumber );
+		line& l = m_text[m_nCurLineNumber];
+
 		line ll = l.substr( m_CaratPos, l.size() - m_CaratPos );
 		ll.type = (m_CaratPos==l.size()?type_n:l.type);
 
@@ -386,6 +433,8 @@ namespace UILib
 		l.type = type_n;
 
 		m_text.insert( m_text.begin() + m_nCurLineNumber + 1, ll );
+		NaturalLine( m_nCurLineNumber + 1 );
+
 		m_CaratPos = 0;
 		SetCurLineNumber( m_nCurLineNumber + 1 );
 	}
@@ -426,6 +475,7 @@ namespace UILib
 		if( _istprint( LOWORD(c) ) )
 		{
 			m_text.at(m_nCurLineNumber).insert( m_CaratPos++, 1, (wchar_t)c );
+			NaturalLine(m_nCurLineNumber);
 		}
 		return true;
 	}
