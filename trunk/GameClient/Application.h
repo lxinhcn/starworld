@@ -43,6 +43,8 @@ private:
 	typedef LRESULT (CALLBACK *pfnDispatchMessage)( __in CONST MSG *lpMsg );
 	typedef ATOM (CALLBACK *pfnRegisterClass)( __in CONST WNDCLASSA *lpWndClass );
 
+	friend LRESULT CALLBACK _DefWindowProc( __in HWND hWnd, __in UINT Msg, __in WPARAM wParam, __in LPARAM lParam);
+
 	pfnDefWindowProc	m_pDefWindowProc;
 	pfnRegisterClass	m_pRegisterClass;
 	pfnDispatchMessage	m_pDispatchMessage;

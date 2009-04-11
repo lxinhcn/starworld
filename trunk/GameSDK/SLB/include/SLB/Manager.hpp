@@ -162,27 +162,7 @@ namespace SLB {
 		_conversions[ ConversionsMap::key_type(&typeid(B), &typeid(D)) ] = &ClassConversor<D,B>::staticConvertToDerived;
 	}
 
-	inline void* Manager::convert( const std::type_info *C1, const std::type_info *C2, void *obj)
-	{
-		SLB_DEBUG_CALL;
-		SLB_DEBUG(10, "C1 = %s", C1->name());
-		SLB_DEBUG(10, "C2 = %s", C2->name());
-		SLB_DEBUG(10, "obj = %p", obj);
-		if (C1 == C2)
-		{
-			SLB_DEBUG(11, "same class");
-			return obj; 
-		}
-
-		ConversionsMap::iterator i = _conversions.find( ConversionsMap::key_type(C1,C2) );
-		if (i != _conversions.end())
-		{
-			SLB_DEBUG(11, "convertible");
-			return i->second( obj );
-		}
-		SLB_DEBUG(11, "fail");
-		return 0;
-	}
+	inline void* convert( const std::type_info *C1, const std::type_info *C2, void *obj);
 
 	inline const void* Manager::convert( const std::type_info *C1, const std::type_info *C2, const void *obj)
 	{

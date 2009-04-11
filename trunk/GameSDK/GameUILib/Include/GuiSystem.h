@@ -72,7 +72,7 @@ namespace UILib
 		bool onImeEndComp(XUI_Wnd* pElement, uint32 wParam, uint32 lParam);
 		bool onImeNotify(XUI_Wnd* pElement, uint32 wParam, uint32 lParam);
 
-		void HandleMouse(UINT uMsg, WPARAM wParam, LPARAM lParam);
+		LRESULT HandleMouse(UINT uMsg, WPARAM wParam, LPARAM lParam);
 		void HandleKeyboard(UINT uMsg, WPARAM wParam, LPARAM lParam);
 		void HandleIMEMsg(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -85,7 +85,7 @@ namespace UILib
 		void Render();
 		
 		//处理外部消息
-		void HandleMessage( UINT uMsg, WPARAM wParam, LPARAM lParam );
+		LRESULT HandleMessage( UINT uMsg, WPARAM& wParam, LPARAM& lParam );
 
 		void Update( float fDelta );
 		//////////////////////////////////////////////////////////////////////////

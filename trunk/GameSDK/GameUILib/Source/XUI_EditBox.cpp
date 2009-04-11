@@ -39,18 +39,22 @@ namespace UILib
 		return true;
 	}
 
-	void XUI_EditBox::NaturalLine( size_t nLine )
+	size_t XUI_EditBox::NaturalLine( size_t nLine )
 	{
-		if( nLine >= m_text.size() ) return;
+		if( nLine >= m_text.size() ) return 0;
 
 		line& l = m_text[nLine];
+		size_t ret = 0;
 		text::iterator i = m_text.begin() + nLine + 1;
 		while( l.type == type_r && i != m_text.end() )
 		{
 			l.append( *i );
 			l.type = (*i).type;
 			i = m_text.erase( i );
+			++ret;
 		}
+
+		return ret;
 	}
 
 	void XUI_EditBox::SetText( const std::string &t )
@@ -206,7 +210,7 @@ namespace UILib
 	//sysKeys，各种重要按键的状态，参见MSDN	
 	bool XUI_EditBox::onMouseMove(const CPoint& pt, UINT sysKeys)
 	{
-		return true;
+		return false;
 	}
 
 	bool XUI_EditBox::onMouseHover(const CPoint& pt)
@@ -307,11 +311,9 @@ namespace UILib
 				if( m_text.size() > n + 1 )
 				{
 					if( l.type == type_n ) --nCount;
+					l.type = type_r;
 
-					line& ll = m_text.at(n+1);
-					l.append( ll );
-					l.type = ll.type;
-					m_text.erase(m_text.begin() + n + 1);
+					NaturalLine( m_nCurLineNumber );
 				}
 				else
 				{
@@ -320,18 +322,7 @@ namespace UILib
 			}
 			else if( l.type == type_r )
 			{
-				if( m_text.size() > n + 1 )
-				{
-					line& ll = m_text.at(n+1);
-					l.append( ll );
-					l.type = ll.type;
-					m_text.erase(m_text.begin() + n + 1);
-				}
-				else
-				{
-					ASSERT_MSG(FALSE, _T("串分析过程中出现错误。") );
-					break;
-				}
+				NaturalLine( m_nCurLineNumber );
 			}
 			else
 			{
@@ -347,7 +338,8 @@ namespace UILib
 		{
 			if( m_nCurLineNumber == 0 ) return;
 			SetCurLineNumber( m_nCurLineNumber - 1 );
-			m_CaratPos = m_text.at( m_nCurLineNumber ).size();
+			line l = m_text.at( m_nCurLineNumber );
+			m_CaratPos = l.size() - (size_t)l.type;
 		}
 		else
 		{

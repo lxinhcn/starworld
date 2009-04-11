@@ -525,12 +525,30 @@ namespace SLB {
 		return 1;
 	}
 
-	bool ClassInfo::isSubClassOf( const ClassInfo *base )
+	bool ClassInfo::isSubClassOf( const ClassInfo *base, ConverList *s, bool bBaseToDerived )
 	{
 		SLB_DEBUG_CALL;
+		if( base == NULL ) return false;
 		if (base == this) return true;
-		BaseClassMap::iterator i = _baseClasses.find( base->getTypeid() );
-		return (i != _baseClasses.end());
+
+		// BaseClassMap::iterator i = _baseClasses.find( base->getTypeid() );
+		BaseClassMap::iterator i = _baseClasses.begin();
+		while( i != _baseClasses.end() )
+		{
+			if( i->second->isSubClassOf( base, s, bBaseToDerived ) )
+			{
+				if( s )
+					s->push_back( 
+					bBaseToDerived?
+					std::make_pair( i->second->getTypeid(), getTypeid() ):
+					std::make_pair( getTypeid(), i->second->getTypeid() )
+				);
+				return true;
+			}
+			++i;
+		}
+		//return (i != _baseClasses.end());
+		return false;
 	}
 
 }

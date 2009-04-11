@@ -287,7 +287,8 @@ static bool _DrawText( _lpcstr lpszText, UILib::XUI_IFont* pFont, float x, float
 	CClientFont* pF = static_cast< CClientFont* >( pFont );
 	if( pF )
 	{
-		pF->Render( x, y, XA2T(lpszText) );
+		_string str = XA2T(lpszText);
+		pF->Render( x, y, str.c_str() );
 	}
 	return true;
 }
@@ -376,6 +377,11 @@ static void _DestroyFont( XUI_IFont* pFont )
 	delete pFont;
 }
 
+static LRESULT CALLBACK _DefWindowProc( __in HWND hWnd, __in UINT Msg, __in WPARAM wParam, __in LPARAM lParam)
+{
+	return Application::Instance().m_pDefWindowProc( hWnd, Msg, wParam, lParam );
+}
+
 void init_canvas()
 {
 	UILib::XUI_DrawText			= _DrawText;
@@ -389,4 +395,5 @@ void init_canvas()
 	UILib::XUI_CreateFont		= _CreateFont;
 	UILib::XUI_CreateFontEx		= _CreateFontEx;
 	UILib::XUI_DestroyFont		= _DestroyFont;
+	UILib:XUI_DefWindowProc		= _DefWindowProc;
 }

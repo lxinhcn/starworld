@@ -14,7 +14,7 @@ namespace UILib
 	pfnCreateFont		XUI_CreateFont		= 0;
 	pfnCreateFontEx		XUI_CreateFontEx	= 0;
 	pfnDestroyFont		XUI_DestroyFont		= 0;
-
+	pfnDefWindowProc	XUI_DefWindowProc	= 0;
 	//////////////////////////////////////////////////////////////////////////
 	// Sprite Attribute
 	//////////////////////////////////////////////////////////////////////////
@@ -42,7 +42,7 @@ namespace UILib
 		p.SetAttribute( "direction", path.c_str() );
 		pNode->InsertEndChild( p );
 
-		TiXmlElement Position( "Positon" );
+		TiXmlElement Position( "Position" );
 		Position.SetDoubleAttribute( "x", x );
 		Position.SetDoubleAttribute( "y", y );
 		pNode->InsertEndChild( Position );
@@ -61,12 +61,20 @@ namespace UILib
 		path = pElement->Attribute( "direction" );
 
 		pElement = pNode->FirstChildElement( "Position" );
-		pElement->QueryFloatAttribute( "x", &x );
-		pElement->QueryFloatAttribute( "y", &y );
+		ASSERT( pElement );
+		if( pElement )
+		{
+			pElement->QueryFloatAttribute( "x", &x );
+			pElement->QueryFloatAttribute( "y", &y );
+		}
 
 		pElement = pNode->FirstChildElement( "Size" );
-		pElement->QueryFloatAttribute( "w", &w );
-		pElement->QueryFloatAttribute( "h", &h );
+		ASSERT(pElement);
+		if( pElement )
+		{
+			pElement->QueryFloatAttribute( "w", &w );
+			pElement->QueryFloatAttribute( "h", &h );
+		}
 
 		return true;
 	}

@@ -77,17 +77,11 @@ namespace UILib
 		virtual void onLostFocus() {}
 
 		virtual unsigned int OnMoveWindow( CRect& rcWindow ){ return 0; }
-		//////////////////////////////////////////////////////////////////////////
-		// 消息处理
-
-		virtual bool OnWndMsg( UINT nMsg, WPARAM wParam, LPARAM lParam );
-		virtual bool OnCommand( WPARAM wParam, LPARAM lParam );
-		virtual bool OnNotify( WPARAM wParam, LPARAM lParam, HRESULT* lResult );
 	public:
 		virtual _lpctstr GetLable()const = 0;
 
 		// 发送消息
-		unsigned int SendMessage( UINT nMsg, WPARAM wParam, LPARAM lParam );
+		LRESULT SendUIMessage( UINT nMsg, WPARAM wParam, LPARAM lParam );
 
 		void Release();
 
@@ -144,9 +138,6 @@ namespace UILib
 		void	SetName( const _string& lpszName)	{ m_strName = lpszName;	}
 		const _string& GetName()const {return m_strName;}
 
-		void	SetID( UINT nID ){ m_nID = nID; }
-		UINT	GetID()const{ return m_nID; }
-
 		//显示
 		bool	IsVisible()const {return m_bVisible;}
 		void	ShowWindow( bool bVisible = true );
@@ -182,7 +173,6 @@ namespace UILib
 
 		//名称，便于查找
 		_string			m_strName;
-		UINT			m_nID;				// 控件ID用于消息映射
 
 		bool			m_bVisible;			// 是否可见
 		bool			m_bEnable;			// 是否有效
