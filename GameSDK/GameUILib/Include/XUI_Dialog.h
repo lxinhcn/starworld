@@ -35,7 +35,7 @@ namespace UILib
 
 		virtual bool	OnInitDialog(){ return true;}
 		virtual void	OnDestroy(){}
-		virtual bool	DefMsgProc( UINT nMsg, WPARAM wParam, LPARAM lParam );
+		virtual LRESULT	DefMsgProc( UINT nMsg, WPARAM wParam, LPARAM lParam );
 
 	private:
 		bool			m_bModal;

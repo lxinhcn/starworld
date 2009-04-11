@@ -110,17 +110,20 @@ namespace UILib
 
 		Class< XUI_IFont, Instance::NoCopy >( "ui::XUI_IFont" )
 			;
+		Class< XUI_Wnd, Instance::NoCopyNoDestroy >( "ui::Base" )
+			.member( "id",			&XUI_Base::SetID,		&XUI_Base::GetID )
+			;
 
 		Class< XUI_Wnd, Instance::NoCopyNoDestroy >( "ui::Wnd" )
+			.static_inherits< XUI_Base >()
 			.set( "MoveWindow",		&XUI_Wnd::MoveWindow )
 			.set( "OffsetWindow",	&XUI_Wnd::Offset )
-			.set( "SendMessage",	&XUI_Wnd::SendMessage )
+			.set( "SendUIMessage",	&XUI_Wnd::SendUIMessage )
 			.set( "SetName",		&XUI_Wnd::SetName )
 			.set( "GetName",		&XUI_Wnd::GetName )
 			.set( "members",		&XUI_Wnd::show_members )
 			.set( "save",			&XUI_Wnd::save_file )
 			.set( "load",			&XUI_Wnd::load_file )
-			.member( "id",			&XUI_Wnd::SetID,		&XUI_Wnd::GetID )
 			.member( "name",		&XUI_Wnd::SetName,		&XUI_Wnd::GetName )
 			.member( "visible",		&XUI_Wnd::ShowWindow,	&XUI_Wnd::IsVisible )
 			.member( "enable",		&XUI_Wnd::EnableWindow, &XUI_Wnd::IsEnable	)

@@ -20,6 +20,7 @@ namespace UILib
 	, m_bEnable( true )
 	, m_bOwnerDraw( false )
 	, m_pFont( NULL )
+	, m_pBackGround( NULL )
 	{
 		MoveWindow(0,0,0,0);
 		m_bTranslateParent = true;
@@ -82,11 +83,11 @@ namespace UILib
 		{
 		case 0:
 			id=EV_MOUSELBTDOWN;
-			SendMessage( EV_MOUSELBTDOWN, sysKeys, MAKELONG( pt.x, pt.y ) );
+			SendUIMessage( EV_MOUSELBTDOWN, sysKeys, MAKELONG( pt.x, pt.y ) );
 			break;
 		case 1:
 			id=EV_MOUSERBTDOWN;
-			SendMessage( EV_MOUSERBTDOWN, sysKeys, MAKELONG( pt.x, pt.y ) );
+			SendUIMessage( EV_MOUSERBTDOWN, sysKeys, MAKELONG( pt.x, pt.y ) );
 			break;
 		case 2:
 			id=EV_MOUSEMBTDOWN;
@@ -102,11 +103,11 @@ namespace UILib
 		{
 		case 0:
 			id=EV_MOUSELBTUP;
-			SendMessage( EV_MOUSELBTUP, sysKeys, MAKELONG( pt.x, pt.y ) );
+			SendUIMessage( EV_MOUSELBTUP, sysKeys, MAKELONG( pt.x, pt.y ) );
 			break;
 		case 1:
 			id=EV_MOUSERBTUP;
-			SendMessage( EV_MOUSERBTUP, sysKeys, MAKELONG( pt.x, pt.y ) );
+			SendUIMessage( EV_MOUSERBTUP, sysKeys, MAKELONG( pt.x, pt.y ) );
 			break;
 		case 2:
 			id=EV_MOUSEMBTUP;
@@ -264,7 +265,7 @@ namespace UILib
 		for(size_t i=0; i<m_pChildren.size(); i++)
 		{
 			XUI_Wnd* pElement=m_pChildren[i];
-			if ( pElement->m_nID == nID )
+			if ( pElement->GetID() == nID )
 				return pElement;
 		}
 		return NULL;
@@ -287,8 +288,8 @@ namespace UILib
 		CRect oldRect = m_WindowRect;
 		m_WindowRect.SetRect( left, top, right, bottom );
 		Validate();
-		SendMessage( WM_MOVE, 0, MAKELONG( left, top ) );
-		SendMessage( WM_SIZE, 0, MAKELONG( m_WindowRect.Width(), m_WindowRect.Height() ) );
+		SendUIMessage( WM_MOVE, 0, MAKELONG( left, top ) );
+		SendUIMessage( WM_SIZE, 0, MAKELONG( m_WindowRect.Width(), m_WindowRect.Height() ) );
 		// 发送位置变更消息
 		OnMoveWindow( m_WindowRect );
 	}
@@ -296,18 +297,18 @@ namespace UILib
 	void XUI_Wnd::Offset(int x, int y)
 	{
 		m_WindowRect.OffsetRect( x, y );
-		SendMessage( WM_MOVE, 0, MAKELONG( m_WindowRect.left, m_WindowRect.top ) );
+		SendUIMessage( WM_MOVE, 0, MAKELONG( m_WindowRect.left, m_WindowRect.top ) );
 	}
 
 	void XUI_Wnd::ShowWindow( bool bVisible /* = true  */ )
 	{
-		SendMessage( WM_SHOWWINDOW, bVisible, 0 );
+		SendUIMessage( WM_SHOWWINDOW, bVisible, 0 );
 		m_bVisible=bVisible;
 	}
 
 	void XUI_Wnd::EnableWindow( bool bEnable )
 	{
-		SendMessage( WM_ENABLE, bEnable, 0 );
+		SendUIMessage( WM_ENABLE, bEnable, 0 );
 		m_bEnable = bEnable;
 	}
 
@@ -372,12 +373,12 @@ namespace UILib
 		//触发事件
 		if (bFocused && !m_bFocused)
 		{
-			SendMessage( WM_COMMAND, MAKELONG( GetID(), EV_SETFOCUS ), 0 );
+			SendUIMessage( WM_COMMAND, MAKELONG( GetID(), EV_SETFOCUS ), 0 );
 			onGetFocus();
 		}
 		if (!bFocused && m_bFocused)
 		{
-			SendMessage( WM_COMMAND, MAKELONG( GetID(), EV_KILLFOCUS ), 0 );
+			SendUIMessage( WM_COMMAND, MAKELONG( GetID(), EV_KILLFOCUS ), 0 );
 			onLostFocus();
 		}
 		m_bFocused=bFocused;
@@ -409,7 +410,7 @@ namespace UILib
 					ds.rcClient		= m_WindowRect;
 					ds.rcClipper	= clpSelf;
 					ds.pCtrl		= this;
-					SendMessage( UI_OWNERDRAW, GetID(), (LPARAM)&ds );
+					SendUIMessage( UI_OWNERDRAW, GetID(), (LPARAM)&ds );
 				}
 				else
 					RenderSelf(clpSelf);
@@ -431,114 +432,16 @@ namespace UILib
 		}
 	}
 
-	// 消息处理，在垂直层次上遍历消息映射表
-	bool XUI_Wnd::OnWndMsg( UINT nMsg, WPARAM wParam, LPARAM lParam )
+	LRESULT XUI_Wnd::SendUIMessage( UINT nMsg, WPARAM wParam, LPARAM lParam )
 	{
-		HRESULT lResult = 0;
-		for( size_t i = 0; i < m_pListeners.size(); ++i )
+		if( m_pChildFocusedOn )
 		{
-			XUI_Base* pTarget = m_pListeners[i];
-			if( pTarget == m_pParent && !m_bTranslateParent ) continue;
-			if( pTarget->DefMsgProc( nMsg, wParam, lParam ) )
-			{
-				return TRUE;
-			}
+			return m_pChildFocusedOn->SendUIMessage( nMsg, wParam, lParam );
 		}
-		if( nMsg == WM_COMMAND )
+		else 
 		{
-			return OnCommand( wParam, lParam );
+			return OnWndMsg( nMsg, wParam, lParam );
 		}
-		else if( nMsg == WM_NOTIFY )
-		{
-			return OnNotify( wParam, lParam, &lResult );
-		}
-		else
-		{
-			// 其他控件消息
-			CONST UI_MSGMAP* pMessageMap = NULL;
-			for( pMessageMap = GetMessageMap(); pMessageMap != NULL; pMessageMap = pMessageMap->pBaseMap )
-			{
-				CONST UI_MSGMAP_ENTRY* lpEntry = pMessageMap->lpEntry;
-				while( lpEntry->nSig != uiSig_end )
-				{
-					if( lpEntry->nMessage == nMsg )
-					{
-						union	pfnSig	mmf;
-						mmf.pfnNormal = lpEntry->pfn;
-						switch( lpEntry->nSig )
-						{
-						case uiSig_vv:
-							( this->*mmf.pfn_vv )();
-							break;
-						case uiSig_vw:
-							( this->*mmf.pfn_vw )( UINT( wParam ) );
-							break;
-						case uiSig_b_wl:
-							( this->*mmf.pfn_b_wl )( wParam, lParam );
-							break;
-						case uiSig_vwp:
-							{
-								CPoint point( (uint32) lParam );
-								( this->*mmf.pfn_vwp )( ( UINT )wParam, point );
-							}
-							break;
-						case uiSig_v_v_ii:
-							( this->*mmf.pfn_v_v_ii)( LOWORD(lParam), HIWORD(lParam) );
-							break;
-						}
-						return TRUE;
-					}
-					++lpEntry;
-				}
-			}
-		}
-
-		return FALSE;
-	}
-
-	// 处理控件消息
-	bool XUI_Wnd::OnCommand( WPARAM wParam, LPARAM lParam )
-	{
-		UINT nID = LOWORD(wParam);
-		XUI_Wnd* pCtrl = (XUI_Wnd*)lParam;
-		int nCode = HIWORD(wParam);
-		// UPDATE_COMMAND_UI
-		// 菜单等单一事件对象的更新消息。
-		if( pCtrl )
-		{
-			OnCmdMsg( nID, UPDATE_COMMAND_UI, NULL, NULL );
-			nCode = NC_COMMAND;
-		}
-		else
-		{
-			// 反射消息
-			// ReflectMsg();
-		}
-
-		return OnCmdMsg( nID, nCode, NULL, NULL );
-	}
-
-	// 处理自定义通知消息
-	bool XUI_Wnd::OnNotify( WPARAM, LPARAM lParam, HRESULT* lResult )
-	{
-		if( lParam == 0 )	return FALSE;
-		NMUIHDR* pNMHDR = ( NMUIHDR* )lParam;
-		if( pNMHDR->pCtrl == NULL )	return FALSE;
-
-		int nID = pNMHDR->pCtrl->GetID();
-		int nCode = pNMHDR->code;
-		// 调用子控件的消息处理
-		for( UINT i=0; i < m_pChildren.size(); i++ )
-		{
-			m_pChildren[i]->OnCmdMsg( nID, MAKELONG( nCode, WM_NOTIFY ), (void*)pNMHDR, NULL );
-		}
-		return	OnCmdMsg( nID, MAKELONG( nCode, WM_NOTIFY ), (void*)pNMHDR, NULL );
-	}
-
-	unsigned int XUI_Wnd::SendMessage( UINT nMsg, WPARAM wParam, LPARAM lParam )
-	{
-		OnWndMsg( nMsg, wParam, lParam );
-		return 0;
 	}
 
 	bool XUI_Wnd::save_file( TiXmlElement* pNode )

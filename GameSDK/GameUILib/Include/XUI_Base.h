@@ -65,7 +65,7 @@ namespace UILib
 	// 通知消息结构
 	struct NMUIHDR
 	{
-		XUI_Wnd* pCtrl;
+		XUI_Base*	pCtrl;
 		UINT		idFrom;
 		UINT		code;
 		LRESULT		hResult;
@@ -92,30 +92,42 @@ namespace UILib
 
 	class XUI_Base	:	public UIObjTypeT< CUIObject, TypeUI >
 	{
-	public:
+	protected:
 		XUI_Base();
 		virtual ~XUI_Base();
+
 	private:
 		static const UI_MSGMAP_ENTRY _messageEntries[];
 
 	protected:
 		static const UI_MSGMAP messageMap;
 		virtual const UI_MSGMAP* GetMessageMap() const;
-
-	protected:
+		virtual LRESULT DefMsgProc( UINT nMsg, WPARAM wParam, LPARAM lParam );
 		const UI_MSGMAP_ENTRY*	FindMessageEntry( const UI_MSGMAP_ENTRY* lpEntry, UINT nMsg, INT nEvent, UINT nID );
+
+		//////////////////////////////////////////////////////////////////////////
+		// 消息处理
+		virtual LRESULT	OnWndMsg( UINT nMsg, WPARAM wParam, LPARAM lParam );
+		virtual LRESULT	OnCommand( WPARAM wParam, LPARAM lParam );
+		virtual void	OnNotify( WPARAM wParam, LPARAM lParam, LRESULT* lResult );
+
+		HRESULT DispatchCmdMsg( UINT nID, int nCode, UI_PMSG pfn, void* lpExtra, UINT_PTR nSig );
+		virtual LRESULT OnCmdMsg( UINT nID, int nCode, void* lpExtra, UI_HANDLE_INFO* pHandler );
+
+	private:
 		//事件响应
 		std::vector<XUI_Base*> m_pListeners;
+		uint32 m_nID;				// 控件ID用于消息映射
 
 	public:
+		void	SetID( UINT nID ){ m_nID = nID; }
+		UINT	GetID()const{ return m_nID; }
+
 		//事件处理，返回true表示终止后续处理
-		HRESULT DispatchCmdMsg( UINT nID, int nCode, UI_PMSG pfn, void* lpExtra, UINT_PTR nSig );
-		virtual bool OnCmdMsg( UINT nID, int nCode, void* lpExtra, UI_HANDLE_INFO* pHandler );
 
 		//事件监听，所有的事件都会被发给这些监听器
 		void AddCommonListener(XUI_Base* pListener);
 		void RemoveCommonListener(XUI_Base* pListener);
 
-		virtual bool DefMsgProc( UINT nMsg, WPARAM wParam, LPARAM lParam ){ return FALSE; }
 	};
 }

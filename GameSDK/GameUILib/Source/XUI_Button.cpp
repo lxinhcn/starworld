@@ -95,12 +95,12 @@ namespace UILib
 			// doAction();
 			//CPoint pt2 = ClientToScreen( pt );
 			SetState( MouseOver );
-			SendMessage( WM_COMMAND, MAKELONG( GetID(), EV_BNCLICKED ), 0 );
+			SendUIMessage( WM_COMMAND, MAKELONG( GetID(), EV_BNCLICKED ), 0 );
 		}
 		else if( button == 2 )
 		{
 			SetState( MouseOver );
-			SendMessage( WM_COMMAND, MAKELONG( GetID(), EV_RBNCLICKED ), 0 );
+			SendUIMessage( WM_COMMAND, MAKELONG( GetID(), EV_RBNCLICKED ), 0 );
 		}
 		return XUI_Wnd::onButtonUp(button, pt, sysKeys);
 	}
@@ -110,7 +110,7 @@ namespace UILib
 		if( m_bFocused && keycode == VK_RETURN )
 		{
 			SetState( ButtonDown );
-			SendMessage( WM_COMMAND, MAKELONG( GetID(), EV_BNCLICKED ), 0 );
+			SendUIMessage( WM_COMMAND, MAKELONG( GetID(), EV_BNCLICKED ), 0 );
 			return true;
 		}
 		return XUI_Wnd::onKeyDown( keycode, sysKeys );

@@ -444,10 +444,14 @@ namespace Private {
 	DEFINE_INTEGER( int );
 	DEFINE_INTEGER( long );
 	DEFINE_INTEGER( __int64 );
+	//DEFINE_INTEGER( __w64 int );
+	//DEFINE_INTEGER( __w64 long );
 
 	DEFINE_UNSIGNED( int );
 	DEFINE_UNSIGNED( long );
 	DEFINE_UNSIGNED( __int64 );
+	//DEFINE_UNSIGNED( __w64 int );
+	//DEFINE_UNSIGNED( __w64 long );
 
 	DEFINE_NUMBER( float );
 	DEFINE_NUMBER( double );

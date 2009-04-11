@@ -51,6 +51,7 @@ namespace SLB {
 	{
 	public:
 		typedef std::map<const std::type_info*, ref_ptr<ClassInfo> > BaseClassMap;
+		typedef std::list< std::pair< const std::type_info*, const std::type_info* > >	ConverList;
 
 		const std::type_info *getTypeid() const { return _typeid; }
 		const std::string &getName() const      { return _name; }
@@ -150,7 +151,7 @@ namespace SLB {
 		//This is used by some default initializations...
 		bool initialized() const { return _instanceFactory != 0; }
 
-		bool isSubClassOf( const ClassInfo* );
+		bool isSubClassOf( const ClassInfo*, ConverList* l = NULL, bool bBaseToDerived = false );
 		bool hasConstructor() const { return _constructor.valid(); }
 
 		//--Private methods -(not meant to be used)-------------------

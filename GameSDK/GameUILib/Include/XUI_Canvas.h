@@ -111,6 +111,7 @@ namespace UILib
 	typedef XUI_IFont*	(*pfnCreateFont)	( _lpcstr lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias );
 	typedef XUI_IFont*	(*pfnCreateFontEx)	( const XUI_FontAttribute& FontAttribute );
 	typedef void		(*pfnDestroyFont)	( XUI_IFont* pFont );
+	typedef LRESULT		(CALLBACK *pfnDefWindowProc)( __in HWND hWnd, __in UINT Msg, __in WPARAM wParam, __in LPARAM lParam);
 
 	extern pfnDrawText			XUI_DrawText;
 	extern pfnDrawCharacter		XUI_DrawCharacter;
@@ -123,4 +124,5 @@ namespace UILib
 	extern pfnCreateFont		XUI_CreateFont;
 	extern pfnCreateFontEx		XUI_CreateFontEx;
 	extern pfnDestroyFont		XUI_DestroyFont;
+	extern pfnDefWindowProc		XUI_DefWindowProc;
 }

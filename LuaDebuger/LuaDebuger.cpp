@@ -43,18 +43,18 @@ struct LuaDebuger::Impl
 
 		}
 
-		int		idx;
-		_string	name;
-		_string value;
+		int			idx;
+		std::string	name;
+		std::string	value;
 	};
 
 	typedef std::list< variant >	variant_list;
 	struct stackframe
 	{
-		int			currentline;
-		_string		filename;
-		_string		funcname;
-		_string		what;
+		int				currentline;
+		std::string		filename;
+		std::string		funcname;
+		std::string		what;
 		variant_list	variants;
 	};
 
@@ -73,7 +73,7 @@ struct LuaDebuger::Impl
 	size_t		begin;		// 当前文件游标
 
 	luastack	lstack;			// lua 栈
-	_string		strFilename;	// 当前文件
+	std::string	strFilename;	// 当前文件
 	CCritical	breakmap_lock;
 };
 

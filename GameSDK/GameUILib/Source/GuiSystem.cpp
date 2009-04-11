@@ -17,10 +17,6 @@ namespace UILib
 	, m_timer_anchor( 0.0f )
 	, m_pDefaultFont( NULL )
 	{
-		m_pDesktop=new XUI_Window();
-		m_pDesktop->SetID( DEFAULT_DESKTOP );
-		m_pDesktop->SetName( _T("root" ) );
-		RegistDesktop( m_pDesktop );
 	}
 
 	CGuiSystem::~CGuiSystem(void)
@@ -32,10 +28,16 @@ namespace UILib
 
 	bool CGuiSystem::Initialize( HWND w, _lpctstr p, const XUI_FontAttribute& f, XUI_IMouse* pCursor )
 	{
+		if( m_bInitialized )	return TRUE;
+
 		m_strMediaPath			= p;
 		m_pCursor				= pCursor;
 		m_pDefaultFont			= XUI_CreateFont( f.name.c_str(), f.size, f.bold, f.italic, f.antialias );	// 设置字体
-		if( m_bInitialized )	return TRUE;
+
+		m_pDesktop = new XUI_Window();
+		m_pDesktop->SetID( DEFAULT_DESKTOP );
+		m_pDesktop->SetName( _T("root" ) );
+		RegistDesktop( m_pDesktop );
 
 		// 初始化lua脚本系统
 		Lua::Instance().Initialize();
@@ -215,27 +217,32 @@ namespace UILib
 		pElement->SetFocus(true);
 	}
 
-	void CGuiSystem::HandleMessage( UINT uMsg, WPARAM wParam, LPARAM lParam )
+	LRESULT CGuiSystem::HandleMessage( UINT uMsg, WPARAM& wParam, LPARAM& lParam )
 	{
 		if( m_pDesktop )
 		{
 			if( uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST )
 			{
-				HandleMouse( uMsg, wParam, lParam );
+				return HandleMouse( uMsg, wParam, lParam );
 			}
-			else if( uMsg >= WM_KEYFIRST && uMsg <= WM_KEYLAST )
+			else if( uMsg >= WM_KEYFIRST && uMsg <= WM_IME_KEYLAST )
 			{
 				HandleKeyboard( uMsg, wParam, lParam );
 			}
 			else
 			{
-				m_pDesktop->SendMessage( uMsg, wParam, lParam );
+				return m_pDesktop->SendUIMessage( uMsg, wParam, lParam );
 			}
 		}
+		else
+		{
+			return XUI_DefWindowProc( m_hWnd, uMsg, wParam, lParam );
+		}
+		return 0;
 	}
 
 	//处理鼠标
-	void CGuiSystem::HandleMouse(UINT uMsg, WPARAM wParam, LPARAM lParam)
+	LRESULT CGuiSystem::HandleMouse(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		// 如果有模态对话框则将消息都发往模态对话框中
 		XUI_Window* pDesktop = m_pDesktop;
@@ -244,12 +251,11 @@ namespace UILib
 			pDesktop = *m_ModalList.begin();
 		}
 
+		bool result = false;
 		if ( pDesktop )
 		{
 			//获取鼠标的坐标
-			int x=LOWORD(lParam);
-			int y=HIWORD(lParam);
-			CPoint pt(x, y);
+			CPoint pt( LOWORD(lParam), HIWORD(lParam) );
 			if (pDesktop->IsPointIn(pt))
 			{
 				pt.x-=pDesktop->m_WindowRect.left;
@@ -259,32 +265,37 @@ namespace UILib
 				switch (uMsg)
 				{
 				case WM_MOUSEMOVE:
-					onMouseMove(pDesktop, pt, (UINT)wParam);
+					result = onMouseMove(pDesktop, pt, (UINT)wParam);
 					break;
 				case WM_MOUSEHOVER:
-					onMouseHover(pDesktop, pt);
+					result = onMouseHover(pDesktop, pt);
 					break;
 				case WM_LBUTTONDOWN:
-					onButtonDown(pDesktop, 0, pt, (UINT)wParam);
+					result = onButtonDown(pDesktop, 0, pt, (UINT)wParam);
 					break;
 				case WM_RBUTTONDOWN:
-					onButtonDown(pDesktop, 1, pt, (UINT)wParam);
+					result = onButtonDown(pDesktop, 1, pt, (UINT)wParam);
 					break;
 				case WM_MBUTTONDOWN:
-					onButtonDown(pDesktop, 2, pt, (UINT)wParam);
+					result = onButtonDown(pDesktop, 2, pt, (UINT)wParam);
 					break;
 				case WM_LBUTTONUP:
-					onButtonUp(pDesktop, 0, pt, (UINT)wParam);
+					result = onButtonUp(pDesktop, 0, pt, (UINT)wParam);
 					break;
 				case WM_RBUTTONUP:
-					onButtonUp(pDesktop, 1, pt, (UINT)wParam);
+					result = onButtonUp(pDesktop, 1, pt, (UINT)wParam);
 					break;
 				case WM_MBUTTONUP:
-					onButtonUp(pDesktop, 2, pt, (UINT)wParam);
+					result = onButtonUp(pDesktop, 2, pt, (UINT)wParam);
 					break;
 				}
 			}
 		}
+
+		if( !result )
+			return XUI_DefWindowProc( m_hWnd, uMsg, wParam, lParam );
+
+		return 0;
 	}
 
 	bool CGuiSystem::onKeyDown(XUI_Wnd* pElement, uint32 dwVirtualCode, UINT sysKeys)
@@ -293,7 +304,7 @@ namespace UILib
 
 		if ( pElement->onKeyDown(dwVirtualCode, sysKeys) )
 		{
-			pElement->SendMessage( WM_KEYDOWN, dwVirtualCode, sysKeys );
+			pElement->SendUIMessage( WM_KEYDOWN, dwVirtualCode, sysKeys );
 			return true;
 		}
 
@@ -311,7 +322,7 @@ namespace UILib
 
 		if ( pElement->onKeyUp(dwVirtualCode, sysKeys))
 		{
-			pElement->SendMessage( WM_KEYUP, dwVirtualCode, sysKeys );
+			pElement->SendUIMessage( WM_KEYUP, dwVirtualCode, sysKeys );
 			return true;
 		}
 
@@ -329,7 +340,7 @@ namespace UILib
 
 		if ( pElement->onChar(dwChar, sysKeys))
 		{
-			pElement->SendMessage( WM_CHAR, dwChar, sysKeys );
+			pElement->SendUIMessage( WM_CHAR, dwChar, sysKeys );
 			return true;
 		}
 
@@ -350,34 +361,37 @@ namespace UILib
 			pDesktop = *m_ModalList.begin();
 		}
 
+		bool result = false;
 		if ( pDesktop )
 		{
 			//分发消息
 			switch(uMsg)
 			{
 			case WM_KEYDOWN:
-				onKeyDown(pDesktop, (uint32)wParam, (UINT)lParam);
+				result = onKeyDown(pDesktop, (uint32)wParam, (UINT)lParam);
 				break;
 			case WM_KEYUP:
-				onKeyUp(pDesktop, (uint32)wParam, (UINT)lParam);
+				result = onKeyUp(pDesktop, (uint32)wParam, (UINT)lParam);
 				break;
 			case WM_CHAR:
-				onChar(pDesktop, (uint32)wParam, (UINT)lParam);
+				result = onChar(pDesktop, (uint32)wParam, (UINT)lParam);
 				break;
 			
 			//输入法
 			case WM_IME_COMPOSITION:
-				onImeComp(pDesktop, (uint32)wParam, (uint32)lParam);
+				result = onImeComp(pDesktop, (uint32)wParam, (uint32)lParam);
 				break;
 			case WM_IME_ENDCOMPOSITION:
-				onImeEndComp(pDesktop, (uint32)wParam, (uint32)lParam);
+				result = onImeEndComp(pDesktop, (uint32)wParam, (uint32)lParam);
 				break;
 			case WM_IME_NOTIFY:
-				onImeNotify(pDesktop, (uint32)wParam, (uint32)lParam);
+				result = onImeNotify(pDesktop, (uint32)wParam, (uint32)lParam);
 				break;
-			
 			}
 		}
+
+		if( !result )
+			XUI_DefWindowProc( m_hWnd, uMsg, wParam, lParam );
 	}
 
 	bool CGuiSystem::onImeComp(XUI_Wnd* pElement, uint32 wParam, uint32 lParam)
@@ -487,9 +501,9 @@ namespace UILib
 		CDesktopMap::const_iterator citer = m_DesktopMap.find( nDesktopID );
 		if( citer != m_DesktopMap.end() )
 		{
-			m_pDesktop->SendMessage( UI_SWITCHLEAVE, 0, 0 );
+			m_pDesktop->SendUIMessage( UI_SWITCHLEAVE, 0, 0 );
 			m_pDesktop = citer->second;
-			m_pDesktop->SendMessage( UI_SWITCHENTER, 0, 0 );
+			m_pDesktop->SendUIMessage( UI_SWITCHENTER, 0, 0 );
 		}
 	}
 

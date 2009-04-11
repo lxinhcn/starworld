@@ -206,48 +206,7 @@ namespace UILib
 		SetFocus( pFocus );
 	}
 
-	//bool CXDialog::SetProperty( const char* pszPropertyName, const char* pszValue )
-	//{
-	//	if( stricmp( pszPropertyName, "Template" ) == 0 )
-	//	{
-	//		Create( pszValue, NULL );
-	//	}
-	//	else
-	//	{
-	//		return __super::SetProperty( pszPropertyName, pszValue );
-	//	}
-
-	//	return true;
-	//}
-
-	//bool CXDialog::GetProperty(const char* pszPropertyName, char* pValueBuffer, int size )
-	//{
-	//	if(stricmp( pszPropertyName, "Template" ) == 0 )
-	//	{
-	//		strncpy( pValueBuffer, m_strTemplate.c_str(), size );
-	//	}
-	//	else
-	//	{
-	//		return __super::GetProperty( pszPropertyName, pValueBuffer, size );
-	//	}
-
-	//	return true;
-	//}
-
-	//void CXDialog::LoadProperty( TiXmlElement* pXMLElement )
-	//{
-	//	__super::LoadProperty( pXMLElement );
-	//	LPCSTR	strTemplate = pXMLElement->Attribute( "Template" );
-	//	Create( strTemplate, NULL );
-	//}
-
-	//void CXDialog::SaveProperty( TiXmlElement* pXMLElement )
-	//{
-	//	__super::SaveProperty( pXMLElement );
-	//	pXMLElement->SetAttribute( "Template", m_strTemplate.c_str() );
-	//}
-
-	bool CXDialog::DefMsgProc( UINT nMsg, WPARAM wParam, LPARAM lParam )
+	LRESULT CXDialog::DefMsgProc( UINT nMsg, WPARAM wParam, LPARAM lParam )
 	{
 		return OnWndMsg( nMsg, wParam, lParam );
 	}

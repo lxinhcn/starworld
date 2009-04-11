@@ -425,5 +425,73 @@ namespace SLB {
 		_names[ new_name ] = ci->getTypeid();
 
 	}
+
+	void* Manager::convert( const std::type_info *C1, const std::type_info *C2, void *obj)
+	{
+		SLB_DEBUG_CALL;
+		SLB_DEBUG(10, "C1 = %s", C1->name());
+		SLB_DEBUG(10, "C2 = %s", C2->name());
+		SLB_DEBUG(10, "obj = %p", obj);
+		if (C1 == C2)
+		{
+			SLB_DEBUG(11, "same class");
+			return obj; 
+		}
+
+		ConversionsMap::iterator i = _conversions.find( ConversionsMap::key_type(C1,C2) );
+		if (i != _conversions.end())
+		{
+			SLB_DEBUG(11, "convertible");
+			return i->second( obj );
+		}
+		else
+		{
+			ClassInfo* c1 = getClass( *C1 );
+			ClassInfo* c2 = getClass( *C2 );
+
+			ClassInfo::ConverList l;
+			if( c1 && c1->isSubClassOf( c2, &l ) )
+			{
+				while( obj && !l.empty() )
+				{
+					ConversionsMap::key_type& p = l.back();
+					ConversionsMap::iterator i = _conversions.find( p );
+					if( i != _conversions.end() )
+					{
+						SLB_DEBUG(11, "convertible");
+						obj = i->second( obj );
+					}
+					else
+					{
+						SLB_DEBUG(11, "fail");
+						return 0;
+					}
+					l.pop_back();
+				}
+			}
+			else if( c2 && c2->isSubClassOf( c1, &l, true ) )
+			{
+				while( obj && !l.empty() )
+				{
+					ConversionsMap::key_type& p = l.front();
+					l.pop_front();
+					ConversionsMap::iterator i = _conversions.find( p );
+					if (i != _conversions.end())
+					{
+						SLB_DEBUG(11, "convertible");
+						obj = i->second( obj );
+					}
+					else
+					{
+						SLB_DEBUG(11, "fail");
+						return 0;
+					}
+				}
+			}
+		}
+		SLB_DEBUG(11, "fail");
+		return obj;
+	}
+
 }
 
