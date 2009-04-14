@@ -16,7 +16,7 @@ namespace UILib
 		virtual void RenderSelf(const CRect& clipper);
 
 		void SetText( const std::string &t );
-		const std::string& GetText()const;
+		std::string GetText()const;
 
 		//鼠标
 		//鼠标移动事件
@@ -55,6 +55,7 @@ namespace UILib
 
 		virtual unsigned int OnMoveWindow( CRect& rcWindow );
 
+		virtual LRESULT OnWndMsg( UINT nMsg, WPARAM wParam, LPARAM lParam );
 	protected:
 		void RenderCharacter( _tchar szChar, XUI_IFont* pFont, LONG &x, LONG &y, BOOL bRender );
 		void DeleteCharacter( size_t nLine, size_t nPos, size_t nCount );
