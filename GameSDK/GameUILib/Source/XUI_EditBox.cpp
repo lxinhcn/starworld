@@ -88,7 +88,7 @@ namespace UILib
 		}
 	}
 
-	std::string XUI_EditBox::GetText()const
+	const std::string& XUI_EditBox::GetText()const
 	{
 		std::string t;
 		text::const_iterator i = m_text.begin();

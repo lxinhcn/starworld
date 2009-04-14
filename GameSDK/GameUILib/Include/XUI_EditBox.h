@@ -16,7 +16,7 @@ namespace UILib
 		virtual void RenderSelf(const CRect& clipper);
 
 		void SetText( const std::string &t );
-		std::string GetText()const;
+		const std::string& GetText()const;
 
 		//鼠标
 		//鼠标移动事件
