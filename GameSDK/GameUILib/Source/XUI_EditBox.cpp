@@ -88,7 +88,7 @@ namespace UILib
 		}
 	}
 
-	const std::string& XUI_EditBox::GetText()const
+	std::string XUI_EditBox::GetText()const
 	{
 		std::string t;
 		text::const_iterator i = m_text.begin();
@@ -580,7 +580,21 @@ namespace UILib
 		}
 		else if( m_nCurLineNumber - m_FirstLineNumber >= (size_t)m_WindowSize.cy )
 		{
-			m_FirstLineNumber = m_nCurLineNumber - (size_t)m_WindowSize.cy + 1;
+			m_FirstLineNumber = m_nCurLineNumber;
 		}
+	}
+
+	LRESULT XUI_EditBox::OnWndMsg( UINT nMsg, WPARAM wParam, LPARAM lParam )
+	{
+		switch( nMsg )
+		{
+		case WM_INPUTLANGCHANGE:
+			break;
+		case WM_IME_SETCONTEXT:
+			break;
+		case WM_IME_SELECT:
+			break;
+		}
+		return XUI_Wnd::OnWndMsg( nMsg, wParam, lParam );
 	}
 }

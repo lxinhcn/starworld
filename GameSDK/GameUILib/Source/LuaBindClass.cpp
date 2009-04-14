@@ -163,7 +163,6 @@ namespace UILib
 			.member( "backgroundcolor",	&XUI_EditBox::m_dwBackgroundColor )
 			;
 
-
 		try
 		{
 			Manager::getInstance().set( "CreateSprite",		FuncCall::create( XUI_CreateSprite ) );
@@ -186,7 +185,6 @@ namespace UILib
 			set( "script", _script );
 
 			_script.append( _T("initialize.lua") );
-
 			doFile( _script.c_str() );
 		}
 		catch( std::runtime_error& err )
