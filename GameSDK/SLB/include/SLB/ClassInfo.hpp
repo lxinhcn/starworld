@@ -192,14 +192,14 @@ namespace SLB {
 	template<class D, class B>
 	inline void ClassInfo::inheritsFrom()
 	{
-		Manager::getInstance().template addConversor<D,B>();
+		Manager::getInstance().addConversor<D,B>();
 		_baseClasses[ &typeid(B) ] = Manager::getInstance().getOrCreateClass(typeid(B));
 	}
 
 	template<class D, class B>
 	inline void ClassInfo::staticInheritsFrom()
 	{
-		Manager::getInstance().template addStaticConversor<D,B>();
+		Manager::getInstance().addStaticConversor<D,B>();
 		_baseClasses[ &typeid(B) ] = Manager::getInstance().getOrCreateClass(typeid(B));
 	}
 

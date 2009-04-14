@@ -474,7 +474,6 @@ namespace SLB {
 				while( obj && !l.empty() )
 				{
 					ConversionsMap::key_type& p = l.front();
-					l.pop_front();
 					ConversionsMap::iterator i = _conversions.find( p );
 					if (i != _conversions.end())
 					{
@@ -486,6 +485,7 @@ namespace SLB {
 						SLB_DEBUG(11, "fail");
 						return 0;
 					}
+					l.pop_front();
 				}
 			}
 		}
