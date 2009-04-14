@@ -1,6 +1,6 @@
 #pragma once
 #include "XUI_Wnd.h"
-
+#define MAX_CANDLIST 12
 namespace UILib
 {
 	class XUI_EditBox :	public UIObjTypeT< XUI_Wnd, TypeEditBox >
@@ -73,19 +73,20 @@ namespace UILib
 		void HandleLineUp();
 		void HandleLineDown();
 
-		//struct CCandList
-		//{
-		//	WCHAR awszCandidate[MAX_CANDLIST][256];
-		//	_string strBuffer;
-		//	int   nFirstSelected; // First character position of the selected string in HoriCand
-		//	int   nHoriSelectedLen; // Length of the selected string in HoriCand
-		//	DWORD dwCount;       // Number of valid entries in the candidate list
-		//	DWORD dwSelection;   // Currently selected candidate entry relative to page top
-		//	DWORD dwPageSize;
-		//	int   nReadingError; // Index of the error character
-		//	bool  bShowWindow;   // Whether the candidate list window is visible
-		//	RECT  rcCandidate;   // Candidate rectangle computed and filled each time before rendered
-		//};
+		struct CCandList
+		{
+			CCandList();
+			wchar_t awszCandidate[MAX_CANDLIST][256];
+			std::string strBuffer;
+			int32   nFirstSelected; // First character position of the selected string in HoriCand
+			int32   nHoriSelectedLen; // Length of the selected string in HoriCand
+			uint32	dwCount;       // Number of valid entries in the candidate list
+			uint32	dwSelection;   // Currently selected candidate entry relative to page top
+			uint32	dwPageSize;
+			int32   nReadingError; // Index of the error character
+			bool  bShowWindow;   // Whether the candidate list window is visible
+			CRect rcCandidate;   // Candidate rectangle computed and filled each time before rendered
+		};
 
 		//---------------------------------------------------------------------//
 		// describe	: 分析当前串，刷新LineRecorder对象。
@@ -135,11 +136,14 @@ namespace UILib
 		size_t			m_nCurLineNumber;	// 当前行索引
 		size_t			m_CaratPos;			// 光标位置
 		text			m_text;				// 行记录
+		uint32			m_dwBorderColor, m_dwBackgroundColor;
 
 		bool	m_bControl, m_bShift;
 		CSize	m_WindowSize;				// 视窗大小
 
 		unsigned int	m_CaratTimerHandler;
 		bool			m_bShowCarat;
+
+		static CCandList	m_Candlist;	// 输入法绘制结构。
 	};
 }

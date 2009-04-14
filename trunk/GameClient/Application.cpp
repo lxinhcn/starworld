@@ -89,6 +89,8 @@ bool CApplication::RenderFunc()
 
 bool CApplication::Initialize()
 {
+	setlocale( LC_ALL, "chs" );
+
 	m_hge = hgeCreate(HGE_VERSION);
 
 	m_hge->System_SetState(HGE_LOGFILE, "StarGame.log");
