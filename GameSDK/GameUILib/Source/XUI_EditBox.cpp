@@ -1,9 +1,26 @@
 #include "GuiHeader.h"
 #include "GuiSystem.h"
+#include "XUI_Window.h"
 #include "XUI_EditBox.h"
 
 namespace UILib
 {
+	XUI_EditBox::CCandList	XUI_EditBox::m_Candlist;	// 输入法绘制结构。
+
+	XUI_EditBox::CCandList::CCandList()
+		: nFirstSelected(0) // First character position of the selected string in HoriCand
+		, nHoriSelectedLen(0) // Length of the selected string in HoriCand
+		, dwCount(0)       // Number of valid entries in the candidate list
+		, dwSelection(0)   // Currently selected candidate entry relative to page top
+		, dwPageSize(0)
+		, nReadingError(0) // Index of the error character
+		, bShowWindow(true)   // Whether the candidate list window is visible
+		, rcCandidate( CRect( 0, 0, 100, 240 ) )
+	{
+		ZeroMemory( awszCandidate, sizeof(awszCandidate) );
+		strBuffer = "阿萨德";
+	}
+
 	BEGIN_UIMSG_MAP( XUI_EditBox, XUI_Wnd )
 	END_UIMSG_MAP()
 
@@ -15,6 +32,8 @@ namespace UILib
 	, m_FirstLineNumber( 0 )
 	, m_nCurLineNumber( 0 )
 	, m_bShowCarat( true )
+	, m_dwBorderColor( XUI_ARGB(0xff,0x80,0x80,0x80) )
+	, m_dwBackgroundColor( XUI_ARGB(0x30,0x20,0x20,0x20) )
 	{
 		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
 		if( pFont )
@@ -98,12 +117,13 @@ namespace UILib
 		CPoint pt = m_WindowRect.TopLeft();
 		AdjustPoint( pt, true );
 
-		XUI_DrawRect( m_WindowRect, 0xffffffff, 0xaa111111 );
+		XUI_DrawRect( m_WindowRect, m_dwBorderColor, m_dwBackgroundColor );
 
 		CRect rc;
 		rc.IntersectRect( m_WindowRect, clipper );
 
 		CPoint CharPos = pt;
+		CPoint CaratPos;
 		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
 
 		for( Position i = m_FirstLineNumber; i < m_text.size(); ++i )
@@ -187,12 +207,15 @@ namespace UILib
 					}
 				}
 
-				if( i == m_nCurLineNumber && cursor == m_CaratPos && m_bShowCarat )
+				if( i == m_nCurLineNumber && cursor == m_CaratPos )
 				{
-					// 是否绘制光标
-					long x = CharPos.x - long( pFont->GetCharacterWidth( _T('|') )*1.5f );
-					long y = CharPos.y;
-					RenderCharacter( _T('|'), pFont, x, y, bRender );
+					long x = CaratPos.x = CharPos.x - long( pFont->GetCharacterWidth( _T('|') )*1.5f );
+					long y = CaratPos.y = CharPos.y;
+					if( m_bShowCarat )
+					{
+						// 是否绘制光标
+						RenderCharacter( _T('|'), pFont, x, y, bRender );
+					}
 				}
 
 			}
@@ -200,6 +223,32 @@ namespace UILib
 			// 折行。
 			CharPos.x = pt.x;
 			CharPos.y += pFont->GetCharacterHeight();
+		}
+
+		if( m_bFocused && !m_Candlist.strBuffer.empty() )
+		{
+			XUI_Window* pWnd = GuiSystem::Instance().GetDesktop( DEFAULT_DESKTOP );
+			const CRect& rcWindow = pWnd->GetWindowRect();
+			CaratPos.x = pFont->GetCharacterWidth( _T(' ') ) + ( (CaratPos.x + m_Candlist.rcCandidate.Width() > rcWindow.Width())?rcWindow.Width()-m_Candlist.rcCandidate.Width()-1:CaratPos.x);
+			if( CaratPos.x < 0 ) CaratPos.x = 0;
+
+			CaratPos.y = pFont->GetCharacterHeight()/2 + ( (CaratPos.y + m_Candlist.rcCandidate.Height() > rcWindow.Height())?rcWindow.Height()-m_Candlist.rcCandidate.Height()-1:CaratPos.y );
+			if( CaratPos.y < 0 ) CaratPos.y = 0;
+
+			XUI_DrawRect( 
+				CRect( CaratPos.x, CaratPos.y, CaratPos.x + m_Candlist.rcCandidate.Width(), CaratPos.y + pFont->GetCharacterHeight() + 2 ),
+				m_dwBorderColor, 
+				m_dwBackgroundColor );
+			XUI_DrawText( m_Candlist.strBuffer.c_str(), pFont, float( CaratPos.x + 1 ), float( CaratPos.y + 1 ) );
+
+			if( m_Candlist.bShowWindow )
+			{
+				CaratPos.y += pFont->GetCharacterHeight() + 2;
+				XUI_DrawRect( 
+					CRect( CaratPos.x, CaratPos.y, CaratPos.x + m_Candlist.rcCandidate.Width(), CaratPos.y + m_Candlist.rcCandidate.Height() ),
+					m_dwBorderColor, 
+					m_dwBackgroundColor );
+			}
 		}
 	}
 
