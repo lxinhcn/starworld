@@ -13,7 +13,7 @@ namespace UILib
 		~CPicture(void);
 
 	protected:
-		virtual void RenderSelf( const CRect& clipper );
+		virtual void RenderSelf( const x_rect& clipper );
 
 	private:
 		XUI_ISprite*		m_pBkTex;			// ±³¾°ÌùÍ¼

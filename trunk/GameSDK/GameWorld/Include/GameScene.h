@@ -180,7 +180,7 @@ protected:
 	BOOL	RemoveObjFromMap( int nObjID );		// 将对象从地图移出
 
 	BOOL	MoveObject( CDynamic& Obj, float fDirection, float fSpeed );
-	BOOL	TestCollision( CMapBlock* pBlock, const CRect& CollisionRect, int nObjID );
+	BOOL	TestCollision( CMapBlock* pBlock, const x_rect& CollisionRect, int nObjID );
 
 	void	AddAnimation( CAnimation* pAni )	{ pAni->AddRef(); m_AnimationList.push_back( pAni ); }
 

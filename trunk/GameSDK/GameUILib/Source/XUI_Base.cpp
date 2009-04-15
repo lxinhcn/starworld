@@ -143,7 +143,7 @@ namespace UILib
 						break;
 					case uiSig_vwp:
 						{
-							CPoint point( (uint32) lParam );
+							x_point point( (uint32) lParam );
 							( this->*mmf.pfn_vwp )( ( UINT )wParam, point );
 						}
 						break;

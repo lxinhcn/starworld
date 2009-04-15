@@ -3,18 +3,20 @@
 
 namespace UILib
 {
-	pfnDrawText			XUI_DrawText		= 0;
-	pfnDrawCharacter	XUI_DrawCharacter	= 0;
-	pfnDrawRect			XUI_DrawRect		= 0;
-	pfnDrawPolygon		XUI_DrawPolygon		= 0;
-	pfnDrawSprite		XUI_DrawSprite		= 0;
-	pfnCreateSprite		XUI_CreateSprite	= 0;
-	pfnCreateSpriteEx	XUI_CreateSpriteEx	= 0;
-	pfnDestroySprite	XUI_DestroySprite	= 0;
-	pfnCreateFont		XUI_CreateFont		= 0;
-	pfnCreateFontEx		XUI_CreateFontEx	= 0;
-	pfnDestroyFont		XUI_DestroyFont		= 0;
-	pfnDefWindowProc	XUI_DefWindowProc	= 0;
+	pfnSetClipping		XUI_SetClipping		= 0;	//   XUI_SetClipping( int x, int y, int w, int h );
+	pfnDrawText			XUI_DrawText		= 0;	//   XUI_DrawText( _lpcstr lpszText, XUI_IFont* pFont, float x, float y );
+	pfnDrawCharacter	XUI_DrawCharacter	= 0;	//   XUI_DrawCharacter( _tchar lpszText, XUI_IFont* pFont, float x, float y );
+	pfnDrawRect			XUI_DrawRect		= 0;	//   XUI_DrawRect( const x_rect& rcDest, uint32 dwBorderColor, uint32 dwBkColor );
+	pfnDrawPolygon		XUI_DrawPolygon		= 0;	//   XUI_DrawPolygon( const x_point* ptArray, uint32* dwColorArray, uint32 nCount, uint16* pTriListArray, int32 nTriCount );
+	pfnDrawLine			XUI_DrawLine		= 0;	//   XUI_DrawLine( float x0, float y0, float x1, float y1 );
+	pfnDrawSprite		XUI_DrawSprite		= 0;	//   XUI_DrawSprite( const XUI_ISprite* Tex,int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect );
+	pfnCreateSprite		XUI_CreateSprite	= 0;	//   XUI_CreateSprite( _lpcstr filename, float x, float y, float w, float h );
+	pfnCreateSpriteEx	XUI_CreateSpriteEx	= 0;	//   XUI_CreateSpriteEx( const XUI_SpriteAttribute& SpriteAttribute );
+	pfnDestroySprite	XUI_DestroySprite	= 0;	//   XUI_DestroySprite( XUI_ISprite* pSprite );
+	pfnCreateFont		XUI_CreateFont		= 0;	//   XUI_CreateFont( _lpcstr lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias );
+	pfnCreateFontEx		XUI_CreateFontEx	= 0;	//   XUI_CreateFontEx( const XUI_FontAttribute& FontAttribute );
+	pfnDestroyFont		XUI_DestroyFont		= 0;	//   XUI_DestroyFont( XUI_IFont* pFont );
+	pfnDefWindowProc	XUI_DefWindowProc	= 0;	//   XUI_DefWindowProc( __in HWND hWnd, __in UINT Msg, __in WPARAM wParam, __in LPARAM lParam);
 	//////////////////////////////////////////////////////////////////////////
 	// Sprite Attribute
 	//////////////////////////////////////////////////////////////////////////
@@ -181,4 +183,19 @@ namespace UILib
 		}
 		return true;
 	}
+
+	XUI_IME::CCandList::CCandList()
+		: nFirstSelected(0) // First character position of the selected string in HoriCand
+		, nHoriSelectedLen(0) // Length of the selected string in HoriCand
+		, dwCount(0)       // Number of valid entries in the candidate list
+		, dwSelection(0)   // Currently selected candidate entry relative to page top
+		, dwPageSize(0)
+		, nReadingError(0) // Index of the error character
+		, bShowWindow(true)   // Whether the candidate list window is visible
+		, rcCandidate( x_rect( 0, 0, 100, 240 ) )
+	{
+		ZeroMemory( awszCandidate, sizeof(awszCandidate) );
+		strBuffer = "°¢ÈøµÂ";
+	}
+
 }

@@ -83,7 +83,7 @@ namespace UILib
 		SLB::LuaCall< void(float, float) >( Lua::Instance().getState(), "UIUpdateEntry" )( m_nowtime, fDelta );
 	}
 
-	bool CGuiSystem::onMouseMove(XUI_Wnd* pElement, const CPoint& pt, UINT sysKeys)
+	bool CGuiSystem::onMouseMove(XUI_Wnd* pElement, const x_point& pt, UINT sysKeys)
 	{
 		if( !pElement->IsEnable() )	return false;
 
@@ -94,7 +94,7 @@ namespace UILib
 			if (pEnterElement)
 			{
 				//在同一个子控件内
-				CPoint ptTemp(pt);
+				x_point ptTemp(pt);
 				ptTemp.x -= pEnterElement->m_WindowRect.left;
 				ptTemp.y -= pEnterElement->m_WindowRect.top;
 				ptTemp = pEnterElement->AdjustPoint( ptTemp, false );
@@ -121,7 +121,7 @@ namespace UILib
 					return true;
 
 				//继续细分
-				CPoint ptTemp(pt);
+				x_point ptTemp(pt);
 				ptTemp.x -= pEnterElement->m_WindowRect.left;
 				ptTemp.y -= pEnterElement->m_WindowRect.top;
 				ptTemp = pEnterElement->AdjustPoint( ptTemp, false );
@@ -146,7 +146,7 @@ namespace UILib
 		return pElement->onMouseLeave();
 	}
 
-	bool CGuiSystem::onMouseHover(XUI_Wnd* pElement, const CPoint& pt)
+	bool CGuiSystem::onMouseHover(XUI_Wnd* pElement, const x_point& pt)
 	{
 		if ( pElement->onMouseHover(pt) )
 			return true;
@@ -154,7 +154,7 @@ namespace UILib
 		XUI_Wnd* pFocusChild=pElement->FindChildInPoint(pt);
 		if (pFocusChild)
 		{
-			CPoint ptTemp(pt);
+			x_point ptTemp(pt);
 			ptTemp.x -= pFocusChild->m_WindowRect.left;
 			ptTemp.y -= pFocusChild->m_WindowRect.top;
 			return onMouseHover(pFocusChild, ptTemp);
@@ -162,14 +162,14 @@ namespace UILib
 		return false;
 	}
 
-	bool CGuiSystem::onButtonDown(XUI_Wnd* pElement, int iButton, const CPoint& pt, UINT sysKeys)
+	bool CGuiSystem::onButtonDown(XUI_Wnd* pElement, int iButton, const x_point& pt, UINT sysKeys)
 	{
 		if( !pElement->IsEnable() )	return false;
 
 		XUI_Wnd* pChild=pElement->FindChildInPoint(pt);
 		if (pChild )
 		{
-			CPoint ptTemp(pt);
+			x_point ptTemp(pt);
 			ptTemp.x -= pChild->m_WindowRect.left;
 			ptTemp.y -= pChild->m_WindowRect.top;
 			ptTemp = pChild->AdjustPoint( ptTemp, false );
@@ -184,14 +184,14 @@ namespace UILib
 		return pElement->onButtonDown(iButton, pt, sysKeys);
 	}
 
-	bool CGuiSystem::onButtonUp(XUI_Wnd* pElement, int iButton, const CPoint& pt, UINT sysKeys)
+	bool CGuiSystem::onButtonUp(XUI_Wnd* pElement, int iButton, const x_point& pt, UINT sysKeys)
 	{
 		if( !pElement->IsEnable() )	return false;
 
 		XUI_Wnd* pChild=pElement->FindChildInPoint(pt);
 		if (pChild)
 		{
-			CPoint ptTemp(pt);
+			x_point ptTemp(pt);
 			ptTemp.x -= pChild->m_WindowRect.left;
 			ptTemp.y -= pChild->m_WindowRect.top;
 			ptTemp = pChild->AdjustPoint( ptTemp, false );
@@ -255,7 +255,7 @@ namespace UILib
 		if ( pDesktop )
 		{
 			//获取鼠标的坐标
-			CPoint pt( LOWORD(lParam), HIWORD(lParam) );
+			x_point pt( LOWORD(lParam), HIWORD(lParam) );
 			if (pDesktop->IsPointIn(pt))
 			{
 				pt.x-=pDesktop->m_WindowRect.left;

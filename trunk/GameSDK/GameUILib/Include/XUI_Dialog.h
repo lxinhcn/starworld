@@ -30,7 +30,7 @@ namespace UILib
 		void		SetFocus( XUI_Wnd* pFocus );
 		void		SetFocus( UINT nCtrlID );
 	protected:
-		virtual void	RenderSelf(const CRect& clipper);
+		virtual void	RenderSelf(const x_rect& clipper);
 		virtual bool	onKeyUp(uint32 keycode, UINT sysKeys);
 
 		virtual bool	OnInitDialog(){ return true;}

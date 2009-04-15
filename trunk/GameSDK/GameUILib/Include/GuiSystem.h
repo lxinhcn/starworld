@@ -58,11 +58,11 @@ namespace UILib
 		void SetFocus(XUI_Wnd* pElement);
 
 		//消息处理，保证消息可以按照预定的方式转发
-		bool onMouseMove(XUI_Wnd* pElement, const CPoint& pt, UINT sysKeys);
+		bool onMouseMove(XUI_Wnd* pElement, const x_point& pt, UINT sysKeys);
 		bool onMouseLeave(XUI_Wnd* pElement);
-		bool onMouseHover(XUI_Wnd* pElement, const CPoint& pt);
-		bool onButtonDown(XUI_Wnd* pElement, int iButton, const CPoint& pt, UINT sysKeys);
-		bool onButtonUp(XUI_Wnd* pElement, int iButton, const CPoint& pt, UINT sysKeys);
+		bool onMouseHover(XUI_Wnd* pElement, const x_point& pt);
+		bool onButtonDown(XUI_Wnd* pElement, int iButton, const x_point& pt, UINT sysKeys);
+		bool onButtonUp(XUI_Wnd* pElement, int iButton, const x_point& pt, UINT sysKeys);
 
 		bool onKeyDown(XUI_Wnd* pElement, uint32 dwVirtualCode, UINT sysKeys);
 		bool onKeyUp(XUI_Wnd* pElement, uint32 dwVirtualCode, UINT sysKeys);

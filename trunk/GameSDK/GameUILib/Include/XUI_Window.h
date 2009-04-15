@@ -20,7 +20,7 @@ namespace UILib
 		~XUI_Window(void);
 
 	public:
-		virtual CPoint AdjustPoint(const CPoint& pt, bool bClientToScreen) const;
+		virtual x_point AdjustPoint(const x_point& pt, bool bClientToScreen) const;
 
 		// Panel¥Û–°
 		int		GetWidth()const		{ return m_nPanelWidth; }
@@ -33,7 +33,7 @@ namespace UILib
 		bool SaveToXMLNode( TiXmlNode* pNode );
 
 	protected:
-		virtual void RenderSelf(const CRect& clipper){};
+		virtual void RenderSelf(const x_rect& clipper){};
 		void	BindScrollBar();
 		int		ScrollVerticle(int iOffset);
 		int		ScrollHorizontal(int iOffset);

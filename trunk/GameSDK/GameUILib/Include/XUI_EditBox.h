@@ -1,6 +1,5 @@
 #pragma once
 #include "XUI_Wnd.h"
-#define MAX_CANDLIST 12
 namespace UILib
 {
 	class XUI_EditBox :	public UIObjTypeT< XUI_Wnd, TypeEditBox >
@@ -13,7 +12,7 @@ namespace UILib
 		~XUI_EditBox(void);
 
 		//重绘，通过实现这个方法来表现空间的外观
-		virtual void RenderSelf(const CRect& clipper);
+		virtual void RenderSelf(const x_rect& clipper);
 
 		void SetText( const std::string &t );
 		std::string GetText()const;
@@ -23,8 +22,8 @@ namespace UILib
 		//参数说明：
 		//pt，鼠标的坐标，相对于控件
 		//sysKeys，各种重要按键的状态，参见MSDN	
-		virtual	bool onMouseMove(const CPoint& pt, UINT sysKeys);
-		virtual bool onMouseHover(const CPoint& pt);
+		virtual	bool onMouseMove(const x_point& pt, UINT sysKeys);
+		virtual bool onMouseHover(const x_point& pt);
 		virtual bool onMouseEnter();
 		virtual bool onMouseLeave();
 		//鼠标按键事件
@@ -32,8 +31,8 @@ namespace UILib
 		//button，按下的键，0-左键，1-右键，2-中键
 		//pt，鼠标的坐标
 		//sysKeys，各种重要按键的状态，参见MSDN
-		virtual	bool onButtonDown(int button, const CPoint& pt, UINT sysKeys);
-		virtual	bool onButtonUp(int button, const CPoint& pt, UINT sysKeys);
+		virtual	bool onButtonDown(int button, const x_point& pt, UINT sysKeys);
+		virtual	bool onButtonUp(int button, const x_point& pt, UINT sysKeys);
 
 		//键盘
 		//参数说明
@@ -53,7 +52,7 @@ namespace UILib
 		virtual bool onImeEndComp(uint32 wParam, uint32 lParam);
 		virtual bool onImeNotify(uint32 wParam, uint32 lParam);
 
-		virtual unsigned int OnMoveWindow( CRect& rcWindow );
+		virtual unsigned int OnMoveWindow( x_rect& rcWindow );
 
 		virtual LRESULT OnWndMsg( UINT nMsg, WPARAM wParam, LPARAM lParam );
 	protected:
@@ -73,21 +72,6 @@ namespace UILib
 		void HandleReturn();
 		void HandleLineUp();
 		void HandleLineDown();
-
-		struct CCandList
-		{
-			CCandList();
-			wchar_t awszCandidate[MAX_CANDLIST][256];
-			std::string strBuffer;
-			int32   nFirstSelected; // First character position of the selected string in HoriCand
-			int32   nHoriSelectedLen; // Length of the selected string in HoriCand
-			uint32	dwCount;       // Number of valid entries in the candidate list
-			uint32	dwSelection;   // Currently selected candidate entry relative to page top
-			uint32	dwPageSize;
-			int32   nReadingError; // Index of the error character
-			bool  bShowWindow;   // Whether the candidate list window is visible
-			CRect rcCandidate;   // Candidate rectangle computed and filled each time before rendered
-		};
 
 		//---------------------------------------------------------------------//
 		// describe	: 分析当前串，刷新LineRecorder对象。
@@ -140,11 +124,9 @@ namespace UILib
 		uint32			m_dwBorderColor, m_dwBackgroundColor;
 
 		bool	m_bControl, m_bShift;
-		CSize	m_WindowSize;				// 视窗大小
+		x_size	m_WindowSize;				// 视窗大小
 
 		unsigned int	m_CaratTimerHandler;
 		bool			m_bShowCarat;
-
-		static CCandList	m_Candlist;	// 输入法绘制结构。
 	};
 }
