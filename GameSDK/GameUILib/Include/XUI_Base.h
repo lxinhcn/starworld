@@ -42,7 +42,7 @@ enum uiSig
 	uiSig_vb = uiSig_vw,	// VOID (BOOL)
 
 	uiSig_b_wl,				// BOOL (WPARAM,LPARAM)
-	uiSig_vwp,				// VOID (UINT,CPoint)
+	uiSig_vwp,				// VOID (UINT,x_point)
 	uiSig_v_v_ii,			// VOID (short,short)
 	uiSig_end
 };
@@ -85,7 +85,7 @@ namespace UILib
 		VOID ( XUI_Base::* pfn_vw )( WPARAM );
 
 		BOOL ( XUI_Base::* pfn_b_wl)(WPARAM, LPARAM);
-		VOID ( XUI_Base::* pfn_vwp )(UINT, CPoint);
+		VOID ( XUI_Base::* pfn_vwp )(UINT, x_point);
 
 		VOID ( XUI_Base::* pfn_v_v_ii)(short, short);
 	};

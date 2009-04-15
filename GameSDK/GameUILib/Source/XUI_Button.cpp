@@ -50,10 +50,10 @@ namespace UILib
 		m_enState = enState;
 	}
 
-	void XUI_Button::RenderSelf(const CRect& clipper)
+	void XUI_Button::RenderSelf(const x_rect& clipper)
 	{
 		//±³¾°
-		CPoint pt( 0, 0 );
+		x_point pt( 0, 0 );
 		pt = ClientToScreen(pt);
 		int nWidth	= m_WindowRect.Width();
 		int nHeight	= m_WindowRect.Height();
@@ -64,7 +64,7 @@ namespace UILib
 			XUI_DrawSprite( m_pButtonSkin[m_enState], pt.x, pt.y, nWidth, nHeight, clipper );
 		}
 		// ÎÄ×Ö
-		XUI_DrawText( XT2A(m_strCaption), m_pFont, pt.x + nWidth/2, pt.y + nHeight/2 );
+		XUI_DrawText( XT2A(m_strCaption), m_pFont, (float)pt.x + nWidth/2, (float)pt.y + nHeight/2 );
 	}
 
 	bool XUI_Button::onMouseEnter()
@@ -79,7 +79,7 @@ namespace UILib
 		return XUI_Wnd::onMouseLeave();
 	}
 
-	bool XUI_Button::onButtonDown(int button, const CPoint& pt, UINT sysKeys)
+	bool XUI_Button::onButtonDown(int button, const x_point& pt, UINT sysKeys)
 	{
 		if (button==0)
 		{
@@ -88,12 +88,12 @@ namespace UILib
 		return XUI_Wnd::onButtonDown(button, pt, sysKeys);
 	}
 
-	bool XUI_Button::onButtonUp(int button, const CPoint& pt, UINT sysKeys)
+	bool XUI_Button::onButtonUp(int button, const x_point& pt, UINT sysKeys)
 	{
 		if ( button == 0 )
 		{
 			// doAction();
-			//CPoint pt2 = ClientToScreen( pt );
+			//x_point pt2 = ClientToScreen( pt );
 			SetState( MouseOver );
 			SendUIMessage( WM_COMMAND, MAKELONG( GetID(), EV_BNCLICKED ), 0 );
 		}

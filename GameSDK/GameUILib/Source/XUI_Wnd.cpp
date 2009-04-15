@@ -56,12 +56,12 @@ namespace UILib
 	//事件处理
 	//鼠标
 	//返回 true 则父控件将不继续处理该消息
-	bool XUI_Wnd::onMouseMove(const CPoint& pt, UINT sysKeys)
+	bool XUI_Wnd::onMouseMove(const x_point& pt, UINT sysKeys)
 	{
 		return false;
 	}
 
-	bool XUI_Wnd::onMouseHover(const CPoint& pt)
+	bool XUI_Wnd::onMouseHover(const x_point& pt)
 	{
 		return false;
 	}
@@ -76,7 +76,7 @@ namespace UILib
 		return false;
 	}
 
-	bool XUI_Wnd::onButtonDown(int button, const CPoint& pt, UINT sysKeys)
+	bool XUI_Wnd::onButtonDown(int button, const x_point& pt, UINT sysKeys)
 	{
 		UINT id=0;
 		switch (button)
@@ -96,7 +96,7 @@ namespace UILib
 		return false;
 	}
 
-	bool XUI_Wnd::onButtonUp(int button, const CPoint& pt, UINT sysKeys)
+	bool XUI_Wnd::onButtonUp(int button, const x_point& pt, UINT sysKeys)
 	{
 		UINT id=0;
 		switch (button)
@@ -151,10 +151,10 @@ namespace UILib
 	//end of 事件处理
 
 	//将一个坐标从控件坐标转换成屏幕坐标
-	CPoint XUI_Wnd::ClientToScreen(const CPoint& pt) const
+	x_point XUI_Wnd::ClientToScreen(const x_point& pt) const
 	{
-		CPoint rstPt= AdjustPoint(pt, true);
-		CPoint ptSelf( m_WindowRect.TopLeft() );
+		x_point rstPt= AdjustPoint(pt, true);
+		x_point ptSelf( m_WindowRect.TopLeft() );
 		rstPt+=ptSelf;
 		if (m_pParent)
 			return m_pParent->ClientToScreen(rstPt);
@@ -163,12 +163,12 @@ namespace UILib
 	}
 
 	//将一个坐标从屏幕坐标转换成控件坐标
-	CPoint XUI_Wnd::ScreenToClient(const CPoint& pt) const
+	x_point XUI_Wnd::ScreenToClient(const x_point& pt) const
 	{
-		CPoint rstPt=AdjustPoint(pt, false);
+		x_point rstPt=AdjustPoint(pt, false);
 		if (m_pParent)
 			rstPt=m_pParent->ScreenToClient(rstPt);
-		CPoint ptSelf( m_WindowRect.TopLeft() );
+		x_point ptSelf( m_WindowRect.TopLeft() );
 		rstPt-=ptSelf;
 		return rstPt;
 	}
@@ -237,7 +237,7 @@ namespace UILib
 	}
 
 	//寻找在某个坐标上的控件
-	XUI_Wnd* XUI_Wnd::FindChildInPoint(const CPoint& pt) const
+	XUI_Wnd* XUI_Wnd::FindChildInPoint(const x_point& pt) const
 	{
 		AdjustPoint(pt, true);
 		for (int i=(int)m_pChildren.size()-1; i>=0; i--)
@@ -285,7 +285,7 @@ namespace UILib
 	// 移动对象
 	void XUI_Wnd::MoveWindow(int left, int top, int right, int bottom)
 	{
-		CRect oldRect = m_WindowRect;
+		x_rect oldRect = m_WindowRect;
 		m_WindowRect.SetRect( left, top, right, bottom );
 		Validate();
 		SendUIMessage( WM_MOVE, 0, MAKELONG( left, top ) );
@@ -384,18 +384,18 @@ namespace UILib
 		m_bFocused=bFocused;
 	}
 
-	BOOL XUI_Wnd::IsPointIn(const CPoint& pt)
+	BOOL XUI_Wnd::IsPointIn(const x_point& pt)
 	{
 		return m_WindowRect.PtInRect( pt );
 	}
 
-	void XUI_Wnd::Render(const CRect& clipper)
+	void XUI_Wnd::Render(const x_rect& clipper)
 	{
 		if (!m_bVisible)		return;
 
 		//计算可见区域
-		CRect clpSelf( m_WindowRect );
-		CPoint pt( 0, 0 );
+		x_rect clpSelf( m_WindowRect );
+		x_point pt( 0, 0 );
 		if( m_pParent )		pt = m_pParent->ClientToScreen( pt );
 		clpSelf += pt;
 
@@ -424,7 +424,7 @@ namespace UILib
 		}
 	}
 
-	void XUI_Wnd::RenderSelf(const CRect& clipper)
+	void XUI_Wnd::RenderSelf(const x_rect& clipper)
 	{
 		if( m_pBackGround )
 		{

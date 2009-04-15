@@ -45,7 +45,7 @@ protected:
 	CEffectList		m_EffectList;	// 作用列表
 
 private:
-	CRect	m_rcOld;	// 临时变量，不允许访问
+	x_rect	m_rcOld;	// 临时变量，不允许访问
 	// CXRender	m_pRender;	// 渲染器
 
 public:

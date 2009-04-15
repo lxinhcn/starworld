@@ -25,9 +25,9 @@ namespace UILib
 	{
 	}
 
-	CPoint XUI_Window::AdjustPoint(const CPoint& pt, bool bClientToScreen) const
+	x_point XUI_Window::AdjustPoint(const x_point& pt, bool bClientToScreen) const
 	{
-		CPoint ptAdjust( m_nOffsetX, m_nOffsetY );
+		x_point ptAdjust( m_nOffsetX, m_nOffsetY );
 		if (bClientToScreen)
 			return pt-ptAdjust;
 		else
@@ -154,7 +154,7 @@ namespace UILib
 							}
 						}
 					}
-					//const CRect& rc = pElement->GetRect();
+					//const x_rect& rc = pElement->GetRect();
 					//if( rc.Width() > m_nPanelWidth )	m_nPanelWidth = rc.Width();
 					//if( rc.Height() > m_nPanelHeight )	m_nPanelHeight = rc.Height();
 				}

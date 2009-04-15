@@ -40,7 +40,7 @@ namespace UILib
 		{
 			TiXmlElement* pElement = Doc.FirstChildElement( "DESKTOP" );
 			CreateFromXMLNode( pElement );
-			CRect rc;
+			x_rect rc;
 
 			rc.left		= pElement->IntAttribute( "X" );
 			rc.top		= pElement->IntAttribute( "Y" );
@@ -153,14 +153,14 @@ namespace UILib
 	{
 		if( m_pParent )
 		{
-			CRect rc = m_pParent->GetWindowRect();
+			x_rect rc = m_pParent->GetWindowRect();
 			int nOffsetX = rc.Width()/2 - GetWindowRect().Width()/2;
 			int nOffsetY = rc.Height()/2 - GetWindowRect().Height()/2;
 			Offset( nOffsetX, nOffsetY );
 		}
 	}
 
-	void CXDialog::RenderSelf(const CRect& clipper)
+	void CXDialog::RenderSelf(const x_rect& clipper)
 	{
 	}
 

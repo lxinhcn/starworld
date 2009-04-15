@@ -11,11 +11,11 @@ namespace UILib
 	{
 	}
 
-	void CPicture::RenderSelf( const CRect& clipper )
+	void CPicture::RenderSelf( const x_rect& clipper )
 	{
 		if( m_pBkTex )
 		{
-			CPoint pt( 0, 0 );
+			x_point pt( 0, 0 );
 			pt = ClientToScreen(pt);
 			int iWidth	= m_WindowRect.Width();
 			int iHeight	= m_WindowRect.Height();

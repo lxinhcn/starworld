@@ -132,8 +132,8 @@ void	CClientSprite::SetUV(float U0, float V0, float U1, float V1)
 
 void CClientSprite::Render( int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect )
 {
-	CRect rc( nX, nY, nX + nWidth, nY + nHeight );
-	CRect intersect;
+	x_rect rc( nX, nY, nX + nWidth, nY + nHeight );
+	x_rect intersect;
 	intersect.IntersectRect( rc, lpClipperRect );
 	if( intersect.IsRectEmpty() ) return;
 	if( intersect != rc )
@@ -281,7 +281,7 @@ bool	CXMouse::IsMouseOver()const
 }
 //////////////////////////////////////////////////////////////////////////
 
-static bool _DrawText( _lpcstr lpszText, UILib::XUI_IFont* pFont, float x, float y )
+static void _DrawText( _lpcstr lpszText, UILib::XUI_IFont* pFont, float x, float y )
 {
 	if( pFont == NULL ) pFont = GuiSystem::Instance().GetDefaultFont();
 	CClientFont* pF = static_cast< CClientFont* >( pFont );
@@ -290,10 +290,9 @@ static bool _DrawText( _lpcstr lpszText, UILib::XUI_IFont* pFont, float x, float
 		_string str = XA2T(lpszText);
 		pF->Render( x, y, str.c_str() );
 	}
-	return true;
 }
 
-static bool _DrawCharacter( _tchar szChar, UILib::XUI_IFont* pFont, float x, float y )
+static void _DrawCharacter( _tchar szChar, UILib::XUI_IFont* pFont, float x, float y )
 {
 	if( pFont == NULL ) pFont = GuiSystem::Instance().GetDefaultFont();
 	CClientFont* pF = static_cast< CClientFont* >( pFont );
@@ -301,35 +300,38 @@ static bool _DrawCharacter( _tchar szChar, UILib::XUI_IFont* pFont, float x, flo
 	{
 		pF->Render( x, y, szChar );
 	}
-	return true;
 }
 
 //没有边框的矩形背景
-static bool _DrawRect( const CRect& rcDest, uint32 dwBorderColor, uint32 dwBkColor/* = -1*/ )
+static void _DrawRect( const x_rect& rc, uint32 bordercolor, uint32 backgroundcolor/* = -1*/ )
 {
-	if( GETA(dwBorderColor) != 0 )
+	if( GETA(bordercolor) != 0 )
 	{
-		Application::Instance()->Gfx_RenderLine( (float)rcDest.left, (float)rcDest.top, (float)rcDest.right, (float)rcDest.top, dwBorderColor );
-		Application::Instance()->Gfx_RenderLine( (float)rcDest.right, (float)rcDest.top, (float)rcDest.right, (float)rcDest.bottom, dwBorderColor );
-		Application::Instance()->Gfx_RenderLine( (float)rcDest.right, (float)rcDest.bottom, (float)rcDest.left, (float)rcDest.bottom, dwBorderColor );
-		Application::Instance()->Gfx_RenderLine( (float)rcDest.left, (float)rcDest.top, (float)rcDest.left, (float)rcDest.bottom, dwBorderColor );
+		Application::Instance()->Gfx_RenderLine( (float)rc.left, (float)rc.top, (float)rc.right, (float)rc.top, bordercolor );
+		Application::Instance()->Gfx_RenderLine( (float)rc.right, (float)rc.top, (float)rc.right, (float)rc.bottom, bordercolor );
+		Application::Instance()->Gfx_RenderLine( (float)rc.right, (float)rc.bottom, (float)rc.left, (float)rc.bottom, bordercolor );
+		Application::Instance()->Gfx_RenderLine( (float)rc.left, (float)rc.top, (float)rc.left, (float)rc.bottom, bordercolor );
 	}
 
-	if( GETA(dwBkColor) != 0 )
+	if( GETA(backgroundcolor) != 0 )
 	{
 		hgeSprite sprite( 0, 0, 0, 0, 0 );
-		sprite.SetColor( dwBkColor );
-		sprite.RenderStretch( rcDest.left, rcDest.top, rcDest.right, rcDest.bottom );
+		sprite.SetColor( backgroundcolor );
+		sprite.RenderStretch( rc.left, rc.top, rc.right, rc.bottom );
 	}
-	return true;
 }
 
-static bool _DrawPolygon( const CPoint* ptArray, uint32* dwColorArray, uint32 nCount, uint16* pTriListArray, int32 nTriCount )
+static void _DrawLine( float x0, float y0, float x1, float y1, uint32 color )
 {
-	return true;
+	Application::Instance()->Gfx_RenderLine( x0, y0, x1, y1, color );
 }
 
-static bool _DrawSprite( const XUI_ISprite* Tex, int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect/* = NULL*/ )
+static void _DrawPolygon( const x_point* ptArray, uint32* dwColorArray, uint32 nCount, uint16* pTriListArray, int32 nTriCount )
+{
+	Application::Instance()->Gfx_RenderTriple
+}
+
+static void _DrawSprite( const XUI_ISprite* Tex, int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect/* = NULL*/ )
 {
 	CClientSprite* pTexture = (CClientSprite*)Tex;
 	pTexture->Render( nX, nY, nWidth, nHeight, lpClipperRect );

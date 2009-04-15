@@ -31,12 +31,12 @@ namespace UILib
 		ButtonState		m_enState;
 		uint32			m_dwColor;
 
-		void RenderSelf(const CRect& clipper);
+		void RenderSelf(const x_rect& clipper);
 
 		bool onMouseEnter();
 		bool onMouseLeave();
-		bool onButtonDown(int button, const CPoint& pt, UINT sysKeys);
-		bool onButtonUp(int button, const CPoint& pt, UINT sysKeys);
+		bool onButtonDown(int button, const x_point& pt, UINT sysKeys);
+		bool onButtonUp(int button, const x_point& pt, UINT sysKeys);
 		
 		bool onKeyDown(uint32 keycode, UINT sysKeys);
 

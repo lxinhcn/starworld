@@ -5,22 +5,6 @@
 
 namespace UILib
 {
-	XUI_EditBox::CCandList	XUI_EditBox::m_Candlist;	// 输入法绘制结构。
-
-	XUI_EditBox::CCandList::CCandList()
-		: nFirstSelected(0) // First character position of the selected string in HoriCand
-		, nHoriSelectedLen(0) // Length of the selected string in HoriCand
-		, dwCount(0)       // Number of valid entries in the candidate list
-		, dwSelection(0)   // Currently selected candidate entry relative to page top
-		, dwPageSize(0)
-		, nReadingError(0) // Index of the error character
-		, bShowWindow(true)   // Whether the candidate list window is visible
-		, rcCandidate( CRect( 0, 0, 100, 240 ) )
-	{
-		ZeroMemory( awszCandidate, sizeof(awszCandidate) );
-		strBuffer = "阿萨德";
-	}
-
 	BEGIN_UIMSG_MAP( XUI_EditBox, XUI_Wnd )
 	END_UIMSG_MAP()
 
@@ -112,18 +96,18 @@ namespace UILib
 	}
 
 	//重绘，通过实现这个方法来表现空间的外观
-	void XUI_EditBox::RenderSelf(const CRect& clipper)
+	void XUI_EditBox::RenderSelf(const x_rect& clipper)
 	{
-		CPoint pt = m_WindowRect.TopLeft();
+		x_point pt = m_WindowRect.TopLeft();
 		AdjustPoint( pt, true );
 
 		XUI_DrawRect( m_WindowRect, m_dwBorderColor, m_dwBackgroundColor );
 
-		CRect rc;
+		x_rect rc;
 		rc.IntersectRect( m_WindowRect, clipper );
 
-		CPoint CharPos = pt;
-		CPoint CaratPos;
+		x_point CharPos = pt;
+		x_point CaratPos;
 		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
 
 		for( Position i = m_FirstLineNumber; i < m_text.size(); ++i )
@@ -172,7 +156,7 @@ namespace UILib
 				}
 
 				// 判断是否被绘制。
-				BOOL bRender = rc.PtInRect( CharPos + CPoint( pFont->GetCharacterWidth( c ), pFont->GetCharacterHeight() ) );
+				BOOL bRender = rc.PtInRect( CharPos + x_point( pFont->GetCharacterWidth( c ), pFont->GetCharacterHeight() ) );
 				if( _istprint( c ) )
 				{
 					// 是显示字符
@@ -228,7 +212,7 @@ namespace UILib
 		if( m_bFocused && !m_Candlist.strBuffer.empty() )
 		{
 			XUI_Window* pWnd = GuiSystem::Instance().GetDesktop( DEFAULT_DESKTOP );
-			const CRect& rcWindow = pWnd->GetWindowRect();
+			const x_rect& rcWindow = pWnd->GetWindowRect();
 			CaratPos.x = pFont->GetCharacterWidth( _T(' ') ) + ( (CaratPos.x + m_Candlist.rcCandidate.Width() > rcWindow.Width())?rcWindow.Width()-m_Candlist.rcCandidate.Width()-1:CaratPos.x);
 			if( CaratPos.x < 0 ) CaratPos.x = 0;
 
@@ -236,7 +220,7 @@ namespace UILib
 			if( CaratPos.y < 0 ) CaratPos.y = 0;
 
 			XUI_DrawRect( 
-				CRect( CaratPos.x, CaratPos.y, CaratPos.x + m_Candlist.rcCandidate.Width(), CaratPos.y + pFont->GetCharacterHeight() + 2 ),
+				x_rect( CaratPos.x, CaratPos.y, CaratPos.x + m_Candlist.rcCandidate.Width(), CaratPos.y + pFont->GetCharacterHeight() + 2 ),
 				m_dwBorderColor, 
 				m_dwBackgroundColor );
 			XUI_DrawText( m_Candlist.strBuffer.c_str(), pFont, float( CaratPos.x + 1 ), float( CaratPos.y + 1 ) );
@@ -245,7 +229,7 @@ namespace UILib
 			{
 				CaratPos.y += pFont->GetCharacterHeight() + 2;
 				XUI_DrawRect( 
-					CRect( CaratPos.x, CaratPos.y, CaratPos.x + m_Candlist.rcCandidate.Width(), CaratPos.y + m_Candlist.rcCandidate.Height() ),
+					x_rect( CaratPos.x, CaratPos.y, CaratPos.x + m_Candlist.rcCandidate.Width(), CaratPos.y + m_Candlist.rcCandidate.Height() ),
 					m_dwBorderColor, 
 					m_dwBackgroundColor );
 			}
@@ -257,12 +241,12 @@ namespace UILib
 	//参数说明：
 	//pt，鼠标的坐标，相对于控件
 	//sysKeys，各种重要按键的状态，参见MSDN	
-	bool XUI_EditBox::onMouseMove(const CPoint& pt, UINT sysKeys)
+	bool XUI_EditBox::onMouseMove(const x_point& pt, UINT sysKeys)
 	{
 		return false;
 	}
 
-	bool XUI_EditBox::onMouseHover(const CPoint& pt)
+	bool XUI_EditBox::onMouseHover(const x_point& pt)
 	{
 		return true;
 	}
@@ -282,12 +266,12 @@ namespace UILib
 	//button，按下的键，0-左键，1-右键，2-中键
 	//pt，鼠标的坐标
 	//sysKeys，各种重要按键的状态，参见MSDN
-	bool XUI_EditBox::onButtonDown(int button, const CPoint& pt, UINT sysKeys)
+	bool XUI_EditBox::onButtonDown(int button, const x_point& pt, UINT sysKeys)
 	{
 		return true;
 	}
 
-	bool XUI_EditBox::onButtonUp(int button, const CPoint& pt, UINT sysKeys)
+	bool XUI_EditBox::onButtonUp(int button, const x_point& pt, UINT sysKeys)
 	{
 		return true;
 	}
@@ -538,7 +522,7 @@ namespace UILib
 		return true;
 	}
 
-	unsigned int XUI_EditBox::OnMoveWindow( CRect& rcWindow )
+	unsigned int XUI_EditBox::OnMoveWindow( x_rect& rcWindow )
 	{
 		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
 		if( pFont )

@@ -111,10 +111,10 @@ BOOL	CMap::GetCollisionBlock( const RECT& rc, CBlockList& retList )const
 // return	:	是否有碰撞
 // pBlock	:	和那个格子检测碰撞
 // CollisionRect	:	那个物体检测碰撞
-BOOL	CMap::TestCollision( CMapBlock* pBlock, const CRect& CollisionRect, int nObjID )
+BOOL	CMap::TestCollision( CMapBlock* pBlock, const x_rect& CollisionRect, int nObjID )
 {
 	if( !pBlock )	return FALSE;
-	CRect rc;
+	x_rect rc;
 	CMapBlock::CObjList::iterator iter = pBlock->m_ObjList.begin();
 	CXObjectList& ObjList = CXObjectList::GetInstance();
 	while( iter != pBlock->m_ObjList.end() )
@@ -124,7 +124,7 @@ BOOL	CMap::TestCollision( CMapBlock* pBlock, const CRect& CollisionRect, int nOb
 		ASSERT_MSG( pObj, _T("无效的指针参数。") );
 		if( pObj && nObjID != nID )
 		{
-			CRect& rc2 = CRect( pObj->GetCollision() );
+			x_rect& rc2 = x_rect( pObj->GetCollision() );
 			if( rc.IntersectRect( rc2, CollisionRect ) )
 			{
 				//TRACE( "检测到格子[%d,%d]的碰撞\n", pBlock->m_ptPos.x, pBlock->m_ptPos.y );
@@ -163,11 +163,11 @@ BOOL	CMap::MoveObject( CDynamic& Obj, float fDirection, float fSpeed )
 	int nMapRightLeg	= (m_dwMapWidth - 1)*m_siBlockSize.cy;
 	int nMapDownLeg		= (m_dwMapHeight - 1)*m_siBlockSize.cx;
 	BOOL bRet = TRUE;
-	const CRect& ObjRect = Obj.GetCollision();
+	const x_rect& ObjRect = Obj.GetCollision();
 	// legRect 能包围碰撞矩形的最小边界矩形。
 	// 出于这样的想法，如果改变后的碰撞矩形仍包含在最小边界矩形中的话，
 	// 则不再需要维护格子引用列表，否则将重新计算格子对将当先对象的引用。
-	CRect legRect(
+	x_rect legRect(
 	ObjRect.left/m_siBlockSize.cx*m_siBlockSize.cx,	// 整数规格化
 	ObjRect.top/m_siBlockSize.cy*m_siBlockSize.cy,	// 整数规格化
 	( ObjRect.right + m_siBlockSize.cx )/m_siBlockSize.cx*m_siBlockSize.cx,
@@ -190,7 +190,7 @@ BOOL	CMap::MoveObject( CDynamic& Obj, float fDirection, float fSpeed )
 	// 将角色坐标设置为新坐标
 	//Obj.SetPos( fNewPosX, fNewPosY, fNewPosZ );
 
-	CRect NewObjRect( ObjRect );
+	x_rect NewObjRect( ObjRect );
 	NewObjRect.OffsetRect( (int)fNewPosX - (int)fPosX, (int)fNewPosZ - (int)fPosZ );
 
 	//if( bRet )
@@ -215,8 +215,8 @@ BOOL	CMap::MoveObject( CDynamic& Obj, float fDirection, float fSpeed )
 		if( !OnDynamicMove( Obj, fNewPosX, fNewPosY, fNewPosZ ) )	return FALSE;
 
 		Obj.SetPos( fNewPosX, fNewPosY, fNewPosZ );
-		const CRect& NewObjRect = Obj.GetCollision();
-		CRect NewLegRect(
+		const x_rect& NewObjRect = Obj.GetCollision();
+		x_rect NewLegRect(
 			NewObjRect.left/m_siBlockSize.cx*m_siBlockSize.cx,
 			NewObjRect.top/m_siBlockSize.cy*m_siBlockSize.cy,
 			( NewObjRect.right + m_siBlockSize.cx )/m_siBlockSize.cx*m_siBlockSize.cx,
@@ -244,7 +244,7 @@ BOOL	CMap::PutObjToMap( int nObjID )			// 将对象放入地图
 	if( !pObj )	return FALSE;
 	if( !pObj->IsType( TypeMapobj ) )	return FALSE;
 	CGameObject* pGameObj = static_cast< CGameObject* >( pObj );
-	CRect rc = pGameObj->GetCollision();
+	x_rect rc = pGameObj->GetCollision();
 	CBlockList	retList;
 	GetCollisionBlock( rc, retList );
 
@@ -273,7 +273,7 @@ BOOL	CMap::RemoveObjFromMap( int nObjID )	// 将对象从地图移出
 {
 	CGameObject* pObj = ( CGameObject* )CXObjectList::GetInstance().GetObj( nObjID );
 	if( !pObj )	return FALSE;
-	CRect rc = pObj->GetCollision();
+	x_rect rc = pObj->GetCollision();
 	CBlockList	retList;
 	GetCollisionBlock( rc, retList );
 	CBlockList::const_iterator citer = retList.begin();

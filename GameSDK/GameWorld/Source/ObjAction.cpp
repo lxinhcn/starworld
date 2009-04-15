@@ -53,9 +53,9 @@
 //	//if( !pObj->IsType( TypeDynamic ) )	return FALSE;
 //
 //	//CDynamic* pDynObj = reinterpret_cast< CDynamic* >( pObj );
-//	//CRect rc = pDynObj->GetCollision();
+//	//x_rect rc = pDynObj->GetCollision();
 //	//rc.InflateRect( Map.GetBlockWidth()/2, Map.GetBlockHeight()/2 );
-//	//CPoint ptCenter = rc.CenterPoint();
+//	//x_point ptCenter = rc.CenterPoint();
 //	//int nObjInBlockX = ptCenter.x / Map.GetBlockWidth();
 //	//int nObjInBlockY = ptCenter.y / Map.GetBlockHeight();
 //
