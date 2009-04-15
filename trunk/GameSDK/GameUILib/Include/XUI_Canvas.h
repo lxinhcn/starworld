@@ -5,6 +5,9 @@
 #include <string>
 #include "defines.h"
 #include "DataHelper.h"
+
+#include <Dimm.h>
+
 class TiXmlElement;
 using namespace XGC;
 
