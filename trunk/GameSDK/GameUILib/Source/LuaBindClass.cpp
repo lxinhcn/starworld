@@ -173,10 +173,10 @@ namespace UILib
 			Manager::getInstance().set( "CreateFontEx",	FuncCall::create( XUI_CreateFontEx ) );
 			Manager::getInstance().set( "DestroyFont",	FuncCall::create( XUI_DestroyFont ) );
 
-			Manager::getInstance().set( "DrawText",		FuncCall::create( XUI_DrawText ) );
-			Manager::getInstance().set( "DrawCharacter",FuncCall::create( XUI_DrawCharacter ) );
-			Manager::getInstance().set( "DrawSprite",	FuncCall::create( XUI_DrawSprite ) );
-			Manager::getInstance().set( "DrawRect",		FuncCall::create( XUI_DrawRect ) );
+			Manager::getInstance().set( "DrawTextA",		FuncCall::create( XUI_DrawTextA ) );
+			Manager::getInstance().set( "DrawCharacterA",	FuncCall::create( XUI_DrawCharacterA ) );
+			Manager::getInstance().set( "DrawSprite",		FuncCall::create( XUI_DrawSprite ) );
+			Manager::getInstance().set( "DrawRect",			FuncCall::create( XUI_DrawRect ) );
 
 			_tchar path[_MAX_PATH+_MAX_FNAME];
 			helper::NormalizePath(  _T("..\\Resource\\Scripts\\"), path, _countof( path ) );

@@ -11,12 +11,18 @@ namespace UILib
 		~XUI_IME(void);
 
 		static bool Initialize();
+		static void RenderImeWindow();
+
+		static void CheckInputLocale();
+		static void OnInputLangChange();
+		static void CheckToggleState();
 
 		static HINSTANCE	m_hDllImm32;	// IMM32 DLL handle
 		static HINSTANCE	m_hDllVer;		// Version DLL handle
 		static HIMC			m_hImcDef;		// Default input context
 		static HKL			m_hklCurrent;	// Current keyboard layout of the process
 
+		static x_rect		m_rcWindow;
 		struct CCandList
 		{
 			CCandList();

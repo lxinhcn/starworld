@@ -216,11 +216,13 @@ namespace UILib
 			CaratPos.y = pFont->GetCharacterHeight()/2 + ( (CaratPos.y + XUI_IME::m_Candlist.rcCandidate.Height() > rcWindow.Height())?rcWindow.Height()-XUI_IME::m_Candlist.rcCandidate.Height()-1:CaratPos.y );
 			if( CaratPos.y < 0 ) CaratPos.y = 0;
 
+			XUI_SetClipping( CaratPos.x, CaratPos.y, CaratPos.x + XUI_IME::m_Candlist.rcCandidate.Width(), CaratPos.y + pFont->GetCharacterHeight() + 2 );
 			XUI_DrawRect( 
 				x_rect( CaratPos.x, CaratPos.y, CaratPos.x + XUI_IME::m_Candlist.rcCandidate.Width(), CaratPos.y + pFont->GetCharacterHeight() + 2 ),
 				m_dwBorderColor, 
 				m_dwBackgroundColor );
-			XUI_DrawText( XUI_IME::m_Candlist.strBuffer.c_str(), pFont, float( CaratPos.x + 1 ), float( CaratPos.y + 1 ) );
+
+			XUI_DrawTextA( XUI_IME::m_Candlist.strBuffer.c_str(), pFont, float( CaratPos.x + 1 ), float( CaratPos.y + 1 ) );
 
 			if( XUI_IME::m_Candlist.bShowWindow )
 			{

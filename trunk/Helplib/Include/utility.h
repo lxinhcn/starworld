@@ -137,6 +137,8 @@ namespace helper
 	#define XT2W( t )	helper::s2ws( t ).c_str()
 #endif
 
+	#define XA2W( a )	helper::s2ws( a ).c_str()
+	#define XW2A( w )	helper::ws2s( w ).c_str()
 	class TOOLLIB_API CErrorDescribe
 	{
 	public:

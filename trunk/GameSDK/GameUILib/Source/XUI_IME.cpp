@@ -1,13 +1,53 @@
 #include "XUI_IME.h"
+#include "GuiSystem.h"
+
 #define GETPROCADDRESS( Module, APIName )	*(FARPROC*)&_##APIName = GetProcAddress( Module, #APIName )
+#define GETLANG()		LOWORD(XUI_IME::m_hklCurrent)
+#define GETPRIMLANG()	((WORD)PRIMARYLANGID(GETLANG()))
+#define GETSUBLANG()	SUBLANGID(GETLANG())
+
+#define LANG_CHS MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED)
+#define LANG_CHT MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL)
+
+#define IMEUI_STATE_OFF		0
+#define IMEUI_STATE_ON		1
+#define IMEUI_STATE_ENGLISH	2
+
+#define INDICATOR_NON_IME	0
+#define INDICATOR_CHS		1
+#define INDICATOR_CHT		2
+#define INDICATOR_KOREAN	3
+#define INDICATOR_JAPANESE	4
+
 namespace UILib
 {
+	static _lpctstr g_aszIndicator[] =
+	{
+		TEXT("A"),
+#ifdef UNICODE
+		L"\x7B80\x0000",
+		L"\x7E41\x0000",
+		L"\xac00\x0000",
+		L"\x3042\x0000",
+#else
+		"\xd6\xd0\x00",
+		"\xa4\xa4\x00",
+		"\xb0\xa1\x00",
+		"\x82\xa0\x00",
+#endif
+	};
+	static _lpctstr	g_pszIndicatior = g_aszIndicator[0];
+	static bool		g_bVerticalCand = true;
+	static bool		g_bChineseIME = true;
+	static uint32	g_dwState = IMEUI_STATE_OFF;
+	static UINT		g_uCodePage = 0;
 
 	XUI_IME::CCandList	XUI_IME::m_Candlist;	// 输入法绘制结构。
-	HINSTANCE			XUI_IME::m_hDllImm32 = NULL;	// IMM32 DLL handle
-	HINSTANCE			XUI_IME::m_hDllVer = NULL;		// Version DLL handle
-	HIMC				XUI_IME::m_hImcDef = NULL;		// Default input context
-	HKL					XUI_IME::m_hklCurrent = NULL;	// Current keyboard layout of the process
+	HINSTANCE			XUI_IME::m_hDllImm32	= NULL;	// IMM32 DLL handle
+	HINSTANCE			XUI_IME::m_hDllVer		= NULL;		// Version DLL handle
+	HIMC				XUI_IME::m_hImcDef		= NULL;		// Default input context
+	HKL					XUI_IME::m_hklCurrent	= NULL;	// Current keyboard layout of the process
+	x_rect				XUI_IME::m_rcWindow( 640, 480, 730, 500 );
 
 	INPUTCONTEXT*	(WINAPI * XUI_IME::_ImmLockIMC)( HIMC );
 	BOOL			(WINAPI * XUI_IME::_ImmUnlockIMC)( HIMC );
@@ -94,6 +134,9 @@ namespace UILib
 			GETPROCADDRESS( m_hDllVer, GetFileVersionInfoSizeA );
 		}
 
+		CheckInputLocale();
+		CheckToggleState();
+
 		return true;
 	}
 
@@ -109,5 +152,101 @@ namespace UILib
 	{
 		ZeroMemory( awszCandidate, sizeof(awszCandidate) );
 		strBuffer = "阿萨德";
+	}
+
+	void XUI_IME::RenderImeWindow()
+	{
+		XUI_IFont* pFont = GuiSystem::Instance().GetDefaultFont();
+
+		XUI_DrawRect( m_rcWindow, XUI_ARGB(0xcc,0xaa, 0xaa, 0xaa), XUI_ARGB(0xcc,0x77, 0x77, 0x77) );
+		XUI_DrawText( g_pszIndicatior, pFont, (float)m_rcWindow.left, (float)m_rcWindow.top + 1 );
+		x_size strSize = pFont->GetStringSize( g_pszIndicatior );
+
+		//XUI_DrawCharacter( )
+	}
+
+	void XUI_IME::CheckInputLocale()
+	{
+		static HKL hklPrev = 0;
+		m_hklCurrent = GetKeyboardLayout( 0 );
+		if ( hklPrev == m_hklCurrent )
+		{
+			return;
+		}
+		hklPrev = m_hklCurrent;
+		switch ( GETPRIMLANG() )
+		{
+			// Simplified Chinese
+		case LANG_CHINESE:
+			g_bVerticalCand = true;
+			switch ( GETSUBLANG() )
+			{
+			case SUBLANG_CHINESE_SIMPLIFIED:
+				g_pszIndicatior = g_aszIndicator[INDICATOR_CHS];
+				//g_bVerticalCand = GetImeId() == 0;
+				g_bVerticalCand = false;
+				break;
+			case SUBLANG_CHINESE_TRADITIONAL:
+				g_pszIndicatior = g_aszIndicator[INDICATOR_CHT];
+				break;
+			default:	// unsupported sub-language
+				g_pszIndicatior = g_aszIndicator[INDICATOR_NON_IME];
+				break;
+			}
+			break;
+			// Korean
+		case LANG_KOREAN:
+			g_pszIndicatior = g_aszIndicator[INDICATOR_KOREAN];
+			g_bVerticalCand = false;
+			break;
+			// Japanese
+		case LANG_JAPANESE:
+			g_pszIndicatior = g_aszIndicator[INDICATOR_JAPANESE];
+			g_bVerticalCand = true;
+			break;		   
+		default:
+			g_pszIndicatior = g_aszIndicator[INDICATOR_NON_IME];
+		}
+		char szCodePage[8];
+		int iRc = GetLocaleInfoA( MAKELCID( GETLANG(), SORT_DEFAULT ), LOCALE_IDEFAULTANSICODEPAGE, szCodePage, _countof( szCodePage ) ); iRc;
+		g_uCodePage = atol( szCodePage );
+		//for ( int i = 0; i < 256; i++ )
+		//{
+		//	LeadByteTable[i] = (BYTE)IsDBCSLeadByteEx( g_uCodePage, (BYTE)i );
+		//}
+	}
+
+	void XUI_IME::CheckToggleState()
+	{
+		CheckInputLocale();
+
+		bool bIme = _ImmIsIME( m_hklCurrent ) != 0
+			&& ( ( 0xF0000000 & (DWORD_PTR)m_hklCurrent ) == 0xE0000000 ); // Hack to detect IME correctly. When IME is running as TIP, ImmIsIME() returns true for CHT US keyboard.
+		g_bChineseIME = ( GETPRIMLANG() == LANG_CHINESE ) && bIme;
+
+		HIMC himc;
+		HWND hWnd = GuiSystem::Instance().GetHWND();
+		if( NULL != ( himc = _ImmGetContext( hWnd ) ) ) 
+		{
+			if (g_bChineseIME) 
+			{
+				DWORD dwConvMode, dwSentMode;
+				_ImmGetConversionStatus(himc, &dwConvMode, &dwSentMode);
+				g_dwState = ( dwConvMode & IME_CMODE_NATIVE ) ? IMEUI_STATE_ON : IMEUI_STATE_ENGLISH;
+			}
+			else
+			{
+				g_dwState = ( bIme && _ImmGetOpenStatus( himc ) != 0 ) ? IMEUI_STATE_ON : IMEUI_STATE_OFF;
+			}
+			_ImmReleaseContext( hWnd, himc);
+		}
+		else
+			g_dwState = IMEUI_STATE_OFF;
+	}
+
+	void XUI_IME::OnInputLangChange()
+	{
+		CheckInputLocale();
+		CheckToggleState();
 	}
 };

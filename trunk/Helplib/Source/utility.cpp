@@ -381,7 +381,7 @@ namespace helper
 	std::string ws2s(const wchar_t* ws)
 	{
 		const wchar_t* _Source = ws;
-		size_t _Dsize = wcslen(ws) + 1;
+		size_t _Dsize = wcstombs(NULL,_Source,0) + 1;
 		char *_Dest = ( char* )_alloca(_Dsize);
 		memset(_Dest,0,_Dsize);
 		wcstombs(_Dest,_Source,_Dsize);

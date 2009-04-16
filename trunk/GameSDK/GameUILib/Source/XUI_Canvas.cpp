@@ -1,4 +1,5 @@
 #include "XUI_Canvas.h"
+#include "Helplib.h"
 #include "tinyxml.h"
 
 namespace UILib
@@ -17,6 +18,21 @@ namespace UILib
 	pfnCreateFontEx		XUI_CreateFontEx	= 0;	//   XUI_CreateFontEx( const XUI_FontAttribute& FontAttribute );
 	pfnDestroyFont		XUI_DestroyFont		= 0;	//   XUI_DestroyFont( XUI_IFont* pFont );
 	pfnDefWindowProc	XUI_DefWindowProc	= 0;	//   XUI_DefWindowProc( __in HWND hWnd, __in UINT Msg, __in WPARAM wParam, __in LPARAM lParam);
+
+	void XUI_DrawTextA( _lpcstr lpszText, XUI_IFont* pFont, float x, float y )
+	{
+		XUI_DrawText( XA2W(lpszText), pFont, x, y );
+	}
+
+	void XUI_DrawCharacterA( const char* szMbs, XUI_IFont* pFont, float x, float y )
+	{
+		_wchar sz;
+		if( mbtowc( &sz, szMbs, MB_CUR_MAX ) >= 0 )
+		{
+			XUI_DrawCharacter( sz, pFont, x, y );
+		}
+	}
+
 	//////////////////////////////////////////////////////////////////////////
 	// Sprite Attribute
 	//////////////////////////////////////////////////////////////////////////
