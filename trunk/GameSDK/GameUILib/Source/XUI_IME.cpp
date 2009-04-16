@@ -210,10 +210,6 @@ namespace UILib
 		char szCodePage[8];
 		int iRc = GetLocaleInfoA( MAKELCID( GETLANG(), SORT_DEFAULT ), LOCALE_IDEFAULTANSICODEPAGE, szCodePage, _countof( szCodePage ) ); iRc;
 		g_uCodePage = atol( szCodePage );
-		//for ( int i = 0; i < 256; i++ )
-		//{
-		//	LeadByteTable[i] = (BYTE)IsDBCSLeadByteEx( g_uCodePage, (BYTE)i );
-		//}
 	}
 
 	void XUI_IME::CheckToggleState()
