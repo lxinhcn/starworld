@@ -160,8 +160,9 @@ namespace UILib
 		}
 	}
 
-	void CXDialog::RenderSelf(const x_rect& clipper)
+	void CXDialog::RenderSelf()
 	{
+		XUI_Window::RenderSelf();
 	}
 
 	bool CXDialog::onKeyUp(uint32 keycode, UINT sysKeys)

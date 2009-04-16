@@ -12,7 +12,7 @@ namespace UILib
 		~XUI_EditBox(void);
 
 		//重绘，通过实现这个方法来表现空间的外观
-		virtual void RenderSelf(const x_rect& clipper);
+		virtual void RenderSelf();
 
 		void SetText( const std::string &t );
 		std::string GetText()const;

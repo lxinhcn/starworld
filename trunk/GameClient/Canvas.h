@@ -1,5 +1,7 @@
 #pragma once
 #include "GfxFont.h"
+#include "Canvas.h"
+
 using namespace UILib;
 
 class CTextureManager
@@ -94,7 +96,7 @@ public:
 	virtual void	RenderStretch( float x, float y, float w, float h );
 	virtual void	RenderEx( float x, float y, float rot, float hscale = 1.0f, float vscale = 1.0f );
 
-	void Render( int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect );
+	void Render( float x, float y, float w, float h );
 private:
 	hgeSprite*	m_pSprite;
 	float		m_u0, m_v0, m_u1, m_v1;

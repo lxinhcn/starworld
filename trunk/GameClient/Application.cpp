@@ -193,6 +193,6 @@ void CApplication::Render()
 {
 	//static byte i = 0;
 	//XUI_DrawRect( x_rect( 1, 1, SCREEN_WIDTH, SCREEN_HEIGHT ), -1, ARGB( 0xff*sin(++i*3.1415/0xff), 0xcc, 0xcc, 0xcc ) );
-	m_hge->Gfx_SetClipping( 0, 0, 100, 100 );
+	// m_hge->Gfx_SetClipping( 0, 0, 100, 100 );
 	XUI_DrawRect( x_rect( 1, 1, SCREEN_WIDTH, SCREEN_HEIGHT ), -1, ARGB( 0xcc, 0xcc, 0xcc, 0xcc ) );
 }

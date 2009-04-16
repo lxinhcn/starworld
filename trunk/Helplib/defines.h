@@ -25,18 +25,26 @@
 	typedef char								_tchar;
 #endif // _UNICODE
 
+#if !defined(_point64)
+	#if !defined(__midl) && (defined(_X86_) || defined(_M_IX86)) && _MSC_VER >= 1300
+		#define _point64 __w64
+	#else
+		#define _point64
+	#endif
+#endif
+
 #ifndef _DEFINES
 #define _DEFINES
-	typedef char	int8;
-	typedef short 	int16;
-	typedef int		int32;
-	typedef __int64 int64;
-	typedef long	_long;
+	typedef char		int8;
+	typedef short 		int16;
+	typedef int			int32;
+	typedef __int64		int64;
+	typedef long		long32;
 
 	typedef unsigned char		byte;
 	typedef unsigned short		uint16;
 	typedef unsigned int		uint32;
-	typedef unsigned long		ulong;
+	typedef unsigned long		ulong, ulong32;
 	typedef unsigned __int64	uint64;
 
 	typedef const _tchar*		_lpctstr;
@@ -44,6 +52,10 @@
 
 	typedef const char*			_lpcstr;
 	typedef char*				_lpstr;
+
+	typedef unsigned long	_point64 long_ptr, *plong_ptr;
+	typedef unsigned int	_point64 uint_ptr, *puint_ptr;
+
 #endif
 
 //--------------------------------------------------------------------------------------------------------//

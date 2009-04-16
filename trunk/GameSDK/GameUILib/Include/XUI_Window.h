@@ -33,7 +33,6 @@ namespace UILib
 		bool SaveToXMLNode( TiXmlNode* pNode );
 
 	protected:
-		virtual void RenderSelf(const x_rect& clipper){};
 		void	BindScrollBar();
 		int		ScrollVerticle(int iOffset);
 		int		ScrollHorizontal(int iOffset);

@@ -410,10 +410,13 @@ namespace UILib
 					ds.rcClient		= m_WindowRect;
 					ds.rcClipper	= clpSelf;
 					ds.pCtrl		= this;
-					SendUIMessage( UI_OWNERDRAW, GetID(), (LPARAM)&ds );
+					SendUIMessage( UI_OWNERDRAW, GetID(), (long_ptr)&ds );
 				}
 				else
-					RenderSelf(clpSelf);
+				{
+					XUI_SetClipping( m_WindowRect.left, m_WindowRect.top, m_WindowRect.Width(), m_WindowRect.Height() );
+					RenderSelf();
+				}
 			}
 
 			//»æÖÆ×Ó¿Ø¼þ
@@ -424,15 +427,15 @@ namespace UILib
 		}
 	}
 
-	void XUI_Wnd::RenderSelf(const x_rect& clipper)
+	void XUI_Wnd::RenderSelf()
 	{
 		if( m_pBackGround )
 		{
-			XUI_DrawSprite( m_pBackGround, m_WindowRect.left, m_WindowRect.top, m_WindowRect.Width(), m_WindowRect.Height(), clipper );
+			XUI_DrawSprite( m_pBackGround, m_WindowRect.left, m_WindowRect.top, m_WindowRect.Width(), m_WindowRect.Height() );
 		}
 	}
 
-	LRESULT XUI_Wnd::SendUIMessage( UINT nMsg, WPARAM wParam, LPARAM lParam )
+	long_ptr XUI_Wnd::SendUIMessage( uint32 nMsg, uint_ptr wParam, long_ptr lParam )
 	{
 		if( m_pChildFocusedOn )
 		{

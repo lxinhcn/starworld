@@ -308,6 +308,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\XUI_IME.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\XUI_IME.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\XUI_Wnd.cpp"
 				>
 			</File>

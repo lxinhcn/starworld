@@ -50,7 +50,7 @@ namespace UILib
 		m_enState = enState;
 	}
 
-	void XUI_Button::RenderSelf(const x_rect& clipper)
+	void XUI_Button::RenderSelf()
 	{
 		//±³¾°
 		x_point pt( 0, 0 );
@@ -61,7 +61,7 @@ namespace UILib
 		// °´Å¥±³¾°
 		if( m_pButtonSkin[m_enState] )
 		{
-			XUI_DrawSprite( m_pButtonSkin[m_enState], pt.x, pt.y, nWidth, nHeight, clipper );
+			XUI_DrawSprite( m_pButtonSkin[m_enState], pt.x, pt.y, nWidth, nHeight );
 		}
 		// ÎÄ×Ö
 		XUI_DrawText( XT2A(m_strCaption), m_pFont, (float)pt.x + nWidth/2, (float)pt.y + nHeight/2 );

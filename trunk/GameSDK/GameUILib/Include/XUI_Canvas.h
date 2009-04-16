@@ -6,6 +6,7 @@
 #include "defines.h"
 #include "DataHelper.h"
 
+#include <objbase.h>
 #include <Dimm.h>
 
 class TiXmlElement;
@@ -75,58 +76,6 @@ namespace UILib
 		virtual bool	IsMouseOver()const = 0;
 	};
 
-	struct XUI_IME
-	{
-		virtual void Render( float x, float y ) = 0;
-
-		struct CCandList
-		{
-			CCandList();
-			wchar_t awszCandidate[MAX_CANDLIST][256];
-			std::string strBuffer;
-			int32   nFirstSelected; // First character position of the selected string in HoriCand
-			int32   nHoriSelectedLen; // Length of the selected string in HoriCand
-			uint32	dwCount;       // Number of valid entries in the candidate list
-			uint32	dwSelection;   // Currently selected candidate entry relative to page top
-			uint32	dwPageSize;
-			int32   nReadingError; // Index of the error character
-			bool  bShowWindow;   // Whether the candidate list window is visible
-			x_rect rcCandidate;   // Candidate rectangle computed and filled each time before rendered
-		};
-
-		static CCandList m_Candlist;	// 输入法绘制结构。
-
-		static INPUTCONTEXT* (WINAPI * _ImmLockIMC)( HIMC );
-		static BOOL		(WINAPI * _ImmUnlockIMC)( HIMC );
-		static LPVOID	(WINAPI * _ImmLockIMCC)( HIMCC );
-		static BOOL		(WINAPI * _ImmUnlockIMCC)( HIMCC );
-		static BOOL		(WINAPI * _ImmDisableTextFrameService)( DWORD );
-		static LONG		(WINAPI * _ImmGetCompositionStringW)( HIMC, DWORD, LPVOID, DWORD );
-		static DWORD	(WINAPI * _ImmGetCandidateListW)( HIMC, DWORD, LPCANDIDATELIST, DWORD );
-		static HIMC		(WINAPI * _ImmGetContext)( HWND );
-		static BOOL		(WINAPI * _ImmReleaseContext)( HWND, HIMC );
-		static HIMC		(WINAPI * _ImmAssociateContext)( HWND, HIMC );
-		static BOOL		(WINAPI * _ImmGetOpenStatus)( HIMC );
-		static BOOL		(WINAPI * _ImmSetOpenStatus)( HIMC, BOOL );
-		static BOOL		(WINAPI * _ImmGetConversionStatus)( HIMC, LPDWORD, LPDWORD );
-		static HWND		(WINAPI * _ImmGetDefaultIMEWnd)( HWND );
-		static UINT		(WINAPI * _ImmGetIMEFileNameA)( HKL, LPSTR, UINT );
-		static UINT		(WINAPI * _ImmGetVirtualKey)( HWND );
-		static BOOL		(WINAPI * _ImmNotifyIME)( HIMC, DWORD, DWORD, DWORD );
-		static BOOL		(WINAPI * _ImmSetConversionStatus)( HIMC, DWORD, DWORD );
-		static BOOL		(WINAPI * _ImmSimulateHotKey)( HWND, DWORD );
-		static BOOL		(WINAPI * _ImmIsIME)( HKL );
-
-		// Function pointers: Traditional Chinese IME
-		static UINT (WINAPI * _GetReadingString)( HIMC, UINT, LPWSTR, PINT, BOOL*, PUINT );
-		static BOOL (WINAPI * _ShowReadingWindow)( HIMC, BOOL );
-
-		// Function pointers: Verion library imports
-		static BOOL (APIENTRY * _VerQueryValueA)( const LPVOID, LPSTR, LPVOID *, PUINT );
-		static BOOL (APIENTRY * _GetFileVersionInfoA)( LPSTR, DWORD, DWORD, LPVOID );
-		static DWORD (APIENTRY * _GetFileVersionInfoSizeA)( LPSTR, LPDWORD );
-	};
-
 	struct XUI_ISprite	:	protected	XUI_SpriteAttribute
 	{
 		virtual ~XUI_ISprite(){}
@@ -167,13 +116,13 @@ namespace UILib
 		virtual INT	GetCharacterHeight() = 0;
 	};
 
-	typedef bool		(*pfnSetClipping)	( int32 x, int32 y, int32 w, int32 h );
+	typedef void		(*pfnSetClipping)	( int32 x, int32 y, int32 w, int32 h );
 	typedef void		(*pfnDrawText)		( _lpcstr lpszText, XUI_IFont* pFont, float x, float y );
 	typedef void		(*pfnDrawCharacter)	( _tchar lpszText, XUI_IFont* pFont, float x, float y );
 	typedef void		(*pfnDrawRect)		( const x_rect& rc, uint32 bordercolor, uint32 backgroundcolor );	//没有边框的矩形背景
 	typedef void		(*pfnDrawLine)		( float x0, float y0, float x1, float y1 );
 	typedef void		(*pfnDrawPolygon)	( const x_point* ptArray, uint32* dwColorArray, uint32 nCount, uint16* pTriListArray, int32 nTriCount );
-	typedef void		(*pfnDrawSprite)	( const XUI_ISprite* Tex,int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect );
+	typedef void		(*pfnDrawSprite)	( const XUI_ISprite* Tex,int nX, int nY, int nWidth, int nHeight );
 	typedef XUI_ISprite*(*pfnCreateSprite)	( _lpcstr filename, float x, float y, float w, float h );
 	typedef XUI_ISprite*(*pfnCreateSpriteEx)( const XUI_SpriteAttribute& SpriteAttribute );
 	typedef void		(*pfnDestroySprite)	( XUI_ISprite* pSprite );

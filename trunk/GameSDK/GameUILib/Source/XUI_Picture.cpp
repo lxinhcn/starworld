@@ -11,7 +11,7 @@ namespace UILib
 	{
 	}
 
-	void CPicture::RenderSelf( const x_rect& clipper )
+	void CPicture::RenderSelf()
 	{
 		if( m_pBkTex )
 		{
@@ -22,7 +22,7 @@ namespace UILib
 			int nImageWidth = 0;
 			int nImageHeight = 0;
 
-			XUI_DrawSprite( m_pBkTex, pt.x, pt.y, iWidth, iHeight, clipper );
+			XUI_DrawSprite( m_pBkTex, pt.x, pt.y, iWidth, iHeight );
 		}
 	}
 }

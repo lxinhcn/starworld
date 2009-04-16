@@ -31,7 +31,7 @@ namespace UILib
 		ButtonState		m_enState;
 		uint32			m_dwColor;
 
-		void RenderSelf(const x_rect& clipper);
+		void RenderSelf();
 
 		bool onMouseEnter();
 		bool onMouseLeave();

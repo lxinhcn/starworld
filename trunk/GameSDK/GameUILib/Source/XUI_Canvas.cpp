@@ -183,19 +183,4 @@ namespace UILib
 		}
 		return true;
 	}
-
-	XUI_IME::CCandList::CCandList()
-		: nFirstSelected(0) // First character position of the selected string in HoriCand
-		, nHoriSelectedLen(0) // Length of the selected string in HoriCand
-		, dwCount(0)       // Number of valid entries in the candidate list
-		, dwSelection(0)   // Currently selected candidate entry relative to page top
-		, dwPageSize(0)
-		, nReadingError(0) // Index of the error character
-		, bShowWindow(true)   // Whether the candidate list window is visible
-		, rcCandidate( x_rect( 0, 0, 100, 240 ) )
-	{
-		ZeroMemory( awszCandidate, sizeof(awszCandidate) );
-		strBuffer = "°¢ÈøµÂ";
-	}
-
 }
