@@ -37,6 +37,7 @@ namespace UILib
 
 		//对应的窗口
 		HWND m_hWnd;
+		x_size m_windowsize;
 
 	private:
 		//根

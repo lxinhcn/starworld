@@ -45,6 +45,10 @@ namespace UILib
 		XUI_IME::Initialize();
 		m_hWnd = w;
 
+		CRect rcWindow;
+		GetClientRect( w, rcWindow );
+		m_windowsize = rcWindow.Size();
+
 		// 初始化定时器系统
 		m_timer.initialize( 1024, 4096 );
 
@@ -66,6 +70,7 @@ namespace UILib
 		if ( m_pDesktop )
 		{
 			m_pDesktop->Render( m_pDesktop->GetWindowRect() );
+			XUI_SetClipping( 0, 0,  )
 			if( m_pCursor->IsMouseOver() )
 			{
 				m_pCursor->RenderMouse();
