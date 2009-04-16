@@ -96,15 +96,12 @@ namespace UILib
 	}
 
 	//重绘，通过实现这个方法来表现空间的外观
-	void XUI_EditBox::RenderSelf(const x_rect& clipper)
+	void XUI_EditBox::RenderSelf()
 	{
 		x_point pt = m_WindowRect.TopLeft();
 		AdjustPoint( pt, true );
 
 		XUI_DrawRect( m_WindowRect, m_dwBorderColor, m_dwBackgroundColor );
-
-		x_rect rc;
-		rc.IntersectRect( m_WindowRect, clipper );
 
 		x_point CharPos = pt;
 		x_point CaratPos;
@@ -115,7 +112,7 @@ namespace UILib
 			line& l = m_text[i];
 			end_type t = l.type;
 
-			if( CharPos.y > rc.bottom - pFont->GetCharacterHeight() )
+			if( CharPos.y > m_WindowRect.bottom - pFont->GetCharacterHeight() )
 			{
 				// 超出高度则跳出
 				break;
@@ -125,7 +122,7 @@ namespace UILib
 			{
 				_tchar c = l[cursor];
 
-				if( pFont->GetCharacterWidth( c ) + CharPos.x > rc.right )
+				if( pFont->GetCharacterWidth( c ) + CharPos.x > m_WindowRect.right )
 				{
 					if( m_bWarpText )
 					{
@@ -156,7 +153,7 @@ namespace UILib
 				}
 
 				// 判断是否被绘制。
-				BOOL bRender = rc.PtInRect( CharPos + x_point( pFont->GetCharacterWidth( c ), pFont->GetCharacterHeight() ) );
+				BOOL bRender = m_WindowRect.PtInRect( CharPos + x_point( pFont->GetCharacterWidth( c ), pFont->GetCharacterHeight() ) );
 				if( _istprint( c ) )
 				{
 					// 是显示字符
@@ -209,27 +206,27 @@ namespace UILib
 			CharPos.y += pFont->GetCharacterHeight();
 		}
 
-		if( m_bFocused && !m_Candlist.strBuffer.empty() )
+		if( m_bFocused && !XUI_IME::m_Candlist.strBuffer.empty() )
 		{
 			XUI_Window* pWnd = GuiSystem::Instance().GetDesktop( DEFAULT_DESKTOP );
 			const x_rect& rcWindow = pWnd->GetWindowRect();
-			CaratPos.x = pFont->GetCharacterWidth( _T(' ') ) + ( (CaratPos.x + m_Candlist.rcCandidate.Width() > rcWindow.Width())?rcWindow.Width()-m_Candlist.rcCandidate.Width()-1:CaratPos.x);
+			CaratPos.x = pFont->GetCharacterWidth( _T(' ') ) + ( (CaratPos.x + XUI_IME::m_Candlist.rcCandidate.Width() > rcWindow.Width())?rcWindow.Width()-XUI_IME::m_Candlist.rcCandidate.Width()-1:CaratPos.x);
 			if( CaratPos.x < 0 ) CaratPos.x = 0;
 
-			CaratPos.y = pFont->GetCharacterHeight()/2 + ( (CaratPos.y + m_Candlist.rcCandidate.Height() > rcWindow.Height())?rcWindow.Height()-m_Candlist.rcCandidate.Height()-1:CaratPos.y );
+			CaratPos.y = pFont->GetCharacterHeight()/2 + ( (CaratPos.y + XUI_IME::m_Candlist.rcCandidate.Height() > rcWindow.Height())?rcWindow.Height()-XUI_IME::m_Candlist.rcCandidate.Height()-1:CaratPos.y );
 			if( CaratPos.y < 0 ) CaratPos.y = 0;
 
 			XUI_DrawRect( 
-				x_rect( CaratPos.x, CaratPos.y, CaratPos.x + m_Candlist.rcCandidate.Width(), CaratPos.y + pFont->GetCharacterHeight() + 2 ),
+				x_rect( CaratPos.x, CaratPos.y, CaratPos.x + XUI_IME::m_Candlist.rcCandidate.Width(), CaratPos.y + pFont->GetCharacterHeight() + 2 ),
 				m_dwBorderColor, 
 				m_dwBackgroundColor );
-			XUI_DrawText( m_Candlist.strBuffer.c_str(), pFont, float( CaratPos.x + 1 ), float( CaratPos.y + 1 ) );
+			XUI_DrawText( XUI_IME::m_Candlist.strBuffer.c_str(), pFont, float( CaratPos.x + 1 ), float( CaratPos.y + 1 ) );
 
-			if( m_Candlist.bShowWindow )
+			if( XUI_IME::m_Candlist.bShowWindow )
 			{
 				CaratPos.y += pFont->GetCharacterHeight() + 2;
 				XUI_DrawRect( 
-					x_rect( CaratPos.x, CaratPos.y, CaratPos.x + m_Candlist.rcCandidate.Width(), CaratPos.y + m_Candlist.rcCandidate.Height() ),
+					x_rect( CaratPos.x, CaratPos.y, CaratPos.x + XUI_IME::m_Candlist.rcCandidate.Width(), CaratPos.y + XUI_IME::m_Candlist.rcCandidate.Height() ),
 					m_dwBorderColor, 
 					m_dwBackgroundColor );
 			}

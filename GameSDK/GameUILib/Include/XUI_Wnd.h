@@ -26,7 +26,7 @@ namespace UILib
 		void Render(const x_rect& clipper);
 
 		//重绘，通过实现这个方法来表现空间的外观
-		virtual void RenderSelf(const x_rect& clipper);
+		virtual void RenderSelf();
 
 		//检查
 		virtual void Validate();
@@ -81,7 +81,7 @@ namespace UILib
 		virtual _lpctstr GetLable()const = 0;
 
 		// 发送消息
-		LRESULT SendUIMessage( UINT nMsg, WPARAM wParam, LPARAM lParam );
+		long_ptr SendUIMessage( uint32 nMsg, uint_ptr wParam, long_ptr lParam );
 
 		void Release();
 

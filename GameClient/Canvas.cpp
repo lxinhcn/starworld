@@ -130,28 +130,13 @@ void	CClientSprite::SetUV(float U0, float V0, float U1, float V1)
 	m_pSprite->SetTextureRect( x, y, w, h );
 }
 
-void CClientSprite::Render( int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect )
+void CClientSprite::Render( float x, float y, float w, float h )
 {
-	x_rect rc( nX, nY, nX + nWidth, nY + nHeight );
-	x_rect intersect;
-	intersect.IntersectRect( rc, lpClipperRect );
-	if( intersect.IsRectEmpty() ) return;
-	if( intersect != rc )
-	{
-		float x, y, w, h;
-		m_pSprite->GetTextureRect( &x, &y, &w, &h );
-		m_pSprite->SetTextureRect( 
-			float(x + intersect.left - nX),
-			float(y + intersect.top - nY),
-			float(intersect.Width()),
-			float(intersect.Height())
-			);
-		m_pSprite->Render( (float)intersect.left, (float)intersect.top );
-	}
-	else
-	{
-		m_pSprite->Render( (float)nX, (float)nY );
-	}
+	//float tx, ty, tw, th;
+	//m_pSprite->GetTextureRect( &tx, &ty, &tw, &th );
+	//m_pSprite->SetTextureRect( tx + x, ty + y, w, h );
+
+	m_pSprite->RenderStretch( x, y, x+w, y+h );
 }
 
 void CClientSprite::Render( float x, float y )
@@ -281,6 +266,11 @@ bool	CXMouse::IsMouseOver()const
 }
 //////////////////////////////////////////////////////////////////////////
 
+static void _SetClipping( int32 x, int32 y, int32 w, int32 h )
+{
+	Application::Instance()->Gfx_SetClipping( x, y, w, h );
+}
+
 static void _DrawText( _lpcstr lpszText, UILib::XUI_IFont* pFont, float x, float y )
 {
 	if( pFont == NULL ) pFont = GuiSystem::Instance().GetDefaultFont();
@@ -317,7 +307,7 @@ static void _DrawRect( const x_rect& rc, uint32 bordercolor, uint32 backgroundco
 	{
 		hgeSprite sprite( 0, 0, 0, 0, 0 );
 		sprite.SetColor( backgroundcolor );
-		sprite.RenderStretch( rc.left, rc.top, rc.right, rc.bottom );
+		sprite.RenderStretch( (float)rc.left, (float)rc.top, (float)rc.right, (float)rc.bottom );
 	}
 }
 
@@ -328,14 +318,13 @@ static void _DrawLine( float x0, float y0, float x1, float y1, uint32 color )
 
 static void _DrawPolygon( const x_point* ptArray, uint32* dwColorArray, uint32 nCount, uint16* pTriListArray, int32 nTriCount )
 {
-	Application::Instance()->Gfx_RenderTriple
+	// Application::Instance()->Gfx_RenderTriple
 }
 
-static void _DrawSprite( const XUI_ISprite* Tex, int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect/* = NULL*/ )
+static void _DrawSprite( const XUI_ISprite* Tex, int nX, int nY, int nWidth, int nHeight )
 {
 	CClientSprite* pTexture = (CClientSprite*)Tex;
-	pTexture->Render( nX, nY, nWidth, nHeight, lpClipperRect );
-	return true;
+	pTexture->Render( (float)nX, (float)nY, (float)nWidth, (float)nHeight );
 }
 
 static XUI_ISprite* _CreateSprite( _lpcstr filename, float x, float y, float w, float h )
@@ -386,6 +375,7 @@ static LRESULT CALLBACK _DefWindowProc( __in HWND hWnd, __in UINT Msg, __in WPAR
 
 void init_canvas()
 {
+	UILib::XUI_SetClipping		= _SetClipping;
 	UILib::XUI_DrawText			= _DrawText;
 	UILib::XUI_DrawCharacter	= _DrawCharacter;
 	UILib::XUI_DrawRect			= _DrawRect;
@@ -397,5 +387,5 @@ void init_canvas()
 	UILib::XUI_CreateFont		= _CreateFont;
 	UILib::XUI_CreateFontEx		= _CreateFontEx;
 	UILib::XUI_DestroyFont		= _DestroyFont;
-	UILib:XUI_DefWindowProc		= _DefWindowProc;
+	UILib::XUI_DefWindowProc	= _DefWindowProc;
 }

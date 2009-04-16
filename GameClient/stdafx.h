@@ -8,6 +8,17 @@
 // Modify the following defines if you have to target a platform prior to the ones specified below.
 // Refer to MSDN for the latest info on corresponding values for different platforms.
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+
+#ifndef WINVER
+#define WINVER         0x0410
+#endif
+#ifndef _WIN32_WINDOWS
+#define _WIN32_WINDOWS 0x0410 
+#endif
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT   0x0500 
+#endif
+
 // Windows Header Files:
 #include <windows.h>
 #include <atlconv.h>

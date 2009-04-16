@@ -42,6 +42,7 @@ namespace UILib
 		// 初始化lua脚本系统
 		Lua::Instance().Initialize();
 
+		XUI_IME::Initialize();
 		m_hWnd = w;
 
 		// 初始化定时器系统

@@ -193,10 +193,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ClientIME.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ClientMap.cpp"
 				>
 			</File>
@@ -240,10 +236,6 @@
 			</File>
 			<File
 				RelativePath=".\Canvas.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ClientIME.h"
 				>
 			</File>
 			<File

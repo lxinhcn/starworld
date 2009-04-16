@@ -444,8 +444,18 @@ namespace Private {
 	DEFINE_INTEGER( int );
 	DEFINE_INTEGER( long );
 	DEFINE_INTEGER( __int64 );
-	//DEFINE_INTEGER( __w64 int );
-	//DEFINE_INTEGER( __w64 long );
+
+//#if !defined(__midl) && (defined(_X86_) || defined(_M_IX86)) && _MSC_VER >= 1300
+//	typedef __w64 unsigned int	slb_uint_ptr;
+//	typedef __w64 unsigned long slb_long_ptr;
+//	DEFINE_INTEGER( slb_uint_ptr );
+//	DEFINE_INTEGER( slb_long_ptr );
+//#else
+//	typedef unsigned int	slb_uint_ptr;
+//	typedef unsigned long	slb_long_ptr;
+//	DEFINE_INTEGER( slb_uint_ptr );
+//	DEFINE_INTEGER( slb_long_ptr );
+//#endif
 
 	DEFINE_UNSIGNED( int );
 	DEFINE_UNSIGNED( long );
