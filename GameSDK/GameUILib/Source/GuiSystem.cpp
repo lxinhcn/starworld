@@ -45,7 +45,7 @@ namespace UILib
 		XUI_IME::Initialize();
 		m_hWnd = w;
 
-		CRect rcWindow;
+		x_rect rcWindow;
 		GetClientRect( w, rcWindow );
 		m_windowsize = rcWindow.Size();
 
@@ -70,7 +70,9 @@ namespace UILib
 		if ( m_pDesktop )
 		{
 			m_pDesktop->Render( m_pDesktop->GetWindowRect() );
-			XUI_SetClipping( 0, 0,  )
+			XUI_SetClipping( 0, 0, m_windowsize.cx, m_windowsize.cy );
+
+			XUI_IME::RenderImeWindow();
 			if( m_pCursor->IsMouseOver() )
 			{
 				m_pCursor->RenderMouse();
@@ -225,26 +227,45 @@ namespace UILib
 
 	LRESULT CGuiSystem::HandleMessage( UINT uMsg, WPARAM& wParam, LPARAM& lParam )
 	{
-		if( m_pDesktop )
+		LRESULT ret = 0;
+		switch( uMsg )
 		{
-			if( uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST )
+		case WM_SIZE:
 			{
-				return HandleMouse( uMsg, wParam, lParam );
+				x_rect rcWindow;
+				GetClientRect( m_hWnd, rcWindow );
+				m_windowsize = rcWindow.Size();
 			}
-			else if( uMsg >= WM_KEYFIRST && uMsg <= WM_IME_KEYLAST )
+			break;
+		case WM_INPUTLANGCHANGE:
+			XUI_IME::OnInputLangChange();
+			break;
+		case WM_IME_SETCONTEXT:
+			lParam = 0;
+			return XUI_DefWindowProc( m_hWnd, uMsg, wParam, lParam );
+			break;
+		default:
+			if( m_pDesktop )
 			{
-				HandleKeyboard( uMsg, wParam, lParam );
+				if( uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST )
+				{
+					return HandleMouse( uMsg, wParam, lParam );
+				}
+				else if( uMsg >= WM_KEYFIRST && uMsg <= WM_IME_KEYLAST )
+				{
+					HandleKeyboard( uMsg, wParam, lParam );
+				}
+				else
+				{
+					return m_pDesktop->SendUIMessage( uMsg, wParam, lParam );
+				}
 			}
 			else
 			{
-				return m_pDesktop->SendUIMessage( uMsg, wParam, lParam );
+				return XUI_DefWindowProc( m_hWnd, uMsg, wParam, lParam );
 			}
 		}
-		else
-		{
-			return XUI_DefWindowProc( m_hWnd, uMsg, wParam, lParam );
-		}
-		return 0;
+		return ret;
 	}
 
 	//¥¶¿Ì Û±Í

@@ -35,6 +35,7 @@
 
 #ifndef _DEFINES
 #define _DEFINES
+	typedef wchar_t		_wchar;
 	typedef char		int8;
 	typedef short 		int16;
 	typedef int			int32;
@@ -52,6 +53,9 @@
 
 	typedef const char*			_lpcstr;
 	typedef char*				_lpstr;
+
+	typedef const wchar_t*		_lpcwstr;
+	typedef wchar_t*			_lpwstr;
 
 	typedef unsigned long	_point64 long_ptr, *plong_ptr;
 	typedef unsigned int	_point64 uint_ptr, *puint_ptr;

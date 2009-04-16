@@ -271,14 +271,13 @@ static void _SetClipping( int32 x, int32 y, int32 w, int32 h )
 	Application::Instance()->Gfx_SetClipping( x, y, w, h );
 }
 
-static void _DrawText( _lpcstr lpszText, UILib::XUI_IFont* pFont, float x, float y )
+static void _DrawText( _lpctstr lpszText, UILib::XUI_IFont* pFont, float x, float y )
 {
 	if( pFont == NULL ) pFont = GuiSystem::Instance().GetDefaultFont();
 	CClientFont* pF = static_cast< CClientFont* >( pFont );
 	if( pF )
 	{
-		_string str = XA2T(lpszText);
-		pF->Render( x, y, str.c_str() );
+		pF->Render( x, y, lpszText );
 	}
 }
 

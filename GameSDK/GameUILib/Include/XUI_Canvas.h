@@ -3,11 +3,11 @@
 #include <windows.h>
 #include <tchar.h>
 #include <string>
+#include <objbase.h>
+#include <Dimm.h>
 #include "defines.h"
 #include "DataHelper.h"
 
-#include <objbase.h>
-#include <Dimm.h>
 
 class TiXmlElement;
 using namespace XGC;
@@ -117,8 +117,8 @@ namespace UILib
 	};
 
 	typedef void		(*pfnSetClipping)	( int32 x, int32 y, int32 w, int32 h );
-	typedef void		(*pfnDrawText)		( _lpcstr lpszText, XUI_IFont* pFont, float x, float y );
-	typedef void		(*pfnDrawCharacter)	( _tchar lpszText, XUI_IFont* pFont, float x, float y );
+	typedef void		(*pfnDrawText)		( _lpcwstr lpszText, XUI_IFont* pFont, float x, float y );
+	typedef void		(*pfnDrawCharacter)	( _wchar lpszText, XUI_IFont* pFont, float x, float y );
 	typedef void		(*pfnDrawRect)		( const x_rect& rc, uint32 bordercolor, uint32 backgroundcolor );	//没有边框的矩形背景
 	typedef void		(*pfnDrawLine)		( float x0, float y0, float x1, float y1 );
 	typedef void		(*pfnDrawPolygon)	( const x_point* ptArray, uint32* dwColorArray, uint32 nCount, uint16* pTriListArray, int32 nTriCount );
@@ -145,4 +145,7 @@ namespace UILib
 	extern pfnCreateFontEx		XUI_CreateFontEx;
 	extern pfnDestroyFont		XUI_DestroyFont;
 	extern pfnDefWindowProc		XUI_DefWindowProc;
+
+	extern void XUI_DrawTextA( _lpcstr lpszText, XUI_IFont* pFont, float x, float y );
+	extern void XUI_DrawCharacterA( const char* szMbs, XUI_IFont* pFont, float x, float y );
 }
