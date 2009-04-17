@@ -244,5 +244,12 @@ namespace UILib
 	{
 		CheckInputLocale();
 		CheckToggleState();
+
+		HWND hWnd = GuiSystem::Instance().GetHWND();
+		HIMC himc = _ImmGetContext( hWnd )
+		if( NULL != himc ) 
+		{
+			_ShowReadingWindow( himc, FALSE );
+		}
 	}
 };
