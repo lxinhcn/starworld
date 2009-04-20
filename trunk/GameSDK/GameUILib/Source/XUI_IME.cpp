@@ -46,6 +46,7 @@ namespace UILib
 
 	XUI_IME::CCandList	XUI_IME::m_Candlist;	// 输入法绘制结构。
 	HINSTANCE			XUI_IME::m_hDllImm32	= NULL;	// IMM32 DLL handle
+	HINSTANCE			XUI_IME::m_hDllIme		= NULL;	// IMM32 DLL handle
 	HINSTANCE			XUI_IME::m_hDllVer		= NULL;		// Version DLL handle
 	HIMC				XUI_IME::m_hImcDef		= NULL;		// Default input context
 	HKL					XUI_IME::m_hklCurrent	= NULL;	// Current keyboard layout of the process
@@ -138,6 +139,11 @@ namespace UILib
 			GETPROCADDRESS( m_hDllVer, GetFileVersionInfoA );
 			GETPROCADDRESS( m_hDllVer, GetFileVersionInfoSizeA );
 		}
+
+		HWND hWnd = GuiSystem::Instance().GetHWND();
+
+		m_hImcDef = _ImmGetContext( hWnd );
+		_ImmReleaseContext( hWnd, m_hImcDef );
 
 		CheckInputLocale();
 		CheckToggleState();
@@ -257,6 +263,22 @@ namespace UILib
 		CheckInputLocale();
 		CheckToggleState();
 
+		char szImeFile[MAX_PATH + 1];
+
+		_GetReadingString = NULL;
+		_ShowReadingWindow = NULL;
+		if( _ImmGetIMEFileNameA( m_hklCurrent, szImeFile, sizeof(szImeFile)/sizeof(szImeFile[0]) - 1 ) == 0 )
+			return;
+
+		if( m_hDllIme ) FreeLibrary( m_hDllIme );
+		m_hDllIme = LoadLibraryA( szImeFile );
+		if ( !m_hDllIme )
+			return;
+		_GetReadingString = (UINT (WINAPI*)(HIMC, UINT, LPWSTR, PINT, BOOL*, PUINT))
+			( GetProcAddress( m_hDllIme, "GetReadingString" ) );
+		_ShowReadingWindow =(BOOL (WINAPI*)(HIMC, BOOL))
+			( GetProcAddress( m_hDllIme, "ShowReadingWindow" ) );
+
 		if( _ShowReadingWindow )
 		{
 			HWND hWnd = GuiSystem::Instance().GetHWND();
@@ -267,5 +289,10 @@ namespace UILib
 				_ImmReleaseContext( hWnd, himc );
 			}
 		}
+	}
+
+	void XUI_IME::ResetCompositionString()
+	{
+		m_Candlist.strBuffer.empty();
 	}
 };

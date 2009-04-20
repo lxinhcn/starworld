@@ -510,7 +510,153 @@ namespace UILib
 	{
 		HWND hWnd = GuiSystem::Instance().GetHWND();
 		HIMC imc = XUI_IME::_ImmGetContext( hWnd );
-		XUI_IME::_ImmReleaseContext( hWnd, imc );
+		{
+			LONG lRet;  // Returned count in CHARACTERS
+			WCHAR wszCompStr[MAX_COMPSTRING_SIZE];
+			HIMC hImc;
+
+			if( NULL == ( hImc = XUI_IME::_ImmGetContext( hWnd ) ) )
+			{
+				break;
+			}
+
+			// Get the caret position in composition string
+			if ( lParam & GCS_CURSORPOS )
+			{
+				XUI_IME::m_Candlist.nCaretPos = XUI_IME::_ImmGetCompositionStringW( hImc, GCS_CURSORPOS, NULL, 0 );
+				if( XUI_IME::m_Candlist.nCaretPos < 0 )
+					XUI_IME::m_Candlist.nCaretPos = 0; // On error, set caret to pos 0.
+			}
+
+			// ResultStr must be processed before composition string.
+			//
+			// This is because for some IMEs, such as CHT, pressing Enter
+			// to complete the composition sends WM_IME_COMPOSITION with both
+			// GCS_RESULTSTR and GCS_COMPSTR.  Retrieving the result string
+			// gives the correct string, while retrieving the comp string
+			// (GCS_COMPSTR) gives empty string.  GCS_RESULTSTR should be
+			// handled first so that the application receives the string.  Then
+			// GCS_COMPSTR can be handled to clear the comp string buffer.
+
+			if ( lParam & GCS_RESULTSTR )
+			{
+				lRet = XUI_IME::_ImmGetCompositionStringW( hImc, GCS_RESULTSTR, wszCompStr, sizeof( wszCompStr ) );
+				if( lRet > 0 )
+				{
+					lRet /= sizeof(WCHAR);
+					wszCompStr[lRet] = 0;  // Force terminate
+					TruncateCompString( false, (int)wcslen( wszCompStr ) );
+					s_CompString.SetText( wszCompStr );
+					SendCompString();
+					XUI_IME::ResetCompositionString();
+				}
+			}
+
+			//
+			// Reads in the composition string.
+			//
+			if ( lParam & GCS_COMPSTR )
+			{
+				//////////////////////////////////////////////////////
+				// Retrieve the latest user-selected IME candidates
+				lRet = XUI_IME::_ImmGetCompositionStringW( hImc, GCS_COMPSTR, wszCompStr, sizeof( wszCompStr ) );
+				if( lRet > 0 )
+				{
+					lRet /= sizeof(WCHAR);  // Convert size in byte to size in char
+					wszCompStr[lRet] = 0;  // Force terminate
+					//
+					// Remove the whole of the string
+					//
+					TruncateCompString( false, (int)wcslen( wszCompStr ) );
+
+					s_CompString.SetText( wszCompStr );
+
+					// Older CHT IME uses composition string for reading string
+					if ( GetLanguage() == LANG_CHT && !GetImeId() )
+					{
+						if( lstrlen( s_CompString.GetBuffer() ) )
+						{
+							s_CandList.dwCount = 4;             // Maximum possible length for reading string is 4
+							s_CandList.dwSelection = (DWORD)-1; // don't select any candidate
+
+							// Copy the reading string to the candidate list
+							for( int i = 3; i >= 0; --i )
+							{
+								if( i > lstrlen( s_CompString.GetBuffer() ) - 1 )
+									s_CandList.awszCandidate[i][0] = 0;  // Doesn't exist
+								else
+								{
+									s_CandList.awszCandidate[i][0] = s_CompString[i];
+									s_CandList.awszCandidate[i][1] = 0;
+								}
+							}
+							s_CandList.dwPageSize = MAX_CANDLIST;
+							// Clear comp string after we are done copying
+							ZeroMemory( (LPVOID)s_CompString.GetBuffer(), 4 * sizeof(WCHAR) );
+							s_bShowReadingWindow = true;
+							GetReadingWindowOrientation( 0 );
+							if( s_bHorizontalReading )
+							{
+								s_CandList.nReadingError = -1;  // Clear error
+
+								// Create a string that consists of the current
+								// reading string.  Since horizontal reading window
+								// is used, we take advantage of this by rendering
+								// one string instead of several.
+								//
+								// Copy the reading string from the candidate list
+								// to the reading string buffer.
+								s_wszReadingString[0] = 0;
+								for( UINT i = 0; i < s_CandList.dwCount; ++i )
+								{
+									if( s_CandList.dwSelection == i )
+										s_CandList.nReadingError = lstrlen( s_wszReadingString );
+									StringCchCat( s_wszReadingString, 32, s_CandList.awszCandidate[i] );
+								}
+							}
+						}
+						else
+						{
+							s_CandList.dwCount = 0;
+							s_bShowReadingWindow = false;
+						}
+					}
+
+					//if( s_bInsertOnType )
+					//{
+					//	// Send composition string to the edit control
+					//	SendCompString();
+					//	// Restore the caret to the correct location.
+					//	// It's at the end right now, so compute the number
+					//	// of times left arrow should be pressed to
+					//	// send it to the original position.
+					//	int nCount = lstrlen( s_CompString.GetBuffer() + s_nCompCaret );
+					//	// Send left keystrokes
+					//	for( int i = 0; i < nCount; ++i )
+					//		SendMessage( DXUTGetHWND(), WM_KEYDOWN, VK_LEFT, 0 );
+					//	SendMessage( DXUTGetHWND(), WM_KEYUP, VK_LEFT, 0 );
+					//}
+				}
+
+				// ResetCaretBlink();
+			}
+
+			// Retrieve comp string attributes
+			//if( lParam & GCS_COMPATTR )
+			//{
+			//	lRet = XUI_IME::_ImmGetCompositionStringW( hImc, GCS_COMPATTR, s_abCompStringAttr, sizeof( s_abCompStringAttr ) );
+			//	if( lRet > 0 )
+			//		s_abCompStringAttr[lRet] = 0;  // ??? Is this needed for attributes?
+			//}
+
+			//// Retrieve clause information
+			//if( lParam & GCS_COMPCLAUSE )
+			//{
+			//	lRet = XUI_IME::_ImmGetCompositionStringW(hImc, GCS_COMPCLAUSE, s_adwCompStringClause, sizeof( s_adwCompStringClause ) );
+			//	s_adwCompStringClause[lRet / sizeof(DWORD)] = 0;  // Terminate
+			//}
+			XUI_IME::_ImmReleaseContext( hWnd, imc );
+		}
 		return true;
 	}
 
@@ -521,7 +667,25 @@ namespace UILib
 
 	bool XUI_EditBox::onImeNotify(uint32 wParam, uint32 lParam)
 	{
+		switch( lParam )
+		{
+		case IMN_PRIVATE:
+			{
+				int i = 0;
+			}
+			break;
+		}
 		return true;
+	}
+
+
+	//--------------------------------------------------------------------------------------
+	// Sends the current composition string to the application by sending keystroke
+	// messages.
+	void XUI_EditBox::SendCompString()
+	{
+		for( int i = 0; i < lstrlen( s_CompString.GetBuffer() ); ++i )
+			GuiSystem::Instance().HandleKeyboard( WM_CHAR, (WPARAM)XUI_IME::m_CompString[i], 0 );
 	}
 
 	unsigned int XUI_EditBox::OnMoveWindow( x_rect& rcWindow )
@@ -570,17 +734,31 @@ namespace UILib
 		}
 	}
 
-	LRESULT XUI_EditBox::OnWndMsg( UINT nMsg, WPARAM wParam, LPARAM lParam )
+	//获得焦点
+	void XUI_EditBox::onGetFocus()
 	{
-		switch( nMsg )
-		{
-		case WM_INPUTLANGCHANGE:
-			break;
-		case WM_IME_SETCONTEXT:
-			break;
-		case WM_IME_SELECT:
-			break;
-		}
-		return XUI_Wnd::OnWndMsg( nMsg, wParam, lParam );
+		XUI_IME::_ImmAssociateContext( GuiSystem::Instance().GetHWND(), XUI_IME::m_hImcDef );
+		XUI_Wnd::onGetFocus();
 	}
+
+	//失去焦点
+	void XUI_EditBox::onLostFocus()
+	{
+		XUI_IME::_ImmAssociateContext( GuiSystem::Instance().GetHWND(), NULL );
+		XUI_Wnd::onGetFocus();
+	}
+
+	//LRESULT XUI_EditBox::OnWndMsg( UINT nMsg, WPARAM wParam, LPARAM lParam )
+	//{
+	//	switch( nMsg )
+	//	{
+	//	case WM_INPUTLANGCHANGE:
+	//		break;
+	//	case WM_IME_SETCONTEXT:
+	//		break;
+	//	case WM_IME_SELECT:
+	//		break;
+	//	}
+	//	return XUI_Wnd::OnWndMsg( nMsg, wParam, lParam );
+	//}
 }
