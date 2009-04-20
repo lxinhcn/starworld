@@ -11,6 +11,7 @@ CApplication::CApplication(void)
 , m_pDefWindowProc( NULL )
 , m_pRegisterClass( NULL )
 {
+	init_canvas();
 }
 
 CApplication::~CApplication(void)
@@ -27,14 +28,18 @@ ATOM CALLBACK CApplication::UIRegisterClass( __in CONST WNDCLASSA *lpWndClass )
 
 LRESULT CALLBACK CApplication::UIWindowProc( __in HWND hWnd, __in UINT Msg, __in WPARAM wParam, __in LPARAM lParam )
 {
-	if( hWnd == UILib::GuiSystem::Instance().GetHWND() )
-	{
-		return UILib::GuiSystem::Instance().HandleMessage( Msg, wParam, lParam );
-	}
-	else
-	{
-		return Application::Instance().m_pDefWindowProc( hWnd, Msg, wParam, lParam );
-	}
+	//if( hWnd == UILib::GuiSystem::Instance().GetHWND() )
+	//{
+		wchar_t szLog[1024];
+		_snwprintf( szLog, sizeof(szLog), L"uMsg = 0x%08X\n", Msg );
+		OutputDebugStringW( szLog );
+
+		return UILib::GuiSystem::Instance().HandleMessage( hWnd, Msg, wParam, lParam );
+	//}
+	//else
+	//{
+	//	return Application::Instance().m_pDefWindowProc( hWnd, Msg, wParam, lParam );
+	//}
 }
 
 LRESULT CALLBACK CApplication::UIDispatchMessage( __in CONST MSG *lpMsg )
@@ -120,7 +125,6 @@ bool CApplication::Initialize()
 	if(m_hge->System_Initiate())
 	{
 		// 初始化回调函数
-		init_canvas();
 		_tchar szPath[1024];
 		helper::GetModulePath( NULL, szPath, sizeof( szPath ) );
 		GuiSystem::Instance().Initialize( 

@@ -1,7 +1,11 @@
 #pragma once
 #ifndef _XUI_IME_H
 #define _XUI_IME_H
+
 #include "GuiHeader.h"
+
+#define MAX_CANDLIST 10
+#define MAX_COMPSTRING_SIZE 256
 namespace UILib
 {
 	class XUI_IME
@@ -16,8 +20,10 @@ namespace UILib
 		static void CheckInputLocale();
 		static void OnInputLangChange();
 		static void CheckToggleState();
+		static void ResetCompositionString();
 
 		static HINSTANCE	m_hDllImm32;	// IMM32 DLL handle
+		static HINSTANCE	m_hDllIme;		// IME DLL handle
 		static HINSTANCE	m_hDllVer;		// Version DLL handle
 		static HIMC			m_hImcDef;		// Default input context
 		static HKL			m_hklCurrent;	// Current keyboard layout of the process
@@ -28,14 +34,15 @@ namespace UILib
 			CCandList();
 			wchar_t awszCandidate[MAX_CANDLIST][256];
 			std::string strBuffer;
+			int32	nCaretPos;
 			int32   nFirstSelected; // First character position of the selected string in HoriCand
 			int32   nHoriSelectedLen; // Length of the selected string in HoriCand
 			uint32	dwCount;       // Number of valid entries in the candidate list
 			uint32	dwSelection;   // Currently selected candidate entry relative to page top
 			uint32	dwPageSize;
 			int32   nReadingError; // Index of the error character
-			bool  bShowWindow;   // Whether the candidate list window is visible
-			x_rect rcCandidate;   // Candidate rectangle computed and filled each time before rendered
+			bool	bShowWindow;   // Whether the candidate list window is visible
+			x_rect	rcCandidate;   // Candidate rectangle computed and filled each time before rendered
 		};
 
 		static CCandList m_Candlist;	// 输入法绘制结构。

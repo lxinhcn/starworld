@@ -211,7 +211,12 @@ namespace UILib
 
 	void CGuiSystem::SetFocus(XUI_Wnd* pElement)
 	{
-		XUI_Wnd* pParent=pElement->m_pParent;
+		if( !pElement ) return;
+
+		if( pElement->m_pChildFocusedOn )
+			pElement->m_pChildFocusedOn->SetFocus( false );
+
+		XUI_Wnd* pParent = pElement->m_pParent;
 		if (pParent)
 		{
 			//去除别的焦点
@@ -225,11 +230,14 @@ namespace UILib
 		pElement->SetFocus(true);
 	}
 
-	LRESULT CGuiSystem::HandleMessage( UINT uMsg, WPARAM& wParam, LPARAM& lParam )
+	LRESULT CGuiSystem::HandleMessage( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 	{
 		LRESULT ret = 0;
 		switch( uMsg )
 		{
+		case WM_NCCREATE:
+			m_hWnd = hWnd;
+			break;
 		case WM_SIZE:
 			{
 				x_rect rcWindow;
@@ -241,8 +249,11 @@ namespace UILib
 			XUI_IME::OnInputLangChange();
 			break;
 		case WM_IME_SETCONTEXT:
-			// lParam = 0;
-			return XUI_DefWindowProc( m_hWnd, uMsg, wParam, lParam );
+			//lParam = 0;
+			break;
+		case WM_IME_STARTCOMPOSITION:
+			XUI_IME::ResetCompositionString();
+			return 0;
 			break;
 		default:
 			if( m_pDesktop )
@@ -260,12 +271,8 @@ namespace UILib
 					return m_pDesktop->SendUIMessage( uMsg, wParam, lParam );
 				}
 			}
-			else
-			{
-				return XUI_DefWindowProc( m_hWnd, uMsg, wParam, lParam );
-			}
 		}
-		return ret;
+		return XUI_DefWindowProc( hWnd, uMsg, wParam, lParam );
 	}
 
 	//处理鼠标

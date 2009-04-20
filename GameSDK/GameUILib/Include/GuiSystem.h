@@ -85,7 +85,7 @@ namespace UILib
 		void Render();
 		
 		//处理外部消息
-		LRESULT HandleMessage( UINT uMsg, WPARAM& wParam, LPARAM& lParam );
+		LRESULT HandleMessage( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
 		void Update( float fDelta );
 		//////////////////////////////////////////////////////////////////////////
