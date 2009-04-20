@@ -241,7 +241,7 @@ namespace UILib
 			XUI_IME::OnInputLangChange();
 			break;
 		case WM_IME_SETCONTEXT:
-			lParam = 0;
+			// lParam = 0;
 			return XUI_DefWindowProc( m_hWnd, uMsg, wParam, lParam );
 			break;
 		default:
@@ -253,7 +253,7 @@ namespace UILib
 				}
 				else if( uMsg >= WM_KEYFIRST && uMsg <= WM_IME_KEYLAST )
 				{
-					HandleKeyboard( uMsg, wParam, lParam );
+					return HandleKeyboard( uMsg, wParam, lParam );
 				}
 				else
 				{
@@ -380,7 +380,7 @@ namespace UILib
 	}
 
 	//处理键盘
-	void CGuiSystem::HandleKeyboard(UINT uMsg, WPARAM wParam, LPARAM lParam)
+	LRESULT CGuiSystem::HandleKeyboard(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		XUI_Window* pDesktop = m_pDesktop;
 		if( !m_ModalList.empty() )
@@ -418,7 +418,9 @@ namespace UILib
 		}
 
 		if( !result )
-			XUI_DefWindowProc( m_hWnd, uMsg, wParam, lParam );
+			return XUI_DefWindowProc( m_hWnd, uMsg, wParam, lParam );
+
+		return 0;
 	}
 
 	bool CGuiSystem::onImeComp(XUI_Wnd* pElement, uint32 wParam, uint32 lParam)
@@ -449,23 +451,6 @@ namespace UILib
 			return onImeNotify(pElement->m_pChildFocusedOn, wParam, lParam);
 		else
 			return false;
-	}
-
-	//处理输入法
-	void CGuiSystem::HandleIMEMsg(UINT uMsg, WPARAM wParam, LPARAM lParam)
-	{
-		switch(uMsg)
-		{
-		case WM_IME_COMPOSITION:
-			onImeComp(m_pDesktop, (uint32)wParam, (uint32)lParam);
-			break;
-		case WM_IME_ENDCOMPOSITION:
-			onImeEndComp(m_pDesktop, (uint32)wParam, (uint32)lParam);
-			break;
-		case WM_IME_NOTIFY:
-			onImeNotify(m_pDesktop, (uint32)wParam, (uint32)lParam);
-			break;
-		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////

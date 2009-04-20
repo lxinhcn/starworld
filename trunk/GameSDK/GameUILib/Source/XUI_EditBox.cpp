@@ -508,6 +508,9 @@ namespace UILib
 	//²Î¼ûMSDN
 	bool XUI_EditBox::onImeComp(uint32 wParam, uint32 lParam)
 	{
+		HWND hWnd = GuiSystem::Instance().GetHWND();
+		HIMC imc = XUI_IME::_ImmGetContext( hWnd );
+		XUI_IME::_ImmReleaseContext( hWnd, imc );
 		return true;
 	}
 

@@ -74,8 +74,7 @@ namespace UILib
 		bool onImeNotify(XUI_Wnd* pElement, uint32 wParam, uint32 lParam);
 
 		LRESULT HandleMouse(UINT uMsg, WPARAM wParam, LPARAM lParam);
-		void HandleKeyboard(UINT uMsg, WPARAM wParam, LPARAM lParam);
-		void HandleIMEMsg(UINT uMsg, WPARAM wParam, LPARAM lParam);
+		LRESULT HandleKeyboard(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	public:
 		HWND GetHWND() {return m_hWnd;}
