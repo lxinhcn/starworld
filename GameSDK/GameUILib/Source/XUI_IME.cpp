@@ -18,6 +18,7 @@
 #define INDICATOR_CHT		2
 #define INDICATOR_KOREAN	3
 #define INDICATOR_JAPANESE	4
+#define INDICATOR_ENGLISH	5
 
 namespace UILib
 {
@@ -35,6 +36,7 @@ namespace UILib
 		"\xb0\xa1\x00",
 		"\x82\xa0\x00",
 #endif
+		TEXT("En"),
 	};
 	static _lpctstr	g_pszIndicatior = g_aszIndicator[0];
 	static bool		g_bVerticalCand = true;
@@ -119,6 +121,9 @@ namespace UILib
 			GETPROCADDRESS( m_hDllImm32, ImmSetConversionStatus );
 			GETPROCADDRESS( m_hDllImm32, ImmSimulateHotKey );
 			GETPROCADDRESS( m_hDllImm32, ImmIsIME );
+			GETPROCADDRESS( m_hDllImm32, GetReadingString );
+			GETPROCADDRESS( m_hDllImm32, ShowReadingWindow );
+
 		}
 
 		if( !::GetSystemDirectory( wszPath, MAX_PATH+1 ) )
@@ -159,7 +164,14 @@ namespace UILib
 		XUI_IFont* pFont = GuiSystem::Instance().GetDefaultFont();
 
 		XUI_DrawRect( m_rcWindow, XUI_ARGB(0xcc,0xaa, 0xaa, 0xaa), XUI_ARGB(0xcc,0x77, 0x77, 0x77) );
-		XUI_DrawText( g_pszIndicatior, pFont, (float)m_rcWindow.left, (float)m_rcWindow.top + 1 );
+		if( g_dwState == IMEUI_STATE_ON )
+		{
+			XUI_DrawText( g_pszIndicatior, pFont, (float)m_rcWindow.left, (float)m_rcWindow.top + 1 );
+		}
+		else
+		{
+			XUI_DrawText( g_aszIndicator[INDICATOR_ENGLISH], pFont, (float)m_rcWindow.left, (float)m_rcWindow.top + 1 );
+		}
 		x_size strSize = pFont->GetStringSize( g_pszIndicatior );
 
 		//XUI_DrawCharacter( )
@@ -245,11 +257,15 @@ namespace UILib
 		CheckInputLocale();
 		CheckToggleState();
 
-		HWND hWnd = GuiSystem::Instance().GetHWND();
-		HIMC himc = _ImmGetContext( hWnd )
-		if( NULL != himc ) 
+		if( _ShowReadingWindow )
 		{
-			_ShowReadingWindow( himc, FALSE );
+			HWND hWnd = GuiSystem::Instance().GetHWND();
+			HIMC himc = _ImmGetContext( hWnd );
+			if( NULL != himc ) 
+			{
+				_ShowReadingWindow( himc, FALSE );
+				_ImmReleaseContext( hWnd, himc );
+			}
 		}
 	}
 };
