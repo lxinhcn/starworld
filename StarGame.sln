@@ -1,6 +1,17 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{4FD68E7D-6D5A-40DE-98F6-2483772A3860}"
+	ProjectSection(SolutionItems) = preProject
+		exe\Resource\Scripts\initialize.lua = exe\Resource\Scripts\initialize.lua
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ui script", "ui script", "{70B08D30-AE70-4D4C-A362-6049ADCF030F}"
+	ProjectSection(SolutionItems) = preProject
+		exe\Resource\Scripts\ui\ui.lua = exe\Resource\Scripts\ui\ui.lua
+		exe\Resource\Scripts\ui\utility.lua = exe\Resource\Scripts\ui\utility.lua
+	EndProjectSection
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameClient", "GameClient\GameClient.vcproj", "{C9AE6665-7E52-4E5D-862D-6E37BA55FEA9}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0CAAD250-94F2-4158-A8A5-506B578D6E08} = {0CAAD250-94F2-4158-A8A5-506B578D6E08}
@@ -28,17 +39,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SLB", "GameSDK\SLB\SLB.vcproj", "{A27E7B13-1C7A-4172-9932-B0A4D15F398D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hge", "Depend\hge181\src\core\hge.vcproj", "{FB1A9503-D67D-4311-AB3B-113DAD7D6F9F}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{4FD68E7D-6D5A-40DE-98F6-2483772A3860}"
-	ProjectSection(SolutionItems) = preProject
-		exe\Resource\Scripts\initialize.lua = exe\Resource\Scripts\initialize.lua
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ui script", "ui script", "{70B08D30-AE70-4D4C-A362-6049ADCF030F}"
-	ProjectSection(SolutionItems) = preProject
-		exe\Resource\Scripts\ui\ui.lua = exe\Resource\Scripts\ui\ui.lua
-		exe\Resource\Scripts\ui\utility.lua = exe\Resource\Scripts\ui\utility.lua
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaDebuger", "LuaDebuger\LuaDebuger.vcproj", "{A6A3A671-E708-4D13-9D42-2EF9BF13A4AF}"
 EndProject
