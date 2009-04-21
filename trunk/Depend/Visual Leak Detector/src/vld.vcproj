@@ -58,6 +58,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				ShowProgress="2"
 				AdditionalLibraryDirectories="$(SolutionDir)Depend\dbghelp\lib\i386"
 				GenerateDebugInformation="true"
 				BaseAddress="0x03200000"

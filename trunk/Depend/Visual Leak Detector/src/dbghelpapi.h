@@ -31,7 +31,7 @@ Applications should never include this header."
 #endif
 
 #include <windows.h>
-#define __out_xcount(x) // Workaround for the specstrings.h bug in the Platform SDK.
+// #define __out_xcount(x) // Workaround for the specstrings.h bug in the Platform SDK.
 #define DBGHELP_TRANSLATE_TCHAR
 #include <dbghelp.h>
 
