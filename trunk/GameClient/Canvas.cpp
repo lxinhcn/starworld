@@ -28,7 +28,7 @@ HTEXTURE CTextureManager::GetTexture( _lpcstr lpszTexpath )
 	}
 
 	HGE* hge = Application::Instance().getEngine();
-	HTEXTURE h = hge->Texture_Load( lpszTexpath );
+	HTEXTURE h = hge->Texture_Load( GuiSystem::Instance().GetImagePath() + lpszTexpath );
 	m_TextureMap[lpszTexpath] = h;
 	return h;
 }

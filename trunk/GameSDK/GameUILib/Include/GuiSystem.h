@@ -51,7 +51,7 @@ namespace UILib
 		XUI_IFont		*m_pDefaultFont;
 		XUI_IMouse		*m_pCursor;
 
-		_string			m_strMediaPath;
+		std::string		m_resource_path;
 		xtimer			m_timer;
 		float			m_nowtime;
 		float			m_timer_anchor;
@@ -99,8 +99,8 @@ namespace UILib
 		bool EnterModaless( XUI_Window* pDialog );
 		void LeaveModaless();
 
-		bool LoadFromFile( _lpctstr pszFilename );
-		bool SaveToFile( _lpctstr pszFilename );
+		bool LoadFromFile( _lpcstr pszFilename );
+		bool SaveToFile( _lpcstr pszFilename );
 
 		unsigned int SetTimer( event_function function, unsigned short repeat, unsigned short timer );
 		void KillTimer( unsigned int handle );
