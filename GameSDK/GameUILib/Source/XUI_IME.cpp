@@ -2,24 +2,6 @@
 #include "GuiSystem.h"
 
 #define GETPROCADDRESS( Module, APIName )	*(FARPROC*)&_##APIName = GetProcAddress( Module, #APIName )
-#define GETLANG()		LOWORD(XUI_IME::m_hklCurrent)
-#define GETPRIMLANG()	((WORD)PRIMARYLANGID(GETLANG()))
-#define GETSUBLANG()	SUBLANGID(GETLANG())
-
-#define LANG_CHS MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED)
-#define LANG_CHT MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL)
-
-#define IMEUI_STATE_OFF		0
-#define IMEUI_STATE_ON		1
-#define IMEUI_STATE_ENGLISH	2
-
-#define INDICATOR_NON_IME	0
-#define INDICATOR_CHS		1
-#define INDICATOR_CHT		2
-#define INDICATOR_KOREAN	3
-#define INDICATOR_JAPANESE	4
-#define INDICATOR_ENGLISH	5
-
 namespace UILib
 {
 	static _lpctstr g_aszIndicator[] =
@@ -44,7 +26,10 @@ namespace UILib
 	static uint32	g_dwState = IMEUI_STATE_OFF;
 	static UINT		g_uCodePage = 0;
 
-	XUI_IME::CCandList	XUI_IME::m_Candlist;	// 输入法绘制结构。
+	wchar_t				XUI_IME::m_CompString[MAX_COMPSTRING_SIZE];
+	wchar_t				XUI_IME::m_CompStringAttr[MAX_COMPSTRING_SIZE];
+
+	XUI_IME::CCandList	XUI_IME::m_CandList;	// 输入法绘制结构。
 	HINSTANCE			XUI_IME::m_hDllImm32	= NULL;	// IMM32 DLL handle
 	HINSTANCE			XUI_IME::m_hDllIme		= NULL;	// IMM32 DLL handle
 	HINSTANCE			XUI_IME::m_hDllVer		= NULL;		// Version DLL handle
@@ -293,6 +278,6 @@ namespace UILib
 
 	void XUI_IME::ResetCompositionString()
 	{
-		m_Candlist.strBuffer.empty();
+		m_CandList.strBuffer.empty();
 	}
 };

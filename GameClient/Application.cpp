@@ -28,18 +28,7 @@ ATOM CALLBACK CApplication::UIRegisterClass( __in CONST WNDCLASSA *lpWndClass )
 
 LRESULT CALLBACK CApplication::UIWindowProc( __in HWND hWnd, __in UINT Msg, __in WPARAM wParam, __in LPARAM lParam )
 {
-	//if( hWnd == UILib::GuiSystem::Instance().GetHWND() )
-	//{
-		wchar_t szLog[1024];
-		_snwprintf( szLog, sizeof(szLog), L"uMsg = 0x%08X\n", Msg );
-		OutputDebugStringW( szLog );
-
-		return UILib::GuiSystem::Instance().HandleMessage( hWnd, Msg, wParam, lParam );
-	//}
-	//else
-	//{
-	//	return Application::Instance().m_pDefWindowProc( hWnd, Msg, wParam, lParam );
-	//}
+	return UILib::GuiSystem::Instance().HandleMessage( hWnd, Msg, wParam, lParam );
 }
 
 LRESULT CALLBACK CApplication::UIDispatchMessage( __in CONST MSG *lpMsg )

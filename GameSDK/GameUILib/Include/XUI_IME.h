@@ -6,6 +6,25 @@
 
 #define MAX_CANDLIST 10
 #define MAX_COMPSTRING_SIZE 256
+
+#define GETLANG()		LOWORD(XUI_IME::m_hklCurrent)
+#define GETPRIMLANG()	((WORD)PRIMARYLANGID(GETLANG()))
+#define GETSUBLANG()	SUBLANGID(GETLANG())
+
+#define LANG_CHS MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED)
+#define LANG_CHT MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL)
+
+#define IMEUI_STATE_OFF		0
+#define IMEUI_STATE_ON		1
+#define IMEUI_STATE_ENGLISH	2
+
+#define INDICATOR_NON_IME	0
+#define INDICATOR_CHS		1
+#define INDICATOR_CHT		2
+#define INDICATOR_KOREAN	3
+#define INDICATOR_JAPANESE	4
+#define INDICATOR_ENGLISH	5
+
 namespace UILib
 {
 	class XUI_IME
@@ -45,7 +64,9 @@ namespace UILib
 			x_rect	rcCandidate;   // Candidate rectangle computed and filled each time before rendered
 		};
 
-		static CCandList m_Candlist;	// 输入法绘制结构。
+		static CCandList	m_CandList;	// 输入法绘制结构。
+		static wchar_t		m_CompString[MAX_COMPSTRING_SIZE];
+		static wchar_t		m_CompStringAttr[MAX_COMPSTRING_SIZE];
 
 		static INPUTCONTEXT* (WINAPI * _ImmLockIMC)( HIMC );
 		static BOOL		(WINAPI * _ImmUnlockIMC)( HIMC );

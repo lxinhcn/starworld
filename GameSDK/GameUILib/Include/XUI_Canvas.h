@@ -21,7 +21,6 @@ using namespace XGC;
 #define XUI_SETR(col,r)		(((col) & 0xFF00FFFF) + (DWORD(r)<<16))
 #define XUI_SETG(col,g)		(((col) & 0xFFFF00FF) + (DWORD(g)<<8))
 #define XUI_SETB(col,b)		(((col) & 0xFFFFFF00) + DWORD(b))
-#define MAX_CANDLIST		12
 
 namespace UILib
 {

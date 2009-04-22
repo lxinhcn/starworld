@@ -88,6 +88,8 @@ namespace UILib
 		// line		: 行索引
 		//---------------------------------------------------------------------//
 		void SetCurLineNumber( size_t line );
+		void SendCompString();
+
 	protected:
 		// Attribute
 		bool			m_bWarpText;		// 折行标志
