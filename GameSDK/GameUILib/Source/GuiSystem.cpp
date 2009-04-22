@@ -30,7 +30,11 @@ namespace UILib
 	{
 		if( m_bInitialized )	return TRUE;
 
-		m_strMediaPath			= p;
+		_lpctstr path = _tfullpath( NULL, p, 0 );
+		m_strMediaPath	= path;
+		free( (void*)path ); 
+		path = NULL;
+
 		m_pCursor				= pCursor;
 		m_pDefaultFont			= XUI_CreateFont( f.name.c_str(), f.size, f.bold, f.italic, f.antialias );	// 设置字体
 
@@ -462,13 +466,12 @@ namespace UILib
 
 	//////////////////////////////////////////////////////////////////////////
 	// 界面生成
-	bool CGuiSystem::LoadFromFile( _lpctstr pszFilename )
+	bool CGuiSystem::LoadFromFile( _lpcstr pszFilename )
 	{
 		if( m_pDesktop )
 		{
 			TiXmlDocument Doc;
-			USES_CONVERSION;
-			if( Doc.LoadFile( T2A(pszFilename) ) == false )
+			if( Doc.LoadFile( m_resource_path + pszFilename ) == false )
 				return false;
 
 			TiXmlNode* pNode = Doc.FirstChild( "WINDOW" );
@@ -480,7 +483,7 @@ namespace UILib
 		return false;
 	}
 
-	bool CGuiSystem::SaveToFile( _lpctstr pszFilename )
+	bool CGuiSystem::SaveToFile( _lpcstr pszFilename )
 	{
 		if( m_pDesktop )
 		{
@@ -491,17 +494,16 @@ namespace UILib
 			{
 				Doc.InsertEndChild( XmlElement2 );
 
-				USES_CONVERSION;
-				Doc.SaveFile( T2A( pszFilename ) );
+				Doc.SaveFile( m_resource_path + pszFilename );
 				return true;
 			}
 		}
 		return false;
 	}
 
-	_lpctstr	CGuiSystem::GetImagePath()
+	_lpcstr	CGuiSystem::GetImagePath()
 	{
-		return m_strMediaPath.c_str();
+		return m_resource_path.c_str();
 	}
 
 	void CGuiSystem::RegistDesktop( XUI_Window* pDesktop )

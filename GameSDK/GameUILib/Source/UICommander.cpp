@@ -280,11 +280,7 @@ namespace UILib
 	bool CUICommander::cmd_save( Params& param )
 	{
 		if( param.size() != 1 ) return false;
-		_tchar szCurrentDirectory[_MAX_PATH];
-		helper::NormalizePath( (_T(".\\") + param[0]).c_str(), szCurrentDirectory, _countof( szCurrentDirectory ) );
-		_tprintf( _T("saving file at %s ...\n"), szCurrentDirectory );
-
-		GuiSystem::Instance().SaveToFile( szCurrentDirectory );
+		GuiSystem::Instance().SaveToFile( param[0].c_str() );
 		_tprintf( _T("save file successful.\n" ) );
 		return true;
 	}
@@ -292,9 +288,7 @@ namespace UILib
 	bool CUICommander::cmd_load( Params& param )
 	{
 		if( param.size() != 1 ) return false;
-		_tchar szPath[1024];
-		helper::NormalizePath( (_T(".\\") + param[0]).c_str(), szPath, _countof( szPath ) );
-		GuiSystem::Instance().LoadFromFile( szPath );
+		GuiSystem::Instance().LoadFromFile( param[0].c_str() );
 		m_pCurElement = GuiSystem::Instance().GetRoot();
 		return true;
 	}

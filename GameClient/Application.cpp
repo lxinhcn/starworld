@@ -114,13 +114,11 @@ bool CApplication::Initialize()
 	if(m_hge->System_Initiate())
 	{
 		// 初始化回调函数
-		_tchar szPath[1024];
-		helper::GetModulePath( NULL, szPath, sizeof( szPath ) );
 		GuiSystem::Instance().Initialize( 
 			m_hge->System_GetState( HGE_HWND ), 
-			szPath, 
+			_T("..\\Resource\\ui\\"), 
 			XUI_FontAttribute( "宋体", 18, false, false, false ),
-			new CXMouse( XUI_SpriteAttribute( "..\\Resource\\cursor.png", 0, 0, 32, 32 ) )
+			new CXMouse( XUI_SpriteAttribute( "cursor.png", 0, 0, 32, 32 ) )
 			);
 		UICommander::Instance().ProcessCommand( _T("load main.xml") );
 	}
