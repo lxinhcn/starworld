@@ -206,29 +206,29 @@ namespace UILib
 			CharPos.y += pFont->GetCharacterHeight();
 		}
 
-		if( m_bFocused && !XUI_IME::m_Candlist.strBuffer.empty() )
+		if( m_bFocused && !XUI_IME::m_CandList.strBuffer.empty() )
 		{
 			XUI_Window* pWnd = GuiSystem::Instance().GetDesktop( DEFAULT_DESKTOP );
 			const x_rect& rcWindow = pWnd->GetWindowRect();
-			CaratPos.x = pFont->GetCharacterWidth( _T(' ') ) + ( (CaratPos.x + XUI_IME::m_Candlist.rcCandidate.Width() > rcWindow.Width())?rcWindow.Width()-XUI_IME::m_Candlist.rcCandidate.Width()-1:CaratPos.x);
+			CaratPos.x = pFont->GetCharacterWidth( _T(' ') ) + ( (CaratPos.x + XUI_IME::m_CandList.rcCandidate.Width() > rcWindow.Width())?rcWindow.Width()-XUI_IME::m_CandList.rcCandidate.Width()-1:CaratPos.x);
 			if( CaratPos.x < 0 ) CaratPos.x = 0;
 
-			CaratPos.y = pFont->GetCharacterHeight()/2 + ( (CaratPos.y + XUI_IME::m_Candlist.rcCandidate.Height() > rcWindow.Height())?rcWindow.Height()-XUI_IME::m_Candlist.rcCandidate.Height()-1:CaratPos.y );
+			CaratPos.y = pFont->GetCharacterHeight()/2 + ( (CaratPos.y + XUI_IME::m_CandList.rcCandidate.Height() > rcWindow.Height())?rcWindow.Height()-XUI_IME::m_CandList.rcCandidate.Height()-1:CaratPos.y );
 			if( CaratPos.y < 0 ) CaratPos.y = 0;
 
-			XUI_SetClipping( CaratPos.x, CaratPos.y, CaratPos.x + XUI_IME::m_Candlist.rcCandidate.Width(), CaratPos.y + pFont->GetCharacterHeight() + 2 );
+			XUI_SetClipping( CaratPos.x, CaratPos.y, CaratPos.x + XUI_IME::m_CandList.rcCandidate.Width(), CaratPos.y + pFont->GetCharacterHeight() + 2 );
 			XUI_DrawRect( 
-				x_rect( CaratPos.x, CaratPos.y, CaratPos.x + XUI_IME::m_Candlist.rcCandidate.Width(), CaratPos.y + pFont->GetCharacterHeight() + 2 ),
+				x_rect( CaratPos.x, CaratPos.y, CaratPos.x + XUI_IME::m_CandList.rcCandidate.Width(), CaratPos.y + pFont->GetCharacterHeight() + 2 ),
 				m_dwBorderColor, 
 				m_dwBackgroundColor );
 
-			XUI_DrawTextA( XUI_IME::m_Candlist.strBuffer.c_str(), pFont, float( CaratPos.x + 1 ), float( CaratPos.y + 1 ) );
+			XUI_DrawTextA( XUI_IME::m_CandList.strBuffer.c_str(), pFont, float( CaratPos.x + 1 ), float( CaratPos.y + 1 ) );
 
-			if( XUI_IME::m_Candlist.bShowWindow )
+			if( XUI_IME::m_CandList.bShowWindow )
 			{
 				CaratPos.y += pFont->GetCharacterHeight() + 2;
 				XUI_DrawRect( 
-					x_rect( CaratPos.x, CaratPos.y, CaratPos.x + XUI_IME::m_Candlist.rcCandidate.Width(), CaratPos.y + XUI_IME::m_Candlist.rcCandidate.Height() ),
+					x_rect( CaratPos.x, CaratPos.y, CaratPos.x + XUI_IME::m_CandList.rcCandidate.Width(), CaratPos.y + XUI_IME::m_CandList.rcCandidate.Height() ),
 					m_dwBorderColor, 
 					m_dwBackgroundColor );
 			}
@@ -496,7 +496,7 @@ namespace UILib
 	//sysKeys，各种重要按键的状态，参见MSDN
 	bool XUI_EditBox::onChar(uint32 c, UINT sysKeys)
 	{
-		if( _istprint( LOWORD(c) ) )
+		//if( _istprint( LOWORD(c) ) )
 		{
 			m_text.at(m_nCurLineNumber).insert( m_CaratPos++, 1, (wchar_t)c );
 			NaturalLine(m_nCurLineNumber);
@@ -517,15 +517,15 @@ namespace UILib
 
 			if( NULL == ( hImc = XUI_IME::_ImmGetContext( hWnd ) ) )
 			{
-				break;
+				return true;
 			}
 
 			// Get the caret position in composition string
 			if ( lParam & GCS_CURSORPOS )
 			{
-				XUI_IME::m_Candlist.nCaretPos = XUI_IME::_ImmGetCompositionStringW( hImc, GCS_CURSORPOS, NULL, 0 );
-				if( XUI_IME::m_Candlist.nCaretPos < 0 )
-					XUI_IME::m_Candlist.nCaretPos = 0; // On error, set caret to pos 0.
+				XUI_IME::m_CandList.nCaretPos = XUI_IME::_ImmGetCompositionStringW( hImc, GCS_CURSORPOS, NULL, 0 );
+				if( XUI_IME::m_CandList.nCaretPos < 0 )
+					XUI_IME::m_CandList.nCaretPos = 0; // On error, set caret to pos 0.
 			}
 
 			// ResultStr must be processed before composition string.
@@ -545,8 +545,7 @@ namespace UILib
 				{
 					lRet /= sizeof(WCHAR);
 					wszCompStr[lRet] = 0;  // Force terminate
-					TruncateCompString( false, (int)wcslen( wszCompStr ) );
-					s_CompString.SetText( wszCompStr );
+					lstrcpyn( XUI_IME::m_CompString, wszCompStr, sizeof(XUI_IME::m_CompString) );
 					SendCompString();
 					XUI_IME::ResetCompositionString();
 				}
@@ -564,81 +563,40 @@ namespace UILib
 				{
 					lRet /= sizeof(WCHAR);  // Convert size in byte to size in char
 					wszCompStr[lRet] = 0;  // Force terminate
-					//
-					// Remove the whole of the string
-					//
-					TruncateCompString( false, (int)wcslen( wszCompStr ) );
 
-					s_CompString.SetText( wszCompStr );
+					lstrcpyn( XUI_IME::m_CompString, wszCompStr, sizeof(XUI_IME::m_CompString) );
 
 					// Older CHT IME uses composition string for reading string
-					if ( GetLanguage() == LANG_CHT && !GetImeId() )
+					if ( GETLANG() == LANG_CHT )
 					{
-						if( lstrlen( s_CompString.GetBuffer() ) )
+						if( lstrlen( XUI_IME::m_CompString ) )
 						{
-							s_CandList.dwCount = 4;             // Maximum possible length for reading string is 4
-							s_CandList.dwSelection = (DWORD)-1; // don't select any candidate
+							XUI_IME::m_CandList.dwCount = 4;             // Maximum possible length for reading string is 4
+							XUI_IME::m_CandList.dwSelection = (DWORD)-1; // don't select any candidate
 
 							// Copy the reading string to the candidate list
 							for( int i = 3; i >= 0; --i )
 							{
-								if( i > lstrlen( s_CompString.GetBuffer() ) - 1 )
-									s_CandList.awszCandidate[i][0] = 0;  // Doesn't exist
+								if( i > lstrlen( XUI_IME::m_CompString ) - 1 )
+									XUI_IME::m_CandList.awszCandidate[i][0] = 0;  // Doesn't exist
 								else
 								{
-									s_CandList.awszCandidate[i][0] = s_CompString[i];
-									s_CandList.awszCandidate[i][1] = 0;
+									XUI_IME::m_CandList.awszCandidate[i][0] = XUI_IME::m_CompString[i];
+									XUI_IME::m_CandList.awszCandidate[i][1] = 0;
 								}
 							}
-							s_CandList.dwPageSize = MAX_CANDLIST;
+							XUI_IME::m_CandList.dwPageSize = MAX_CANDLIST;
 							// Clear comp string after we are done copying
-							ZeroMemory( (LPVOID)s_CompString.GetBuffer(), 4 * sizeof(WCHAR) );
-							s_bShowReadingWindow = true;
-							GetReadingWindowOrientation( 0 );
-							if( s_bHorizontalReading )
-							{
-								s_CandList.nReadingError = -1;  // Clear error
-
-								// Create a string that consists of the current
-								// reading string.  Since horizontal reading window
-								// is used, we take advantage of this by rendering
-								// one string instead of several.
-								//
-								// Copy the reading string from the candidate list
-								// to the reading string buffer.
-								s_wszReadingString[0] = 0;
-								for( UINT i = 0; i < s_CandList.dwCount; ++i )
-								{
-									if( s_CandList.dwSelection == i )
-										s_CandList.nReadingError = lstrlen( s_wszReadingString );
-									StringCchCat( s_wszReadingString, 32, s_CandList.awszCandidate[i] );
-								}
-							}
+							ZeroMemory( (LPVOID)XUI_IME::m_CompString, 4 * sizeof(WCHAR) );
+							XUI_IME::m_CandList.bShowWindow = true;
 						}
 						else
 						{
-							s_CandList.dwCount = 0;
-							s_bShowReadingWindow = false;
+							XUI_IME::m_CandList.dwCount = 0;
+							XUI_IME::m_CandList.bShowWindow = false;
 						}
 					}
-
-					//if( s_bInsertOnType )
-					//{
-					//	// Send composition string to the edit control
-					//	SendCompString();
-					//	// Restore the caret to the correct location.
-					//	// It's at the end right now, so compute the number
-					//	// of times left arrow should be pressed to
-					//	// send it to the original position.
-					//	int nCount = lstrlen( s_CompString.GetBuffer() + s_nCompCaret );
-					//	// Send left keystrokes
-					//	for( int i = 0; i < nCount; ++i )
-					//		SendMessage( DXUTGetHWND(), WM_KEYDOWN, VK_LEFT, 0 );
-					//	SendMessage( DXUTGetHWND(), WM_KEYUP, VK_LEFT, 0 );
-					//}
 				}
-
-				// ResetCaretBlink();
 			}
 
 			// Retrieve comp string attributes
@@ -662,6 +620,7 @@ namespace UILib
 
 	bool XUI_EditBox::onImeEndComp(uint32 wParam, uint32 lParam)
 	{
+		XUI_IME::ResetCompositionString();
 		return true;
 	}
 
@@ -669,6 +628,31 @@ namespace UILib
 	{
 		switch( lParam )
 		{
+		case IMN_OPENSTATUSWINDOW:
+			break;
+		case IMN_CLOSESTATUSWINDOW:
+			break;
+		case IMN_OPENCANDIDATE:
+		case IMN_CHANGECANDIDATE:
+			break;
+		case IMN_CLOSECANDIDATE:
+			break;
+		case IMN_SETCONVERSIONMODE:
+			break;
+		case IMN_SETSENTENCEMODE:
+			break;
+		case IMN_SETOPENSTATUS:
+			break;
+		case IMN_SETCANDIDATEPOS:
+			break;
+		case IMN_SETCOMPOSITIONFONT:
+			break;
+		case IMN_SETCOMPOSITIONWINDOW:
+			break;
+		case IMN_SETSTATUSWINDOWPOS:
+			break;
+		case IMN_GUIDELINE:
+			break;
 		case IMN_PRIVATE:
 			{
 				int i = 0;
@@ -684,8 +668,8 @@ namespace UILib
 	// messages.
 	void XUI_EditBox::SendCompString()
 	{
-		for( int i = 0; i < lstrlen( s_CompString.GetBuffer() ); ++i )
-			GuiSystem::Instance().HandleKeyboard( WM_CHAR, (WPARAM)XUI_IME::m_CompString[i], 0 );
+		for( int i = 0; i < lstrlen( XUI_IME::m_CompString ); ++i )
+			onChar( (WPARAM)XUI_IME::m_CompString[i], 0 );
 	}
 
 	unsigned int XUI_EditBox::OnMoveWindow( x_rect& rcWindow )
