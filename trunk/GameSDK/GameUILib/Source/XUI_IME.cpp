@@ -146,8 +146,6 @@ namespace UILib
 		, bShowWindow(true)   // Whether the candidate list window is visible
 		, rcCandidate( x_rect( 0, 0, 100, 240 ) )
 	{
-		ZeroMemory( awszCandidate, sizeof(awszCandidate) );
-		strBuffer = "°¢ÈøµÂ";
 	}
 
 	void XUI_IME::RenderImeWindow()
