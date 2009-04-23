@@ -51,7 +51,7 @@ namespace UILib
 		struct CCandList
 		{
 			CCandList();
-			wchar_t awszCandidate[MAX_CANDLIST][256];
+			std::list< std::wstring >	l;
 			std::string strBuffer;
 			int32	nCaretPos;
 			int32   nFirstSelected; // First character position of the selected string in HoriCand

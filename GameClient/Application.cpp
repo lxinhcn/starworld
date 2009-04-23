@@ -28,6 +28,9 @@ ATOM CALLBACK CApplication::UIRegisterClass( __in CONST WNDCLASSA *lpWndClass )
 
 LRESULT CALLBACK CApplication::UIWindowProc( __in HWND hWnd, __in UINT Msg, __in WPARAM wParam, __in LPARAM lParam )
 {
+	//char szlog[1024];
+	//_snprintf( szlog, sizeof(szlog), "nMsg = %x\n", Msg );
+	//OutputDebugStringA( szlog );
 	return UILib::GuiSystem::Instance().HandleMessage( hWnd, Msg, wParam, lParam );
 }
 
@@ -118,7 +121,7 @@ bool CApplication::Initialize()
 	}
 
 	GuiSystem::Instance().Initialize( 
-		NULL, 
+		m_hge->System_GetState(HGE_HWND), 
 		"..\\Resource\\ui\\", 
 		XUI_FontAttribute( "ËÎÌו", 18, false, false, false ),
 		new CXMouse( XUI_SpriteAttribute( "cursor.png", 0, 0, 32, 32 ) )

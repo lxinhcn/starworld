@@ -206,7 +206,7 @@ namespace UILib
 			CharPos.y += pFont->GetCharacterHeight();
 		}
 
-		if( m_bFocused && !XUI_IME::m_CandList.strBuffer.empty() )
+		if( m_bFocused && XUI_IME::m_CompString[0] )
 		{
 			XUI_Window* pWnd = GuiSystem::Instance().GetDesktop( DEFAULT_DESKTOP );
 			const x_rect& rcWindow = pWnd->GetWindowRect();
@@ -216,21 +216,30 @@ namespace UILib
 			CaratPos.y = pFont->GetCharacterHeight()/2 + ( (CaratPos.y + XUI_IME::m_CandList.rcCandidate.Height() > rcWindow.Height())?rcWindow.Height()-XUI_IME::m_CandList.rcCandidate.Height()-1:CaratPos.y );
 			if( CaratPos.y < 0 ) CaratPos.y = 0;
 
-			XUI_SetClipping( CaratPos.x, CaratPos.y, CaratPos.x + XUI_IME::m_CandList.rcCandidate.Width(), CaratPos.y + pFont->GetCharacterHeight() + 2 );
+			XUI_SetClipping( CaratPos.x, CaratPos.y, XUI_IME::m_CandList.rcCandidate.Width(), pFont->GetCharacterHeight() + 2 );
 			XUI_DrawRect( 
-				x_rect( CaratPos.x, CaratPos.y, CaratPos.x + XUI_IME::m_CandList.rcCandidate.Width(), CaratPos.y + pFont->GetCharacterHeight() + 2 ),
+				x_rect( CaratPos, x_size( XUI_IME::m_CandList.rcCandidate.Width(), pFont->GetCharacterHeight() + 2 ) ),
 				m_dwBorderColor, 
 				m_dwBackgroundColor );
 
-			XUI_DrawTextA( XUI_IME::m_CandList.strBuffer.c_str(), pFont, float( CaratPos.x + 1 ), float( CaratPos.y + 1 ) );
+			XUI_DrawText( XUI_IME::m_CompString, pFont, float( CaratPos.x + 1 ), float( CaratPos.y + 1 ) );
 
 			if( XUI_IME::m_CandList.bShowWindow )
 			{
 				CaratPos.y += pFont->GetCharacterHeight() + 2;
+				XUI_SetClipping( CaratPos.x, CaratPos.y, XUI_IME::m_CandList.rcCandidate.Width(), XUI_IME::m_CandList.rcCandidate.Height() );
 				XUI_DrawRect( 
-					x_rect( CaratPos.x, CaratPos.y, CaratPos.x + XUI_IME::m_CandList.rcCandidate.Width(), CaratPos.y + XUI_IME::m_CandList.rcCandidate.Height() ),
+					x_rect( CaratPos, XUI_IME::m_CandList.rcCandidate.Size() ),
 					m_dwBorderColor, 
 					m_dwBackgroundColor );
+
+				std::list< std::wstring >::const_iterator citer = XUI_IME::m_CandList.l.begin();
+				while( citer != XUI_IME::m_CandList.l.end() )
+				{
+					XUI_DrawText( citer->c_str(), pFont, CaratPos.x, CaratPos.y );
+					CaratPos.y += pFont->GetCharacterHeight();
+					++citer;
+				}
 			}
 		}
 	}
@@ -569,18 +578,18 @@ namespace UILib
 							XUI_IME::m_CandList.dwCount = 4;             // Maximum possible length for reading string is 4
 							XUI_IME::m_CandList.dwSelection = (DWORD)-1; // don't select any candidate
 
-							// Copy the reading string to the candidate list
-							for( int i = 3; i >= 0; --i )
-							{
-								if( i > lstrlen( XUI_IME::m_CompString ) - 1 )
-									XUI_IME::m_CandList.awszCandidate[i][0] = 0;  // Doesn't exist
-								else
-								{
-									XUI_IME::m_CandList.awszCandidate[i][0] = XUI_IME::m_CompString[i];
-									XUI_IME::m_CandList.awszCandidate[i][1] = 0;
-								}
-							}
-							XUI_IME::m_CandList.dwPageSize = MAX_CANDLIST;
+							//// Copy the reading string to the candidate list
+							//for( int i = 3; i >= 0; --i )
+							//{
+							//	if( i > lstrlen( XUI_IME::m_CompString ) - 1 )
+							//		XUI_IME::m_CandList.awszCandidate[i][0] = 0;  // Doesn't exist
+							//	else
+							//	{
+							//		XUI_IME::m_CandList.awszCandidate[i][0] = XUI_IME::m_CompString[i];
+							//		XUI_IME::m_CandList.awszCandidate[i][1] = 0;
+							//	}
+							//}
+							//XUI_IME::m_CandList.dwPageSize = MAX_CANDLIST;
 							// Clear comp string after we are done copying
 							ZeroMemory( (LPVOID)XUI_IME::m_CompString, 4 * sizeof(WCHAR) );
 							XUI_IME::m_CandList.bShowWindow = true;
@@ -629,8 +638,54 @@ namespace UILib
 			break;
 		case IMN_OPENCANDIDATE:
 		case IMN_CHANGECANDIDATE:
+			{
+				XUI_IME::m_CandList.bShowWindow = true;
+
+				HWND hWnd = GuiSystem::Instance().GetHWND();
+				HIMC himc;
+				if (NULL == (himc = XUI_IME::_ImmGetContext(hWnd)))
+					break;
+
+				LPCANDIDATELIST lpCandList;
+				DWORD dwIndex, dwBufLen, uCandPageSize;
+
+				dwIndex = 0;
+				dwBufLen = XUI_IME::_ImmGetCandidateListW( himc, dwIndex, NULL, 0 );
+				if ( dwBufLen )
+				{
+					lpCandList = (LPCANDIDATELIST)malloc(dwBufLen);
+					dwBufLen = XUI_IME::_ImmGetCandidateListW( himc, dwIndex, lpCandList, dwBufLen );
+				}
+
+				if ( dwBufLen )
+				{
+					DWORD dwSelection = lpCandList->dwSelection;
+					DWORD dwCount = lpCandList->dwCount;
+
+					int startOfPage = 0;
+
+					XUI_IME::CCandList& Watch = XUI_IME::m_CandList;
+					for( int i = 0; i < lpCandList->dwPageSize && i < MAX_CANDLIST; ++i )
+					{
+						XUI_IME::m_CandList.l.push_back( (LPWSTR)((DWORD_PTR)lpCandList + lpCandList->dwOffset[lpCandList->dwPageStart+i]) );
+					}
+					XUI_IME::m_CandList.dwCount = __min( lpCandList->dwCount, MAX_CANDLIST );
+
+					//memset(&g_szCandidate, 0, sizeof(g_szCandidate));
+					//for (UINT i = startOfPage, j = 0;
+					//	(DWORD)i < lpCandList->dwCount && j < g_uCandPageSize;
+					//	i++, j++)
+					//{
+					//	ComposeCandidateLine( j,
+					//		(LPTSTR)( (DWORD)lpCandList + lpCandList->dwOffset[i] ) );
+					//}
+					free( (HANDLE)lpCandList );
+					XUI_IME::_ImmReleaseContext(hWnd, himc);
+				}
+			}
 			break;
 		case IMN_CLOSECANDIDATE:
+			XUI_IME::m_CandList.bShowWindow = false;
 			break;
 		case IMN_SETCONVERSIONMODE:
 			break;

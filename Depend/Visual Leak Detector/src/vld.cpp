@@ -2004,10 +2004,10 @@ BOOL VisualLeakDetector::_RtlFreeHeap (HANDLE heap, DWORD flags, LPVOID mem)
 
     // Unmap the block from the specified heap.
     vld.unmapblock(heap, mem);
+	LeaveCriticalSection(&vld.m_heaplock);
 
     status = RtlFreeHeap(heap, flags, mem);
 
-    LeaveCriticalSection(&vld.m_heaplock);
     return status;
 }
 
