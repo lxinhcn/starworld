@@ -280,7 +280,7 @@ namespace UILib
 	bool CUICommander::cmd_save( Params& param )
 	{
 		if( param.size() != 1 ) return false;
-		GuiSystem::Instance().SaveToFile( param[0].c_str() );
+		GuiSystem::Instance().SaveToFile( XT2A(param[0]) );
 		_tprintf( _T("save file successful.\n" ) );
 		return true;
 	}
@@ -288,7 +288,7 @@ namespace UILib
 	bool CUICommander::cmd_load( Params& param )
 	{
 		if( param.size() != 1 ) return false;
-		GuiSystem::Instance().LoadFromFile( param[0].c_str() );
+		GuiSystem::Instance().LoadFromFile( XT2A(param[0]) );
 		m_pCurElement = GuiSystem::Instance().GetRoot();
 		return true;
 	}

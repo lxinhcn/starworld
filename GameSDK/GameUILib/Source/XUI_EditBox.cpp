@@ -245,11 +245,6 @@ namespace UILib
 		return false;
 	}
 
-	bool XUI_EditBox::onMouseHover(const x_point& pt)
-	{
-		return true;
-	}
-
 	bool XUI_EditBox::onMouseEnter()
 	{
 		return true;
@@ -496,7 +491,7 @@ namespace UILib
 	//sysKeys，各种重要按键的状态，参见MSDN
 	bool XUI_EditBox::onChar(uint32 c, UINT sysKeys)
 	{
-		//if( _istprint( LOWORD(c) ) )
+		if( _istprint( c ) )
 		{
 			m_text.at(m_nCurLineNumber).insert( m_CaratPos++, 1, (wchar_t)c );
 			NaturalLine(m_nCurLineNumber);
@@ -626,7 +621,7 @@ namespace UILib
 
 	bool XUI_EditBox::onImeNotify(uint32 wParam, uint32 lParam)
 	{
-		switch( lParam )
+		switch( wParam )
 		{
 		case IMN_OPENSTATUSWINDOW:
 			break;

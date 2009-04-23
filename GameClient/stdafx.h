@@ -39,6 +39,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <strstream>
 
 #include <DbgHelp.h>
 

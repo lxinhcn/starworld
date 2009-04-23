@@ -111,17 +111,19 @@ bool CApplication::Initialize()
 		helper::patchimport( GetModuleHandle( _T("hge.dll") ), "User32.dll", NULL, "DispatchMessageA", UIDispatchMessage );
 	}
 
-	if(m_hge->System_Initiate())
+	// 初始化回调函数
+	if( !m_hge->System_Initiate())
 	{
-		// 初始化回调函数
-		GuiSystem::Instance().Initialize( 
-			m_hge->System_GetState( HGE_HWND ), 
-			_T("..\\Resource\\ui\\"), 
-			XUI_FontAttribute( "宋体", 18, false, false, false ),
-			new CXMouse( XUI_SpriteAttribute( "cursor.png", 0, 0, 32, 32 ) )
-			);
-		UICommander::Instance().ProcessCommand( _T("load main.xml") );
+		return false;
 	}
+
+	GuiSystem::Instance().Initialize( 
+		NULL, 
+		"..\\Resource\\ui\\", 
+		XUI_FontAttribute( "宋体", 18, false, false, false ),
+		new CXMouse( XUI_SpriteAttribute( "cursor.png", 0, 0, 32, 32 ) )
+		);
+	UICommander::Instance().ProcessCommand( _T("load main.xml") );
 
 	helper::restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "RegisterClassA",	m_pRegisterClass );
 	return true;

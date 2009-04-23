@@ -157,7 +157,7 @@ namespace UILib
 			}
 		}
 
-		return XUI_DefWindowProc( GuiSystem::Instance().GetHWND(), nMsg, wParam, lParam );
+		return -1;
 	}
 
 	// 消息处理，在垂直层次上遍历消息映射表

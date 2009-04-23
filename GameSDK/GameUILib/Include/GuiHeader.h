@@ -14,6 +14,7 @@
 	#include <tchar.h>
 	#include <conio.h>
 
+	#include "MessageDefine.h"
 	#include "GuiMacroDefine.h"
 	#include "EventDefine.h"
 	#include "XUI_Canvas.h"
