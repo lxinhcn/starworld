@@ -22,10 +22,11 @@ namespace UILib
 		virtual ~CGuiSystem(void);
 
 	public:
-		bool Initialize( HWND w, _lpctstr p, const XUI_FontAttribute& f, XUI_IMouse* pCursor );
+		bool Initialize( HWND hWnd, _lpcstr lpszPath, const XUI_FontAttribute& fontAttr, XUI_IMouse* pCursor );
 		void Unitialize();
+
 		// 设置图片路径
-		_lpctstr	GetImagePath();
+		_lpcstr	GetResourcePath();
 
 		XUI_IFont*	GetDefaultFont()const{ return m_pDefaultFont; }
 		XUI_IMouse*	GetMouseCursor()const{ return m_pCursor; }
@@ -56,28 +57,28 @@ namespace UILib
 		float			m_nowtime;
 		float			m_timer_anchor;
 	protected:
-		void SetFocus(XUI_Wnd* pElement);
+		void SetFocus		( XUI_Wnd* pElement );
 
 		//消息处理，保证消息可以按照预定的方式转发
-		bool onMouseMove(XUI_Wnd* pElement, const x_point& pt, UINT sysKeys);
-		bool onMouseLeave(XUI_Wnd* pElement);
-		bool onMouseHover(XUI_Wnd* pElement, const x_point& pt);
-		bool onButtonDown(XUI_Wnd* pElement, int iButton, const x_point& pt, UINT sysKeys);
-		bool onButtonUp(XUI_Wnd* pElement, int iButton, const x_point& pt, UINT sysKeys);
+		bool onMouseMove	( XUI_Wnd* pElement, const x_point& pt, uint32 sysKeys, long_ptr *result );
+		bool onMouseLeave	( XUI_Wnd* pElement );
+		//bool onButtonDbClick( XUI_Wnd* pElement, uint32 nButton, const x_point& pt, uint32 sysKeys, long_ptr *result );
+		bool onButtonDown	( XUI_Wnd* pElement, uint32 nButton, const x_point& pt, uint32 sysKeys, long_ptr *result );
+		bool onButtonUp		( XUI_Wnd* pElement, uint32 nButton, const x_point& pt, uint32 sysKeys, long_ptr *result );
 
-		bool onKeyDown(XUI_Wnd* pElement, uint32 dwVirtualCode, UINT sysKeys);
-		bool onKeyUp(XUI_Wnd* pElement, uint32 dwVirtualCode, UINT sysKeys);
-		bool onChar(XUI_Wnd* pElement, uint32 dwChar, UINT sysKeys);
+		bool onKeyDown		( XUI_Wnd* pElement, uint32 dwVirtualCode, uint32 sysKeys, long_ptr *result );
+		bool onKeyUp		( XUI_Wnd* pElement, uint32 dwVirtualCode, uint32 sysKeys, long_ptr *result );
+		bool onChar			( XUI_Wnd* pElement, uint32 dwChar, uint32 sysKeys, long_ptr *result );
 
-		bool onImeComp(XUI_Wnd* pElement, uint32 wParam, uint32 lParam);
-		bool onImeEndComp(XUI_Wnd* pElement, uint32 wParam, uint32 lParam);
-		bool onImeNotify(XUI_Wnd* pElement, uint32 wParam, uint32 lParam);
+		bool onImeComp		( XUI_Wnd* pElement, uint32 wParam, uint32 lParam, long_ptr *result );
+		bool onImeEndComp	( XUI_Wnd* pElement, uint32 wParam, uint32 lParam, long_ptr *result );
+		bool onImeNotify	( XUI_Wnd* pElement, uint32 wParam, uint32 lParam, long_ptr *result );
 
-		LRESULT HandleMouse(UINT uMsg, WPARAM wParam, LPARAM lParam);
-		LRESULT HandleKeyboard(UINT uMsg, WPARAM wParam, LPARAM lParam);
+		bool HandleMouse	( UINT uMsg, WPARAM wParam, LPARAM lParam, long_ptr *result );
+		bool HandleKeyboard	( UINT uMsg, WPARAM wParam, LPARAM lParam, long_ptr *result );
 
 	public:
-		HWND GetHWND() {return m_hWnd;}
+		HWND GetHWND()const {return m_hWnd;}
 	    
 		XUI_Window* GetRoot() {return m_pDesktop;}
 

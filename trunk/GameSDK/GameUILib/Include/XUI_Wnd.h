@@ -42,7 +42,6 @@ namespace UILib
 		//pt，鼠标的坐标，相对于控件
 		//sysKeys，各种重要按键的状态，参见MSDN	
 		virtual	bool onMouseMove(const x_point& pt, UINT sysKeys);
-		virtual bool onMouseHover(const x_point& pt);
 		virtual bool onMouseEnter();
 		virtual bool onMouseLeave();
 

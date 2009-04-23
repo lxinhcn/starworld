@@ -265,6 +265,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Include\MessageDefine.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\UICommander.cpp"
 				>
 			</File>

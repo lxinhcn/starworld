@@ -22,7 +22,6 @@ namespace UILib
 	, m_pFont( NULL )
 	, m_pBackGround( NULL )
 	{
-		MoveWindow(0,0,0,0);
 		m_bTranslateParent = true;
 		m_fZ=0.1f;
 	}
@@ -57,11 +56,6 @@ namespace UILib
 	//鼠标
 	//返回 true 则父控件将不继续处理该消息
 	bool XUI_Wnd::onMouseMove(const x_point& pt, UINT sysKeys)
-	{
-		return false;
-	}
-
-	bool XUI_Wnd::onMouseHover(const x_point& pt)
 	{
 		return false;
 	}
@@ -288,8 +282,8 @@ namespace UILib
 		x_rect oldRect = m_WindowRect;
 		m_WindowRect.SetRect( left, top, right, bottom );
 		Validate();
-		SendUIMessage( WM_MOVE, 0, MAKELONG( left, top ) );
-		SendUIMessage( WM_SIZE, 0, MAKELONG( m_WindowRect.Width(), m_WindowRect.Height() ) );
+		SendUIMessage( UIM_MOVE, 0, MAKELONG( left, top ) );
+		SendUIMessage( UIM_SIZE, 0, MAKELONG( m_WindowRect.Width(), m_WindowRect.Height() ) );
 		// 发送位置变更消息
 		OnMoveWindow( m_WindowRect );
 	}

@@ -15,7 +15,9 @@
 */
 /*********************************************************************/
 #define OFFSET( structure, member )	((DWORD_PTR)&((structure*)0)->member)
-
+#define XUI_LBUTTON 0
+#define XUI_RBUTTON 1
+#define XUI_MBUTTON 2
 //////////////////////////////////////////////////////////////////////////
 // 消息映射定义的宏
 //////////////////////////////////////////////////////////////////////////
@@ -68,26 +70,26 @@ const UI_MSGMAP* theClass::GetMessageMap() const \
 
 //--------------------------------------------------------------------------
 #define UI_COMMAND( id, pfnProc )\
-{	WM_COMMAND, EV_COMMAND, id, id, uiSig_Cmd,\
+{	UIM_COMMAND, EV_COMMAND, id, id, uiSig_Cmd,\
 	( UI_PMSG )static_cast< void ( XUI_Base::* )( void ) >( &ThisClass::pfnProc ) },
 
 #define UI_COMMAND_RANGE( id, idLast, pfnProc )\
-{	WM_COMMAND, EV_COMMAND, id, idLast, uiSig_Cmd_Range, ( UI_PMSG )static_cast< void ( XUI_Base::* )( void ) >( &ThisClass::pfnProc ) },
+{	UIM_, EV_COMMAND, id, idLast, uiSig_Cmd_Range, ( UI_PMSG )static_cast< void ( XUI_Base::* )( void ) >( &ThisClass::pfnProc ) },
 
 #define UI_CONTROL( id, nNotifyCode, pfnProc )\
-{	WM_COMMAND, nNotifyCode, id, id, uiSig_Cmd,\
+{	UIM_, nNotifyCode, id, id, uiSig_Cmd,\
 	( UI_PMSG )static_cast< void ( XUI_Base::* )( void ) >( &ThisClass::pfnProc ) },
 
 #define UI_CONTROL_RANGE( id, idLast, nNotifyCode, pfnProc )\
-{	WM_COMMAND, nNotifyCode, id, idLast, uiSig_Cmd_Range,\
+{	UIM_, nNotifyCode, id, idLast, uiSig_Cmd_Range,\
 	( UI_PMSG )static_cast< void ( XUI_Base::* )( UINT ) >( &ThisClass::pfnProc ) },
 
 #define UI_NOTIFY( id, nNotifyCode, pfnProc )\
-{	WM_NOTIFY, nNotifyCode, id, id, uiSig_Notify,\
+{	UIM_NOTIFY, nNotifyCode, id, id, uiSig_Notify,\
 	( UI_PMSG )static_cast< void ( XUI_Base::* )( NMUIHDR*, LRESULT ) >( &ThisClass::pfnProc ) },
 
 #define UI_NOTIFY_RANGE( id, idLast, nNotifyCode, pfnProc )\
-{	WM_NOTIFY, nNotifyCode, id, idLast, uiSig_Notify_Range,\
+{	UIM_NOTIFY, nNotifyCode, id, idLast, uiSig_Notify_Range,\
 	( UI_PMSG )static_cast< void ( XUI_Base::* )( UINT, NMUIHDR*, LRESULT ) >( &ThisClass::pfnProc ) },
 //--------------------------------------------------------------------------
 

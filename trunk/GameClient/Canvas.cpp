@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "Canvas.h"
 #include "Application.h"
+#define RESOURCEPATH	"..\\Resource\\UI\\Media\\"
 
 //////////////////////////////////////////////////////////////////////////
 // CTextureManager class
@@ -28,7 +29,7 @@ HTEXTURE CTextureManager::GetTexture( _lpcstr lpszTexpath )
 	}
 
 	HGE* hge = Application::Instance().getEngine();
-	HTEXTURE h = hge->Texture_Load( GuiSystem::Instance().GetImagePath() + lpszTexpath );
+	HTEXTURE h = hge->Texture_Load( ( std::string() + RESOURCEPATH + lpszTexpath ).c_str() );
 	m_TextureMap[lpszTexpath] = h;
 	return h;
 }
