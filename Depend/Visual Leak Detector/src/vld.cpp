@@ -1484,7 +1484,7 @@ FARPROC VisualLeakDetector::_GetProcAddress (HMODULE module, LPCSTR procname)
     for (index = 0; index < tablesize; ++index) {
         entry = &vld.m_patchtable[index];
         exportmodule = GetModuleHandleA(entry->exportmodulename);
-        if (exportmodule != module) {
+        if (!module || exportmodule != module) {
             // This patch table entry is for a different module.
             continue;
         }
@@ -1940,10 +1940,10 @@ LPVOID VisualLeakDetector::_RtlAllocateHeap (HANDLE heap, DWORD flags, SIZE_T si
     SIZE_T               returnaddress;
     tls_t               *tls = vld.gettls();
 
-    EnterCriticalSection(&vld.m_heaplock);
 
     // Allocate the block.
     block = RtlAllocateHeap(heap, flags, size);
+	EnterCriticalSection(&vld.m_heaplock);
     if ((block != NULL) && vld.enabled()) {
         if (tls->addrfp == 0x0) {
             // This is the first call to enter VLD for the current allocation.

@@ -124,23 +124,23 @@ namespace UILib
 
 				if( pFont->GetCharacterWidth( c ) + CharPos.x > m_WindowRect.right )
 				{
-					if( m_bWarpText )
+					if( c && m_bWarpText )
 					{
 						// 字符显示超出宽度，则折行显示
 						// 将没有画的作为独立的串添加到下一行
-						line ll( l.substr( cursor - 1, -1 ), l.type );
-						l.erase( cursor - 1, -1 );
+						line ll( l.substr( cursor, -1 ), l.type );
+						l.erase( cursor, -1 );
 						l.type = type_r;
 						l.cursor_position = l.size();
 
 						size_t lsize = l.size();
+						ll.cursor_position = m_CaratPos - lsize;
 						m_text.insert( m_text.begin() + i + 1, ll );
 
 						// 根据光标位置判断是否要重新设定光标所在行。
 						if( m_nCurLineNumber == i && m_CaratPos > lsize )
 						{
 							SetCurLineNumber( m_nCurLineNumber + 1 );
-							m_CaratPos = cursor - lsize;
 						}
 						break;
 					}
@@ -190,7 +190,7 @@ namespace UILib
 
 				if( i == m_nCurLineNumber && cursor == m_CaratPos )
 				{
-					long x = CaratPos.x = CharPos.x - long( pFont->GetCharacterWidth( _T('|') )*1.5f );
+					long x = CaratPos.x = CharPos.x - long( pFont->GetCharacterWidth( c ) + pFont->GetCharacterWidth( _T('|') )*0.5f );
 					long y = CaratPos.y = CharPos.y;
 					if( m_bShowCarat )
 					{
@@ -222,7 +222,19 @@ namespace UILib
 				m_dwBorderColor, 
 				m_dwBackgroundColor );
 
-			XUI_DrawText( XUI_IME::m_CompString, pFont, float( CaratPos.x + 1 ), float( CaratPos.y + 1 ) );
+			XUI_IME::CCandList& Watch = XUI_IME::m_CandList;
+			wchar_t* compchar = XUI_IME::m_CompString;
+			do
+			{
+				RenderCharacter( *compchar, pFont, CaratPos.x, CaratPos.y, true );
+				if( m_bShowCarat && XUI_IME::m_CandList.nCaretPos == compchar - XUI_IME::m_CompString )
+				{
+					long x = CaratPos.x - long( pFont->GetCharacterWidth( *compchar ) + pFont->GetCharacterWidth( _T('|') )*0.5f );
+					long y = CaratPos.y;
+					// 是否绘制光标
+					RenderCharacter( _T('|'), pFont, x, y, true );
+				}
+			}while( *compchar++ );
 
 			if( XUI_IME::m_CandList.bShowWindow )
 			{
@@ -233,10 +245,13 @@ namespace UILib
 					m_dwBorderColor, 
 					m_dwBackgroundColor );
 
+				wchar_t show[256];
+				int idx = 0;
 				std::list< std::wstring >::const_iterator citer = XUI_IME::m_CandList.l.begin();
 				while( citer != XUI_IME::m_CandList.l.end() )
 				{
-					XUI_DrawText( citer->c_str(), pFont, CaratPos.x, CaratPos.y );
+					_snwprintf( show, _countof(show), _T("%02d %s"), ++idx, citer->c_str() );
+					XUI_DrawText( show, pFont, CaratPos.x, CaratPos.y );
 					CaratPos.y += pFont->GetCharacterHeight();
 					++citer;
 				}
@@ -563,7 +578,7 @@ namespace UILib
 				//////////////////////////////////////////////////////
 				// Retrieve the latest user-selected IME candidates
 				lRet = XUI_IME::_ImmGetCompositionStringW( hImc, GCS_COMPSTR, wszCompStr, sizeof( wszCompStr ) );
-				if( lRet > 0 )
+				if( lRet >= 0 )
 				{
 					lRet /= sizeof(WCHAR);  // Convert size in byte to size in char
 					wszCompStr[lRet] = 0;  // Force terminate
@@ -665,20 +680,13 @@ namespace UILib
 					int startOfPage = 0;
 
 					XUI_IME::CCandList& Watch = XUI_IME::m_CandList;
-					for( int i = 0; i < lpCandList->dwPageSize && i < MAX_CANDLIST; ++i )
+					XUI_IME::m_CandList.l.clear();
+					for( uint32 i = lpCandList->dwPageStart; i < lpCandList->dwPageSize && i < MAX_CANDLIST; ++i )
 					{
-						XUI_IME::m_CandList.l.push_back( (LPWSTR)((DWORD_PTR)lpCandList + lpCandList->dwOffset[lpCandList->dwPageStart+i]) );
+						XUI_IME::m_CandList.l.push_back( (LPWSTR)((DWORD_PTR)lpCandList + lpCandList->dwOffset[i]) );
 					}
 					XUI_IME::m_CandList.dwCount = __min( lpCandList->dwCount, MAX_CANDLIST );
 
-					//memset(&g_szCandidate, 0, sizeof(g_szCandidate));
-					//for (UINT i = startOfPage, j = 0;
-					//	(DWORD)i < lpCandList->dwCount && j < g_uCandPageSize;
-					//	i++, j++)
-					//{
-					//	ComposeCandidateLine( j,
-					//		(LPTSTR)( (DWORD)lpCandList + lpCandList->dwOffset[i] ) );
-					//}
 					free( (HANDLE)lpCandList );
 					XUI_IME::_ImmReleaseContext(hWnd, himc);
 				}
