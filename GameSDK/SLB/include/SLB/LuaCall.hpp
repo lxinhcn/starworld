@@ -44,6 +44,7 @@ namespace SLB
 		// this allows to store a luaCall, mainly used by
 		// Hybrid classes...
 		virtual ~LuaCallBase();
+		bool valid()const;
 	protected: 
 		LuaCallBase(lua_State *L, int index);
 		LuaCallBase(lua_State *L, const char *func);

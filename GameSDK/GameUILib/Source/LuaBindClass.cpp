@@ -130,7 +130,7 @@ namespace UILib
 			.member( "font",		&XUI_Wnd::SetFontAttribute,			&XUI_Wnd::GetFontAttribute )
 			.member( "background",	&XUI_Wnd::SetBackgroundAttribute,	&XUI_Wnd::GetBackgroundAttribute )
 			.member( "transparent",	&XUI_Wnd::m_bTranslateParent )
-			.member( "LuaUpdate",	&XUI_Wnd::m_LuaUpdate )
+			.member( "updatefunc",	&XUI_Wnd::m_strUpdateFunc )
 			.member_readonly( "window",	&XUI_Wnd::m_WindowRect )
 			;
 

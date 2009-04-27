@@ -46,12 +46,20 @@ namespace SLB {
 		luaL_unref(_L, LUA_REGISTRYINDEX, _ref); 
 	}
 
+	bool LuaCallBase::valid()const
+	{
+		return _ref != LUA_REFNIL && (  lua_getref( _L, _ref ), lua_type( _L, -1 ) );
+	}
+
 	void LuaCallBase::getFunc(int index)
 	{
 		SLB_DEBUG_CALL;
 		lua_pushvalue(_L,index);
-		assert("Invalid function!" && (lua_type(_L, -1) == LUA_TFUNCTION) );
-		_ref = luaL_ref(_L, LUA_REGISTRYINDEX);
+		// assert("Invalid function!" && (lua_type(_L, -1) == LUA_TFUNCTION) );
+		if( lua_type(_L, -1) == LUA_TFUNCTION )
+			_ref = luaL_ref(_L, LUA_REGISTRYINDEX);
+		else
+			_ref = LUA_REFNIL;
 	}
 
 	int LuaCallBase::errorHandler(lua_State *L)

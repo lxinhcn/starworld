@@ -48,10 +48,14 @@ namespace SLB
 
 	void LuaObject::push( lua_State *L )const
 	{
-		if( m_state )
+		if( m_state && m_state == L )
 		{
 			lua_getref( m_state, m_luaobject );
 			lua_pushvalue( m_state, -1 );
+		}
+		else
+		{
+			lua_pushnil( L );
 		}
 	}
 

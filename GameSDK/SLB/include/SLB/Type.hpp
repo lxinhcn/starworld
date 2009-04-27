@@ -1247,6 +1247,31 @@ namespace Private {
 		}
 	};
 
+	template<>
+	struct Type< LuaObject& >
+	{
+		static void push(lua_State *L,const LuaObject &obj)
+		{
+			SLB_DEBUG_CALL; 
+			SLB_DEBUG(8,"Push<T=%s>(L=%p, obj =%p)", typeid(T).name(), L, &obj);
+			obj.push( L );
+		}
+
+		static LuaObject get(lua_State *L, int pos)
+		{
+			SLB_DEBUG_CALL; 
+			SLB_DEBUG(8,"Get<T=%s>(L=%p, pos = %i)", typeid(T).name(), L, pos);
+			int ref = lua_ref( L, true );
+			return LuaObject( L, ref );
+		}
+
+		static bool check(lua_State *L, int pos)
+		{
+			SLB_DEBUG_CALL;
+			return (lua_istable( L, pos ) != 0);
+		}
+	};
+
 	//template<>
 	//struct Type< LuaObject* >
 	//{

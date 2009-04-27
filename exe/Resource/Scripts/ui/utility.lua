@@ -13,6 +13,8 @@ function save( item, name, node )
 		local element = Element( name );
 		attrib:save( element );
 		node:InsertChild( element );
+	elseif type( attrib ) == "function" then
+		slb.print( "lua function" );
 	else
 		local element = Element( name );
 		element:SetAttribute( "value", tostring( attrib ) );
