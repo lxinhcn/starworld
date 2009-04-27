@@ -421,6 +421,19 @@ namespace UILib
 		}
 	}
 
+	void XUI_Wnd::Update( float timer, float delta )
+	{
+		if( m_LuaUpdate.isvalid() )
+		{
+			bool ret = m_LuaUpdate.call< bool, float, float >( timer, delta );
+		}
+		//»æÖÆ×Ó¿Ø¼þ
+		for (UINT i=0; i<m_pChildren.size(); i++)
+		{
+			m_pChildren[i]->Update( timer, delta );
+		}
+	}
+
 	void XUI_Wnd::RenderSelf()
 	{
 		if( m_pBackGround )
@@ -571,8 +584,9 @@ namespace UILib
 	void XUI_Wnd::SetBackgroundAttribute( const XUI_SpriteAttribute& Background )
 	{
 		if( m_BackgroundAttribute == Background ) return;
+		m_BackgroundAttribute = Background;
 		XUI_DestroySprite( m_pBackGround );
-		m_pBackGround = XUI_CreateSpriteEx( m_BackgroundAttribute );
+		m_pBackGround = XUI_CreateSpriteEx( Background );
 	}
 
 };

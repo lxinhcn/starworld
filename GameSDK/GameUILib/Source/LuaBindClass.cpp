@@ -130,10 +130,11 @@ namespace UILib
 			.member( "font",		&XUI_Wnd::SetFontAttribute,			&XUI_Wnd::GetFontAttribute )
 			.member( "background",	&XUI_Wnd::SetBackgroundAttribute,	&XUI_Wnd::GetBackgroundAttribute )
 			.member( "transparent",	&XUI_Wnd::m_bTranslateParent )
+			.member( "LuaUpdate",	&XUI_Wnd::m_LuaUpdate )
 			.member_readonly( "window",	&XUI_Wnd::m_WindowRect )
 			;
 
-		Class< XUI_Window >( "ui:Window" )
+		Class< XUI_Window, Instance::NoCopy >( "ui:Window" )
 			.static_inherits< XUI_Wnd >()
 			.set( "Width",	&XUI_Window::GetWidth )
 			.set( "Height", &XUI_Window::GetHeight )
@@ -141,7 +142,7 @@ namespace UILib
 			.member( "y",	&XUI_Window::m_nOffsetY )
 			;
 
-		Class< XUI_Button >( "ui::Button" )
+		Class< XUI_Button, Instance::NoCopy >( "ui::Button" )
 			.static_inherits< XUI_Wnd >()
 			.constructor()
 			.set( "SetState",	&XUI_Button::SetState )
@@ -154,7 +155,7 @@ namespace UILib
 			.enumValue( "Disable",		XUI_Button::Disable )
 			;
 
-		Class< XUI_EditBox >( "ui::EditCtrl" )
+		Class< XUI_EditBox, Instance::NoCopy >( "ui::EditCtrl" )
 			.static_inherits< XUI_Wnd >()
 			.constructor()
 			.member( "text", &XUI_EditBox::SetText, &XUI_EditBox::GetText )

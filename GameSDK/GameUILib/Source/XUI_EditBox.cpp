@@ -124,7 +124,7 @@ namespace UILib
 
 				if( pFont->GetCharacterWidth( c ) + CharPos.x > m_WindowRect.right )
 				{
-					if( c && m_bWarpText )
+					if( l.type == type_n && m_bWarpText )
 					{
 						// 字符显示超出宽度，则折行显示
 						// 将没有画的作为独立的串添加到下一行
@@ -138,7 +138,7 @@ namespace UILib
 						m_text.insert( m_text.begin() + i + 1, ll );
 
 						// 根据光标位置判断是否要重新设定光标所在行。
-						if( m_nCurLineNumber == i && m_CaratPos > lsize )
+						if( m_nCurLineNumber == i && m_CaratPos >= lsize )
 						{
 							SetCurLineNumber( m_nCurLineNumber + 1 );
 						}
@@ -662,7 +662,7 @@ namespace UILib
 					break;
 
 				LPCANDIDATELIST lpCandList;
-				DWORD dwIndex, dwBufLen, uCandPageSize;
+				DWORD dwIndex, dwBufLen;
 
 				dwIndex = 0;
 				dwBufLen = XUI_IME::_ImmGetCandidateListW( himc, dwIndex, NULL, 0 );

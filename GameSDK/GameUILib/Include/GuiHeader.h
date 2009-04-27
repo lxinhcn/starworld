@@ -20,6 +20,7 @@
 	#include "XUI_Canvas.h"
 	#include "XUI_IME.h"
 	#include "tinyxml.h"
+	#include "slb\SLB.hpp"
 
 	// »ù´¡¸¨Öú¿â
 	#include "Helplib.h"

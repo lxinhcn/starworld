@@ -2,8 +2,6 @@
 #ifndef _LUABINDCLASS_H
 #define _LUABINDCLASS_H
 #include <loki\Singleton.h>
-#include "SLB\Script.hpp"
-#include "SLB\LuaCall.hpp"
 
 #define LUA_CATCH(...)	catch( std::runtime_error& err ){ OutputDebugStringA( err.what() ); __VA_ARGS__; }
 

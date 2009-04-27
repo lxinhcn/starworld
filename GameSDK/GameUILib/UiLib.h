@@ -1,5 +1,6 @@
 #ifndef _UILIB_H_
 #define _UILIB_H_
+#include "slb\SLB.hpp"
 #include ".\Include\GuiMacroDefine.h"
 #include ".\Include\GuiSystem.h"
 #include ".\Include\XUI_Canvas.h"

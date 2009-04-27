@@ -35,6 +35,7 @@
 #include "StatefulHybrid.hpp"
 #include "Script.hpp"
 #include "SPP.hpp"
+#include "LuaObject.h"
 
 // just for help....
 #define SLB_ON_LOAD( FuncName ) \
