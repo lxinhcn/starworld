@@ -12,12 +12,10 @@ namespace UILib
 	END_UIMSG_MAP()
 
 	XUI_Window::XUI_Window(void)
-	: m_nOffsetX( 0 )
-	, m_nOffsetY( 0 )
-	, m_nPanelWidth( 0 )
-	, m_nPanelHeight( 0 )
-	//, m_pVScrollBar( NULL )
-	//, m_pHScrollBar( NULL )
+		: m_nOffsetX( 0 )
+		, m_nOffsetY( 0 )
+		, m_nPanelWidth( 0 )
+		, m_nPanelHeight( 0 )
 	{
 	}
 

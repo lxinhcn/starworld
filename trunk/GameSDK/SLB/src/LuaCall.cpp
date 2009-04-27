@@ -26,7 +26,11 @@
 
 namespace SLB {
 
-	LuaCallBase::LuaCallBase(lua_State *L, int index) : _L(L) { SLB_DEBUG_CALL; getFunc(index); } 
+	LuaCallBase::LuaCallBase(lua_State *L, int index) : _L(L) 
+	{ 
+		SLB_DEBUG_CALL; 
+		getFunc(index); 
+	}
 
 	LuaCallBase::LuaCallBase(lua_State *L, const char *func) : _L(L) 
 	{

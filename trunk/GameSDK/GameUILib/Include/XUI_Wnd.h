@@ -27,6 +27,7 @@ namespace UILib
 
 		//重绘，通过实现这个方法来表现空间的外观
 		virtual void RenderSelf();
+		virtual void Update( float timer, float delta );
 
 		//检查
 		virtual void Validate();
@@ -190,6 +191,7 @@ namespace UILib
 
 		XUI_Wnd*		m_pChildMouseOver;	// 当前鼠标下的子控件
 		XUI_Wnd*		m_pChildFocusedOn;	// 当前获得焦点的子控件
+		SLB::LuaObject	m_LuaUpdate;
 	};
 
 	extern 	CGuiSystem* _afxCurrentGuiSystem;

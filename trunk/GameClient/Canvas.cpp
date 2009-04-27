@@ -323,8 +323,8 @@ static void _DrawPolygon( const x_point* ptArray, uint32* dwColorArray, uint32 n
 
 static void _DrawSprite( const XUI_ISprite* Tex, int nX, int nY, int nWidth, int nHeight )
 {
-	CClientSprite* pTexture = (CClientSprite*)Tex;
-	pTexture->Render( (float)nX, (float)nY, (float)nWidth, (float)nHeight );
+	CClientSprite* pSprite = (CClientSprite*)Tex;
+	pSprite->Render( (float)nX, (float)nY, (float)nWidth, (float)nHeight );
 }
 
 static XUI_ISprite* _CreateSprite( _lpcstr filename, float x, float y, float w, float h )

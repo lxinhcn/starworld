@@ -92,6 +92,7 @@ namespace UILib
 			m_timer.timer();
 		}
 		SLB::LuaCall< void(float, float) >( Lua::Instance().getState(), "UIUpdateEntry" )( m_nowtime, fDelta );
+
 	}
 
 	bool CGuiSystem::onMouseMove(XUI_Wnd* pElement, const x_point& pt, UINT sysKeys, long_ptr *result )
@@ -224,7 +225,10 @@ namespace UILib
 		if( !pElement ) return;
 
 		if( pElement->m_pChildFocusedOn )
+		{
 			pElement->m_pChildFocusedOn->SetFocus( false );
+			pElement->m_pChildFocusedOn = NULL;
+		}
 
 		XUI_Wnd* pParent = pElement->m_pParent;
 		if (pParent)
