@@ -92,6 +92,10 @@ namespace UILib
 			m_timer.timer();
 		}
 		SLB::LuaCall< void(float, float) >( Lua::Instance().getState(), "UIUpdateEntry" )( m_nowtime, fDelta );
+		if( m_pDesktop )
+		{
+			m_pDesktop->Update( m_nowtime, fDelta );
+		}
 
 	}
 
@@ -236,10 +240,10 @@ namespace UILib
 			//去除别的焦点
 			if( pParent->m_pChildFocusedOn )
 				pParent->m_pChildFocusedOn->SetFocus(false);
-			pParent->m_pChildFocusedOn=pElement;
 
 			//当前空间的容器应该也是获得焦点的
 			SetFocus( pParent );
+			pParent->m_pChildFocusedOn=pElement;
 		}
 		pElement->SetFocus(true);
 	}
@@ -264,7 +268,7 @@ namespace UILib
 			XUI_IME::OnInputLangChange();
 			break;
 		case WM_IME_SETCONTEXT:
-			//lParam = 0;
+			lParam = 0;
 			break;
 		case WM_IME_STARTCOMPOSITION:
 			XUI_IME::ResetCompositionString();

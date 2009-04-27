@@ -173,6 +173,7 @@ namespace UILib
 
 		//名称，便于查找
 		_string			m_strName;
+		std::string		m_strUpdateFunc;
 
 		bool			m_bVisible;			// 是否可见
 		bool			m_bEnable;			// 是否有效
@@ -191,7 +192,6 @@ namespace UILib
 
 		XUI_Wnd*		m_pChildMouseOver;	// 当前鼠标下的子控件
 		XUI_Wnd*		m_pChildFocusedOn;	// 当前获得焦点的子控件
-		SLB::LuaObject	m_LuaUpdate;
 	};
 
 	extern 	CGuiSystem* _afxCurrentGuiSystem;

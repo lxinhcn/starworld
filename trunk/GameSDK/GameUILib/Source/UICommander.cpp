@@ -288,8 +288,14 @@ namespace UILib
 	bool CUICommander::cmd_load( Params& param )
 	{
 		if( param.size() != 1 ) return false;
-		GuiSystem::Instance().LoadFromFile( XT2A(param[0]) );
-		m_pCurElement = GuiSystem::Instance().GetRoot();
+		if( GuiSystem::Instance().LoadFromFile( XT2A(param[0]) ) == false )
+		{
+			_tprintf( _T("load file failed.\n") );
+		}
+		else
+		{
+			m_pCurElement = GuiSystem::Instance().GetRoot();
+		}
 		return true;
 	}
 

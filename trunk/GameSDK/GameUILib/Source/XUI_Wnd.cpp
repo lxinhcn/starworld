@@ -423,10 +423,9 @@ namespace UILib
 
 	void XUI_Wnd::Update( float timer, float delta )
 	{
-		if( m_LuaUpdate.isvalid() )
-		{
-			bool ret = m_LuaUpdate.call< bool, float, float >( timer, delta );
-		}
+		LuaCall< void( float, float ) > LuaUpdate( Lua::Instance(), m_strUpdateFunc.c_str() );
+		if( LuaUpdate.valid() )
+			LuaUpdate( timer, delta );
 		//»æÖÆ×Ó¿Ø¼þ
 		for (UINT i=0; i<m_pChildren.size(); i++)
 		{
