@@ -84,7 +84,6 @@ GfxFont* CFontManager::GetFont( _lpcstr lpszFont, int nSize, bool bBold, bool bI
 CClientSprite::CClientSprite()
 : m_pSprite( NULL )
 , m_u0(0.0f), m_v0(0.0f), m_u1(1.0f), m_v1(1.0f)
-, m_x(0.0f), m_y(0.0f), m_w(0.0f), m_h(0.0f)
 {
 }
 
@@ -108,26 +107,30 @@ bool CClientSprite::LoadTexture( _lpcstr lpszFileName, float x, float y, float w
 
 	m_pSprite = new hgeSprite( hTexture, x, y, w, h );
 	if( m_pSprite == NULL ) return false;
-	m_x = x, m_y = y, m_w = w, m_h = h;
 	return true;
 }
 
 float CClientSprite::GetWidth()const
 {
-	return m_w;
+	return m_pSprite->GetWidth();
 }
 
 float CClientSprite::GetHeight()const
 {
-	return m_h;
+	return m_pSprite->GetHeight();
 }
 
-void	CClientSprite::SetUV(float U0, float V0, float U1, float V1)
+void CClientSprite::SetUV(float U0, float V0, float U1, float V1)
 {
-	float x = U0 * m_w;
-	float y = V0 * m_h;
-	float w	= (U1 - U0)*m_w;
-	float h = (V1 - V0)*m_h;
+	m_u0 = U0, m_u1 = U1, m_v0 = V0, m_v1 = V1;
+
+	float x = U0 * GetWidth();
+	float y = V0 * GetHeight();
+	float w	= (U1 - U0) * GetWidth();
+	float h = (V1 - V0) * GetHeight();
+	char szLog[1024];
+	_snprintf( szLog, sizeof(szLog), "x = %f, y = %f, w = %f, h = %f", x, y, w, h );
+	XUI_DrawTextA( szLog, NULL, 10, 60 );
 	m_pSprite->SetTextureRect( x, y, w, h );
 }
 

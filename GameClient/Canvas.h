@@ -100,7 +100,6 @@ public:
 private:
 	hgeSprite*	m_pSprite;
 	float		m_u0, m_v0, m_u1, m_v1;
-	float		m_x, m_y, m_w, m_h;
 	float		m_alpha;
 	float		m_angle;
 	float		m_diffuse;
