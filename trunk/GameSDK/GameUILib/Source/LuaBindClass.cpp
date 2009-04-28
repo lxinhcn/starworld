@@ -119,8 +119,7 @@ namespace UILib
 			.set( "MoveWindow",		&XUI_Wnd::MoveWindow )
 			.set( "OffsetWindow",	&XUI_Wnd::Offset )
 			.set( "SendUIMessage",	reinterpret_cast< ulong ( UILib::XUI_Wnd::* )( uint32, ulong, ulong ) >( &XUI_Wnd::SendUIMessage ) )
-			.set( "SetName",		&XUI_Wnd::SetName )
-			.set( "GetName",		&XUI_Wnd::GetName )
+			.set( "GetBackground",	&XUI_Wnd::GetBackground )
 			.set( "members",		&XUI_Wnd::show_members )
 			.set( "save",			&XUI_Wnd::save_file )
 			.set( "load",			&XUI_Wnd::load_file )
@@ -170,17 +169,17 @@ namespace UILib
 			Manager::getInstance().set( "CreateSpriteEx",	FuncCall::create( XUI_CreateSpriteEx ) );
 			Manager::getInstance().set( "DestroySprite",	FuncCall::create( XUI_DestroySprite ) );
 
-			Manager::getInstance().set( "CreateFont",	FuncCall::create( XUI_CreateFont ) );
-			Manager::getInstance().set( "CreateFontEx",	FuncCall::create( XUI_CreateFontEx ) );
-			Manager::getInstance().set( "DestroyFont",	FuncCall::create( XUI_DestroyFont ) );
+			Manager::getInstance().set( "CreateFont",		FuncCall::create( XUI_CreateFont ) );
+			Manager::getInstance().set( "CreateFontEx",		FuncCall::create( XUI_CreateFontEx ) );
+			Manager::getInstance().set( "DestroyFont",		FuncCall::create( XUI_DestroyFont ) );
 
-			Manager::getInstance().set( "DrawTextA",		FuncCall::create( XUI_DrawTextA ) );
-			Manager::getInstance().set( "DrawCharacterA",	FuncCall::create( XUI_DrawCharacterA ) );
+			Manager::getInstance().set( "DrawText",			FuncCall::create( XUI_DrawTextA ) );
+			Manager::getInstance().set( "DrawCharacter",	FuncCall::create( XUI_DrawCharacterA ) );
 			Manager::getInstance().set( "DrawSprite",		FuncCall::create( XUI_DrawSprite ) );
 			Manager::getInstance().set( "DrawRect",			FuncCall::create( XUI_DrawRect ) );
 
 			_tchar path[_MAX_PATH+_MAX_FNAME];
-			helper::NormalizePath(  _T("..\\Resource\\Scripts\\"), path, _countof( path ) );
+			_tfullpath( path, _T("..\\Resource\\Scripts\\"), _countof( path ) );
 			// 设置脚本根目录
 			_string _script( path );
 			set( "script", _script );

@@ -40,6 +40,12 @@ namespace SLB {
 		lua_pop(L,1); 
 	}
 
+	LuaCallBase::LuaCallBase( const LuaObject& obj )
+		:_L(obj.m_state)
+	{
+		_ref = luaL_ref( obj.m_state, LUA_REGISTRYINDEX );
+	}
+
 	LuaCallBase::~LuaCallBase()
 	{
 		SLB_DEBUG_CALL;

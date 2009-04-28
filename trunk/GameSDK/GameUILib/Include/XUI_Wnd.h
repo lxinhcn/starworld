@@ -152,6 +152,8 @@ namespace UILib
 		// ±≥æ∞
 		XUI_SpriteAttribute& GetBackgroundAttribute()const{ return m_BackgroundAttribute; }
 		void SetBackgroundAttribute( const XUI_SpriteAttribute& Background );
+		XUI_ISprite* GetBackground()const{ return m_pBackGround; }
+
 		//…Ë÷√Ωπµ„
 		void	SetFocus(bool bFocused);
 

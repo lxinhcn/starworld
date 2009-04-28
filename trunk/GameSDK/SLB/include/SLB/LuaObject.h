@@ -5,6 +5,7 @@
 struct lua_State;
 namespace SLB
 {
+	class LuaCallBase;
 	class LuaObject
 	{
 	public:
@@ -15,11 +16,6 @@ namespace SLB
 
 		LuaObject& operator=( LuaObject& obj );
 		void push( lua_State *L )const;
-
-		// Ö´ÐÐluaº¯Êý
-		void execute(int numArgs, int numOutput, int top);
-
-		static int errorHandler(lua_State *L);
 
 		bool		toboolean()const;
 		const char* tostring()const;
@@ -69,44 +65,11 @@ namespace SLB
 			return val;
 		}
 
-		//template< class R, class T1, class T2 >
-		//R call( T1 arg_1, T2 arg_2, char dummy = 0 )
-		//{
-		//	int top = lua_gettop(m_state);
-		//	lua_rawgeti(m_state, LUA_REGISTRYINDEX,m_luaobject);
-		//	push<T1>( m_state, arg_1 );
-		//	push<T2>( m_state, arg_2 );
-		//	execute(2, 1, top);
-		//	R result = SLB::get<R>(m_state, -1);
-		//	lua_settop(m_state,top);
-		//	return result;
-		//}
-
-		#define SLB_ARG(N) T##N arg_##N, 
-		#define SLB_PUSH_ARGS(N) SLB::push<T##N>(m_state, arg_##N );
-
-		#define SLB_REPEAT(N) \
-		template<class R SPP_COMMA_IF(N) SPP_ENUM_D(N, class T)> \
-		R call( SPP_REPEAT( N, SLB_ARG) char dummyARG = 0)\
-		{ \
-			int top = lua_gettop(m_state); \
-			lua_rawgeti(m_state, LUA_REGISTRYINDEX,m_luaobject); \
-			SPP_REPEAT( N, SLB_PUSH_ARGS ); \
-			execute(N, 1, top); \
-			R result = SLB::get<R>(m_state, -1); \
-			lua_settop(m_state,top); \
-			return result; \
-		} \
-
-		SPP_MAIN_REPEAT_Z(MAX,SLB_REPEAT)
-		#undef SLB_REPEAT
-		#undef SLB_ARG
-		#undef SLB_PUSH_ARGS
-
 	protected:
 		virtual void pushImplementation(lua_State *);
 
 	private:
+		friend class LuaCallBase;
 		lua_State*	m_state;
 		int			m_luaobject;
 	};
