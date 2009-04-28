@@ -34,7 +34,8 @@
 #define _CRT_SECURE_NO_DEPRECATE
 #endif
 namespace SLB {
-namespace Private {
+namespace Private 
+{
 
 	// Default implementation
 	template<class T>
@@ -358,7 +359,7 @@ namespace Private {
 
 		static T get(lua_State *L, int p)
 		{
-			T v = (T) lua_tointeger(L,p);
+			T v = (T)lua_tonumber(L,p);
 			return v;
 		}
 
@@ -1272,30 +1273,82 @@ namespace Private {
 		}
 	};
 
-	//template<>
-	//struct Type< LuaObject* >
-	//{
+	template<>
+	struct Type< const LuaObject& >
+	{
+		static void push(lua_State *L,const LuaObject &obj)
+		{
+			SLB_DEBUG_CALL; 
+			SLB_DEBUG(8,"Push<T=%s>(L=%p, obj =%p)", typeid(T).name(), L, &obj);
+			obj.push( L );
+		}
 
-	//};
+		static LuaObject get(lua_State *L, int pos)
+		{
+			SLB_DEBUG_CALL; 
+			SLB_DEBUG(8,"Get<T=%s>(L=%p, pos = %i)", typeid(T).name(), L, pos);
+			int ref = lua_ref( L, true );
+			return LuaObject( L, ref );
+		}
 
-	//template<>
-	//struct Type< const LuaObject* >
-	//{
+		static bool check(lua_State *L, int pos)
+		{
+			SLB_DEBUG_CALL;
+			return (lua_istable( L, pos ) != 0);
+		}
+	};
 
-	//};
+	template<>
+	struct Type< LuaObject* >
+	{
+		static void push(lua_State *L,const LuaObject *obj)
+		{
+			SLB_DEBUG_CALL; 
+			SLB_DEBUG(8,"Push<T=%s>(L=%p, obj =%p)", typeid(T).name(), L, obj);
+			obj->push( L );
+		}
 
-	//template<>
-	//struct Type< LuaObject& >
-	//{
+		static LuaObject get(lua_State *L, int pos)
+		{
+			SLB_DEBUG_CALL; 
+			SLB_DEBUG(8,"Get<T=%s>(L=%p, pos = %i)", typeid(T).name(), L, pos);
+			int ref = lua_ref( L, true );
+			return LuaObject( L, ref );
+		}
 
-	//};
+		static bool check(lua_State *L, int pos)
+		{
+			SLB_DEBUG_CALL;
+			return (lua_istable( L, pos ) != 0);
+		}
 
-	//template<>
-	//struct Type< const LuaObject& >
-	//{
+	};
 
-	//};
+	template<>
+	struct Type< const LuaObject* >
+	{
+		static void push(lua_State *L,const LuaObject *obj)
+		{
+			SLB_DEBUG_CALL; 
+			SLB_DEBUG(8,"Push<T=%s>(L=%p, obj =%p)", typeid(T).name(), L, obj);
+			obj->push( L );
+		}
 
-}} // end of SLB::Private
+		static LuaObject get(lua_State *L, int pos)
+		{
+			SLB_DEBUG_CALL; 
+			SLB_DEBUG(8,"Get<T=%s>(L=%p, pos = %i)", typeid(T).name(), L, pos);
+			int ref = lua_ref( L, true );
+			return LuaObject( L, ref );
+		}
+
+		static bool check(lua_State *L, int pos)
+		{
+			SLB_DEBUG_CALL;
+			return (lua_istable( L, pos ) != 0);
+		}
+	};
+}
+} // end of SLB::Private
 
 #endif
