@@ -3,26 +3,16 @@
 
 namespace UILib
 {
-	CPicture::CPicture(void)
+	XUI_Picture::XUI_Picture(void)
 	{
 	}
 
-	CPicture::~CPicture(void)
+	XUI_Picture::~XUI_Picture(void)
 	{
 	}
 
-	void CPicture::RenderSelf()
+	void XUI_Picture::RenderSelf()
 	{
-		if( m_pBkTex )
-		{
-			x_point pt( 0, 0 );
-			pt = ClientToScreen(pt);
-			int iWidth	= m_WindowRect.Width();
-			int iHeight	= m_WindowRect.Height();
-			int nImageWidth = 0;
-			int nImageHeight = 0;
-
-			XUI_DrawSprite( m_pBkTex, pt.x, pt.y, iWidth, iHeight );
-		}
+		__super::RenderSelf();
 	}
 }
