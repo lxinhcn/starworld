@@ -128,9 +128,9 @@ void CClientSprite::SetUV(float U0, float V0, float U1, float V1)
 	float y = V0 * GetHeight();
 	float w	= (U1 - U0) * GetWidth();
 	float h = (V1 - V0) * GetHeight();
-	char szLog[1024];
-	_snprintf( szLog, sizeof(szLog), "x = %f, y = %f, w = %f, h = %f", x, y, w, h );
-	XUI_DrawTextA( szLog, NULL, 10, 60 );
+	//char szLog[1024];
+	//_snprintf( szLog, sizeof(szLog), "x = %f, y = %f, w = %f, h = %f", x, y, w, h );
+	//XUI_DrawTextA( szLog, NULL, 10, 60 );
 	m_pSprite->SetTextureRect( x, y, w, h );
 }
 

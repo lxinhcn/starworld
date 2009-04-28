@@ -98,6 +98,7 @@ namespace UILib
 	//重绘，通过实现这个方法来表现空间的外观
 	void XUI_EditBox::RenderSelf()
 	{
+		__super::RenderSelf();
 		x_point pt = m_WindowRect.TopLeft();
 		AdjustPoint( pt, true );
 
