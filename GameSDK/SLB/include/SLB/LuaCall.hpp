@@ -48,6 +48,7 @@ namespace SLB
 	protected: 
 		LuaCallBase(lua_State *L, int index);
 		LuaCallBase(lua_State *L, const char *func);
+		LuaCallBase( const LuaObject& obj );
 		void execute(int numArgs, int numOutput, int top);
 
 		lua_State *_L;
@@ -71,6 +72,7 @@ namespace SLB
 		{ \
 			LuaCall(lua_State *L, int index) : LuaCallBase(L,index) {} \
 			LuaCall(lua_State *L, const char *func) : LuaCallBase(L,func) {} \
+			LuaCall(const LuaObject& obj ) : LuaCallBase( obj ) {} \
 			R operator()( SPP_REPEAT( N, SLB_ARG) char dummyARG = 0) /*TODO: REMOVE dummyARG */\
 			{ \
 				int top = lua_gettop(_L); \
@@ -94,6 +96,7 @@ namespace SLB
 		{ \
 			LuaCall(lua_State *L, int index) : LuaCallBase(L,index) {} \
 			LuaCall(lua_State *L, const char *func) : LuaCallBase(L,func) {} \
+			LuaCall(const LuaObject& obj ) : LuaCallBase( obj ) {} \
 			void operator()( SPP_REPEAT( N, SLB_ARG) char dummyARG = 0) /*TODO: REMOVE dummyARG */\
 			{ \
 				int top = lua_gettop(_L); \

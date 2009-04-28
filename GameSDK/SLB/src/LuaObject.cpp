@@ -21,7 +21,7 @@ namespace SLB
 	{
 		// ÒýÓÃ
 		lua_getref( m_state, obj.m_luaobject );
-		m_luaobject = lua_ref( m_state, true );
+		m_luaobject = luaL_ref( m_state, LUA_REGISTRYINDEX );
 	}
 
 	LuaObject::~LuaObject(void)
@@ -35,7 +35,7 @@ namespace SLB
 
 	LuaObject& LuaObject::operator=( LuaObject& obj )
 	{
-		int luaobject = lua_ref( obj.m_state, true );
+		int luaobject = luaL_ref( obj.m_state, LUA_REGISTRYINDEX );
 
 		if( m_state && m_luaobject != LUA_REFNIL )
 		{
@@ -115,59 +115,4 @@ namespace SLB
 	{
 		return m_state && m_luaobject!=LUA_REFNIL;
 	}
-
-	int LuaObject::errorHandler(lua_State *L)
-	{
-		SLB_DEBUG_CALL;
-		std::ostringstream out; // Use lua pushfstring and so on...
-		lua_Debug debug;
-
-		out << "SLB Exception: "
-			<< std::endl << "-------------------------------------------------------"
-			<< std::endl;
-		out << "Lua Error:" << std::endl << "\t" 
-			<<  lua_tostring(L, -1) << std::endl
-			<< "Traceback:" << std::endl;
-		for ( int level = 0; lua_getstack(L, level, &debug ); level++)
-		{
-			if (lua_getinfo(L, "Sln", &debug) )
-			{
-				//TODO use debug.name and debug.namewhat
-				//make this more friendly
-				out << "\t [ " << level << " (" << debug.what << ") ] ";
-				if (debug.currentline > 0 )
-				{
-					out << debug.short_src << ":" << debug.currentline; 
-					if (debug.name)
-						out << " @ " << debug.name << "(" << debug.namewhat << ")";
-				}
-				out << std::endl;
-			}
-			else
-			{
-				out << "[ERROR using Lua DEBUG INTERFACE]" << std::endl;
-			}
-		}
-
-		lua_pushstring(L, out.str().c_str()) ;
-		return 1;
-	}
-
-	void LuaObject::execute(int numArgs, int numOutput, int top)
-	{
-		SLB_DEBUG_CALL;
-		int base = lua_gettop(m_state) - numArgs;
-		lua_pushcfunction(m_state, LuaObject::errorHandler);
-		lua_insert(m_state, base);
-
-		if(lua_pcall(m_state, numArgs, numOutput, base)) 
-		{
-			std::runtime_error exception( lua_tostring(m_state, -1) );
-			lua_remove(m_state, base);
-			lua_settop(m_state,top); // TODO: Remove this.
-			throw exception;
-		}
-		lua_remove(m_state, base);
-	}
-
 }
