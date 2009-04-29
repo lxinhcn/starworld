@@ -5,11 +5,11 @@ function UIUpdateEntry( timer, delta )
 end;
 
 function DesktopUpdate( element, timer, delta )
-	local tx = math.sin(timer/60);
-	local ty = math.cos(timer/60);
-	-- DrawText( string.format( "desktop tx= %f, ty = %f", tx, ty ), nil, 10, 40 );
+	local tx = 2*math.sin(timer/60);
+	local ty = 2*math.cos(timer/60);
+	DrawText( string.format( "desktop tx= %f, ty = %f", tx, ty ), nil, 10, 40 );
 	local pBackground = element:GetBackground();
-	pBackground:SetUV( tx, ty, 1+tx, 1+ty );
+	pBackground:SetUV( tx, ty, tx+1, ty+1 );
 end;
 
 return true;
