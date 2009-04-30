@@ -70,12 +70,12 @@ public:
 	CXObject*	operator []( int nID ){ return m_pObjList[nID]; }
 };
 
-struct AttribValueListener
+struct CORE_API AttribValueListener
 {
 	virtual BOOL OnAttribChange( _variant_t OldValue, _variant_t NewValue ) = 0;
 };
 
-class CAttrib
+class CORE_API CAttrib
 {
 public:
 	CAttrib()
@@ -353,7 +353,7 @@ private:
 
 public:
 	void			SetName( _lpctstr lpszName )	{ m_strName = lpszName;			}
-	_lpctstr			GetName()const				{ return m_strName.c_str();		}
+	_lpctstr		GetName()const				{ return m_strName.c_str();		}
 
 	const	int		GetObjID()const				{ return m_nID;					}
 	static	int		GetPointType()				{ return TypeObjectbase;		}
@@ -368,10 +368,10 @@ public:
 	virtual BOOL	SetAttrib( int nType, int nIndex, _variant_t Value )						{ return FALSE; }
 	virtual BOOL	ChangeValue( int nType, int nIndex, _variant_t Value, bool bPersent )		{ return FALSE; }
 
-	virtual _lpctstr	GetStrAttrib( int nType, _lpctstr szName )const				{ return NULL; }
-	virtual BOOL	SetStrAttrib( int nType, _lpctstr szName, _lpctstr strValue )	{ return FALSE;}
+	virtual _lpctstr	GetStrAttrib( int nType, _lpctstr szName )const					{ return NULL; }
+	virtual BOOL		SetStrAttrib( int nType, _lpctstr szName, _lpctstr strValue )	{ return FALSE;}
 
-	virtual LPVOID	GetBufAttrib( int nType, _lpctstr szName )const				{ return NULL; }
+	virtual LPVOID	GetBufAttrib( int nType, _lpctstr szName )const					{ return NULL; }
 	virtual BOOL	SetBufAttrib( int nType, _lpctstr szName, LPVOID lpData )		{ return FALSE; }
 
 	/************************************************************************/

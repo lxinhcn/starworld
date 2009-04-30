@@ -100,6 +100,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="&quot;..\lua-5.1.4\src&quot;;.\include"
 				PreprocessorDefinitions="_WIN32;NDEBUG;SLB_EXTERNAL_LUA;_LIB;_CRT_SECURE_NO_DEPRECATE"
 				RuntimeLibrary="2"
 				Detect64BitPortabilityProblems="false"

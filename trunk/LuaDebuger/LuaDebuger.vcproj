@@ -86,7 +86,7 @@
 			OutputDirectory="$(SolutionDir)Exe\$(ConfigurationName)"
 			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
-			CharacterSet="1"
+			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -107,7 +107,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="&quot;..\GameSDK\lua-5.1.4\src&quot;;..\Helplib;..\Depend\Loki-0.1.6\Include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -125,7 +125,8 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib/$(ConfigurationName)/$(TargetName).lib"
+				OutputFile="$(SolutionDir)lib/$(ConfigurationName)/$(ProjectName).lib"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)GameSDK/lua-5.1.4/src&quot;;&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"

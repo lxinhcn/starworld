@@ -18,8 +18,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\..\Exe"
-			IntermediateDirectory="..\..\Temp\GUI\Debug"
+			OutputDirectory="$(SolutionDir)Exe\$(ConfigurationName)"
+			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
@@ -88,11 +88,11 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\..\Exe"
-			IntermediateDirectory="..\..\Temp\GUI\Release"
+			OutputDirectory="$(SolutionDir)Exe\$(ConfigurationName)"
+			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
-			CharacterSet="2"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -111,8 +111,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="./Include;..\GameCore\Include;..\..\Helplib\;..\SLB\Include;&quot;..\lua-5.1.4\src&quot;;&quot;..\..\Depend\Loki-0.1.6\Include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				AdditionalIncludeDirectories="..\..\Helplib;&quot;..\..\Depend\Loki-0.1.6\Include&quot;;..\..\LuaDebuger;&quot;..\lua-5.1.4\src&quot;;..\SLB\Include;..\GameCore\Include;./Include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_MEMLEAK_"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -130,8 +130,9 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="loki.lib HelperLib.lib SLB.lib Lua51.lib"
+				AdditionalDependencies="HelperLib.lib SLB.lib LuaDebuger.lib"
 				OutputFile="..\..\Lib\$(ConfigurationName)\$(ProjectName).lib"
+				AdditionalLibraryDirectories="&quot;..\..\Lib\$(ConfigurationName)\&quot;;&quot;..\lua-5.1.4\src&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"

@@ -54,7 +54,11 @@ using namespace UILib;
 
 #include <loki/Singleton.h>
 
+#ifdef _DEBUG
 #pragma comment( lib, "atlsd.lib" )
+#else
+#pragma comment( lib, "atls.lib" )
+#endif
 #pragma comment( lib, "dbghelp.lib" )
 
 // TODO: reference additional headers your program requires here
