@@ -1,6 +1,7 @@
 #include "GuiHeader.h"
 #include "LuaBindClass.h"
 #include "DataHelper.h"
+#include "GuiSystem.h"
 #include "UICommander.h"
 //////////////////////////////////////////////////////////////////////////
 #include "XUI_Button.h"
@@ -26,11 +27,18 @@ namespace UILib
 		delete m_pLuaDebuger;
 	}
 
+	bool LuaBindClass::SetupDebuger()
+	{
+		if( m_pLuaDebuger == NULL )
+		{
+			m_pLuaDebuger = new LuaDebuger();
+			m_pLuaDebuger->initialize( getState(), "ui"  );
+		}
+		return true;
+	}
+
 	void LuaBindClass::Initialize()
 	{
-		m_pLuaDebuger = new LuaDebuger();
-		m_pLuaDebuger->initialize( Lua::Instance().getState(), "ui"  );
-
 		Class< TiXmlElement >( "xml::Element" )
 			.constructor< const char* >()
 			.set< TiXmlElement, void, const char*, const char* >( "SetAttribute",	&TiXmlElement::SetAttribute )
@@ -110,6 +118,15 @@ namespace UILib
 
 		Class< XUI_IFont, Instance::NoCopy >( "ui::XUI_IFont" )
 			;
+
+		Class< CGuiSystem, Instance::NoCopyNoDestroy >( "ui::GuiSystem" )
+			.set( "GetRoot",		&CGuiSystem::GetRoot )
+			.set( "GetDesktop",		&CGuiSystem::GetDesktop )
+			.set( "Load",			&CGuiSystem::LoadFromFile )
+			.set( "Save",			&CGuiSystem::SaveToFile )
+			.set( "GetResPath",		&CGuiSystem::GetResourcePath )
+			;
+
 		Class< XUI_Wnd, Instance::NoCopyNoDestroy >( "ui::Base" )
 			.member( "id",			&XUI_Base::SetID,		&XUI_Base::GetID )
 			;
@@ -177,12 +194,14 @@ namespace UILib
 			Manager::getInstance().set( "DrawCharacter",	FuncCall::create( XUI_DrawCharacterA ) );
 			Manager::getInstance().set( "DrawSprite",		FuncCall::create( XUI_DrawSprite ) );
 			Manager::getInstance().set( "DrawRect",			FuncCall::create( XUI_DrawRect ) );
+			Manager::getInstance().set( "SetTimer",			FuncCall::create( LuaSetTimer ) );
 
 			_tchar path[_MAX_PATH+_MAX_FNAME];
 			_tfullpath( path, _T("..\\Resource\\Scripts\\"), _countof( path ) );
 			// 设置脚本根目录
 			_string _script( path );
 			set( "script", _script );
+			set( "gui", &GuiSystem::Instance() );
 
 			_script.append( _T("initialize.lua") );
 			doFile( _script.c_str() );
@@ -193,4 +212,35 @@ namespace UILib
 			puts( err.what() );
 		}
 	}
+
+	unsigned int LuaSetTimer( SLB::LuaObject& function, unsigned short repeat, unsigned short timer )
+	{
+		struct call
+		{
+			call( SLB::LuaObject& func )
+				: function( func )
+			{
+
+			}
+
+			bool operator()( unsigned int handle, unsigned short& repeat, unsigned int& timer )
+			{
+				try
+				{
+					return function( handle, repeat, timer );
+				}
+				catch( std::runtime_error& error )
+				{
+					puts( error.what() );
+				}
+
+				return false;
+			}
+
+			SLB::LuaCall< bool( unsigned int /*handle*/, unsigned short& /*repeat*/, unsigned int& /*timer*/) > function;
+		};
+
+		return GuiSystem::Instance().SetTimer( event_function( call( function ) ), repeat, timer );
+	}
+
 }

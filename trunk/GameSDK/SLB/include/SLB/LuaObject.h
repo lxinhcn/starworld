@@ -15,13 +15,14 @@ namespace SLB
 		~LuaObject(void);
 
 		LuaObject& operator=( LuaObject& obj );
-		void push( lua_State *L )const;
+		void push()const;
 
 		bool		toboolean()const;
 		const char* tostring()const;
 		long		tointeger()const;
 		double		tonumber()const;
 
+		bool		isfunction()const;
 		bool		isboolean()const;
 		bool		isstring()const;
 		bool		isnumber()const;

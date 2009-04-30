@@ -43,7 +43,13 @@ namespace SLB {
 	LuaCallBase::LuaCallBase( const LuaObject& obj )
 		:_L(obj.m_state)
 	{
+		assert( obj.isfunction() );
+		obj.push();
+		int type = lua_type( _L, -1 );
 		_ref = luaL_ref( obj.m_state, LUA_REGISTRYINDEX );
+		lua_getref(_L,_ref);
+		type = lua_type( _L, -1 );
+		lua_pop(_L,2);
 	}
 
 	LuaCallBase::~LuaCallBase()
@@ -54,7 +60,10 @@ namespace SLB {
 
 	bool LuaCallBase::valid()const
 	{
-		return _ref != LUA_REFNIL && (  lua_getref( _L, _ref ), lua_type( _L, -1 ) );
+		lua_getref( _L, _ref );
+		bool ret = (_ref != LUA_REFNIL && lua_type( _L, -1 ) );
+		lua_pop(_L,1);
+		return ret;
 	}
 
 	void LuaCallBase::getFunc(int index)

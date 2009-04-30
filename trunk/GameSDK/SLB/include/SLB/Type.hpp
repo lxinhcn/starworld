@@ -442,6 +442,7 @@ namespace Private
 	DEFINE_TYPE_INTEGER( char& );
 	DEFINE_TYPE_INTEGER( unsigned char& );
 
+	DEFINE_INTEGER( short );
 	DEFINE_INTEGER( int );
 	DEFINE_INTEGER( long );
 	DEFINE_INTEGER( __int64 );
@@ -458,6 +459,7 @@ namespace Private
 //	DEFINE_INTEGER( slb_long_ptr );
 //#endif
 
+	DEFINE_UNSIGNED( short );
 	DEFINE_UNSIGNED( int );
 	DEFINE_UNSIGNED( long );
 	DEFINE_UNSIGNED( __int64 );
@@ -1230,14 +1232,14 @@ namespace Private
 		{
 			SLB_DEBUG_CALL; 
 			SLB_DEBUG(8,"Push<T=%s>(L=%p, obj =%p)", typeid(T).name(), L, &obj);
-			obj.push( L );
+			obj.push();
 		}
 
 		static LuaObject get(lua_State *L, int pos)
 		{
 			SLB_DEBUG_CALL; 
 			SLB_DEBUG(8,"Get<T=%s>(L=%p, pos = %i)", typeid(T).name(), L, pos);
-			int ref = lua_ref( L, true );
+			int ref = luaL_ref( L, pos );
 			return LuaObject( L, ref );
 		}
 
@@ -1255,21 +1257,23 @@ namespace Private
 		{
 			SLB_DEBUG_CALL; 
 			SLB_DEBUG(8,"Push<T=%s>(L=%p, obj =%p)", typeid(T).name(), L, &obj);
-			obj.push( L );
+			obj.push();
 		}
 
 		static LuaObject get(lua_State *L, int pos)
 		{
 			SLB_DEBUG_CALL; 
 			SLB_DEBUG(8,"Get<T=%s>(L=%p, pos = %i)", typeid(T).name(), L, pos);
-			int ref = lua_ref( L, true );
+			int type = lua_type( L, pos );
+			lua_pushvalue(L,pos);
+			int ref = luaL_ref( L, LUA_REGISTRYINDEX );
 			return LuaObject( L, ref );
 		}
 
 		static bool check(lua_State *L, int pos)
 		{
 			SLB_DEBUG_CALL;
-			return (lua_istable( L, pos ) != 0);
+			return true;
 		}
 	};
 
@@ -1280,14 +1284,14 @@ namespace Private
 		{
 			SLB_DEBUG_CALL; 
 			SLB_DEBUG(8,"Push<T=%s>(L=%p, obj =%p)", typeid(T).name(), L, &obj);
-			obj.push( L );
+			obj.push();
 		}
 
 		static LuaObject get(lua_State *L, int pos)
 		{
 			SLB_DEBUG_CALL; 
 			SLB_DEBUG(8,"Get<T=%s>(L=%p, pos = %i)", typeid(T).name(), L, pos);
-			int ref = lua_ref( L, true );
+			int ref = luaL_ref( L, pos );
 			return LuaObject( L, ref );
 		}
 
@@ -1305,14 +1309,14 @@ namespace Private
 		{
 			SLB_DEBUG_CALL; 
 			SLB_DEBUG(8,"Push<T=%s>(L=%p, obj =%p)", typeid(T).name(), L, obj);
-			obj->push( L );
+			obj->push();
 		}
 
 		static LuaObject get(lua_State *L, int pos)
 		{
 			SLB_DEBUG_CALL; 
 			SLB_DEBUG(8,"Get<T=%s>(L=%p, pos = %i)", typeid(T).name(), L, pos);
-			int ref = lua_ref( L, true );
+			int ref = luaL_ref( L, pos );
 			return LuaObject( L, ref );
 		}
 
@@ -1331,14 +1335,14 @@ namespace Private
 		{
 			SLB_DEBUG_CALL; 
 			SLB_DEBUG(8,"Push<T=%s>(L=%p, obj =%p)", typeid(T).name(), L, obj);
-			obj->push( L );
+			obj->push();
 		}
 
 		static LuaObject get(lua_State *L, int pos)
 		{
 			SLB_DEBUG_CALL; 
 			SLB_DEBUG(8,"Get<T=%s>(L=%p, pos = %i)", typeid(T).name(), L, pos);
-			int ref = lua_ref( L, true );
+			int ref = luaL_ref( L, pos );
 			return LuaObject( L, ref );
 		}
 

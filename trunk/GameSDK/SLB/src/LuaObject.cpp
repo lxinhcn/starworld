@@ -35,6 +35,7 @@ namespace SLB
 
 	LuaObject& LuaObject::operator=( LuaObject& obj )
 	{
+		obj.push();
 		int luaobject = luaL_ref( obj.m_state, LUA_REGISTRYINDEX );
 
 		if( m_state && m_luaobject != LUA_REFNIL )
@@ -46,16 +47,15 @@ namespace SLB
 		return *this;
 	}
 
-	void LuaObject::push( lua_State *L )const
+	void LuaObject::push()const
 	{
-		if( m_state && m_state == L )
+		if( m_state )
 		{
 			lua_getref( m_state, m_luaobject );
-			lua_pushvalue( m_state, -1 );
 		}
 		else
 		{
-			lua_pushnil( L );
+			lua_pushnil( m_state );
 		}
 	}
 
@@ -87,27 +87,39 @@ namespace SLB
 		return (long)lua_tonumber( m_state, -1 );
 	}
 
+	bool LuaObject::isfunction()const
+	{
+		lua_getref( m_state, m_luaobject );			// t
+		int ret = lua_isfunction( m_state, -1 );
+		lua_pop( m_state, 1 );
+		return ret;
+	}
+
 	bool LuaObject::isboolean()const
 	{
 		lua_getref( m_state, m_luaobject );			// t
+		const char* tn = lua_typename( m_state, -1 );
 		return lua_isboolean( m_state, -1 );
 	}
 
 	bool LuaObject::isstring()const
 	{
 		lua_getref( m_state, m_luaobject );			// t
+		const char* tn = lua_typename( m_state, -1 );
 		return lua_isstring( m_state, -1 ) != 0;
 	}
 
 	bool LuaObject::isnumber()const
 	{
 		lua_getref( m_state, m_luaobject );			// t
+		const char* tn = lua_typename( m_state, -1 );
 		return lua_isnumber( m_state, -1 ) != 0;
 	}
 
 	bool LuaObject::isnil()const
 	{
 		lua_getref( m_state, m_luaobject );			// t
+		const char* tn = lua_typename( m_state, -1 );
 		return lua_isnil( m_state, -1 );
 	}
 
