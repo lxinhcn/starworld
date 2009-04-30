@@ -3,7 +3,7 @@
         <x value="0" />
         <y value="0" />
         <background>
-            <Path direction="bg.png" />
+            <Path direction="bg2.png" />
             <Position x="0.000000" y="0.000000" />
             <Size w="800.000000" h="600.000000" />
         </background>

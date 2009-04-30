@@ -16,6 +16,7 @@ namespace UILib
 	class CGuiSystem
 	{
 	friend struct Loki::CreateUsingNew< CGuiSystem >;
+	friend class LuaBindClass;
 	private:
 		CGuiSystem();
 		CGuiSystem( CONST CGuiSystem& src );
@@ -107,6 +108,7 @@ namespace UILib
 		void KillTimer( unsigned int handle );
 	};
 
+	extern bool SetupDebuger();
 	typedef Loki::SingletonHolder< CGuiSystem, Loki::CreateUsingNew, Loki::LongevityLifetime::DieAsSmallObjectChild > GuiSystem;
 }
 

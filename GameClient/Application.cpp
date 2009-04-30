@@ -47,6 +47,9 @@ bool CApplication::FrameFunc()
 
 	switch(Application::Instance()->Input_GetKey())
 	{
+	case HGEK_F10:
+		UILib::SetupDebuger();
+		break;
 	case HGEK_F9:
 		Application::Instance()->System_SetState( HGE_DONTSUSPEND, true );
 		printf( "UICommander start successful.\n" );

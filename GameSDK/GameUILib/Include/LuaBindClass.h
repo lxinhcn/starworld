@@ -2,6 +2,7 @@
 #ifndef _LUABINDCLASS_H
 #define _LUABINDCLASS_H
 #include <loki\Singleton.h>
+#include "SLB\LuaObject.h"
 
 #define LUA_CATCH(...)	catch( std::runtime_error& err ){ OutputDebugStringA( err.what() ); __VA_ARGS__; }
 
@@ -15,13 +16,13 @@ namespace UILib
 		friend class CGuiSystem;
 	public:
 		operator lua_State*(){ return getState(); }
+		bool SetupDebuger();
 
 	private:
 		LuaBindClass(void);
 		~LuaBindClass(void);
 
 		void Initialize();
-		bool SetupMeta();
 
 		LuaDebuger	*m_pLuaDebuger; 
 	};
@@ -117,5 +118,6 @@ namespace UILib
 		return true;
 	}
 
+	unsigned int LuaSetTimer( SLB::LuaObject& function, unsigned short repeat, unsigned short timer );
 }
 #endif //_LUABINDCLASS_H

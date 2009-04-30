@@ -77,6 +77,7 @@ namespace SLB
 			{ \
 				int top = lua_gettop(_L); \
 				lua_rawgeti(_L, LUA_REGISTRYINDEX,_ref); \
+				int type = lua_type( _L, -1 );\
 				SPP_REPEAT( N, SLB_PUSH_ARGS ); \
 				execute(N, 1, top); \
 				R result = get<R>(_L, -1); \

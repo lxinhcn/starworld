@@ -39,6 +39,9 @@ namespace UILib
 		free( (void*)path ); 
 		path = NULL;
 
+		// 初始化定时器系统
+		m_timer.initialize( 1024, 4096 );
+
 		m_pCursor				= pCursor;
 		m_pDefaultFont			= XUI_CreateFont( fontAttr.name.c_str(), fontAttr.size, fontAttr.bold, fontAttr.italic, fontAttr.antialias );	// 设置字体
 
@@ -52,8 +55,6 @@ namespace UILib
 		GetClientRect( hWnd, rcWindow );
 		m_windowsize = rcWindow.Size();
 
-		// 初始化定时器系统
-		m_timer.initialize( 1024, 4096 );
 
 		RECT rect;
 		::GetClientRect( hWnd, &rect );
@@ -559,5 +560,10 @@ namespace UILib
 	void CGuiSystem::KillTimer( unsigned int handle )
 	{
 		m_timer.remove_event( handle );
+	}
+
+	bool SetupDebuger()
+	{
+		return Lua::Instance().SetupDebuger();
 	}
 };

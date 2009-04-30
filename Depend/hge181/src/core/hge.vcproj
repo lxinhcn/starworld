@@ -147,7 +147,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;HGEDLL"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;HGEDLL;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -173,7 +173,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="winmm.lib d3d8.lib d3dx8.lib user32.lib gdi32.lib Advapi32.lib shell32.lib"
-				OutputFile="$(OutDir)hge.dll"
+				OutputFile="$(OutDir)/hge.dll"
 				Version="1.53"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -207,7 +207,6 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description=""
 				CommandLine=""
 			/>
 		</Configuration>
