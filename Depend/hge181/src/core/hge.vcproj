@@ -177,6 +177,7 @@
 				Version="1.53"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
+				IgnoreDefaultLibraryNames="libci.lib"
 				ModuleDefinitionFile=".\hge.def"
 				ProgramDatabaseFile=".\Release/hge.pdb"
 				RandomizedBaseAddress="1"
@@ -206,8 +207,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="pack dll with UPX"
-				CommandLine="upx -9 ..\..\hge.dll"
+				Description=""
+				CommandLine=""
 			/>
 		</Configuration>
 	</Configurations>

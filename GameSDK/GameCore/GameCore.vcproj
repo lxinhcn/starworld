@@ -121,7 +121,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".\;.\Include"
+				AdditionalIncludeDirectories=".\;.\include;&quot;..\..\Depend\Loki-0.1.6\Include&quot;;..\..\Helplib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;CORE_EXPORTS"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
