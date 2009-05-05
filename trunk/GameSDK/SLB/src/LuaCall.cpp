@@ -52,6 +52,24 @@ namespace SLB {
 		lua_pop(_L,2);
 	}
 
+	LuaCallBase::LuaCallBase( const LuaCallBase& rsh )
+	{
+		_L = rsh._L;
+		lua_getref( rsh._L, rsh._ref );
+		_ref = luaL_ref( rsh._L, LUA_REGISTRYINDEX );
+		lua_pop(_L,1);
+	}
+
+	LuaCallBase& LuaCallBase::operator=( const LuaCallBase& rsh )
+	{
+		_L = rsh._L;
+		lua_getref( rsh._L, rsh._ref );
+		_ref = luaL_ref( rsh._L, LUA_REGISTRYINDEX );
+		lua_pop(_L,1);
+
+		return *this;
+	}
+
 	LuaCallBase::~LuaCallBase()
 	{
 		SLB_DEBUG_CALL;
@@ -61,7 +79,7 @@ namespace SLB {
 	bool LuaCallBase::valid()const
 	{
 		lua_getref( _L, _ref );
-		bool ret = (_ref != LUA_REFNIL && lua_type( _L, -1 ) );
+		bool ret = (_ref != LUA_REFNIL && lua_type( _L, -1 ) > LUA_TNIL );
 		lua_pop(_L,1);
 		return ret;
 	}
