@@ -194,6 +194,9 @@ namespace UILib
 			Manager::getInstance().set( "DrawCharacter",	FuncCall::create( XUI_DrawCharacterA ) );
 			Manager::getInstance().set( "DrawSprite",		FuncCall::create( XUI_DrawSprite ) );
 			Manager::getInstance().set( "DrawRect",			FuncCall::create( XUI_DrawRect ) );
+
+			//////////////////////////////////////////////////////////////////////////
+			// luaÏà¹Øº¯Êý
 			Manager::getInstance().set( "SetTimer",			FuncCall::create( LuaSetTimer ) );
 
 			_tchar path[_MAX_PATH+_MAX_FNAME];
