@@ -8,6 +8,7 @@
 #include "XUI_Dialog.h"
 #include "XUI_EditBox.h"
 #include "XUI_Window.h"
+#include "UIFactory.h"
 //////////////////////////////////////////////////////////////////////////
 #include "LuaDebuger.h"
 //////////////////////////////////////////////////////////////////////////
@@ -77,7 +78,7 @@ namespace UILib
 			;
 
 		Class< XUI_SpriteAttribute >( "ui::XUI_SpriteAttribute" )
-			.constructor< const char*, float, float, float, float >()
+			.constructor< _lpcstr, float, float, float, float >()
 			.member_readonly( "f",	&XUI_SpriteAttribute::path )
 			.member_readonly( "x",	&XUI_SpriteAttribute::x )
 			.member_readonly( "y",	&XUI_SpriteAttribute::y )
@@ -89,6 +90,7 @@ namespace UILib
 			;
 
 		Class< XUI_ISprite, Instance::NoCopy >( "ui::XUI_ISprite" )
+			.static_inherits< XUI_SpriteAttribute >()
 			.set( "Render", &XUI_ISprite::Render )
 			.set( "RenderStretch", &XUI_ISprite::RenderStretch )
 			.set( "RenderEx", &XUI_ISprite::RenderEx )
@@ -140,13 +142,23 @@ namespace UILib
 			.set( "members",		&XUI_Wnd::show_members )
 			.set( "save",			&XUI_Wnd::save_file )
 			.set( "load",			&XUI_Wnd::load_file )
+			.set( "AddChild",		&XUI_Wnd::AddChild )
+			.set( "AddChildAt",		&XUI_Wnd::AddChildAt )
+			.set( "RemoveChild",	&XUI_Wnd::RemoveChild )
+			.set( "GetParent",		&XUI_Wnd::GetParent )
+			.set( "FindChildByName",&XUI_Wnd::FindChildByName )
+			.set( "FindChildByID",	&XUI_Wnd::FindChildByID )
+			.set( "BringToUp",		&XUI_Wnd::BringToUp )
+			.set( "BringToDown",	&XUI_Wnd::BringToDown )
+			.set( "BringToFront",	&XUI_Wnd::BringToFront )
+			.set( "BringToEnd",		&XUI_Wnd::BringToEnd )
 			.member( "name",		&XUI_Wnd::SetName,					&XUI_Wnd::GetName )
 			.member( "visible",		&XUI_Wnd::ShowWindow,				&XUI_Wnd::IsVisible )
 			.member( "enable",		&XUI_Wnd::EnableWindow,				&XUI_Wnd::IsEnable	)
 			.member( "font",		&XUI_Wnd::SetFontAttribute,			&XUI_Wnd::GetFontAttribute )
-			.member( "background",	&XUI_Wnd::SetBackgroundAttribute,	&XUI_Wnd::GetBackgroundAttribute )
 			.member( "transparent",	&XUI_Wnd::m_bTranslateParent )
 			.member( "updatefunc",	&XUI_Wnd::m_strUpdateFunc )
+			.member( "background",	&XUI_Wnd::m_pBackGround )
 			.member_readonly( "window",	&XUI_Wnd::m_WindowRect )
 			;
 
@@ -162,9 +174,8 @@ namespace UILib
 			.static_inherits< XUI_Wnd >()
 			.constructor()
 			.set( "SetState",	&XUI_Button::SetState )
-			.set( "SetSkin",	&XUI_Button::SetSkin )
 			.member( "caption",	&XUI_Button::m_strCaption )
-			.member_readonly( "skin",	&XUI_Button::m_SpriteAttribute )
+			.member( "skin",	&XUI_Button::m_pButtonSkin )
 			.enumValue( "Normal",		XUI_Button::Normal )
 			.enumValue( "MouseOver",	XUI_Button::MouseOver )
 			.enumValue( "ButtonDown",	XUI_Button::ButtonDown )
@@ -198,6 +209,7 @@ namespace UILib
 			//////////////////////////////////////////////////////////////////////////
 			// luaÏà¹Øº¯Êý
 			Manager::getInstance().set( "SetTimer",			FuncCall::create( LuaSetTimer ) );
+			Manager::getInstance().set( "CreateUI",			FuncCall::create( CreateUI ) );
 
 			_tchar path[_MAX_PATH+_MAX_FNAME];
 			_tfullpath( path, _T("..\\Resource\\Scripts\\"), _countof( path ) );
@@ -246,4 +258,8 @@ namespace UILib
 		return GuiSystem::Instance().SetTimer( event_function( call( function ) ), repeat, timer );
 	}
 
+	XUI_Wnd*	CreateUI( _lpcstr lpszLable )
+	{
+		return CUIFactory::GetInstance().Creator( XA2T(lpszLable) );
+	}
 }

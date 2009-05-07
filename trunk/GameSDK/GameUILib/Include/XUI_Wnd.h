@@ -105,8 +105,8 @@ namespace UILib
 		void DestroyAllChild();
 		void SetParent( XUI_Wnd* pParent ){ m_pParent = pParent; }
 		XUI_Wnd* GetParent(){return m_pParent;}
-		XUI_Wnd* FindChildInPoint(const x_point& pt) const;
-		XUI_Wnd* FindChildByName(_lpctstr sName) const;
+		XUI_Wnd* FindChildInPoint( const x_point& pt )const;
+		XUI_Wnd* FindChildByName( const _string& sName )const;
 		XUI_Wnd* FindChildByID( int nID )const;
 
 		typedef bool (*ElementCallback)( XUI_Wnd*, void* );

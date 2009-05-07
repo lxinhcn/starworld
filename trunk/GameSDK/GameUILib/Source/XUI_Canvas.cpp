@@ -56,16 +56,17 @@ namespace UILib
 
 	bool XUI_SpriteAttribute::save_file( TiXmlElement* pNode )
 	{
-		TiXmlElement p( "Path" );
+		pNode->SetAttribute( "class", "sprite" );
+		TiXmlElement p( "path" );
 		p.SetAttribute( "direction", path.c_str() );
 		pNode->InsertEndChild( p );
 
-		TiXmlElement Position( "Position" );
+		TiXmlElement Position( "position" );
 		Position.SetDoubleAttribute( "x", x );
 		Position.SetDoubleAttribute( "y", y );
 		pNode->InsertEndChild( Position );
 
-		TiXmlElement Size( "Size" );
+		TiXmlElement Size( "size" );
 		Size.SetDoubleAttribute( "w", w );
 		Size.SetDoubleAttribute( "h", h );
 		pNode->InsertEndChild( Size );
@@ -75,10 +76,10 @@ namespace UILib
 
 	bool XUI_SpriteAttribute::load_file( TiXmlElement* pNode )
 	{
-		TiXmlElement* pElement = pNode->FirstChildElement( "Path" );
+		TiXmlElement* pElement = pNode->FirstChildElement( "path" );
 		path = pElement->Attribute( "direction" );
 
-		pElement = pNode->FirstChildElement( "Position" );
+		pElement = pNode->FirstChildElement( "position" );
 		ASSERT( pElement );
 		if( pElement )
 		{
@@ -86,7 +87,7 @@ namespace UILib
 			pElement->QueryFloatAttribute( "y", &y );
 		}
 
-		pElement = pNode->FirstChildElement( "Size" );
+		pElement = pNode->FirstChildElement( "size" );
 		ASSERT(pElement);
 		if( pElement )
 		{
@@ -173,14 +174,14 @@ namespace UILib
 
 	bool XUI_FontAttribute::save_file( TiXmlElement* pNode )
 	{
-		TiXmlElement* pElement = pNode->ToElement();
-		if( pElement )
+		pNode->SetAttribute( "class", "font" );
+		if( pNode )
 		{
-			pElement->SetAttribute( "name", name.c_str() );
-			pElement->IntAttribute( "size", size );
-			pElement->BoolAttribute( "bold", bold );
-			pElement->BoolAttribute( "italic", italic );
-			pElement->BoolAttribute( "antialias", antialias );
+			pNode->SetAttribute( "name", name.c_str() );
+			pNode->IntAttribute( "size", size );
+			pNode->BoolAttribute( "bold", bold );
+			pNode->BoolAttribute( "italic", italic );
+			pNode->BoolAttribute( "antialias", antialias );
 		}
 		return true;
 	}

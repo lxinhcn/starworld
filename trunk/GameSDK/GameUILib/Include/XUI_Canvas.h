@@ -75,7 +75,7 @@ namespace UILib
 		virtual bool	IsMouseOver()const = 0;
 	};
 
-	struct XUI_ISprite	:	protected	XUI_SpriteAttribute
+	struct XUI_ISprite	:	public	XUI_SpriteAttribute
 	{
 		virtual ~XUI_ISprite(){}
 		virtual float	GetWidth()const		= 0;

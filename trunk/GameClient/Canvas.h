@@ -69,7 +69,7 @@ private:
 class CClientSprite	:	public UILib::XUI_ISprite
 {
 public:
-	CClientSprite();
+	CClientSprite( _lpcstr _path, float _x, float _y, float _w, float _h );
 	~CClientSprite();
 	bool LoadTexture( _lpcstr lpszFileName, float x, float y, float w, float h );
 
