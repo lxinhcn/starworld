@@ -212,7 +212,7 @@ namespace UILib
 			if( m_pChildMouseOver == pChild )	m_pChildMouseOver = NULL;
 			if( m_pChildFocusedOn == pChild )	m_pChildFocusedOn = NULL;
 
-			if( bDestroy ) delete pChild;
+			if( bDestroy ) pChild->Release();
 			m_pChildren.erase(itr);
 		}
 	}
@@ -243,7 +243,7 @@ namespace UILib
 		return NULL;
 	}
 
-	XUI_Wnd* XUI_Wnd::FindChildByName(_lpctstr sName) const
+	XUI_Wnd* XUI_Wnd::FindChildByName( const _string& sName) const
 	{
 		for(size_t i=0; i<m_pChildren.size(); i++)
 		{
@@ -540,7 +540,7 @@ namespace UILib
 					const char* attrib = op( this, *i, indent );
 					if( attrib )
 					{
-						printf( " = %s", *i, attrib );
+						printf( " = %s", attrib );
 					}
 				}
 				catch( std::runtime_error& err )
@@ -572,14 +572,14 @@ namespace UILib
 			if( !m_FontAttribute.name.empty() )
 				m_pFont = XUI_CreateFontEx( m_FontAttribute );
 		}
-		else if( strcmp( "background", name ) == 0 )
-		{
-			if( m_pBackGround )
-				XUI_DestroySprite( m_pBackGround );
+		//else if( strcmp( "background", name ) == 0 )
+		//{
+		//	if( m_pBackGround )
+		//		XUI_DestroySprite( m_pBackGround );
 
-			if( !m_BackgroundAttribute.path.empty() )
-				m_pBackGround = XUI_CreateSpriteEx( m_BackgroundAttribute );
-		}
+		//	if( !m_BackgroundAttribute.path.empty() )
+		//		m_pBackGround = XUI_CreateSpriteEx( m_BackgroundAttribute );
+		//}
 	}
 
 	void XUI_Wnd::SetFontAttribute( const XUI_FontAttribute& Font )

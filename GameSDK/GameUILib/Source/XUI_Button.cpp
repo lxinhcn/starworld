@@ -10,21 +10,14 @@ namespace UILib
 	XUI_Button::XUI_Button(void)
 	: m_enState(Normal)
 	, m_dwColor( 0 )
+	, m_pButtonSkin( NULL )
 	{
 		SetState( Normal );
-		memset( m_pButtonSkin, 0, sizeof(m_pButtonSkin) );
 	}
 
 	XUI_Button::~XUI_Button(void)
 	{
-		for( int i = 0; i < _countof(m_pButtonSkin); ++i )
-		{
-			if( m_pButtonSkin[i] )
-			{
-				m_pButtonSkin[i]->Release();
-				m_pButtonSkin[i] = NULL;
-			}
-		}
+		SAFE_DELETE( m_pButtonSkin );
 	}
 
 	void XUI_Button::SetText( _lpctstr sText)
@@ -32,19 +25,6 @@ namespace UILib
 		if( sText )	m_strCaption = sText;
 	}
 
-	void XUI_Button::SetSkin( const _string& path, float x, float y, float w, float h )
-	{
-		for( int i = 0; i < _countof(m_pButtonSkin); ++i )
-		{
-			if( m_pButtonSkin[i] )
-			{
-				m_pButtonSkin[i]->Release();
-				m_pButtonSkin[i] = NULL;
-			}
-			m_pButtonSkin[i] = XUI_CreateSprite( XT2A(path), x + w*i, y, w, h );
-		}
-	}
-	
 	void XUI_Button::SetState( ButtonState enState )
 	{
 		m_enState = enState;
@@ -59,9 +39,9 @@ namespace UILib
 		int nHeight	= m_WindowRect.Height();
 
 		// 按钮背景
-		if( m_pButtonSkin[m_enState] )
+		if( m_pButtonSkin )
 		{
-			XUI_DrawSprite( m_pButtonSkin[m_enState], pt.x, pt.y, nWidth, nHeight );
+			XUI_DrawSprite( m_pButtonSkin, pt.x, pt.y, nWidth, nHeight );
 		}
 		// 文字
 		XUI_DrawText( m_strCaption.c_str(), m_pFont, (float)pt.x + nWidth/2, (float)pt.y + nHeight/2 );
@@ -132,12 +112,5 @@ namespace UILib
 			SetState( Disable );
 		else
 			SetState( Normal );
-	}
-
-	// 皮肤改变时调用
-	void XUI_Button::onSkinChange()
-	{
-		USES_CONVERSION;
-		SetSkin( A2T( m_SpriteAttribute.path.c_str() ), m_SpriteAttribute.x, m_SpriteAttribute.y, m_SpriteAttribute.w, m_SpriteAttribute.h );
 	}
 }

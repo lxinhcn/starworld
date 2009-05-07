@@ -81,10 +81,11 @@ GfxFont* CFontManager::GetFont( _lpcstr lpszFont, int nSize, bool bBold, bool bI
 //////////////////////////////////////////////////////////////////////////
 // CClientSprite class
 //////////////////////////////////////////////////////////////////////////
-CClientSprite::CClientSprite()
+CClientSprite::CClientSprite( _lpcstr _path, float _x, float _y, float _w, float _h )
 : m_pSprite( NULL )
 , m_u0(0.0f), m_v0(0.0f), m_u1(1.0f), m_v1(1.0f)
 {
+	path = _path, x = _x, y = _y, w = _w, h = _h;
 }
 
 CClientSprite::~CClientSprite()
@@ -332,7 +333,7 @@ static void _DrawSprite( const XUI_ISprite* Tex, int nX, int nY, int nWidth, int
 
 static XUI_ISprite* _CreateSprite( _lpcstr filename, float x, float y, float w, float h )
 {
-	CClientSprite* pTexture = new CClientSprite();
+	CClientSprite* pTexture = new CClientSprite( filename, x, y, w, h);
 	if( pTexture->LoadTexture( filename, x, y, w, h ) )
 	{
 		return pTexture;
