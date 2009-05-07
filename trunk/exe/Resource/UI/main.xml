@@ -2,14 +2,14 @@
     <Attribute>
         <x value="0" />
         <y value="0" />
-        <background>
-            <Path direction="bg2.png" />
-            <Position x="0.000000" y="0.000000" />
-            <Size w="800.000000" h="600.000000" />
+        <background class="sprite">
+            <path direction="bg2.png" />
+            <position x="0.000000" y="0.000000" />
+            <size w="800.000000" h="600.000000" />
         </background>
         <enable value="true" />
-        <font name="" />
-        <id value="65536" />
+        <font class="font" name="" />
+        <id value="10001" />
         <name value="root" />
         <transparent value="true" />
         <updatefunc value="DesktopUpdate" />
@@ -27,23 +27,18 @@
             <bordercolor value="-8355712" />
             <text value="" />
             <warp value="true" />
-            <background>
-                <Path direction="bg2.png" />
-                <Position x="0.000000" y="0.000000" />
-                <Size w="200" h="300" />
-            </background>
             <enable value="true" />
-            <font name="" />
-            <id value="-842150451" />
+            <font class="font" name="" />
+            <id value="1000" />
             <name value="" />
             <transparent value="true" />
             <updatefunc value="" />
             <visible value="true" />
             <window>
-                <bottom value="400" />
+                <bottom value="300" />
                 <left value="100" />
-                <right value="300" />
-                <top value="100" />
+                <right value="400" />
+                <top value="200" />
             </window>
         </Attribute>
     </CONTROL>
