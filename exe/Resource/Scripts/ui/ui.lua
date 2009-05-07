@@ -10,7 +10,9 @@ function DesktopUpdate( element, timer, delta )
 	local p = gui:GetRoot();
 	DrawText( string.format( "desktop tx= %f, ty = %f %s", tx, ty, p.name ), nil, 10, 40 );
 	local pBackground = element:GetBackground();
-	pBackground:SetUV( tx, ty, tx+1, ty+1 );
+	if pBackground then
+		pBackground:SetUV( tx, ty, tx+1, ty+1 );
+	end;
 end;
 
 return true;
