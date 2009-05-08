@@ -145,15 +145,6 @@ namespace UILib
 		bool	IsEnable()const { return m_bEnable; }
 		void	EnableWindow( bool bEnable );
 
-		// 字体
-		XUI_FontAttribute& GetFontAttribute()const{ return m_FontAttribute; }
-		void SetFontAttribute( const XUI_FontAttribute& Font );
-
-		// 背景
-		XUI_SpriteAttribute& GetBackgroundAttribute()const{ return m_BackgroundAttribute; }
-		void SetBackgroundAttribute( const XUI_SpriteAttribute& Background );
-		XUI_ISprite* GetBackground()const{ return m_pBackGround; }
-
 		//设置焦点
 		void	SetFocus(bool bFocused);
 
@@ -187,8 +178,6 @@ namespace UILib
 		float			m_fZ;
 		x_rect			m_WindowRect;		// 位置和大小，相对于父控件
 
-		mutable XUI_FontAttribute	m_FontAttribute;	// 字体信息
-		mutable XUI_SpriteAttribute	m_BackgroundAttribute;	// 背景信息
 		XUI_IFont*		m_pFont;
 		XUI_ISprite*	m_pBackGround;			// 背景图
 
