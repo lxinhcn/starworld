@@ -1,7 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
-//  $Id: vldheap.cpp,v 1.11 2006/11/12 18:05:52 dmouldin Exp $
 //
-//  Visual Leak Detector (Version 1.9d) - Internal C++ Heap Management
+//  Visual Leak Detector - Internal C++ Heap Management
 //  Copyright (c) 2006 Dan Moulding
 //
 //  This library is free software; you can redistribute it and/or

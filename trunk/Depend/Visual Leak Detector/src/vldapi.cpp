@@ -1,7 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
-//  $Id: vldapi.cpp,v 1.15 2006/11/12 18:09:20 dmouldin Exp $
 //
-//  Visual Leak Detector (Version 1.9d) - Exported APIs
+//  Visual Leak Detector - Exported APIs
 //  Copyright (c) 2005-2006 Dan Moulding
 //
 //  This library is free software; you can redistribute it and/or
@@ -38,8 +37,8 @@ extern "C" __declspec(dllexport) void VLDDisable ()
 {
     tls_t *tls;
 
-    if (!vld.enabled()) {
-        // Already disabled for the current thread.
+    if (vld.m_options & VLD_OPT_VLDOFF) {
+        // VLD has been turned off.
         return;
     }
 
@@ -56,8 +55,8 @@ extern "C" __declspec(dllexport) void VLDEnable ()
 {
     tls_t *tls;
 
-    if (vld.enabled()) {
-        // Already enabled for the current thread.
+    if (vld.m_options & VLD_OPT_VLDOFF) {
+        // VLD has been turned off.
         return;
     }
 

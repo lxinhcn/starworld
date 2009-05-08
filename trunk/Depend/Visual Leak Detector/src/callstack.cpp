@@ -1,8 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-//  $Id: callstack.cpp,v 1.16 2006/11/12 18:09:19 dmouldin Exp $
 //
-//  Visual Leak Detector (Version 1.9d) - CallStack Class Implementations
-//  Copyright (c) 2005-2006 Dan Moulding
+//  Visual Leak Detector - CallStack Class Implementations
+//  Copyright (c) 2005-2009 Dan Moulding
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -24,9 +23,13 @@
 
 #include <cassert>
 #include <windows.h>
+#ifndef __out_xcount
+#define __out_xcount(x) // Workaround for the specstrings.h bug in the Platform SDK.
+#endif
+#define DBGHELP_TRANSLATE_TCHAR
+#include <dbghelp.h>    // Provides symbol handling services.
 #define VLDBUILD
 #include "callstack.h"  // This class' header.
-#include "dbghelpapi.h" // Provides symbol handling services.
 #include "utility.h"    // Provides various utility functions.
 #include "vldheap.h"    // Provides internal new and delete operators.
 #include "vldint.h"     // Provides access to VLD internals.
@@ -36,7 +39,8 @@
 // Imported global variables.
 extern HANDLE             currentprocess;
 extern HANDLE             currentthread;
-extern VisualLeakDetector vld;
+extern CRITICAL_SECTION   stackwalklock;
+extern CRITICAL_SECTION   symbollock;
 
 // Constructor - Initializes the CallStack with an initial size of zero and one
 //   Chunk of capacity.
@@ -183,10 +187,6 @@ VOID CallStack::clear ()
 //   Note: The symbol handler must be initialized prior to calling this
 //     function.
 //
-//   Caution: This function is not thread-safe. It calls into the Debug Help
-//     Library which is single-threaded. Therefore, calls to this function must
-//     be synchronized.
-//
 //  - showinternalframes (IN): If true, then all frames in the CallStack will be
 //      dumped. Otherwise, frames internal to the heap will not be dumped.
 //
@@ -225,7 +225,8 @@ VOID CallStack::dump (BOOL showinternalframes) const
         // Try to get the source file and line number associated with
         // this program counter address.
         programcounter = (*this)[frame];
-        if ((foundline = pSymGetLineFromAddrW64(currentprocess, programcounter, &displacement, &sourceinfo)) == TRUE) {
+        EnterCriticalSection(&symbollock);
+        if ((foundline = SymGetLineFromAddrW64(currentprocess, programcounter, &displacement, &sourceinfo)) == TRUE) {
             if (!showinternalframes) {
                 _wcslwr_s(sourceinfo.FileName, wcslen(sourceinfo.FileName) + 1);
                 if (wcsstr(sourceinfo.FileName, L"afxmem.cpp") ||
@@ -241,12 +242,13 @@ VOID CallStack::dump (BOOL showinternalframes) const
 
         // Try to get the name of the function containing this program
         // counter address.
-        if (pSymFromAddrW(currentprocess, (*this)[frame], &displacement64, functioninfo)) {
+        if (SymFromAddrW(currentprocess, (*this)[frame], &displacement64, functioninfo)) {
             functionname = functioninfo->Name;
         }
         else {
             functionname = L"(Function name unavailable)";
         }
+        LeaveCriticalSection(&symbollock);
 
         // Display the current stack frame's information.
         if (foundline) {
@@ -420,10 +422,11 @@ VOID SafeCallStack::getstacktrace (UINT32 maxdepth, SIZE_T *framepointer)
     frame.AddrStack.Mode   = AddrModeFlat;
 
     // Walk the stack.
+    EnterCriticalSection(&stackwalklock);
     while (count < maxdepth) {
         count++;
-        if (!pStackWalk64(architecture, currentprocess, currentthread, &frame, &context, NULL,
-                          pSymFunctionTableAccess64, pSymGetModuleBase64, NULL)) {
+        if (!StackWalk64(architecture, currentprocess, currentthread, &frame, &context, NULL,
+                         SymFunctionTableAccess64, SymGetModuleBase64, NULL)) {
             // Couldn't trace back through any more frames.
             break;
         }
@@ -435,4 +438,5 @@ VOID SafeCallStack::getstacktrace (UINT32 maxdepth, SIZE_T *framepointer)
         // Push this frame's program counter onto the CallStack.
         push_back((SIZE_T)frame.AddrPC.Offset);
     }
+    LeaveCriticalSection(&stackwalklock);
 }
