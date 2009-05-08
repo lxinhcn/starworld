@@ -1,7 +1,7 @@
 dofile( script.."ui\\utility.lua" )
 
 function UIUpdateEntry( timer, delta )
-	DrawText( string.format( "timer = %f, delta = %f", timer, delta ), nil, 10, 10 );
+	DrawText( string.format( "time = %f, delta = %f, timer = %d", timer, delta, timercount ), nil, 10, 10 );
 end;
 
 function DesktopUpdate( element, timer, delta )

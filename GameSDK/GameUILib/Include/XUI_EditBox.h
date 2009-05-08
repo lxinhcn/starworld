@@ -123,6 +123,7 @@ namespace UILib
 
 		typedef _string::size_type Position;
 		typedef	std::vector< line >	text;
+		bool			m_bSingleLine;
 		size_t			m_FirstLineNumber;	// 编辑框里看到的第一个字符的位置
 		size_t			m_nCurLineNumber;	// 当前行索引
 		size_t			m_CaratPos;			// 光标位置
