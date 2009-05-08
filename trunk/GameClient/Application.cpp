@@ -52,11 +52,13 @@ bool CApplication::FrameFunc()
 		break;
 	case HGEK_F9:
 		Application::Instance()->System_SetState( HGE_DONTSUSPEND, true );
-		printf( "UICommander start successful.\n" );
+		GuiSystem::Instance().SetEditMode( true );
+		printf( "UICommander start successful. Enter edit mode.\n" );
 		break;
 	case HGEK_F8:
 		Application::Instance()->System_SetState( HGE_DONTSUSPEND, false );
-		printf( "UICommander closed.\n" );
+		GuiSystem::Instance().SetEditMode( false );
+		printf( "UICommander closed. Quit edit mode.\n" );
 		break;
 		//case HGEK_UP:
 		//	if(nObjects<MAX_OBJECTS) nObjects+=100; break;
