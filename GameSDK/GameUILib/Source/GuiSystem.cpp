@@ -17,6 +17,8 @@ namespace UILib
 	, m_nowtime( 0.0f )
 	, m_timer_anchor( 0.0f )
 	, m_pDefaultFont( NULL )
+	, m_capture_element( NULL )
+	, m_mouseover_element( NULL )
 	{
 		m_pDesktop = new XUI_Window();
 		m_pDesktop->SetID( DEFAULT_DESKTOP );
@@ -79,9 +81,9 @@ namespace UILib
 
 			if( m_bEditMode )
 			{
-				XUI_Wnd* pWnd = GetRoot();
-				while( pWnd->m_pChildFocusedOn ) pWnd = pWnd->m_pChildFocusedOn;
-				const x_rect& rc = pWnd->GetWindowRect();
+				//XUI_Wnd* pWnd = GetRoot();
+				//while( pWnd->m_pChildFocusedOn ) pWnd = pWnd->m_pChildFocusedOn;
+				const x_rect& rc = m_capture_element->GetWindowRect();
 				RenderEditFrame( rc );
 			}
 
@@ -141,98 +143,96 @@ namespace UILib
 
 	bool CGuiSystem::onMouseMove(XUI_Wnd* pElement, const x_point& pt, UINT sysKeys, long_ptr *result )
 	{
+		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
 
 		XUI_Wnd *pEnterElement = pElement->FindChildInPoint(pt);
-		if (pEnterElement==pElement->m_pChildMouseOver)
+		if( pEnterElement && pEnterElement != m_mouseover_element )
 		{
-			//焦点状态没有发生改变
-			if( pEnterElement )
-			{
-				//在同一个子控件内
-				x_point ptTemp(pt);
-				ptTemp.x -= pEnterElement->m_WindowRect.left;
-				ptTemp.y -= pEnterElement->m_WindowRect.top;
-				ptTemp = pEnterElement->AdjustPoint( ptTemp, false );
-				if( onMouseMove( pEnterElement, ptTemp, sysKeys, result ) )
-				{
-					return true;
-				}
-			}
+			if( m_mouseover_element ) m_mouseover_element->onMouseLeave();
+			pEnterElement->onMouseEnter();
+			m_mouseover_element = pEnterElement;
 		}
-		else
+		//if( pEnterElement==pElement->m_pChildMouseOver )
+		//{
+		//	//焦点状态没有发生改变
+		//	if( pEnterElement )
+		//	{
+		//		//在同一个子控件内
+		//		x_point ptTemp(pt);
+		//		ptTemp.x -= pEnterElement->m_WindowRect.left;
+		//		ptTemp.y -= pEnterElement->m_WindowRect.top;
+		//		ptTemp = pEnterElement->AdjustPoint( ptTemp, false );
+		//		if( onMouseMove( pEnterElement, ptTemp, sysKeys, result ) )
+		//		{
+		//			return true;
+		//		}
+		//	}
+		//}
+		//else
+		//{
+		//	//状态发生改变，应该产生一个leave和一个enter事件
+		//	XUI_Wnd* pTemp=pElement->m_pChildMouseOver;
+		//	pElement->m_pChildMouseOver=pEnterElement;
+
+		//	if (pTemp && pTemp->IsEnable() )
+		//	{
+		//		//if (onMouseLeave(pTemp))
+		//		//    return true;
+		//		if( onMouseLeave( pTemp ) )
+		//		{
+		//			*result = pTemp->SendUIMessage( UIM_MOUSELEAVE, MAKELONG(pt.x,pt.y), sysKeys );
+		//		}
+		//	}
+
+		//	if( pEnterElement && pEnterElement->IsEnable() )
+		//	{
+		//		if ( pEnterElement->onMouseEnter() )
+		//		{
+		//			*result = pEnterElement->SendUIMessage( UIM_MOUSEENTER, MAKELONG(pt.x,pt.y), sysKeys );
+		//		}
+
+		//		//继续细分
+		//		x_point ptTemp(pt);
+		//		ptTemp.x -= pEnterElement->m_WindowRect.left;
+		//		ptTemp.y -= pEnterElement->m_WindowRect.top;
+		//		ptTemp = pEnterElement->AdjustPoint( ptTemp, false );
+
+		//		if( onMouseMove( pEnterElement, ptTemp, sysKeys, result ) )
+		//		{
+		//			// 子控件不处理的交由父控件处理
+		//			return true;
+		//		}
+		//	}
+		//}
+
+		if( m_mouseover_element->onMouseMove(pt, sysKeys) )
 		{
-			//状态发生改变，应该产生一个leave和一个enter事件
-			XUI_Wnd* pTemp=pElement->m_pChildMouseOver;
-			pElement->m_pChildMouseOver=pEnterElement;
-
-			if (pTemp && pTemp->IsEnable() )
-			{
-				//if (onMouseLeave(pTemp))
-				//    return true;
-				if( onMouseLeave( pTemp ) )
-				{
-					*result = pTemp->SendUIMessage( UIM_MOUSELEAVE, MAKELONG(pt.x,pt.y), sysKeys );
-				}
-			}
-
-			if( pEnterElement && pEnterElement->IsEnable() )
-			{
-				if ( pEnterElement->onMouseEnter() )
-				{
-					*result = pEnterElement->SendUIMessage( UIM_MOUSEENTER, MAKELONG(pt.x,pt.y), sysKeys );
-				}
-
-				//继续细分
-				x_point ptTemp(pt);
-				ptTemp.x -= pEnterElement->m_WindowRect.left;
-				ptTemp.y -= pEnterElement->m_WindowRect.top;
-				ptTemp = pEnterElement->AdjustPoint( ptTemp, false );
-
-				if( onMouseMove( pEnterElement, ptTemp, sysKeys, result ) )
-				{
-					// 子控件不处理的交由父控件处理
-					return true;
-				}
-			}
-		}
-
-		if( pElement->onMouseMove(pt, sysKeys) )
-		{
-			*result = pEnterElement->SendUIMessage( UIM_MOUSEMOVE, MAKELONG(pt.x,pt.y), sysKeys );
+			*result = m_mouseover_element->SendUIMessage( UIM_MOUSEMOVE, MAKELONG(pt.x,pt.y), sysKeys );
 			return true;
 		}
 		return false;
 	}
 
-	bool CGuiSystem::onMouseLeave( XUI_Wnd* pElement )
-	{
-		//发生leave事件，所有的子控件都会收到一个leave事件
-		if( pElement && !pElement->onMouseLeave() )
-		{
-			return pElement->m_pChildMouseOver?onMouseLeave( pElement->m_pChildMouseOver ):false;
-		}
-		return true;
-	}
+	//bool CGuiSystem::onMouseLeave( XUI_Wnd* pElement )
+	//{
+	//	//发生leave事件，所有的子控件都会收到一个leave事件
+	//	if( pElement && !pElement->onMouseLeave() )
+	//	{
+	//		return pElement->m_pChildMouseOver?onMouseLeave( pElement->m_pChildMouseOver ):false;
+	//	}
+	//	return true;
+	//}
 
 	bool CGuiSystem::onButtonDown( XUI_Wnd* pElement, uint32 nButton, const x_point& pt, UINT sysKeys, long_ptr *result )
 	{
+		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
 
 		XUI_Wnd* pChild = pElement->FindChildInPoint(pt);
-		if( pChild )
+		if( pChild->onButtonDown( nButton, pt, sysKeys ) )
 		{
-			x_point ptTemp(pt);
-			ptTemp.x -= pChild->m_WindowRect.left;
-			ptTemp.y -= pChild->m_WindowRect.top;
-			ptTemp = pChild->AdjustPoint( ptTemp, false );
-			if( onButtonDown( pChild, nButton, ptTemp, sysKeys, result ) )
-				return true;
-		}
-		
-		if( pElement->onButtonDown( nButton, pt, sysKeys ) )
-		{
-			*result = pElement->SendUIMessage( UIM_BUTTONDOWN_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );
+			*result = pChild->SendUIMessage( UIM_BUTTONDOWN_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );
 			return true;
 		}
 		return false;
@@ -240,54 +240,47 @@ namespace UILib
 
 	bool CGuiSystem::onButtonUp( XUI_Wnd* pElement, uint32 nButton, const x_point& pt, UINT sysKeys, long_ptr *result )
 	{
+		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
+		XUI_Wnd* pChild = pElement->FindChildInPoint(pt);
 
-		XUI_Wnd* pChild=pElement->FindChildInPoint(pt);
-		if (pChild)
+		if( pChild != m_capture_element )
 		{
-			x_point ptTemp(pt);
-			ptTemp.x -= pChild->m_WindowRect.left;
-			ptTemp.y -= pChild->m_WindowRect.top;
-			ptTemp = pChild->AdjustPoint( ptTemp, false );
-			if ( onButtonUp( pChild, nButton, ptTemp, sysKeys, result ) )
-				return true;
+			if( m_capture_element ) m_capture_element->SetFocus( false );
+			pChild->SetFocus( true );
+			m_capture_element = pChild;
 		}
-		else
+		if( pChild->onButtonUp( nButton, pt, sysKeys ) )
 		{
-			SetFocus( pElement );
-		}
-
-		if( pElement->onButtonUp( nButton, pt, sysKeys ) )
-		{
-			*result = pElement->SendUIMessage( UIM_BUTTONUP_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );
+			*result = pChild->SendUIMessage( UIM_BUTTONUP_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );
 			return true;
 		}
 		return false;
 	}
 
-	void CGuiSystem::SetFocus(XUI_Wnd* pElement)
-	{
-		if( !pElement ) return;
+	//void CGuiSystem::SetFocus(XUI_Wnd* pElement)
+	//{
+	//	if( !pElement ) return;
 
-		if( pElement->m_pChildFocusedOn )
-		{
-			pElement->m_pChildFocusedOn->SetFocus( false );
-			pElement->m_pChildFocusedOn = NULL;
-		}
+	//	if( pElement->m_pChildFocusedOn )
+	//	{
+	//		pElement->m_pChildFocusedOn->SetFocus( false );
+	//		pElement->m_pChildFocusedOn = NULL;
+	//	}
 
-		XUI_Wnd* pParent = pElement->m_pParent;
-		if (pParent)
-		{
-			//去除别的焦点
-			if( pParent->m_pChildFocusedOn )
-				pParent->m_pChildFocusedOn->SetFocus(false);
+	//	XUI_Wnd* pParent = pElement->m_pParent;
+	//	if (pParent)
+	//	{
+	//		//去除别的焦点
+	//		if( pParent->m_pChildFocusedOn )
+	//			pParent->m_pChildFocusedOn->SetFocus(false);
 
-			//当前空间的容器应该也是获得焦点的
-			SetFocus( pParent );
-			pParent->m_pChildFocusedOn=pElement;
-		}
-		pElement->SetFocus(true);
-	}
+	//		//当前空间的容器应该也是获得焦点的
+	//		SetFocus( pParent );
+	//		pParent->m_pChildFocusedOn=pElement;
+	//	}
+	//	pElement->SetFocus(true);
+	//}
 
 	LRESULT CGuiSystem::HandleMessage( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 	{
@@ -389,17 +382,21 @@ namespace UILib
 		return ret;
 	}
 
-	bool CGuiSystem::onKeyDown(XUI_Wnd* pElement, uint32 dwVirtualCode, UINT sysKeys, long_ptr *result )
+	bool CGuiSystem::onKeyDown( XUI_Wnd* pElement, uint32 dwVirtualCode, UINT sysKeys, long_ptr *result )
 	{
-		if( !pElement->IsEnable() )	return false;
+		//if( !pElement->IsEnable() )	return false;
 
-		if (pElement->m_pChildFocusedOn)
+		//if (pElement->m_pChildFocusedOn)
+		//{
+		//	return onKeyDown(pElement->m_pChildFocusedOn, dwVirtualCode, sysKeys, result );
+		//}
+		//else if ( pElement->onKeyDown(dwVirtualCode, sysKeys) )
+
+		if( m_capture_element == NULL ) return false;
+		if( !m_capture_element->IsEnable() ) return false;
+		if( m_capture_element->onKeyDown(dwVirtualCode, sysKeys) )
 		{
-			return onKeyDown(pElement->m_pChildFocusedOn, dwVirtualCode, sysKeys, result );
-		}
-		else if ( pElement->onKeyDown(dwVirtualCode, sysKeys) )
-		{
-			*result = pElement->SendUIMessage( UIM_KEYDOWN, dwVirtualCode, sysKeys );
+			*result = m_capture_element->SendUIMessage( UIM_KEYDOWN, dwVirtualCode, sysKeys );
 			return true;
 		}
 		return false;
@@ -407,13 +404,16 @@ namespace UILib
 
 	bool CGuiSystem::onKeyUp(XUI_Wnd* pElement, uint32 dwVirtualCode, UINT sysKeys, long_ptr *result )
 	{
-		if( !pElement->IsEnable() )	return false;
+		//if( !pElement->IsEnable() )	return false;
 
-		if( pElement->m_pChildFocusedOn )
-		{
-			return onKeyUp(pElement->m_pChildFocusedOn, dwVirtualCode, sysKeys, result );
-		}
-		else if( pElement->onKeyUp( dwVirtualCode, sysKeys ) )
+		//if( pElement->m_pChildFocusedOn )
+		//{
+		//	return onKeyUp(pElement->m_pChildFocusedOn, dwVirtualCode, sysKeys, result );
+		//}
+		//else if( pElement->onKeyUp( dwVirtualCode, sysKeys ) )
+		if( m_capture_element == NULL ) return false;
+		if( !m_capture_element->IsEnable() ) return false;
+		if( m_capture_element->onKeyUp(dwVirtualCode, sysKeys) )
 		{
 			*result = pElement->SendUIMessage( UIM_KEYUP, dwVirtualCode, sysKeys );
 			return true;
@@ -423,13 +423,16 @@ namespace UILib
 
 	bool CGuiSystem::onChar(XUI_Wnd* pElement, uint32 dwChar, UINT sysKeys, long_ptr *result )
 	{
-		if( !pElement->IsEnable() )	return false;
+		//if( !pElement->IsEnable() )	return false;
 
-		if (pElement->m_pChildFocusedOn)
-		{
-			return onChar( pElement->m_pChildFocusedOn, dwChar, sysKeys, result );
-		}
-		else if ( pElement->onChar(dwChar, sysKeys))
+		//if (pElement->m_pChildFocusedOn)
+		//{
+		//	return onChar( pElement->m_pChildFocusedOn, dwChar, sysKeys, result );
+		//}
+		//else if ( pElement->onChar(dwChar, sysKeys))
+		if( m_capture_element == NULL ) return false;
+		if( !m_capture_element->IsEnable() ) return false;
+		if( m_capture_element->onChar( dwChar, sysKeys ) )
 		{
 			*result = pElement->SendUIMessage( UIM_CHAR, dwChar, sysKeys );
 			return true;
@@ -468,26 +471,29 @@ namespace UILib
 
 	bool CGuiSystem::onImeComp(XUI_Wnd* pElement, uint32 wParam, uint32 lParam, long_ptr *result )
 	{
-		if (pElement->m_pChildFocusedOn)
-			return onImeComp( pElement->m_pChildFocusedOn, wParam, lParam, result );
-		else
-			return pElement->onImeComp(wParam, lParam);
+		//if (pElement->m_pChildFocusedOn)
+		//	return onImeComp( pElement->m_pChildFocusedOn, wParam, lParam, result );
+		//else
+		//	return pElement->onImeComp(wParam, lParam);
+		return ( m_capture_element != NULL )?m_capture_element->onImeComp( wParam, lParam ):false;
 	}
 
 	bool CGuiSystem::onImeEndComp(XUI_Wnd* pElement, uint32 wParam, uint32 lParam, long_ptr *result )
 	{
-		if( pElement->m_pChildFocusedOn )
-			return onImeEndComp( pElement->m_pChildFocusedOn, wParam, lParam, result );
-		else
-			return pElement->onImeEndComp( wParam, lParam );
+		//if( pElement->m_pChildFocusedOn )
+		//	return onImeEndComp( pElement->m_pChildFocusedOn, wParam, lParam, result );
+		//else
+		//	return pElement->onImeEndComp( wParam, lParam );
+		return ( m_capture_element != NULL )?m_capture_element->onImeEndComp( wParam, lParam ):false;
 	}
 
 	bool CGuiSystem::onImeNotify(XUI_Wnd* pElement, uint32 wParam, uint32 lParam, long_ptr *result )
 	{
-		if (pElement->m_pChildFocusedOn)
-			return onImeNotify( pElement->m_pChildFocusedOn, wParam, lParam, result );
-		else
-			return pElement->onImeNotify( wParam, lParam );
+		//if (pElement->m_pChildFocusedOn)
+		//	return onImeNotify( pElement->m_pChildFocusedOn, wParam, lParam, result );
+		//else
+		//	return pElement->onImeNotify( wParam, lParam );
+		return ( m_capture_element != NULL )?m_capture_element->onImeNotify( wParam, lParam ):false;
 	}
 
 	//////////////////////////////////////////////////////////////////////////

@@ -22,7 +22,7 @@ namespace UILib
 	}
 
 	REGIST_CONTROL( UILib::XUI_Window,		WINDOW		);
-	REGIST_CONTROL( UILib::CXDialog,		DIALOG		);
+	REGIST_CONTROL( UILib::XUI_Dialog,		DIALOG		);
 	REGIST_CONTROL( UILib::XUI_Button,		BUTTON		);
 	REGIST_CONTROL( UILib::XUI_Picture,		PICTURE		);
 	REGIST_CONTROL( UILib::XUI_EditBox,		EDIT		);

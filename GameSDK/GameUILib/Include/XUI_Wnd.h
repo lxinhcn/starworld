@@ -105,7 +105,7 @@ namespace UILib
 		void DestroyAllChild();
 		void SetParent( XUI_Wnd* pParent ){ m_pParent = pParent; }
 		XUI_Wnd* GetParent(){return m_pParent;}
-		XUI_Wnd* FindChildInPoint( const x_point& pt )const;
+		XUI_Wnd* FindChildInPoint( const x_point &pt, uint32* deep = NULL );
 		XUI_Wnd* FindChildByName( const _string& sName )const;
 		XUI_Wnd* FindChildByID( int nID )const;
 
@@ -181,8 +181,8 @@ namespace UILib
 		XUI_IFont*		m_pFont;
 		XUI_ISprite*	m_pBackGround;			// 背景图
 
-		XUI_Wnd*		m_pChildMouseOver;	// 当前鼠标下的子控件
-		XUI_Wnd*		m_pChildFocusedOn;	// 当前获得焦点的子控件
+		//XUI_Wnd*		m_pChildMouseOver;	// 当前鼠标下的子控件
+		//XUI_Wnd*		m_pChildFocusedOn;	// 当前获得焦点的子控件
 	};
 
 	extern 	CGuiSystem* _afxCurrentGuiSystem;

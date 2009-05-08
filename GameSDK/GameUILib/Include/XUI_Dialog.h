@@ -5,13 +5,13 @@ namespace UILib
 {
 	//框架控件，不显示任何内容，只是作为容器
 	class CGuiSystem;
-	class CXDialog:	public	UIObjTypeT< XUI_Window, TypeDialog >
+	class XUI_Dialog:	public	UIObjTypeT< XUI_Window, TypeDialog >
 	{
 	DECLARE_UIMSG_MAP()
 	DECLARE_LABLE( DIALOG )
 	public:
-		CXDialog( _lpctstr lpszTemplate = NULL );
-		~CXDialog();
+		XUI_Dialog( _lpctstr lpszTemplate = NULL );
+		~XUI_Dialog();
 
 		bool Create( _lpctstr strTemplate, XUI_Window* pParent = NULL );
 
@@ -27,11 +27,10 @@ namespace UILib
 		void		OnOK();
 		void		OnCancel();
 		void		CenterWindow();
-		void		SetFocus( XUI_Wnd* pFocus );
 		void		SetFocus( UINT nCtrlID );
 	protected:
 		virtual void	RenderSelf();
-		virtual bool	onKeyUp(uint32 keycode, UINT sysKeys);
+		virtual bool	onKeyUp( uint32 keycode, uint32 sysKeys );
 
 		virtual bool	OnInitDialog(){ return true;}
 		virtual void	OnDestroy(){}

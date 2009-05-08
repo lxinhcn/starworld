@@ -13,8 +13,6 @@ namespace UILib
 	*******************************************************/
 	XUI_Wnd::XUI_Wnd(void)
 	: m_pParent(NULL)
-	, m_pChildMouseOver(NULL)
-	, m_pChildFocusedOn(NULL)
 	, m_bFocused(false)
 	, m_bVisible( true )
 	, m_bEnable( true )
@@ -211,8 +209,8 @@ namespace UILib
 			std::vector<XUI_Wnd*>::iterator itr = m_pChildren.begin()+i;
 
 			XUI_Wnd* pChild = *itr;
-			if( m_pChildMouseOver == pChild )	m_pChildMouseOver = NULL;
-			if( m_pChildFocusedOn == pChild )	m_pChildFocusedOn = NULL;
+			//if( m_pChildMouseOver == pChild )	m_pChildMouseOver = NULL;
+			//if( m_pChildFocusedOn == pChild )	m_pChildFocusedOn = NULL;
 
 			if( bDestroy ) pChild->Release();
 			m_pChildren.erase(itr);
@@ -228,21 +226,21 @@ namespace UILib
 			delete pXUI_Wnd;
 		}
 		m_pChildren.clear();
-		m_pChildMouseOver = NULL;
-		m_pChildFocusedOn = NULL;
+		//m_pChildMouseOver = NULL;
+		//m_pChildFocusedOn = NULL;
 	}
 
 	//寻找在某个坐标上的控件
-	XUI_Wnd* XUI_Wnd::FindChildInPoint(const x_point& pt) const
+	XUI_Wnd* XUI_Wnd::FindChildInPoint(const x_point &pt, uint32 *deep )
 	{
 		AdjustPoint(pt, true);
 		for (int i=(int)m_pChildren.size()-1; i>=0; i--)
 		{
 			XUI_Wnd* pElement=m_pChildren[i];
-			if (pElement->m_bVisible && pElement->IsPointIn(pt))
-				return pElement;
+			if( pElement->m_bVisible && pElement->IsPointIn(pt) )
+				return ((deep&&*deep--)||!deep)?pElement->FindChildInPoint( pt - m_WindowRect.TopLeft(), deep ):pElement;
 		}
-		return NULL;
+		return this;
 	}
 
 	XUI_Wnd* XUI_Wnd::FindChildByName( const _string& sName) const
@@ -455,14 +453,15 @@ namespace UILib
 
 	long_ptr XUI_Wnd::SendUIMessage( uint32 nMsg, uint_ptr wParam, long_ptr lParam )
 	{
-		if( m_pChildFocusedOn )
-		{
-			return m_pChildFocusedOn->SendUIMessage( nMsg, wParam, lParam );
-		}
-		else 
-		{
-			return OnWndMsg( nMsg, wParam, lParam );
-		}
+		//if( m_pChildFocusedOn )
+		//{
+		//	return m_pChildFocusedOn->SendUIMessage( nMsg, wParam, lParam );
+		//}
+		//else 
+		//{
+		//	return OnWndMsg( nMsg, wParam, lParam );
+		//}
+		return OnWndMsg( nMsg, wParam, lParam );
 	}
 
 	bool XUI_Wnd::save_file( TiXmlElement* pNode )

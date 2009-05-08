@@ -117,8 +117,8 @@ namespace UILib
 	{
 		// Çå³ý×Ó¿Ø¼þ
 		DestroyAllChild();
-		m_pChildMouseOver	= NULL;
-		m_pChildFocusedOn	= NULL;
+		//m_pChildMouseOver	= NULL;
+		//m_pChildFocusedOn	= NULL;
 
 		TiXmlNode* Attribute = pNode->FirstChild( "Attribute" );
 		if( Attribute == NULL ) return false;
