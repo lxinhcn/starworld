@@ -268,7 +268,7 @@ namespace UILib
 	//sysKeys，各种重要按键的状态，参见MSDN	
 	bool XUI_EditBox::onMouseMove(const x_point& pt, UINT sysKeys)
 	{
-		return false;
+		return XUI_Wnd::onMouseMove( pt, sysKeys );
 	}
 
 	bool XUI_EditBox::onMouseEnter()
@@ -288,12 +288,12 @@ namespace UILib
 	//sysKeys，各种重要按键的状态，参见MSDN
 	bool XUI_EditBox::onButtonDown(int button, const x_point& pt, UINT sysKeys)
 	{
-		return true;
+		return XUI_Wnd::onButtonDown( button, pt, sysKeys );
 	}
 
 	bool XUI_EditBox::onButtonUp(int button, const x_point& pt, UINT sysKeys)
 	{
-		return true;
+		return XUI_Wnd::onButtonUp( button, pt, sysKeys );
 	}
 
 	//键盘

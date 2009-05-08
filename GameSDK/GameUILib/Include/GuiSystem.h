@@ -26,6 +26,9 @@ namespace UILib
 		bool Initialize( HWND hWnd, _lpcstr lpszPath, const XUI_FontAttribute& fontAttr, XUI_IMouse* pCursor );
 		void Unitialize();
 
+		void SetEditMode( bool bMode ){ m_bEditMode = bMode; }
+		bool IsEditMode()const{ return m_bEditMode; }
+
 		// 设置图片路径
 		_lpcstr	GetResourcePath();
 
@@ -57,6 +60,7 @@ namespace UILib
 		xtimer			m_timer;
 		float			m_nowtime;
 		float			m_timer_anchor;
+		bool			m_bEditMode;
 	protected:
 		void SetFocus		( XUI_Wnd* pElement );
 
@@ -85,6 +89,8 @@ namespace UILib
 
 		//渲染
 		void Render();
+		void RenderEditFrame( const x_rect& rc );
+
 		
 		//处理外部消息
 		LRESULT HandleMessage( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );

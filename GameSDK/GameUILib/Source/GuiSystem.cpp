@@ -11,6 +11,7 @@ namespace UILib
 	CGuiSystem::CGuiSystem()
 	: m_pDesktop(NULL)
 	, m_bPointInRoot(false)
+	, m_bEditMode( false )
 	, m_hWnd(NULL)
 	, m_bInitialized( FALSE )
 	, m_nowtime( 0.0f )
@@ -76,12 +77,50 @@ namespace UILib
 			m_pDesktop->Render( m_pDesktop->GetWindowRect() );
 			XUI_SetClipping( 0, 0, m_windowsize.cx, m_windowsize.cy );
 
+			if( m_bEditMode )
+			{
+				XUI_Wnd* pWnd = GetRoot();
+				while( pWnd->m_pChildFocusedOn ) pWnd = pWnd->m_pChildFocusedOn;
+				const x_rect& rc = pWnd->GetWindowRect();
+				RenderEditFrame( rc );
+			}
+
 			XUI_IME::RenderImeWindow();
 			if( m_pCursor->IsMouseOver() )
 			{
 				m_pCursor->RenderMouse();
 			}
 		}
+	}
+
+	void CGuiSystem::RenderEditFrame( const x_rect& rc )
+	{
+		XUI_DrawRect( rc, XUI_ARGB(0xff,0,0,0), XUI_ARGB(0x40,80,80,80) );
+
+		x_rect rch( -2, -2, 2, 2 );
+		rch.OffsetRect( rc.TopLeft() );
+		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+
+		rch.OffsetRect( rc.Width()/2, 0 );
+		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+
+		rch.OffsetRect( rc.Width()/2, 0 );
+		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+
+		rch.OffsetRect( 0, rc.Height()/2 );
+		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+
+		rch.OffsetRect( 0, rc.Height()/2 );
+		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+
+		rch.OffsetRect( -rc.Width()/2, 0 );
+		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+		
+		rch.OffsetRect( -rc.Width()/2, 0 );
+		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+
+		rch.OffsetRect( 0, -rc.Height()/2 );
+		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
 	}
 
 	void CGuiSystem::Update( float fDelta )
@@ -190,10 +229,6 @@ namespace UILib
 			if( onButtonDown( pChild, nButton, ptTemp, sysKeys, result ) )
 				return true;
 		}
-		else if( pElement->IsEnable() )
-		{
-			SetFocus( pElement );
-		}
 		
 		if( pElement->onButtonDown( nButton, pt, sysKeys ) )
 		{
@@ -217,6 +252,11 @@ namespace UILib
 			if ( onButtonUp( pChild, nButton, ptTemp, sysKeys, result ) )
 				return true;
 		}
+		else
+		{
+			SetFocus( pElement );
+		}
+
 		if( pElement->onButtonUp( nButton, pt, sysKeys ) )
 		{
 			*result = pElement->SendUIMessage( UIM_BUTTONUP_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );

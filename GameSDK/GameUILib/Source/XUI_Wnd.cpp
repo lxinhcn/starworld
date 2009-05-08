@@ -21,6 +21,7 @@ namespace UILib
 	, m_bOwnerDraw( false )
 	, m_pFont( NULL )
 	, m_pBackGround( NULL )
+	, m_WindowRect( 0, 0, 100, 100 )
 	{
 		m_bTranslateParent = true;
 		m_fZ=0.1f;
