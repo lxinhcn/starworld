@@ -1,7 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
-//  $Id: callstack.h,v 1.8 2006/11/12 18:09:19 dmouldin Exp $
 //
-//  Visual Leak Detector (Version 1.9d) - CallStack Class Definitions
+//  Visual Leak Detector - CallStack Class Definitions
 //  Copyright (c) 2005-2006 Dan Moulding
 //
 //  This library is free software; you can redistribute it and/or

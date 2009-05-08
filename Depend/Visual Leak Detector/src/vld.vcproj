@@ -39,13 +39,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)Depend\dbghelp\inc&quot;"
+				AdditionalIncludeDirectories="$(SolutionDir)Depend\dbghelp\inc"
 				PreprocessorDefinitions="WIN32, UNICODE, _UNICODE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="4"
-				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -59,7 +58,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				ShowProgress="2"
 				AdditionalLibraryDirectories="$(SolutionDir)Depend\dbghelp\lib\i386"
 				GenerateDebugInformation="true"
 				BaseAddress="0x03200000"
@@ -72,6 +70,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AssemblyIdentity=""
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -91,8 +90,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)Exe\$(ConfigurationName)"
-			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			WholeProgramOptimization="1"
 			>
@@ -121,7 +120,6 @@
 				RuntimeLibrary="2"
 				BufferSecurityCheck="false"
 				FloatingPointModel="2"
-				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -135,21 +133,20 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalLibraryDirectories="$(SolutionDir)Depend\dbghelp\lib\i386"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				OptimizeForWindows98="1"
 				BaseAddress="0x03200000"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(SolutionDir)Lib\$(ConfigurationName)\$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="$(SolutionDir)vld.dll.dependency.manifest"
+				AssemblyIdentity=""
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -181,7 +178,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\dbghelpapi.cpp"
+				RelativePath=".\crtmfcpatch.cpp"
 				>
 			</File>
 			<File
@@ -215,7 +212,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\dbghelpapi.h"
+				RelativePath=".\crtmfcpatch.h"
 				>
 			</File>
 			<File
@@ -224,6 +221,10 @@
 			</File>
 			<File
 				RelativePath=".\ntapi.h"
+				>
+			</File>
+			<File
+				RelativePath=".\resource.h"
 				>
 			</File>
 			<File
@@ -256,6 +257,10 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath=".\vld.rc"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
