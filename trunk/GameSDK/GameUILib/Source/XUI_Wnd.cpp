@@ -566,38 +566,5 @@ namespace UILib
 		{
 			OnMoveWindow( m_WindowRect );
 		}
-		else if( strcmp( "font", name ) == 0 )
-		{
-			if( m_pFont ) 
-				XUI_DestroyFont( m_pFont );
-
-			if( !m_FontAttribute.name.empty() )
-				m_pFont = XUI_CreateFontEx( m_FontAttribute );
-		}
-		//else if( strcmp( "background", name ) == 0 )
-		//{
-		//	if( m_pBackGround )
-		//		XUI_DestroySprite( m_pBackGround );
-
-		//	if( !m_BackgroundAttribute.path.empty() )
-		//		m_pBackGround = XUI_CreateSpriteEx( m_BackgroundAttribute );
-		//}
 	}
-
-	void XUI_Wnd::SetFontAttribute( const XUI_FontAttribute& Font )
-	{ 
-		if( m_FontAttribute == Font ) return;
-		m_FontAttribute = Font;
-		XUI_DestroyFont( m_pFont );
-		m_pFont = XUI_CreateFontEx( m_FontAttribute );
-	}
-
-	void XUI_Wnd::SetBackgroundAttribute( const XUI_SpriteAttribute& Background )
-	{
-		if( m_BackgroundAttribute == Background ) return;
-		m_BackgroundAttribute = Background;
-		XUI_DestroySprite( m_pBackGround );
-		m_pBackGround = XUI_CreateSpriteEx( Background );
-	}
-
 };

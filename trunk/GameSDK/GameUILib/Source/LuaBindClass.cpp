@@ -119,6 +119,7 @@ namespace UILib
 			;
 
 		Class< XUI_IFont, Instance::NoCopy >( "ui::XUI_IFont" )
+			.set( "SetColor", &XUI_IFont::SetColor )
 			;
 
 		Class< CGuiSystem, Instance::NoCopyNoDestroy >( "ui::GuiSystem" )
@@ -138,7 +139,6 @@ namespace UILib
 			.set( "MoveWindow",		&XUI_Wnd::MoveWindow )
 			.set( "OffsetWindow",	&XUI_Wnd::Offset )
 			.set( "SendUIMessage",	reinterpret_cast< ulong ( UILib::XUI_Wnd::* )( uint32, ulong, ulong ) >( &XUI_Wnd::SendUIMessage ) )
-			.set( "GetBackground",	&XUI_Wnd::GetBackground )
 			.set( "members",		&XUI_Wnd::show_members )
 			.set( "save",			&XUI_Wnd::save_file )
 			.set( "load",			&XUI_Wnd::load_file )
@@ -152,10 +152,10 @@ namespace UILib
 			.set( "BringToDown",	&XUI_Wnd::BringToDown )
 			.set( "BringToFront",	&XUI_Wnd::BringToFront )
 			.set( "BringToEnd",		&XUI_Wnd::BringToEnd )
-			.member( "name",		&XUI_Wnd::SetName,					&XUI_Wnd::GetName )
-			.member( "visible",		&XUI_Wnd::ShowWindow,				&XUI_Wnd::IsVisible )
-			.member( "enable",		&XUI_Wnd::EnableWindow,				&XUI_Wnd::IsEnable	)
-			.member( "font",		&XUI_Wnd::SetFontAttribute,			&XUI_Wnd::GetFontAttribute )
+			.member( "name",		&XUI_Wnd::SetName,		&XUI_Wnd::GetName )
+			.member( "visible",		&XUI_Wnd::ShowWindow,	&XUI_Wnd::IsVisible )
+			.member( "enable",		&XUI_Wnd::EnableWindow,	&XUI_Wnd::IsEnable	)
+			.member( "font",		&XUI_Wnd::m_pFont )
 			.member( "transparent",	&XUI_Wnd::m_bTranslateParent )
 			.member( "updatefunc",	&XUI_Wnd::m_strUpdateFunc )
 			.member( "background",	&XUI_Wnd::m_pBackGround )
