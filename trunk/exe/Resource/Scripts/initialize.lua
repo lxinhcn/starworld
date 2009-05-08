@@ -2,8 +2,10 @@ slb.using( slb );
 slb.using( slb.xml );
 slb.print( "@ initialize script system ..." );
 slb.print( "@ script path = "..script );
+
+timercount = 0;
 tfunc = function( _handle, _repeat, _timer )
-	DrawText( string.format( "timer = %d, repeat = %d", _timer, _repeat ), nil, 10, 60 );
+	timercount = timercount + 1;
 	return true;
 end;
 

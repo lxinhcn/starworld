@@ -185,10 +185,11 @@ namespace UILib
 		Class< XUI_EditBox, Instance::NoCopy >( "ui::EditCtrl" )
 			.static_inherits< XUI_Wnd >()
 			.constructor()
-			.member( "text", &XUI_EditBox::SetText, &XUI_EditBox::GetText )
-			.member( "warp", &XUI_EditBox::m_bWarpText )
+			.member( "text",			&XUI_EditBox::SetText, &XUI_EditBox::GetText )
+			.member( "warp",			&XUI_EditBox::m_bWarpText )
 			.member( "bordercolor",		&XUI_EditBox::m_dwBorderColor )
 			.member( "backgroundcolor",	&XUI_EditBox::m_dwBackgroundColor )
+			.member( "singleline",		&XUI_EditBox::m_bSingleLine )
 			;
 
 		try

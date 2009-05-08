@@ -40,6 +40,7 @@ namespace UILib
 			SetParent( NULL );
 			pParent->RemoveChild( this, false );
 		}
+		SAFE_DELETE( m_pBackGround );
 	}
 
 	void XUI_Wnd::Release()

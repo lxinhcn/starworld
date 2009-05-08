@@ -10,6 +10,7 @@ namespace UILib
 
 	XUI_EditBox::XUI_EditBox(void)
 	: UIObjTypeT< XUI_Wnd, TypeEditBox >()
+	, m_bSingleLine( true )
 	, m_bControl( false )
 	, m_bShift( false )
 	, m_CaratPos( 0 )
@@ -125,7 +126,7 @@ namespace UILib
 
 				if( pFont->GetCharacterWidth( c ) + CharPos.x > m_WindowRect.right )
 				{
-					if( l.type == type_n && m_bWarpText )
+					if( l.type == type_n && m_bWarpText && !m_bSingleLine )
 					{
 						// 字符显示超出宽度，则折行显示
 						// 将没有画的作为独立的串添加到下一行
@@ -468,6 +469,8 @@ namespace UILib
 
 	void XUI_EditBox::HandleReturn()
 	{
+		if( m_bSingleLine ) return;
+
 		line& l = m_text[m_nCurLineNumber];
 
 		line ll = l.substr( m_CaratPos, l.size() - m_CaratPos );

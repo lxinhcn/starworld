@@ -115,6 +115,7 @@
 				Optimization="3"
 				FavorSizeOrSpeed="1"
 				EnableFiberSafeOptimizations="true"
+				AdditionalIncludeDirectories="$(SolutionDir)Depend\dbghelp\inc"
 				PreprocessorDefinitions="UNICODE, _UNICODE"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -133,19 +134,20 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalLibraryDirectories="$(SolutionDir)Depend\dbghelp\lib\i386"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				BaseAddress="0x03200000"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
+				ImportLibrary="$(SolutionDir)Lib\$(ConfigurationName)\$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
 			/>
 			<Tool
 				Name="VCManifestTool"
-				AdditionalManifestFiles="$(SolutionDir)vld.dll.dependency.manifest"
 				AssemblyIdentity=""
 			/>
 			<Tool

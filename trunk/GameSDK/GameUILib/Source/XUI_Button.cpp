@@ -28,6 +28,8 @@ namespace UILib
 	void XUI_Button::SetState( ButtonState enState )
 	{
 		m_enState = enState;
+		if( m_pButtonSkin )
+			m_pButtonSkin->SetUV( 0.25f*m_enState, 0.0f, 0.25f*(m_enState+1), 1.0f );
 	}
 
 	void XUI_Button::RenderSelf()
