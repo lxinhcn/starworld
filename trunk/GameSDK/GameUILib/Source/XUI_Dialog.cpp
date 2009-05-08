@@ -7,9 +7,9 @@ namespace UILib
 //////////////////////////////////////////////////////////////////////////
 // Dialog class
 //////////////////////////////////////////////////////////////////////////
-	BEGIN_UIMSG_MAP( CXDialog, XUI_Window )
+	BEGIN_UIMSG_MAP( XUI_Dialog, XUI_Window )
 	END_UIMSG_MAP()
-	CXDialog::CXDialog( _lpctstr lpszTemplate /*= NULL*/ )
+	XUI_Dialog::XUI_Dialog( _lpctstr lpszTemplate /*= NULL*/ )
 	{
 		m_bTranslateParent = false;
 		m_bEnableParent = false;
@@ -19,12 +19,12 @@ namespace UILib
 		//BindProperty( _T("Template"), m_strTemplate );
 	}
 
-	CXDialog::~CXDialog()
+	XUI_Dialog::~XUI_Dialog()
 	{
 		OnDestroy();
 	}
 
-	bool CXDialog::Create( _lpctstr strTemplate, XUI_Window* pParent /* = NULL  */)
+	bool XUI_Dialog::Create( _lpctstr strTemplate, XUI_Window* pParent /* = NULL  */)
 	{
 		m_strTemplate = strTemplate;
 		if( pParent )
@@ -59,7 +59,7 @@ namespace UILib
 		return false;
 	}
 
-	XUI_Wnd* CXDialog::PreModal()
+	XUI_Wnd* XUI_Dialog::PreModal()
 	{
 		XUI_Wnd* pParent = m_pParent;
 		if( pParent == NULL )
@@ -80,7 +80,7 @@ namespace UILib
 		return pParent;
 	}
 
-	UINT CXDialog::DoModal( fnModalMsgProc pfn )
+	UINT XUI_Dialog::DoModal( fnModalMsgProc pfn )
 	{
 		XUI_Wnd* pParent = PreModal();
 		//ASSERT( pParent );
@@ -102,7 +102,7 @@ namespace UILib
 		return m_nResult;
 	}
 
-	void CXDialog::BeginModalLoop( fnModalMsgProc pfn )
+	void XUI_Dialog::BeginModalLoop( fnModalMsgProc pfn )
 	{
 		for(;;)
 		{
@@ -126,30 +126,30 @@ namespace UILib
 		}
 	}
 
-	void CXDialog::PostModal()
+	void XUI_Dialog::PostModal()
 	{
 		GuiSystem::Instance().LeaveModaless();
 	}
 
-	void CXDialog::EndModalLoop()
+	void XUI_Dialog::EndModalLoop()
 	{
 		m_bModal = false;
 	}
 
-	void CXDialog::OnOK()
+	void XUI_Dialog::OnOK()
 	{
 		//UpdateData( TRUE );
 		m_nResult = IDOK;
 		EndModalLoop();
 	}
 
-	void CXDialog::OnCancel()
+	void XUI_Dialog::OnCancel()
 	{
 		m_nResult = IDCANCEL;
 		EndModalLoop();
 	}
 
-	void CXDialog::CenterWindow()
+	void XUI_Dialog::CenterWindow()
 	{
 		if( m_pParent )
 		{
@@ -160,54 +160,44 @@ namespace UILib
 		}
 	}
 
-	void CXDialog::RenderSelf()
+	void XUI_Dialog::RenderSelf()
 	{
 		XUI_Window::RenderSelf();
 	}
 
-	bool CXDialog::onKeyUp(uint32 keycode, UINT sysKeys)
+	bool XUI_Dialog::onKeyUp(uint32 keycode, UINT sysKeys)
 	{
 		// 通过Tab键在控件中切换
 		if( m_bFocused && keycode == VK_TAB )
 		{
-			for( size_t i= 0; i < m_pChildren.size(); ++i )
-			{
-				if( m_pChildFocusedOn == m_pChildren[i] )
-				{
-					m_pChildFocusedOn->SetFocus( false );
-					if( i >= m_pChildren.size() - 1 )
-					{
-						m_pChildFocusedOn = m_pChildren[0];
-					}
-					else
-					{
-						m_pChildFocusedOn = m_pChildren[i+1];
-					}
-					m_pChildFocusedOn->SetFocus( true );
-					break;
-				}
-			}
+			//for( size_t i= 0; i < m_pChildren.size(); ++i )
+			//{
+			//	if( m_pChildFocusedOn == m_pChildren[i] )
+			//	{
+			//		m_pChildFocusedOn->SetFocus( false );
+			//		if( i >= m_pChildren.size() - 1 )
+			//		{
+			//			m_pChildFocusedOn = m_pChildren[0];
+			//		}
+			//		else
+			//		{
+			//			m_pChildFocusedOn = m_pChildren[i+1];
+			//		}
+			//		m_pChildFocusedOn->SetFocus( true );
+			//		break;
+			//	}
+			//}
 		}
 		return true;
 	}
 
-	void CXDialog::SetFocus( XUI_Wnd* pFocus )
+	void XUI_Dialog::SetFocus( UINT nCtrlID )
 	{
-		assert( pFocus );
-		if( !pFocus )	return;
-
-		m_pChildFocusedOn->SetFocus( false );
-		m_pChildFocusedOn = pFocus;
+		XUI_Wnd* pFocus = FindChildByID( nCtrlID );
 		pFocus->SetFocus( true );
 	}
 
-	void CXDialog::SetFocus( UINT nCtrlID )
-	{
-		XUI_Wnd* pFocus = FindChildByID( nCtrlID );
-		SetFocus( pFocus );
-	}
-
-	LRESULT CXDialog::DefMsgProc( UINT nMsg, WPARAM wParam, LPARAM lParam )
+	LRESULT XUI_Dialog::DefMsgProc( UINT nMsg, WPARAM wParam, LPARAM lParam )
 	{
 		return OnWndMsg( nMsg, wParam, lParam );
 	}
