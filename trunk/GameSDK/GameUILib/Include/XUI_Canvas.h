@@ -22,6 +22,16 @@ using namespace XGC;
 #define XUI_SETG(col,g)		(((col) & 0xFFFF00FF) + (DWORD(g)<<8))
 #define XUI_SETB(col,b)		(((col) & 0xFFFFFF00) + DWORD(b))
 
+#define XUI_MOUSE_ARROW		0
+#define XUI_MOUSE_TEXT		1
+#define XUI_MOUSE_MOVE		2
+#define XUI_MOUSE_LEFT45	3
+#define XUI_MOUSE_VER		4
+#define XUI_MOUSE_RIGHT45	5
+#define XUI_MOUSE_HOR		6
+#define XUI_MOUSE_WAIT		7
+#define XUI_MOUSE_WAITING	8
+
 namespace UILib
 {
 	struct XUI_SpriteAttribute
@@ -66,6 +76,7 @@ namespace UILib
 		virtual void	SetMousePos( float x, float y ) = 0;
 		virtual int32	GetMouseWheel() = 0;
 		virtual void	RenderMouse() = 0;
+		virtual void	SetMouse( uint32 id ) = 0;
 		virtual bool	IsPressedLButton()const = 0;
 		virtual bool	IsReleaseLButton()const = 0;
 		virtual bool	IsPressedRButton()const = 0;

@@ -129,7 +129,7 @@ bool CApplication::Initialize()
 		m_hge->System_GetState(HGE_HWND), 
 		"..\\Resource\\ui\\", 
 		XUI_FontAttribute( "ËÎÌו", 18, false, false, false ),
-		new CXMouse( XUI_SpriteAttribute( "cursor.png", 0, 0, 32, 32 ) )
+		new CXMouse( XUI_SpriteAttribute( "cursor.png", 0, 0, 32, 32 ), 1, 1 )
 		);
 	UICommander::Instance().ProcessCommand( _T("load main.xml") );
 

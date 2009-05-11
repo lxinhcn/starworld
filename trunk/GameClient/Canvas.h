@@ -48,12 +48,13 @@ typedef Loki::SingletonHolder< CFontManager, Loki::CreateStatic >	FontManager;
 
 struct CXMouse	:	public XUI_IMouse
 {
-	CXMouse( const XUI_SpriteAttribute& sprite );
+	CXMouse( const XUI_SpriteAttribute& sprite, int count, int frames );
 	virtual ~CXMouse();
 	virtual void	GetMousePos( float *x, float *y );
 	virtual void	SetMousePos( float x, float y );
 	virtual int32	GetMouseWheel();
 	virtual void	RenderMouse();
+	virtual void	SetMouse( uint32 id );
 	virtual bool	IsPressedLButton()const;
 	virtual bool	IsReleaseLButton()const;
 	virtual bool	IsPressedRButton()const;
@@ -62,8 +63,14 @@ struct CXMouse	:	public XUI_IMouse
 	virtual bool	IsReleaseMButton()const;
 	virtual bool	IsMouseOver()const;
 
+	bool OnTimer( unsigned int handle, unsigned short& repeat, unsigned int& timer );
 private:
 	XUI_ISprite*	m_pCursor;
+	int32			m_nCount;
+	int32			m_nFrames;
+	int32			m_nCurIndex;
+	int32			m_nCurFrame;
+	uint32			m_nTimerHandle;
 };
 
 class CClientSprite	:	public UILib::XUI_ISprite

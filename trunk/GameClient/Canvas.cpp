@@ -203,14 +203,25 @@ void CClientFont::Render( float x, float y, _tchar szChar )const
 //////////////////////////////////////////////////////////////////////////
 // 鼠标功能类
 //////////////////////////////////////////////////////////////////////////
-CXMouse::CXMouse( const XUI_SpriteAttribute& sprite )
+CXMouse::CXMouse( const XUI_SpriteAttribute& sprite, int count, int frames )
+: m_nCount( count )
+, m_nFrames( frames )
+, m_nCurFrame( 0 )
+, m_nCurIndex( 0 )
 {
 	m_pCursor = XUI_CreateSprite( sprite.path.c_str(), sprite.x, sprite.y, sprite.w, sprite.h );
+	m_nTimerHandle = GuiSystem::Instance().SetTimer( event_function( this, &CXMouse::OnTimer ), 1, TIMER_SECOND(0.1f) );
 }
 
 CXMouse::~CXMouse()
 {
 	XUI_DestroySprite( m_pCursor );
+}
+
+bool	CXMouse::OnTimer( unsigned int handle, unsigned short& repeat, unsigned int& timer )
+{
+	++m_nCurFrame;
+	m_pCursor->SetUV( m_nCurIndex*1.0f%m_nCount, m_nCurFrame*1.0f%m_nFrames, ( m_nCurIndex + 1 )*1.0f%m_nCount, ( m_nCurFrame + 1 )*1.0f%m_nFrames );
 }
 
 void	CXMouse::GetMousePos( float *x, float *y )
@@ -233,6 +244,12 @@ void	CXMouse::RenderMouse()
 	float x, y;
 	GetMousePos( &x, &y );
 	m_pCursor->Render( x, y );
+}
+
+void	CXMouse::SetMouse( uint32 id )
+{
+	m_nCurIndex = id;
+	m_pCursor->SetUV( m_nCurIndex*1.0f%m_nCount, m_nCurFrame*1.0f%m_nFrames, ( m_nCurIndex + 1 )*1.0f%m_nCount, ( m_nCurFrame + 1 )*1.0f%m_nFrames );
 }
 
 bool	CXMouse::IsPressedLButton()const

@@ -79,7 +79,7 @@ namespace UILib
 			m_pDesktop->Render( m_pDesktop->GetWindowRect() );
 			XUI_SetClipping( 0, 0, m_windowsize.cx, m_windowsize.cy );
 
-			if( m_bEditMode )
+			if( m_bEditMode && m_capture_element )
 			{
 				//XUI_Wnd* pWnd = GetRoot();
 				//while( pWnd->m_pChildFocusedOn ) pWnd = pWnd->m_pChildFocusedOn;
@@ -125,6 +125,37 @@ namespace UILib
 		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
 	}
 
+	uint32 CGuiSystem::DetectHandler( const x_rect &rc, const x_point &pt )
+	{
+		int i = 0;
+		x_rect rch( -2, -2, 2, 2 );
+		rch.OffsetRect( rc.TopLeft() );
+		if( rch.PtInRect( pt ) ) return i++;
+
+		rch.OffsetRect( rc.Width()/2, 0 );
+		if( rch.PtInRect( pt ) ) return i++;
+
+		rch.OffsetRect( rc.Width()/2, 0 );
+		if( rch.PtInRect( pt ) ) return i++;
+
+		rch.OffsetRect( 0, rc.Height()/2 );
+		if( rch.PtInRect( pt ) ) return i++;
+
+		rch.OffsetRect( 0, rc.Height()/2 );
+		if( rch.PtInRect( pt ) ) return i++;
+
+		rch.OffsetRect( -rc.Width()/2, 0 );
+		if( rch.PtInRect( pt ) ) return i++;
+
+		rch.OffsetRect( -rc.Width()/2, 0 );
+		if( rch.PtInRect( pt ) ) return i++;
+
+		rch.OffsetRect( 0, -rc.Height()/2 );
+		if( rch.PtInRect( pt ) ) return i++;
+
+		return -1;
+	}
+
 	void CGuiSystem::Update( float fDelta )
 	{
 		m_nowtime += fDelta;
@@ -147,65 +178,33 @@ namespace UILib
 		if( !pElement->IsEnable() )	return false;
 
 		XUI_Wnd *pEnterElement = pElement->FindChildInPoint(pt);
+
+		if( m_bEditMode )
+		{
+			if( m_capture_element )
+			{
+				int idx = DetectHandler( m_capture_element->GetWindowRect(), pt );
+				if( idx != -1 )
+				{
+
+				}
+				else if( pEnterElement == m_capture_element )
+				{
+					m_pCursor->SetMouse( XUI_MOUSE_MOVE );
+				}
+				else
+				{
+					m_pCursor->SetMouse( XUI_MOUSE_ARROW );
+				}
+			}
+		}
+
 		if( pEnterElement && pEnterElement != m_mouseover_element )
 		{
 			if( m_mouseover_element ) m_mouseover_element->onMouseLeave();
 			pEnterElement->onMouseEnter();
 			m_mouseover_element = pEnterElement;
 		}
-		//if( pEnterElement==pElement->m_pChildMouseOver )
-		//{
-		//	//焦点状态没有发生改变
-		//	if( pEnterElement )
-		//	{
-		//		//在同一个子控件内
-		//		x_point ptTemp(pt);
-		//		ptTemp.x -= pEnterElement->m_WindowRect.left;
-		//		ptTemp.y -= pEnterElement->m_WindowRect.top;
-		//		ptTemp = pEnterElement->AdjustPoint( ptTemp, false );
-		//		if( onMouseMove( pEnterElement, ptTemp, sysKeys, result ) )
-		//		{
-		//			return true;
-		//		}
-		//	}
-		//}
-		//else
-		//{
-		//	//状态发生改变，应该产生一个leave和一个enter事件
-		//	XUI_Wnd* pTemp=pElement->m_pChildMouseOver;
-		//	pElement->m_pChildMouseOver=pEnterElement;
-
-		//	if (pTemp && pTemp->IsEnable() )
-		//	{
-		//		//if (onMouseLeave(pTemp))
-		//		//    return true;
-		//		if( onMouseLeave( pTemp ) )
-		//		{
-		//			*result = pTemp->SendUIMessage( UIM_MOUSELEAVE, MAKELONG(pt.x,pt.y), sysKeys );
-		//		}
-		//	}
-
-		//	if( pEnterElement && pEnterElement->IsEnable() )
-		//	{
-		//		if ( pEnterElement->onMouseEnter() )
-		//		{
-		//			*result = pEnterElement->SendUIMessage( UIM_MOUSEENTER, MAKELONG(pt.x,pt.y), sysKeys );
-		//		}
-
-		//		//继续细分
-		//		x_point ptTemp(pt);
-		//		ptTemp.x -= pEnterElement->m_WindowRect.left;
-		//		ptTemp.y -= pEnterElement->m_WindowRect.top;
-		//		ptTemp = pEnterElement->AdjustPoint( ptTemp, false );
-
-		//		if( onMouseMove( pEnterElement, ptTemp, sysKeys, result ) )
-		//		{
-		//			// 子控件不处理的交由父控件处理
-		//			return true;
-		//		}
-		//	}
-		//}
-
 		if( m_mouseover_element->onMouseMove(pt, sysKeys) )
 		{
 			*result = m_mouseover_element->SendUIMessage( UIM_MOUSEMOVE, MAKELONG(pt.x,pt.y), sysKeys );
