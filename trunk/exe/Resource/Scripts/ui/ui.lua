@@ -5,8 +5,8 @@ function UIUpdateEntry( timer, delta )
 end;
 
 function DesktopUpdate( element, timer, delta )
-	local tx = 2*math.sin(timer/60);
-	local ty = 2*math.cos(timer/60);
+	local tx = timer/-20; --2*math.sin(timer/60);
+	local ty = timer/20; --2*math.cos(timer/60);
 	local p = gui:GetRoot();
 	DrawText( string.format( "desktop tx= %f, ty = %f %s", tx, ty, p.name ), nil, 10, 40 );
 	local pBackground = element.background

@@ -186,7 +186,6 @@ namespace UILib
 				int idx = DetectHandler( m_capture_element->GetWindowRect(), pt );
 				if( idx != -1 )
 				{
-
 				}
 				else if( pEnterElement == m_capture_element )
 				{
