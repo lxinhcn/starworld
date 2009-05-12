@@ -30,11 +30,15 @@ function load( item, name, node )
 		if attrib == nil then 
 			local class = node:Attribute( "class" );
 			--slb.print( string.format( "create class %s", class ) );
-			if class and class == "sprite" then
-				local sprite_attr = ui.XUI_SpriteAttribute("", 0, 0, 0, 0);
+			if class == "sprite" then
+				local sprite_attr = ui.XUI_SpriteAttribute( "", 0, 0, 0, 0 );
 				sprite_attr:load( node );
 				--slb.print( string.format( "create %s, %f, %f", sprite_attr.f, sprite_attr.x, sprite_attr.y ) );
 				item[name] = CreateSpriteEx( sprite_attr );
+			elseif class == "font" then
+				local font_attr = ui.XUI_FontAttribute("", 0, false, false, false );
+				font_attr:load( node );
+				item[name] = CreateFontEx( font_attr );
 			end;
 		elseif type( attrib ) == "userdata" then
 			attrib:load( node );
