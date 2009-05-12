@@ -8,7 +8,6 @@
             <size w="800.000000" h="600.000000" />
         </background>
         <enable value="true" />
-        <font class="font" name="" />
         <id value="10001" />
         <name value="root" />
         <transparent value="true" />
@@ -25,10 +24,10 @@
         <Attribute>
             <backgroundcolor value="807411744" />
             <bordercolor value="-8355712" />
+            <singleline value="true" />
             <text value="" />
             <warp value="true" />
             <enable value="true" />
-            <font class="font" name="" />
             <id value="1000" />
             <name value="" />
             <transparent value="true" />
@@ -39,6 +38,50 @@
                 <left value="100" />
                 <right value="400" />
                 <top value="200" />
+            </window>
+        </Attribute>
+    </CONTROL>
+    <CONTROL Lable="BUTTON">
+        <Attribute>
+            <caption value="" />
+            <skin class="sprite">
+                <path direction="enter.png" />
+                <position x="0.000000" y="0.000000" />
+                <size w="376.000000" h="38.000000" />
+            </skin>
+            <enable value="true" />
+            <id value="-842150451" />
+            <name value="" />
+            <transparent value="true" />
+            <updatefunc value="" />
+            <visible value="true" />
+            <window>
+                <bottom value="438" />
+                <left value="100" />
+                <right value="194" />
+                <top value="400" />
+            </window>
+        </Attribute>
+    </CONTROL>
+    <CONTROL Lable="BUTTON">
+        <Attribute>
+            <caption value="" />
+            <skin class="sprite">
+                <path direction="exit.png" />
+                <position x="0.000000" y="0.000000" />
+                <size w="376.000000" h="38.000000" />
+            </skin>
+            <enable value="true" />
+            <id value="-842150451" />
+            <name value="" />
+            <transparent value="true" />
+            <updatefunc value="" />
+            <visible value="true" />
+            <window>
+                <bottom value="438" />
+                <left value="200" />
+                <right value="294" />
+                <top value="400" />
             </window>
         </Attribute>
     </CONTROL>
