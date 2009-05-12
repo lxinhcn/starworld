@@ -26,28 +26,11 @@ using namespace XGC;
 #define XUI_MOUSE_ARROW				0
 #define XUI_MOUSE_TEXT				1
 #define XUI_MOUSE_MOVE				2
-#define XUI_MOUSE_SIZE_LEFT			3
-#define XUI_MOUSE_SIZE_VERTICAL		4
-#define XUI_MOUSE_SIZE_RIGHT		5
-#define XUI_MOUSE_SIZE_HORIZONTAL	6
+#define XUI_MOUSE_SIZENESW			3
+#define XUI_MOUSE_SIZENS			4
+#define XUI_MOUSE_SIZENWSE			5
+#define XUI_MOUSE_SIZEWE			6
 #define XUI_MOUSE_WAIT				7
-#define XUI_MOUSE_WAITING			8
-
-//IDC_APPSTARTING// Standard arrow and small hourglass. 
-//IDC_ARROW //Standard arrow. 
-//IDC_CROSS //Crosshair. 
-//IDC_HAND //Hand. 
-//IDC_HELP //Arrow and question mark. 
-//IDC_ICON //Obsolete. 
-//IDC_NO //Slashed circle. 
-//IDC_SIZE //Obsolete; use IDC_SIZEALL. 
-//IDC_SIZEALL //Four-pointed arrow pointing north, south, east, and west. 
-//IDC_SIZENESW //Double-pointed arrow pointing northeast and southwest. 
-//IDC_SIZENS //Double-pointed arrow pointing north and south. 
-//IDC_SIZENWSE //Double-pointed arrow pointing northwest and southeast. 
-//IDC_SIZEWE //Double-pointed arrow pointing west and east. 
-//IDC_UPARROW //Vertical arrow. 
-//IDC_WAIT //Hourglass. 
 
 namespace UILib
 {
