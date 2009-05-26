@@ -1,12 +1,11 @@
 #pragma once
-#define LOKI_CLASS_LEVEL_THREADING
 #include <loki/TypeManip.h>
 #include <loki/Function.h>
 #include <loki/Singleton.h>
 #include <loki/TypeTraits.h>
 #include <loki/Threads.h>
 
-typedef Loki::SmallObject< Loki::ClassLevelLockable, 1024, 128 > CPoolAllocator;
+// typedef Loki::SmallObject< Loki::ClassLevelLockable, 1024, 128 > CPoolAllocator;
 class TOOLLIB_API xtimer
 {
 public:

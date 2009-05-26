@@ -239,6 +239,11 @@ namespace UILib
 
 			}
 
+			~call()
+			{
+
+			}
+
 			bool operator()( unsigned int handle, unsigned short& repeat, unsigned int& timer )
 			{
 				try

@@ -215,13 +215,16 @@ CXMouse::CXMouse( const XUI_SpriteAttribute& sprite, int count, int frames )
 
 CXMouse::~CXMouse()
 {
+	GuiSystem::Instance().KillTimer( m_nTimerHandle );
 	XUI_DestroySprite( m_pCursor );
 }
 
 bool	CXMouse::OnTimer( unsigned int handle, unsigned short& repeat, unsigned int& timer )
 {
+	repeat = 1;
 	++m_nCurFrame;
-	m_pCursor->SetUV( m_nCurIndex*1.0f%m_nCount, m_nCurFrame*1.0f%m_nFrames, ( m_nCurIndex + 1 )*1.0f%m_nCount, ( m_nCurFrame + 1 )*1.0f%m_nFrames );
+	m_pCursor->SetUV( m_nCurIndex%m_nCount*1.0f/m_nCount, m_nCurFrame%m_nFrames*1.0f/m_nFrames, ( m_nCurIndex + 1 )%m_nCount*1.0f/m_nCount, ( m_nCurFrame + 1 )%m_nFrames*1.0f/m_nFrames );
+	return true;
 }
 
 void	CXMouse::GetMousePos( float *x, float *y )
@@ -249,7 +252,7 @@ void	CXMouse::RenderMouse()
 void	CXMouse::SetMouse( uint32 id )
 {
 	m_nCurIndex = id;
-	m_pCursor->SetUV( m_nCurIndex*1.0f%m_nCount, m_nCurFrame*1.0f%m_nFrames, ( m_nCurIndex + 1 )*1.0f%m_nCount, ( m_nCurFrame + 1 )*1.0f%m_nFrames );
+	m_pCursor->SetUV( m_nCurIndex%m_nCount*1.0f/m_nCount, m_nCurFrame%m_nFrames*1.0f/m_nFrames, ( m_nCurIndex + 1 )%m_nCount*1.0f/m_nCount, ( m_nCurFrame + 1 )%m_nFrames*1.0f/m_nFrames );
 }
 
 bool	CXMouse::IsPressedLButton()const
