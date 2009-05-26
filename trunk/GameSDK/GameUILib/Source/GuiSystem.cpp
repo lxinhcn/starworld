@@ -23,6 +23,8 @@ namespace UILib
 		m_pDesktop = new XUI_Window();
 		m_pDesktop->SetID( DEFAULT_DESKTOP );
 		m_pDesktop->SetName( _T("root" ) );
+		// 初始化定时器系统
+		m_timer.initialize( 1024, 4096 );
 		RegistDesktop( m_pDesktop );
 	}
 
@@ -41,9 +43,6 @@ namespace UILib
 		m_resource_path	= path;
 		free( (void*)path ); 
 		path = NULL;
-
-		// 初始化定时器系统
-		m_timer.initialize( 1024, 4096 );
 
 		m_pCursor				= pCursor;
 		m_pDefaultFont			= XUI_CreateFont( fontAttr.name.c_str(), fontAttr.size, fontAttr.bold, fontAttr.italic, fontAttr.antialias );	// 设置字体

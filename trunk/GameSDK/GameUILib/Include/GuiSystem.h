@@ -119,7 +119,8 @@ namespace UILib
 	};
 
 	extern bool SetupDebuger();
-	typedef Loki::SingletonHolder< CGuiSystem, Loki::CreateUsingNew, Loki::LongevityLifetime::DieAsSmallObjectChild > GuiSystem;
+	inline unsigned int GetLongevity( CGuiSystem* ){ return 20; }
+	typedef Loki::SingletonHolder< CGuiSystem, Loki::CreateUsingNew, Loki::SingletonWithLongevity > GuiSystem;
 }
 
 #endif

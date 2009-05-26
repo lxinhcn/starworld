@@ -3,6 +3,7 @@
 #define _LUABINDCLASS_H
 #include <loki\Singleton.h>
 #include "SLB\LuaObject.h"
+#include "GuiSystem.h"
 
 #define LUA_CATCH(...)	catch( std::runtime_error& err ){ OutputDebugStringA( err.what() ); __VA_ARGS__; }
 
@@ -26,7 +27,8 @@ namespace UILib
 
 		LuaDebuger	*m_pLuaDebuger; 
 	};
-	typedef Loki::SingletonHolder< LuaBindClass, Loki::CreateStatic >	Lua;
+	inline unsigned int GetLongevity( LuaBindClass* ){ return 21; }
+	typedef Loki::SingletonHolder< LuaBindClass, Loki::CreateStatic, Loki::SingletonWithLongevity >	Lua;
 
 	template< class T >
 	void show_members( const T* item, int indent )
