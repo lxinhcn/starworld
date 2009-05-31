@@ -223,7 +223,7 @@ bool	CXMouse::OnTimer( unsigned int handle, unsigned short& repeat, unsigned int
 {
 	repeat = 1;
 	++m_nCurFrame;
-	m_pCursor->SetUV( m_nCurIndex%m_nCount*1.0f/m_nCount, m_nCurFrame%m_nFrames*1.0f/m_nFrames, ( m_nCurIndex + 1 )%m_nCount*1.0f/m_nCount, ( m_nCurFrame + 1 )%m_nFrames*1.0f/m_nFrames );
+	m_pCursor->SetUV( m_nCurIndex%m_nCount*1.0f/m_nCount, m_nCurFrame%m_nFrames*1.0f/m_nFrames, m_nCurIndex%m_nCount*1.0f/m_nCount + 1, m_nCurFrame%m_nFrames*1.0f/m_nFrames + 1 );
 	return true;
 }
 
@@ -252,7 +252,7 @@ void	CXMouse::RenderMouse()
 void	CXMouse::SetMouse( uint32 id )
 {
 	m_nCurIndex = id;
-	m_pCursor->SetUV( m_nCurIndex%m_nCount*1.0f/m_nCount, m_nCurFrame%m_nFrames*1.0f/m_nFrames, ( m_nCurIndex + 1 )%m_nCount*1.0f/m_nCount, ( m_nCurFrame + 1 )%m_nFrames*1.0f/m_nFrames );
+	m_pCursor->SetUV( m_nCurIndex%m_nCount*1.0f/m_nCount, m_nCurFrame%m_nFrames*1.0f/m_nFrames, m_nCurIndex%m_nCount*1.0f/m_nCount + 1, m_nCurFrame%m_nFrames*1.0f/m_nFrames + 1 );
 }
 
 bool	CXMouse::IsPressedLButton()const
