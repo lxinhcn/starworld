@@ -52,6 +52,8 @@ private:
 	HGE			*m_hge;
 	CClientMap	*m_pMap;
 
+	struct		mouse_cursor;
+	static		mouse_cursor m_cursor_table;
 	CConsole	m_console;
 };
 

@@ -6,6 +6,24 @@
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 600
 
+CXMouse::CursorDefine Cursors[14] = 
+{
+	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
+	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
+	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
+	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
+	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
+	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
+	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
+	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
+	{ 0, 0, 32, 32, 8, 0x01, "cursor.png" },
+	{ 0, 0, 32, 32, 8, 0x01, "cursor.png" },
+	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
+	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
+	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
+	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
+};
+
 CApplication::CApplication(void)
 : m_console( _T("UICommander"), 40, 100 )
 , m_pDefWindowProc( NULL )
@@ -129,7 +147,7 @@ bool CApplication::Initialize()
 		m_hge->System_GetState(HGE_HWND), 
 		"..\\Resource\\ui\\", 
 		XUI_FontAttribute( "ËÎÌו", 18, false, false, false ),
-		new CXMouse( XUI_SpriteAttribute( "cursor.png", 0, 0, 32, 32 ), 1, 1 )
+		new CXMouse( Cursors, 14 )
 		);
 	UICommander::Instance().ProcessCommand( _T("load main.xml") );
 
@@ -152,7 +170,7 @@ void CApplication::UnInitialize()
 	delete GuiSystem::Instance().GetMouseCursor();
 	GuiSystem::Instance().Unitialize();
 	TextureManager::Instance().Clear();
-	m_hge->System_Shutdown();
+	// m_hge->System_Shutdown();
 	m_hge->Release();
 }
 

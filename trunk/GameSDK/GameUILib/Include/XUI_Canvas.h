@@ -25,12 +25,13 @@ using namespace XGC;
 #define XUI_MOUSE_APPSTARTING		0
 #define XUI_MOUSE_ARROW				0
 #define XUI_MOUSE_TEXT				1
-#define XUI_MOUSE_MOVE				2
+#define XUI_MOUSE_CROSS				2
 #define XUI_MOUSE_SIZENESW			3
 #define XUI_MOUSE_SIZENS			4
 #define XUI_MOUSE_SIZENWSE			5
 #define XUI_MOUSE_SIZEWE			6
-#define XUI_MOUSE_WAIT				7
+#define XUI_MOUSE_SIZEALL			7
+#define XUI_MOUSE_WAIT				8
 
 namespace UILib
 {
@@ -67,23 +68,6 @@ namespace UILib
 
 		bool save_file( TiXmlElement* pNode );
 		bool load_file( TiXmlElement* pNode );
-	};
-
-	struct XUI_IMouse
-	{
-		virtual ~XUI_IMouse(){}
-		virtual void	GetMousePos( float *x, float *y ) = 0;
-		virtual void	SetMousePos( float x, float y ) = 0;
-		virtual int32	GetMouseWheel() = 0;
-		virtual void	RenderMouse() = 0;
-		virtual void	SetMouse( uint32 id ) = 0;
-		virtual bool	IsPressedLButton()const = 0;
-		virtual bool	IsReleaseLButton()const = 0;
-		virtual bool	IsPressedRButton()const = 0;
-		virtual bool	IsReleaseRButton()const = 0;
-		virtual bool	IsPressedMButton()const = 0;
-		virtual bool	IsReleaseMButton()const = 0;
-		virtual bool	IsMouseOver()const = 0;
 	};
 
 	struct XUI_ISprite	:	public	XUI_SpriteAttribute
@@ -125,6 +109,35 @@ namespace UILib
 		virtual INT GetCharacterWidth( _tchar szChar ) = 0;
 		virtual INT	GetCharacterHeight() = 0;
 	};
+
+	struct XUI_IMouse
+	{
+		struct CursorDefine
+		{
+			byte			m_hotx;			// 热点X坐标
+			byte			m_hoty;			// 热点Y坐标
+			byte			m_width;		// 鼠标宽度
+			byte			m_height;		// 鼠标高度
+			byte			m_frame_count;	// 帧数
+			byte			m_frame_seq;	// 帧间隔时间 一字节定点数，整数部分为高位，小数部分为低位
+			byte			m_cur_frame;	// 当前帧索引
+			XUI_ISprite*	m_texture;		// 帧指针
+		};
+		virtual ~XUI_IMouse(){}
+		virtual void	GetMousePos( float *x, float *y ) = 0;
+		virtual void	SetMousePos( float x, float y ) = 0;
+		virtual int32	GetMouseWheel() = 0;
+		virtual void	RenderMouse() = 0;
+		virtual void	SetMouse( uint16 id ) = 0;
+		virtual bool	IsPressedLButton()const = 0;
+		virtual bool	IsReleaseLButton()const = 0;
+		virtual bool	IsPressedRButton()const = 0;
+		virtual bool	IsReleaseRButton()const = 0;
+		virtual bool	IsPressedMButton()const = 0;
+		virtual bool	IsReleaseMButton()const = 0;
+		virtual bool	IsMouseOver()const = 0;
+	};
+
 
 	typedef void		(*pfnSetClipping)	( int32 x, int32 y, int32 w, int32 h );
 	typedef void		(*pfnDrawText)		( _lpcwstr lpszText, XUI_IFont* pFont, float x, float y );
