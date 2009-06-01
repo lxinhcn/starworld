@@ -188,7 +188,7 @@ namespace UILib
 				}
 				else if( pEnterElement == m_capture_element )
 				{
-					m_pCursor->SetMouse( XUI_MOUSE_MOVE );
+					m_pCursor->SetMouse( XUI_MOUSE_SIZEALL );
 				}
 				else
 				{

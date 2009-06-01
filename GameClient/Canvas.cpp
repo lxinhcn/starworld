@@ -36,7 +36,7 @@ HTEXTURE CTextureManager::GetTexture( _lpcstr lpszTexpath )
 
 void CTextureManager::Clear()
 {
-	HGE* hge = Application::Instance().getEngine();
+	HGE* hge = hgeCreate( HGE_VERSION );
 	CTextureMap::iterator iter = m_TextureMap.begin();
 	while( iter != m_TextureMap.end() )
 	{
@@ -44,6 +44,7 @@ void CTextureManager::Clear()
 		++iter;
 	}
 	m_TextureMap.clear();
+	hge->Release();
 }
 //////////////////////////////////////////////////////////////////////////
 // CFontManager
@@ -203,27 +204,48 @@ void CClientFont::Render( float x, float y, _tchar szChar )const
 //////////////////////////////////////////////////////////////////////////
 // 鼠标功能类
 //////////////////////////////////////////////////////////////////////////
-CXMouse::CXMouse( const XUI_SpriteAttribute& sprite, int count, int frames )
+CXMouse::CXMouse( CXMouse::CursorDefine* cursor, int count )
 : m_nCount( count )
-, m_nFrames( frames )
-, m_nCurFrame( 0 )
 , m_nCurIndex( 0 )
+, m_pCursorArray( NULL )
 {
-	m_pCursor = XUI_CreateSprite( sprite.path.c_str(), sprite.x, sprite.y, sprite.w, sprite.h );
-	m_nTimerHandle = GuiSystem::Instance().SetTimer( event_function( this, &CXMouse::OnTimer ), 1, TIMER_SECOND(0.1f) );
+	m_pCursorArray = new XUI_IMouse::CursorDefine[count];
+	for( int i = 0; i < count; ++i )
+	{
+		//m_pCursorArray[i].m_hotx = cursor[i].m_hotx;
+		//m_pCursorArray[i].m_hoty = cursor[i].m_hoty;
+		//m_pCursorArray[i].m_width = cursor[i].m_width;
+		//m_pCursorArray[i].m_height= cursor[i].m_height;
+		m_pCursorArray[i].m_frame_count = cursor[i].m_frame_count;
+		m_pCursorArray[i].m_cur_frame = 0;
+		m_pCursorArray[i].m_texture = XUI_CreateSprite( cursor[i].m_filename, i*cursor[i].m_width, 0, cursor[i].m_width, cursor[i].m_height*cursor[i].m_frame_count );
+	}
+	m_nTimerHandle = GuiSystem::Instance().SetTimer( event_function( this, &CXMouse::OnTimer ), 1, TIMER_SECOND(cursor->m_frame_seq) );
 }
 
 CXMouse::~CXMouse()
 {
 	GuiSystem::Instance().KillTimer( m_nTimerHandle );
-	XUI_DestroySprite( m_pCursor );
+	for( size_t i = 0; i < m_nCount; ++i )
+	{
+		XUI_DestroySprite( m_pCursorArray[i].m_texture );
+	}
+	delete[] m_pCursorArray;
 }
 
 bool	CXMouse::OnTimer( unsigned int handle, unsigned short& repeat, unsigned int& timer )
 {
 	repeat = 1;
-	++m_nCurFrame;
-	m_pCursor->SetUV( m_nCurIndex%m_nCount*1.0f/m_nCount, m_nCurFrame%m_nFrames*1.0f/m_nFrames, m_nCurIndex%m_nCount*1.0f/m_nCount + 1, m_nCurFrame%m_nFrames*1.0f/m_nFrames + 1 );
+	XUI_IMouse::CursorDefine* pCursor = m_pCursorArray + m_nCurIndex;
+	if( pCursor )
+	{
+		++pCursor->m_cur_frame;
+		if( pCursor->m_texture )
+			pCursor->m_texture->SetUV( 
+				0.0f, pCursor->m_cur_frame%pCursor->m_frame_count*1.0f/pCursor->m_frame_count,
+				1.0f, pCursor->m_cur_frame%pCursor->m_frame_count*1.0f/pCursor->m_frame_count + 1 );
+
+	}
 	return true;
 }
 
@@ -246,13 +268,19 @@ void	CXMouse::RenderMouse()
 {
 	float x, y;
 	GetMousePos( &x, &y );
-	m_pCursor->Render( x, y );
+	XUI_IMouse::CursorDefine* pCursor = m_pCursorArray + m_nCurIndex;
+	if( pCursor && pCursor->m_texture )
+	{
+		pCursor->m_texture->Render( x, y );
+	}
 }
 
-void	CXMouse::SetMouse( uint32 id )
+void	CXMouse::SetMouse( uint16 id )
 {
-	m_nCurIndex = id;
-	m_pCursor->SetUV( m_nCurIndex%m_nCount*1.0f/m_nCount, m_nCurFrame%m_nFrames*1.0f/m_nFrames, m_nCurIndex%m_nCount*1.0f/m_nCount + 1, m_nCurFrame%m_nFrames*1.0f/m_nFrames + 1 );
+	if( id < m_nCount )
+	{
+		m_nCurIndex = id;
+	}
 }
 
 bool	CXMouse::IsPressedLButton()const
@@ -319,12 +347,14 @@ static void _DrawCharacter( _tchar szChar, UILib::XUI_IFont* pFont, float x, flo
 //没有边框的矩形背景
 static void _DrawRect( const x_rect& rc, uint32 bordercolor, uint32 backgroundcolor/* = -1*/ )
 {
+	HGE* hge = hgeCreate(HGE_VERSION);
+
 	if( GETA(bordercolor) != 0 )
 	{
-		Application::Instance()->Gfx_RenderLine( (float)rc.left, (float)rc.top, (float)rc.right, (float)rc.top, bordercolor );
-		Application::Instance()->Gfx_RenderLine( (float)rc.right, (float)rc.top, (float)rc.right, (float)rc.bottom, bordercolor );
-		Application::Instance()->Gfx_RenderLine( (float)rc.right, (float)rc.bottom, (float)rc.left, (float)rc.bottom, bordercolor );
-		Application::Instance()->Gfx_RenderLine( (float)rc.left, (float)rc.top, (float)rc.left, (float)rc.bottom, bordercolor );
+		hge->Gfx_RenderLine( (float)rc.left, (float)rc.top, (float)rc.right, (float)rc.top, bordercolor );
+		hge->Gfx_RenderLine( (float)rc.right, (float)rc.top, (float)rc.right, (float)rc.bottom, bordercolor );
+		hge->Gfx_RenderLine( (float)rc.right, (float)rc.bottom, (float)rc.left, (float)rc.bottom, bordercolor );
+		hge->Gfx_RenderLine( (float)rc.left, (float)rc.top, (float)rc.left, (float)rc.bottom, bordercolor );
 	}
 
 	if( GETA(backgroundcolor) != 0 )
@@ -333,6 +363,7 @@ static void _DrawRect( const x_rect& rc, uint32 bordercolor, uint32 backgroundco
 		sprite.SetColor( backgroundcolor );
 		sprite.RenderStretch( (float)rc.left, (float)rc.top, (float)rc.right, (float)rc.bottom );
 	}
+	hge->Release();
 }
 
 static void _DrawLine( float x0, float y0, float x1, float y1, uint32 color )
