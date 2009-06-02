@@ -8,20 +8,20 @@
 
 CXMouse::CursorDefine Cursors[14] = 
 {
-	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
-	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
-	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
-	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
-	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
-	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
-	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
-	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
-	{ 0, 0, 32, 32, 8, 0x01, "cursor.png" },
-	{ 0, 0, 32, 32, 8, 0x01, "cursor.png" },
-	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
-	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
-	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
-	{ 0, 0, 32, 32, 1, 0x10, "cursor.png" },
+	{  0,  0, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_ARROW				0
+	{ 16, 16, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_TEXT				1
+	{ 16, 16, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_CROSS				2
+	{ 16, 16, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_SIZENESW			3
+	{ 16, 16, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_SIZENS				4
+	{ 16, 16, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_SIZENWSE			5
+	{ 16, 16, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_SIZEWE				6
+	{ 16, 16, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_SIZEALL				7
+	{ 16, 16, 32, 32, 8, 1, "cursor.png" },// XUI_MOUSE_WAIT				8
+	{  0,  0, 32, 32, 8, 1, "cursor.png" },// XUI_MOUSE_BUSY				9
+	{  0,  0, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_HAND				10
+	{  0, 32, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_HANDWRITE			11
+	{ 16, 16, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_STOP				12
+	{  0,  0, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_HELP				13
 };
 
 CApplication::CApplication(void)

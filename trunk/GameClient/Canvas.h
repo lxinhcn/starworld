@@ -92,6 +92,7 @@ public:
 	virtual float	GetWidth()const;
 	virtual float	GetHeight()const;
 
+	virtual void	SetCenter( float x, float y );
 	virtual void	SetUV(float U0, float V0, float U1, float V1);
 	virtual float	GetU0() const{ return m_u0; }
 	virtual float	GetV0() const{ return m_v0; }
