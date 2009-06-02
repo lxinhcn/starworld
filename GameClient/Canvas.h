@@ -89,8 +89,8 @@ public:
 	~CClientSprite();
 	bool LoadTexture( _lpcstr lpszFileName, float x, float y, float w, float h );
 
-	virtual float	GetWidth()const;
-	virtual float	GetHeight()const;
+	virtual float	GetWidth()const{ return w; }
+	virtual float	GetHeight()const{ return h; }
 
 	virtual void	SetCenter( float x, float y );
 	virtual void	SetUV(float U0, float V0, float U1, float V1);

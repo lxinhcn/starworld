@@ -112,16 +112,6 @@ bool CClientSprite::LoadTexture( _lpcstr lpszFileName, float x, float y, float w
 	return true;
 }
 
-float CClientSprite::GetWidth()const
-{
-	return m_pSprite->GetWidth();
-}
-
-float CClientSprite::GetHeight()const
-{
-	return m_pSprite->GetHeight();
-}
-
 void CClientSprite::SetCenter( float x, float y )
 {
 	m_pSprite->SetHotSpot( x, y );

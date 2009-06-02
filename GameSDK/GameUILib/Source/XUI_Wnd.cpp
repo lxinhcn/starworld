@@ -277,15 +277,18 @@ namespace UILib
 	}
 
 	// 移动对象
-	void XUI_Wnd::MoveWindow(int left, int top, int right, int bottom)
+	void XUI_Wnd::MoveWindow(int left, int top, int right, int bottom, bool notify )
 	{
 		x_rect oldRect = m_WindowRect;
 		m_WindowRect.SetRect( left, top, right, bottom );
 		Validate();
-		SendUIMessage( UIM_MOVE, 0, MAKELONG( left, top ) );
-		SendUIMessage( UIM_SIZE, 0, MAKELONG( m_WindowRect.Width(), m_WindowRect.Height() ) );
-		// 发送位置变更消息
-		OnMoveWindow( m_WindowRect );
+		if( notify )
+		{
+			SendUIMessage( UIM_MOVE, 0, MAKELONG( left, top ) );
+			SendUIMessage( UIM_SIZE, 0, MAKELONG( m_WindowRect.Width(), m_WindowRect.Height() ) );
+			// 发送位置变更消息
+			OnMoveWindow( m_WindowRect );
+		}
 	}
 
 	void XUI_Wnd::Offset(int x, int y)
