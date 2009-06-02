@@ -84,19 +84,29 @@ class iocp_handle
 public:
 	virtual operator HANDLE()const = 0;
 	virtual void close() = 0;
+
+protected:
+	bool closed;
 };
 
 class iocp_file	:	public iocp_handle
 {
 public:
-	iocp_file( HANDLE handle ) : m_handle( handle ){}
-	iocp_file( const iocp_file& handle ) : m_handle( handle.m_handle ){}
+	iocp_file( HANDLE handle ) : m_handle( handle ){ closed = false; }
+	iocp_file( const iocp_file& handle ) : m_handle( handle.m_handle ){ closed = false; }
 
 	virtual operator HANDLE()const { return m_handle; }
 	HANDLE operator=( const HANDLE handle ) { m_handle = handle; return *this; }
 	HANDLE operator=( const iocp_file& handle ) { m_handle = handle.m_handle; return *this; }
 
-	void close(){ if( m_handle != INVALID_HANDLE_VALUE ){ CloseHandle( m_handle ); m_handle = INVALID_HANDLE_VALUE; } }
+	void close()
+	{ 
+		if( !closed )
+		{ 
+			closed = true;
+			CloseHandle( m_handle ); 
+		}
+	}
 
 private:
 	HANDLE m_handle;
@@ -105,8 +115,8 @@ private:
 class iocp_socket	:	public iocp_handle
 {
 public:
-	iocp_socket( SOCKET handle ) : m_handle( handle ){}
-	iocp_socket( const iocp_socket& handle ) : m_handle( handle.m_handle ){}
+	iocp_socket( SOCKET handle ) : m_handle( handle ){ closed = false; }
+	iocp_socket( const iocp_socket& handle ) : m_handle( handle.m_handle ){ closed = false; }
 
 	operator SOCKET()const { return m_handle; }
 	virtual operator HANDLE()const { return (HANDLE)m_handle; }
@@ -115,12 +125,12 @@ public:
 
 	void close()
 	{ 
-		if( m_handle != INVALID_SOCKET )
-		{ 
+		if( !closed )
+		{
+			closed = true;
 			CancelIo( (HANDLE)m_handle );
 			shutdown( m_handle, 0 );
 			closesocket( m_handle );
-			m_handle = INVALID_SOCKET;
 		} 
 	}
 

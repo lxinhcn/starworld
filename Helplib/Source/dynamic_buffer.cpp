@@ -46,7 +46,7 @@ VOID CDynamicBuffer::SetChunkSize( DWORD dwSize )
 //--------------------------------------------------------------------------------------------------------//
 LPBYTE CDynamicBuffer::Get()
 {
-	CleanUp();
+	CleanUp( TRUE );
 	return m_head;
 }
 
