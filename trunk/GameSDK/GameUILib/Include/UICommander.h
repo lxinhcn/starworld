@@ -59,5 +59,6 @@ namespace UILib
 		XUI_Wnd*		m_pCurElement;
 	};
 
-	typedef Loki::SingletonHolder< CUICommander, Loki::CreateStatic >	UICommander;
+	inline unsigned int GetLongevity( CUICommander* ){ return 22; }
+	typedef Loki::SingletonHolder< CUICommander, Loki::CreateStatic, Loki::SingletonWithLongevity >	UICommander;
 }
