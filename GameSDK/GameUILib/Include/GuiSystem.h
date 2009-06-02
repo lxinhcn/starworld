@@ -26,7 +26,7 @@ namespace UILib
 		bool Initialize( HWND hWnd, _lpcstr lpszPath, const XUI_FontAttribute& fontAttr, XUI_IMouse* pCursor );
 		void Unitialize();
 
-		void SetEditMode( bool bMode ){ m_bEditMode = bMode; }
+		void SetEditMode( bool bMode );
 		bool IsEditMode()const{ return m_bEditMode; }
 
 		// …Ë÷√Õº∆¨¬∑æ∂

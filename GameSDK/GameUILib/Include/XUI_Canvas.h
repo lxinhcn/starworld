@@ -32,7 +32,11 @@ using namespace XGC;
 #define XUI_MOUSE_SIZEWE			6
 #define XUI_MOUSE_SIZEALL			7
 #define XUI_MOUSE_WAIT				8
-
+#define XUI_MOUSE_BUSY				9
+#define XUI_MOUSE_HAND				10
+#define XUI_MOUSE_HANDWRITE			11
+#define XUI_MOUSE_STOP				12
+#define XUI_MOUSE_HELP				13
 namespace UILib
 {
 	struct XUI_SpriteAttribute
@@ -76,6 +80,7 @@ namespace UILib
 		virtual float	GetWidth()const		= 0;
 		virtual float	GetHeight()const	= 0;
 
+		virtual void	SetCenter( float x, float y ) = 0;
 		virtual void	SetUV(float U0, float V0, float U1, float V1) = 0;
 		virtual float	GetU0() const = 0;
 		virtual float	GetV0() const = 0;
@@ -114,10 +119,6 @@ namespace UILib
 	{
 		struct CursorDefine
 		{
-			byte			m_hotx;			// 热点X坐标
-			byte			m_hoty;			// 热点Y坐标
-			byte			m_width;		// 鼠标宽度
-			byte			m_height;		// 鼠标高度
 			byte			m_frame_count;	// 帧数
 			byte			m_frame_seq;	// 帧间隔时间 一字节定点数，整数部分为高位，小数部分为低位
 			byte			m_cur_frame;	// 当前帧索引
@@ -143,7 +144,7 @@ namespace UILib
 	typedef void		(*pfnDrawText)		( _lpcwstr lpszText, XUI_IFont* pFont, float x, float y );
 	typedef void		(*pfnDrawCharacter)	( _wchar lpszText, XUI_IFont* pFont, float x, float y );
 	typedef void		(*pfnDrawRect)		( const x_rect& rc, uint32 bordercolor, uint32 backgroundcolor );	//没有边框的矩形背景
-	typedef void		(*pfnDrawLine)		( float x0, float y0, float x1, float y1 );
+	typedef void		(*pfnDrawLine)		( float x0, float y0, float x1, float y1, uint32 color );
 	typedef void		(*pfnDrawPolygon)	( const x_point* ptArray, uint32* dwColorArray, uint32 nCount, uint16* pTriListArray, int32 nTriCount );
 	typedef void		(*pfnDrawSprite)	( const XUI_ISprite* Tex,int nX, int nY, int nWidth, int nHeight );
 	typedef XUI_ISprite*(*pfnCreateSprite)	( _lpcstr filename, float x, float y, float w, float h );

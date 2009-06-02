@@ -122,18 +122,25 @@ float CClientSprite::GetHeight()const
 	return m_pSprite->GetHeight();
 }
 
+void CClientSprite::SetCenter( float x, float y )
+{
+	m_pSprite->SetHotSpot( x, y );
+}
+
 void CClientSprite::SetUV(float U0, float V0, float U1, float V1)
 {
 	m_u0 = U0, m_u1 = U1, m_v0 = V0, m_v1 = V1;
 
-	float x = U0 * GetWidth();
-	float y = V0 * GetHeight();
-	float w	= (U1 - U0) * GetWidth();
-	float h = (V1 - V0) * GetHeight();
+	float tx, ty, tw, th;
+	m_pSprite->GetTextureRect( &tx, &ty, &tw, &th );
+	float _x = x + U0 * tw;
+	float _y = y + V0 * th;
+	float _w = (U1 - U0) * tw;
+	float _h = (V1 - V0) * th;
 	//char szLog[1024];
 	//_snprintf( szLog, sizeof(szLog), "x = %f, y = %f, w = %f, h = %f", x, y, w, h );
 	//XUI_DrawTextA( szLog, NULL, 10, 60 );
-	m_pSprite->SetTextureRect( x, y, w, h, false );
+	m_pSprite->SetTextureRect( _x, _y, _w, _h, false );
 }
 
 void CClientSprite::Render( float x, float y, float w, float h )
@@ -208,25 +215,24 @@ CXMouse::CXMouse( CXMouse::CursorDefine* cursor, int count )
 : m_nCount( count )
 , m_nCurIndex( 0 )
 , m_pCursorArray( NULL )
+, m_nTimerHandle( -1 )
 {
 	m_pCursorArray = new XUI_IMouse::CursorDefine[count];
 	for( int i = 0; i < count; ++i )
 	{
-		//m_pCursorArray[i].m_hotx = cursor[i].m_hotx;
-		//m_pCursorArray[i].m_hoty = cursor[i].m_hoty;
-		//m_pCursorArray[i].m_width = cursor[i].m_width;
-		//m_pCursorArray[i].m_height= cursor[i].m_height;
 		m_pCursorArray[i].m_frame_count = cursor[i].m_frame_count;
+		m_pCursorArray[i].m_frame_seq = cursor[i].m_frame_seq;
 		m_pCursorArray[i].m_cur_frame = 0;
-		m_pCursorArray[i].m_texture = XUI_CreateSprite( cursor[i].m_filename, i*cursor[i].m_width, 0, cursor[i].m_width, cursor[i].m_height*cursor[i].m_frame_count );
+		m_pCursorArray[i].m_texture = XUI_CreateSprite( cursor[i].m_filename, 1.0f*i*cursor[i].m_width, 0.0f, 1.0f*cursor[i].m_width, 1.0f*cursor[i].m_height*cursor[i].m_frame_count );
+		m_pCursorArray[i].m_texture->SetCenter( cursor[i].m_hotx, cursor[i].m_hoty );
 	}
-	m_nTimerHandle = GuiSystem::Instance().SetTimer( event_function( this, &CXMouse::OnTimer ), 1, TIMER_SECOND(cursor->m_frame_seq) );
+	SetMouse( XUI_MOUSE_ARROW );
 }
 
 CXMouse::~CXMouse()
 {
 	GuiSystem::Instance().KillTimer( m_nTimerHandle );
-	for( size_t i = 0; i < m_nCount; ++i )
+	for( int i = 0; i < m_nCount; ++i )
 	{
 		XUI_DestroySprite( m_pCursorArray[i].m_texture );
 	}
@@ -242,9 +248,8 @@ bool	CXMouse::OnTimer( unsigned int handle, unsigned short& repeat, unsigned int
 		++pCursor->m_cur_frame;
 		if( pCursor->m_texture )
 			pCursor->m_texture->SetUV( 
-				0.0f, pCursor->m_cur_frame%pCursor->m_frame_count*1.0f/pCursor->m_frame_count,
-				1.0f, pCursor->m_cur_frame%pCursor->m_frame_count*1.0f/pCursor->m_frame_count + 1 );
-
+				pCursor->m_texture->GetU0(), pCursor->m_cur_frame%pCursor->m_frame_count*1.0f/pCursor->m_frame_count,
+				pCursor->m_texture->GetU1(), pCursor->m_cur_frame%pCursor->m_frame_count*1.0f/pCursor->m_frame_count + 1 );
 	}
 	return true;
 }
@@ -279,6 +284,12 @@ void	CXMouse::SetMouse( uint16 id )
 {
 	if( id < m_nCount )
 	{
+		XUI_IMouse::CursorDefine* pCursor = m_pCursorArray + m_nCurIndex;
+		GuiSystem::Instance().KillTimer( m_nTimerHandle );
+		if( pCursor && pCursor->m_frame_seq )
+			m_nTimerHandle = GuiSystem::Instance().SetTimer( event_function( this, &CXMouse::OnTimer ), 1, TIMER_SECOND(pCursor->m_frame_seq/16) );
+		else
+			m_nTimerHandle = -1;
 		m_nCurIndex = id;
 	}
 }
@@ -434,6 +445,7 @@ void init_canvas()
 	UILib::XUI_DrawText			= _DrawText;
 	UILib::XUI_DrawCharacter	= _DrawCharacter;
 	UILib::XUI_DrawRect			= _DrawRect;
+	UILib::XUI_DrawLine			= _DrawLine;
 	UILib::XUI_DrawPolygon		= _DrawPolygon;
 	UILib::XUI_DrawSprite		= _DrawSprite;
 	UILib::XUI_CreateSprite		= _CreateSprite;
