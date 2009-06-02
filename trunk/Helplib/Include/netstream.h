@@ -133,40 +133,6 @@ public:
 		return *this;
 	}
 
-	//template< typename T >
-	//CNetInStream& operator << ( T& val )
-	//{
-	//	write( val );
-	//	return *this;
-	//}
-
-
-	//template< >
-	//	CNetInStream& operator << ( char* val )
-	//{
-	//	char* pbuf = m_pbuf + m_nNowSite;
-	//	size_t nLen = strlen( val ) + 1;
-	//	if( m_nNowSite + nLen < m_nBufSize )
-	//	{
-	//		memcpy( pbuf, val, nLen );
-	//		m_nNowSite += nLen;
-	//	}
-	//	return *this;
-	//}
-
-	//template< >
-	//	CNetInStream& operator << ( wchar_t* val )
-	//{
-	//	char* pbuf = m_pbuf + m_nNowSite;
-	//	size_t nLen = (wcslen( val ) + 1)*sizeof(wchar_t);
-	//	if( m_nNowSite + nLen < m_nBufSize )
-	//	{
-	//		memcpy( pbuf, val, nLen );
-	//		m_nNowSite += nLen;
-	//	}
-	//	return *this;
-	//}
-
 	typedef void ( *pfnControl )( CNetInStream& netstream );
 	template< >
 		CNetInStream& operator << ( pfnControl pfn )
