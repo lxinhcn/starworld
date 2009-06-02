@@ -210,6 +210,7 @@ namespace UILib
 			//////////////////////////////////////////////////////////////////////////
 			// lua相关函数
 			Manager::getInstance().set( "SetTimer",			FuncCall::create( LuaSetTimer ) );
+			Manager::getInstance().set( "KillTimer",		FuncCall::create( LuaKillTimer ) );
 			Manager::getInstance().set( "CreateUI",			FuncCall::create( CreateUI ) );
 
 			_tchar path[_MAX_PATH+_MAX_FNAME];
@@ -262,6 +263,14 @@ namespace UILib
 		};
 
 		return GuiSystem::Instance().SetTimer( event_function( call( function ) ), repeat, timer );
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// 删除定时器
+	//////////////////////////////////////////////////////////////////////////
+	void LuaKillTimer( unsigned int handle )
+	{
+		GuiSystem::Instance().KillTimer( handle );
 	}
 
 	XUI_Wnd*	CreateUI( _lpcstr lpszLable )

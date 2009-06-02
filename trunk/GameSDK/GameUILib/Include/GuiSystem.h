@@ -41,8 +41,9 @@ namespace UILib
 		bool m_bPointInRoot;
 
 		//对应的窗口
-		HWND m_hWnd;
-		x_size m_windowsize;
+		HWND	m_hWnd;
+		x_size	m_windowsize;
+		x_point	m_mouse_old;
 
 	private:
 		//根

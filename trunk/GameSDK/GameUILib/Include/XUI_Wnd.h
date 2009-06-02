@@ -118,7 +118,7 @@ namespace UILib
 		//--------------------------------------------------------------------------
 		
 		// 重新设置空间的显示区域
-		void MoveWindow(int left, int top, int right, int bottom);
+		void MoveWindow(int left, int top, int right, int bottom, bool notify = true );
 		//平移
 		void Offset(int x, int y);
 

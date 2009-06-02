@@ -197,6 +197,8 @@ namespace UILib
 
 	bool CGuiSystem::onMouseMove(XUI_Wnd* pElement, const x_point& pt, UINT sysKeys, long_ptr *result )
 	{
+		x_point pt_old = m_mouse_old;
+		m_mouse_old = pt;
 		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
 
@@ -207,7 +209,46 @@ namespace UILib
 			if( m_capture_element )
 			{
 				int idx = DetectHandler( m_capture_element->GetWindowRect(), pt );
-				if( idx != -1 )
+				printf( "idx = %d\n", idx );
+				if( sysKeys & MK_LBUTTON )
+				{
+					const x_rect& r = m_capture_element->GetWindowRect();
+					long dx = pt.x - pt_old.x;
+					long dy = pt.y - pt_old.y;
+					printf( "x=%d, y=%d, w=%d, h=%d, px=%d, py=%d dx=%d, df=%d\n", r.left, r.top, r.right, r.bottom, pt.x, pt.y, dx, dy );
+					switch( idx )
+					{
+					case -1:
+						m_capture_element->Offset( dx, dy );
+						break;
+					case 0:
+						m_capture_element->MoveWindow( r.left+dx, r.top+dy, r.right, r.bottom );
+						break;
+					case 1:
+						m_capture_element->MoveWindow( r.left, r.top+dy, r.right, r.bottom );
+						break;
+					case 2:
+						m_capture_element->MoveWindow( r.left, r.top+dy, r.right+dx, r.bottom );
+						break;
+					case 3:
+						m_capture_element->MoveWindow( r.left, r.top, r.right+dx, r.bottom );
+						break;
+					case 4:
+						m_capture_element->MoveWindow( r.left, r.top, r.right+dx, r.bottom+dy );
+						break;
+					case 5:
+						m_capture_element->MoveWindow( r.left, r.top, r.right, r.bottom+dy );
+						break;
+					case 6:
+						m_capture_element->MoveWindow( r.left+dx, r.top, r.right, r.bottom+dy );
+						break;
+					case 7:
+						m_capture_element->MoveWindow( r.left+dx, r.top, r.right, r.bottom );
+						break;
+					}
+					printf( "x=%d, y=%d, w=%d, h=%d, px=%d, py=%d dx=%d, dy=%d\n", r.left, r.top, r.right, r.bottom, pt.x, pt.y, dx, dy );
+				}
+				else if( idx != -1 )
 				{
 					switch( idx )
 					{
@@ -237,6 +278,7 @@ namespace UILib
 				{
 					m_pCursor->SetMouse( XUI_MOUSE_ARROW );
 				}
+				if( idx != -1 ) pEnterElement = m_mouseover_element;
 			}
 		}
 
@@ -246,6 +288,7 @@ namespace UILib
 			pEnterElement->onMouseEnter();
 			m_mouseover_element = pEnterElement;
 		}
+
 		if( m_mouseover_element->onMouseMove(pt, sysKeys) )
 		{
 			*result = m_mouseover_element->SendUIMessage( UIM_MOUSEMOVE, MAKELONG(pt.x,pt.y), sysKeys );
@@ -269,14 +312,15 @@ namespace UILib
 		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
 
-		XUI_Wnd* pChild = pElement->FindChildInPoint(pt);
+		// XUI_Wnd* pChild = pElement->FindChildInPoint(pt);
+
 		if( m_bEditMode )
 		{
 			return true;
 		}
-		else if( pChild->onButtonDown( nButton, pt, sysKeys ) )
+		else if( m_capture_element && m_capture_element->onButtonDown( nButton, pt, sysKeys ) )
 		{
-			*result = pChild->SendUIMessage( UIM_BUTTONDOWN_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );
+			*result = m_capture_element->SendUIMessage( UIM_BUTTONDOWN_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );
 			return true;
 		}
 		return false;
@@ -286,22 +330,21 @@ namespace UILib
 	{
 		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
-		XUI_Wnd* pChild = pElement->FindChildInPoint(pt);
 
-		if( pChild != m_capture_element )
+		if( m_mouseover_element != m_capture_element )
 		{
-			if( m_capture_element ) m_capture_element->SetFocus( false );
-			pChild->SetFocus( true );
-			m_capture_element = pChild;
+			if( m_capture_element ) m_capture_element->SetFocus(false);
+			m_capture_element = m_mouseover_element;
+			if( m_capture_element ) m_capture_element->SetFocus(true);
 		}
 
 		if( m_bEditMode )
 		{
 			return true;
 		}
-		else if( pChild->onButtonUp( nButton, pt, sysKeys ) )
+		else if( m_capture_element && m_capture_element->onButtonUp( nButton, pt, sysKeys ) )
 		{
-			*result = pChild->SendUIMessage( UIM_BUTTONUP_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );
+			*result = m_capture_element->SendUIMessage( UIM_BUTTONUP_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );
 			return true;
 		}
 		return false;
