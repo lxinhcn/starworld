@@ -83,7 +83,7 @@ namespace UILib
 	{
 		if ( m_pDesktop )
 		{
-			m_pDesktop->Render( m_pDesktop->GetWindowRect() );
+			m_pDesktop->Render( x_rect( 0, 0, m_windowsize.cx, m_windowsize.cy ) );
 			XUI_SetClipping( 0, 0, m_windowsize.cx, m_windowsize.cy );
 
 			if( m_bEditMode && m_capture_element )
@@ -91,7 +91,8 @@ namespace UILib
 				//XUI_Wnd* pWnd = GetRoot();
 				//while( pWnd->m_pChildFocusedOn ) pWnd = pWnd->m_pChildFocusedOn;
 				x_rect rc = m_capture_element->GetWindowRect();
-				m_capture_element->AdjustWindow( rc, true );
+				if( m_capture_element->GetParent() )
+					m_capture_element->GetParent()->ClientToScreen( rc );
 				RenderEditFrame( rc );
 			}
 
@@ -210,8 +211,6 @@ namespace UILib
 		{
 			if( m_capture_element )
 			{
-				int idx = DetectHandler( m_capture_element->GetWindowRect(), pt );
-				printf( "idx = %d\n", idx );
 				if( sysKeys & MK_LBUTTON )
 				{
 					const x_rect& r = m_capture_element->GetWindowRect();
@@ -220,7 +219,8 @@ namespace UILib
 					switch( m_nCurHandle )
 					{
 					case -1:
-						m_capture_element->Offset( dx, dy );
+						m_capture_element->MoveWindow( r.left+dx, r.top+dy, r.right+dx, r.bottom+dy );
+						printf( "dx = %d, dy = %d\n", dx, dy );
 						break;
 					case 0:
 						m_capture_element->MoveWindow( r.left+dx, r.top+dy, r.right, r.bottom );
@@ -248,9 +248,9 @@ namespace UILib
 						break;
 					}
 				}
-				else if( idx != -1 )
+				else if( m_nCurHandle = DetectHandler( m_capture_element->GetWindowRect(), pt ) )
 				{
-					switch( idx )
+					switch( m_nCurHandle )
 					{
 					case 0:
 					case 4:
@@ -278,7 +278,6 @@ namespace UILib
 				{
 					m_pCursor->SetMouse( XUI_MOUSE_ARROW );
 				}
-				if( idx != -1 ) pEnterElement = m_mouseover_element;
 			}
 		}
 

@@ -100,8 +100,8 @@ namespace UILib
 	void XUI_EditBox::RenderSelf( const x_point& adjust )
 	{
 		__super::RenderSelf( adjust );
-		x_point pt = m_WindowRect.TopLeft() - adjust;
-		XUI_DrawRect( m_WindowRect - adjust, m_dwBorderColor, m_dwBackgroundColor );
+		x_point pt = m_WindowRect.TopLeft() + adjust;
+		XUI_DrawRect( m_WindowRect + adjust, m_dwBorderColor, m_dwBackgroundColor );
 
 		x_point CharPos = pt;
 		x_point CaratPos;
