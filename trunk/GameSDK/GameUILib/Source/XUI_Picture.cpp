@@ -10,9 +10,4 @@ namespace UILib
 	XUI_Picture::~XUI_Picture(void)
 	{
 	}
-
-	void XUI_Picture::RenderSelf()
-	{
-		__super::RenderSelf();
-	}
 }

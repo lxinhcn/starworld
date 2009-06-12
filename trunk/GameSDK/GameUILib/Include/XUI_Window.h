@@ -20,7 +20,8 @@ namespace UILib
 		~XUI_Window(void);
 
 	public:
-		virtual x_point AdjustPoint(const x_point& pt, bool bClientToScreen) const;
+		virtual void AdjustPoint( x_point& pt, bool bClientToScreen )const;
+		virtual void AdjustPoint( x_rect& pt, bool bClientToScreen )const;
 
 		// Panel¥Û–°
 		int		GetWidth()const		{ return m_nPanelWidth; }

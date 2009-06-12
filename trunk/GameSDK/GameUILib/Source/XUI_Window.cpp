@@ -23,13 +23,22 @@ namespace UILib
 	{
 	}
 
-	x_point XUI_Window::AdjustPoint(const x_point& pt, bool bClientToScreen) const
+	void XUI_Window::AdjustPoint( x_point& pt, bool bClientToScreen )const
 	{
 		x_point ptAdjust( m_nOffsetX, m_nOffsetY );
-		if (bClientToScreen)
-			return pt-ptAdjust;
+		if( bClientToScreen )
+			pt -= ptAdjust;
 		else
-			return pt+ptAdjust;
+			pt += ptAdjust;
+	}
+
+	void XUI_Window::AdjustPoint( x_rect& rc, bool bClientToScreen )const
+	{
+		x_point ptAdjust( m_nOffsetX, m_nOffsetY );
+		if( bClientToScreen )
+			rc -= ptAdjust;
+		else
+			rc += ptAdjust;
 	}
 
 	int XUI_Window::ScrollHorizontal(int nOffset)

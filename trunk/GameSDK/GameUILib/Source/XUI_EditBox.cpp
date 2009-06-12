@@ -97,13 +97,11 @@ namespace UILib
 	}
 
 	//重绘，通过实现这个方法来表现空间的外观
-	void XUI_EditBox::RenderSelf()
+	void XUI_EditBox::RenderSelf( const x_point& adjust )
 	{
-		__super::RenderSelf();
-		x_point pt = m_WindowRect.TopLeft();
-		AdjustPoint( pt, true );
-
-		XUI_DrawRect( m_WindowRect, m_dwBorderColor, m_dwBackgroundColor );
+		__super::RenderSelf( adjust );
+		x_point pt = m_WindowRect.TopLeft() - adjust;
+		XUI_DrawRect( m_WindowRect - adjust, m_dwBorderColor, m_dwBackgroundColor );
 
 		x_point CharPos = pt;
 		x_point CaratPos;
@@ -253,7 +251,7 @@ namespace UILib
 				while( citer != XUI_IME::m_CandList.l.end() )
 				{
 					_snwprintf( show, _countof(show), _T("%02d %s"), ++idx, citer->c_str() );
-					XUI_DrawText( show, pFont, CaratPos.x, CaratPos.y );
+					XUI_DrawText( show, pFont, (float)CaratPos.x, (float)CaratPos.y );
 					CaratPos.y += pFont->GetCharacterHeight();
 					++citer;
 				}

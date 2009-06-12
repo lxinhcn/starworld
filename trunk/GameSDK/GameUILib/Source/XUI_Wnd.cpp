@@ -145,26 +145,35 @@ namespace UILib
 	//end of 事件处理
 
 	//将一个坐标从控件坐标转换成屏幕坐标
-	x_point XUI_Wnd::ClientToScreen(const x_point& pt) const
+	void XUI_Wnd::ClientToScreen( x_point& pt )const
 	{
-		x_point rstPt= AdjustPoint(pt, true);
-		x_point ptSelf( m_WindowRect.TopLeft() );
-		rstPt+=ptSelf;
-		if (m_pParent)
-			return m_pParent->ClientToScreen(rstPt);
-		else
-			return rstPt;
+		AdjustPoint(pt, true);
+		pt += m_WindowRect.TopLeft();
+		if (m_pParent) return m_pParent->ClientToScreen( pt );
+	}
+
+	void XUI_Wnd::ClientToScreen( x_rect& rc )const
+	{
+		AdjustWindow( rc, true);
+		rc += m_WindowRect.TopLeft();
+		if (m_pParent) return m_pParent->ClientToScreen( rc );
 	}
 
 	//将一个坐标从屏幕坐标转换成控件坐标
-	x_point XUI_Wnd::ScreenToClient(const x_point& pt) const
+	void XUI_Wnd::ScreenToClient( x_point& pt )const
 	{
-		x_point rstPt=AdjustPoint(pt, false);
-		if (m_pParent)
-			rstPt=m_pParent->ScreenToClient(rstPt);
-		x_point ptSelf( m_WindowRect.TopLeft() );
-		rstPt-=ptSelf;
-		return rstPt;
+		AdjustPoint( pt, false );
+		if( m_pParent )
+			m_pParent->ScreenToClient( pt );
+		pt -= m_WindowRect.TopLeft();
+	}
+
+	void XUI_Wnd::ScreenToClient( x_rect& rc )const
+	{
+		AdjustWindow( rc, false );
+		if( m_pParent )
+			m_pParent->ScreenToClient( rc );
+		rc -= m_WindowRect.TopLeft();
 	}
 
 	int XUI_Wnd::FindChild(XUI_Wnd* pElement) const
@@ -233,12 +242,13 @@ namespace UILib
 	//寻找在某个坐标上的控件
 	XUI_Wnd* XUI_Wnd::FindChildInPoint(const x_point &pt, uint32 *deep )
 	{
-		AdjustPoint(pt, true);
+		x_point adjust( pt );
+		AdjustPoint( adjust, true);
 		for (int i=(int)m_pChildren.size()-1; i>=0; i--)
 		{
 			XUI_Wnd* pElement=m_pChildren[i];
-			if( pElement->m_bVisible && pElement->IsPointIn(pt) )
-				return ((deep&&*deep--)||!deep)?pElement->FindChildInPoint( pt - m_WindowRect.TopLeft(), deep ):pElement;
+			if( pElement->m_bVisible && pElement->IsPointIn(adjust) )
+				return ((deep&&*deep--)||!deep)?pElement->FindChildInPoint( adjust - m_WindowRect.TopLeft(), deep ):pElement;
 		}
 		return this;
 	}
@@ -391,10 +401,7 @@ namespace UILib
 		if (!m_bVisible)		return;
 
 		//计算可见区域
-		x_rect clpSelf( m_WindowRect );
-		x_point pt( 0, 0 );
-		if( m_pParent )		pt = m_pParent->ClientToScreen( pt );
-		clpSelf += pt;
+		x_rect clpSelf( m_WindowRect - clipper.TopLeft() );
 
 		if( clpSelf.IntersectRect( clpSelf, clipper ) )
 		{
@@ -411,8 +418,8 @@ namespace UILib
 				}
 				else
 				{
-					XUI_SetClipping( m_WindowRect.left, m_WindowRect.top, m_WindowRect.Width(), m_WindowRect.Height() );
-					RenderSelf();
+					XUI_SetClipping( clpSelf.left, clpSelf.top, clpSelf.Width(), clpSelf.Height() );
+					RenderSelf( clipper.TopLeft() );
 				}
 			}
 
@@ -446,11 +453,11 @@ namespace UILib
 		}
 	}
 
-	void XUI_Wnd::RenderSelf()
+	void XUI_Wnd::RenderSelf( const x_point& adjust )
 	{
 		if( m_pBackGround )
 		{
-			XUI_DrawSprite( m_pBackGround, m_WindowRect.left, m_WindowRect.top, m_WindowRect.Width(), m_WindowRect.Height() );
+			XUI_DrawSprite( m_pBackGround, m_WindowRect.left - adjust.x, m_WindowRect.top - adjust.y, m_WindowRect.Width(), m_WindowRect.Height() );
 		}
 	}
 
