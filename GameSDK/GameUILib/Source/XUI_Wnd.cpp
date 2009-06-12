@@ -401,7 +401,7 @@ namespace UILib
 		if (!m_bVisible)		return;
 
 		//计算可见区域
-		x_rect clpSelf( m_WindowRect - clipper.TopLeft() );
+		x_rect clpSelf( m_WindowRect + clipper.TopLeft() );
 
 		if( clpSelf.IntersectRect( clpSelf, clipper ) )
 		{

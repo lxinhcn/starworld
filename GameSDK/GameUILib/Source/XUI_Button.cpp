@@ -35,7 +35,7 @@ namespace UILib
 	void XUI_Button::RenderSelf( const x_point& adjust )
 	{
 		//±³¾°
-		x_point pt( m_WindowRect.TopLeft() - adjust );
+		x_point pt( m_WindowRect.TopLeft() + adjust );
 		int nWidth	= m_WindowRect.Width();
 		int nHeight	= m_WindowRect.Height();
 
