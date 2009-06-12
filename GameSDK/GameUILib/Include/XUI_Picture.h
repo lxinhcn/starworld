@@ -12,7 +12,5 @@ namespace UILib
 		XUI_Picture(void);
 		~XUI_Picture(void);
 
-	protected:
-		virtual void RenderSelf();
 	};
 };

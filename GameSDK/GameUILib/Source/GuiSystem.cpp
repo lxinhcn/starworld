@@ -62,6 +62,7 @@ namespace UILib
 		::GetClientRect( hWnd, &rect );
 
 		m_pDesktop->MoveWindow( 0, 0, rect.right - rect.left, rect.bottom - rect.top);
+		m_capture_element = m_pDesktop;
 		return TRUE;
 	}
 
@@ -89,7 +90,8 @@ namespace UILib
 			{
 				//XUI_Wnd* pWnd = GetRoot();
 				//while( pWnd->m_pChildFocusedOn ) pWnd = pWnd->m_pChildFocusedOn;
-				const x_rect& rc = m_capture_element->GetWindowRect();
+				x_rect rc = m_capture_element->GetWindowRect();
+				m_capture_element->AdjustWindow( rc, true );
 				RenderEditFrame( rc );
 			}
 
@@ -215,8 +217,7 @@ namespace UILib
 					const x_rect& r = m_capture_element->GetWindowRect();
 					long dx = pt.x - pt_old.x;
 					long dy = pt.y - pt_old.y;
-					printf( "x=%d, y=%d, w=%d, h=%d, px=%d, py=%d dx=%d, df=%d\n", r.left, r.top, r.right, r.bottom, pt.x, pt.y, dx, dy );
-					switch( idx )
+					switch( m_nCurHandle )
 					{
 					case -1:
 						m_capture_element->Offset( dx, dy );
@@ -246,7 +247,6 @@ namespace UILib
 						m_capture_element->MoveWindow( r.left+dx, r.top, r.right, r.bottom );
 						break;
 					}
-					printf( "x=%d, y=%d, w=%d, h=%d, px=%d, py=%d dx=%d, dy=%d\n", r.left, r.top, r.right, r.bottom, pt.x, pt.y, dx, dy );
 				}
 				else if( idx != -1 )
 				{
@@ -297,16 +297,6 @@ namespace UILib
 		return false;
 	}
 
-	//bool CGuiSystem::onMouseLeave( XUI_Wnd* pElement )
-	//{
-	//	//发生leave事件，所有的子控件都会收到一个leave事件
-	//	if( pElement && !pElement->onMouseLeave() )
-	//	{
-	//		return pElement->m_pChildMouseOver?onMouseLeave( pElement->m_pChildMouseOver ):false;
-	//	}
-	//	return true;
-	//}
-
 	bool CGuiSystem::onButtonDown( XUI_Wnd* pElement, uint32 nButton, const x_point& pt, UINT sysKeys, long_ptr *result )
 	{
 		if( pElement == NULL ) return false;
@@ -316,6 +306,7 @@ namespace UILib
 
 		if( m_bEditMode )
 		{
+			m_nCurHandle = DetectHandler( m_capture_element->GetWindowRect(), pt );
 			return true;
 		}
 		else if( m_capture_element && m_capture_element->onButtonDown( nButton, pt, sysKeys ) )
@@ -331,7 +322,7 @@ namespace UILib
 		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
 
-		if( m_mouseover_element != m_capture_element )
+		if( (m_bEditMode?DetectHandler( m_capture_element->GetWindowRect(), pt ) == -1:true) && m_mouseover_element != m_capture_element )
 		{
 			if( m_capture_element ) m_capture_element->SetFocus(false);
 			m_capture_element = m_mouseover_element;
@@ -349,30 +340,6 @@ namespace UILib
 		}
 		return false;
 	}
-
-	//void CGuiSystem::SetFocus(XUI_Wnd* pElement)
-	//{
-	//	if( !pElement ) return;
-
-	//	if( pElement->m_pChildFocusedOn )
-	//	{
-	//		pElement->m_pChildFocusedOn->SetFocus( false );
-	//		pElement->m_pChildFocusedOn = NULL;
-	//	}
-
-	//	XUI_Wnd* pParent = pElement->m_pParent;
-	//	if (pParent)
-	//	{
-	//		//去除别的焦点
-	//		if( pParent->m_pChildFocusedOn )
-	//			pParent->m_pChildFocusedOn->SetFocus(false);
-
-	//		//当前空间的容器应该也是获得焦点的
-	//		SetFocus( pParent );
-	//		pParent->m_pChildFocusedOn=pElement;
-	//	}
-	//	pElement->SetFocus(true);
-	//}
 
 	LRESULT CGuiSystem::HandleMessage( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 	{
@@ -476,14 +443,6 @@ namespace UILib
 
 	bool CGuiSystem::onKeyDown( XUI_Wnd* pElement, uint32 dwVirtualCode, UINT sysKeys, long_ptr *result )
 	{
-		//if( !pElement->IsEnable() )	return false;
-
-		//if (pElement->m_pChildFocusedOn)
-		//{
-		//	return onKeyDown(pElement->m_pChildFocusedOn, dwVirtualCode, sysKeys, result );
-		//}
-		//else if ( pElement->onKeyDown(dwVirtualCode, sysKeys) )
-
 		if( m_capture_element == NULL ) return false;
 		if( !m_capture_element->IsEnable() ) return false;
 		if( m_capture_element->onKeyDown(dwVirtualCode, sysKeys) )
@@ -496,13 +455,6 @@ namespace UILib
 
 	bool CGuiSystem::onKeyUp(XUI_Wnd* pElement, uint32 dwVirtualCode, UINT sysKeys, long_ptr *result )
 	{
-		//if( !pElement->IsEnable() )	return false;
-
-		//if( pElement->m_pChildFocusedOn )
-		//{
-		//	return onKeyUp(pElement->m_pChildFocusedOn, dwVirtualCode, sysKeys, result );
-		//}
-		//else if( pElement->onKeyUp( dwVirtualCode, sysKeys ) )
 		if( m_capture_element == NULL ) return false;
 		if( !m_capture_element->IsEnable() ) return false;
 		if( m_capture_element->onKeyUp(dwVirtualCode, sysKeys) )
@@ -515,13 +467,6 @@ namespace UILib
 
 	bool CGuiSystem::onChar(XUI_Wnd* pElement, uint32 dwChar, UINT sysKeys, long_ptr *result )
 	{
-		//if( !pElement->IsEnable() )	return false;
-
-		//if (pElement->m_pChildFocusedOn)
-		//{
-		//	return onChar( pElement->m_pChildFocusedOn, dwChar, sysKeys, result );
-		//}
-		//else if ( pElement->onChar(dwChar, sysKeys))
 		if( m_capture_element == NULL ) return false;
 		if( !m_capture_element->IsEnable() ) return false;
 		if( m_capture_element->onChar( dwChar, sysKeys ) )
@@ -601,7 +546,11 @@ namespace UILib
 			TiXmlNode* pNode = Doc.FirstChild( "WINDOW" );
 			if( pNode )
 			{
-				return m_pDesktop->CreateFromXMLNode( pNode->ToElement() );
+				bool ret = m_pDesktop->CreateFromXMLNode( pNode->ToElement() );
+				float x, y;
+				m_pCursor->GetMousePos( &x, &y );
+				m_capture_element = m_pDesktop->FindChildInPoint( x_point( (long)x, (long)y ) );
+				return ret;
 			}
 		}
 		return false;

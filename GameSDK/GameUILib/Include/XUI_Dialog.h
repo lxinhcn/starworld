@@ -29,7 +29,7 @@ namespace UILib
 		void		CenterWindow();
 		void		SetFocus( UINT nCtrlID );
 	protected:
-		virtual void	RenderSelf();
+		virtual void	RenderSelf( const x_point& adjust );
 		virtual bool	onKeyUp( uint32 keycode, uint32 sysKeys );
 
 		virtual bool	OnInitDialog(){ return true;}

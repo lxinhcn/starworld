@@ -160,9 +160,9 @@ namespace UILib
 		}
 	}
 
-	void XUI_Dialog::RenderSelf()
+	void XUI_Dialog::RenderSelf( const x_point& adjust )
 	{
-		XUI_Window::RenderSelf();
+		XUI_Window::RenderSelf( adjust );
 	}
 
 	bool XUI_Dialog::onKeyUp(uint32 keycode, UINT sysKeys)

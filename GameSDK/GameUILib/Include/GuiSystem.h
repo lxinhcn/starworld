@@ -62,6 +62,7 @@ namespace UILib
 		float			m_nowtime;
 		float			m_timer_anchor;
 		bool			m_bEditMode;
+		int				m_nCurHandle;
 		x_point			m_mousedown;
 		XUI_Wnd*		m_capture_element;
 		XUI_Wnd*		m_mouseover_element;

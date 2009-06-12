@@ -26,7 +26,7 @@ namespace UILib
 		void Render(const x_rect& clipper);
 
 		//重绘，通过实现这个方法来表现空间的外观
-		virtual void RenderSelf();
+		virtual void RenderSelf( const x_point& adjust );
 		virtual void Update( float timer, float delta );
 
 		//检查
@@ -86,11 +86,14 @@ namespace UILib
 		void Release();
 
 		//坐标转换
-		x_point ScreenToClient(const x_point& pt) const;
-		x_point ClientToScreen(const x_point& pt) const;
+		void ScreenToClient( x_point& pt) const;
+		void ClientToScreen( x_point& pt) const;
+		void ScreenToClient( x_rect& rc ) const;
+		void ClientToScreen( x_rect& rc ) const;
 
 		//坐标修正，个别控件可以滚动，因此需要进行修正
-		virtual x_point AdjustPoint(const x_point& pt, bool bClientToScreen) const {return pt;}
+		virtual void AdjustPoint( x_point& pt, bool bClientToScreen )const { if( m_pParent ) m_pParent->AdjustPoint( pt, bClientToScreen ); }
+		virtual void AdjustWindow( x_rect& rc, bool bClientToScreen )const { if( m_pParent ) m_pParent->AdjustWindow( rc, bClientToScreen ); }
 
 		//获取空间的显示区域
 		const x_rect& GetWindowRect()const { return m_WindowRect; }

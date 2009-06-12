@@ -32,11 +32,10 @@ namespace UILib
 			m_pButtonSkin->SetUV( 0.25f*m_enState, 0.0f, 0.25f*(m_enState+1), 1.0f );
 	}
 
-	void XUI_Button::RenderSelf()
+	void XUI_Button::RenderSelf( const x_point& adjust )
 	{
 		//±³¾°
-		x_point pt( 0, 0 );
-		pt = ClientToScreen(pt);
+		x_point pt( m_WindowRect.TopLeft() - adjust );
 		int nWidth	= m_WindowRect.Width();
 		int nHeight	= m_WindowRect.Height();
 
