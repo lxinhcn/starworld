@@ -95,7 +95,7 @@ namespace UILib
 		//渲染
 		void Render();
 		void RenderEditFrame( const x_rect &rc );
-		uint32 DetectHandler( const x_rect &rc, const x_point &pt );
+		uint32 DetectHandler(  XUI_Wnd* pElement, const x_point &pt );
 
 		
 		//处理外部消息

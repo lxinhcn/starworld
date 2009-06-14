@@ -56,10 +56,10 @@
             <updatefunc value="" />
             <visible value="true" />
             <window>
-                <bottom value="438" />
+                <bottom value="338" />
                 <left value="100" />
                 <right value="194" />
-                <top value="400" />
+                <top value="300" />
             </window>
         </Attribute>
     </CONTROL>
@@ -78,10 +78,10 @@
             <updatefunc value="" />
             <visible value="true" />
             <window>
-                <bottom value="438" />
-                <left value="200" />
-                <right value="294" />
-                <top value="400" />
+                <bottom value="338" />
+                <left value="300" />
+                <right value="394" />
+                <top value="300" />
             </window>
         </Attribute>
     </CONTROL>

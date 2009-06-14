@@ -1,6 +1,5 @@
 #ifndef HEADER_H
 #define HEADER_H
-	#include "vld.h"
 	#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 	#include <windows.h>
 
