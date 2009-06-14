@@ -97,6 +97,7 @@ namespace UILib
 
 		//获取空间的显示区域
 		const x_rect& GetWindowRect()const { return m_WindowRect; }
+		const x_point& GetTopLeft()const{ return m_WindowRect.TopLeft(); }
 
 		//--------------------------------------------------------------------------
 		//层次关系

@@ -142,8 +142,15 @@ namespace UILib
 		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
 	}
 
-	uint32 CGuiSystem::DetectHandler( const x_rect &rc, const x_point &pt )
+	uint32 CGuiSystem::DetectHandler( XUI_Wnd* pElement, const x_point &pt )
 	{
+		x_rect rc = pElement->GetWindowRect();
+		x_point ptt( pt );
+		if( pElement->GetParent() )
+		{
+			pElement->GetParent()->ScreenToClient( ptt );
+		}
+
 		int i = 0;
 		x_rect rch( -2, -2, 2, 2 );
 		rch.OffsetRect( rc.TopLeft() );
@@ -205,7 +212,7 @@ namespace UILib
 		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
 
-		XUI_Wnd *pEnterElement = pElement->FindChildInPoint(pt);
+		XUI_Wnd *pEnterElement = pElement->FindChildInPoint(pt-pElement->GetTopLeft());
 
 		if( m_bEditMode )
 		{
@@ -220,7 +227,7 @@ namespace UILib
 					{
 					case -1:
 						m_capture_element->MoveWindow( r.left+dx, r.top+dy, r.right+dx, r.bottom+dy );
-						printf( "dx = %d, dy = %d\n", dx, dy );
+						// printf( "dx = %d, dy = %d x = %d,%d y = %d,%d\n", dx, dy, pt.x, pt_old.x, pt.y, pt_old.y );
 						break;
 					case 0:
 						m_capture_element->MoveWindow( r.left+dx, r.top+dy, r.right, r.bottom );
@@ -248,7 +255,7 @@ namespace UILib
 						break;
 					}
 				}
-				else if( m_nCurHandle = DetectHandler( m_capture_element->GetWindowRect(), pt ) )
+				else if( m_nCurHandle = DetectHandler( m_capture_element, pt ) )
 				{
 					switch( m_nCurHandle )
 					{
@@ -305,12 +312,12 @@ namespace UILib
 
 		if( m_bEditMode )
 		{
-			m_nCurHandle = DetectHandler( m_capture_element->GetWindowRect(), pt );
+			m_nCurHandle = DetectHandler( m_capture_element, pt );
 			return true;
 		}
-		else if( m_capture_element && m_capture_element->onButtonDown( nButton, pt, sysKeys ) )
+		else if( m_mouseover_element && m_mouseover_element->onButtonDown( nButton, pt, sysKeys ) )
 		{
-			*result = m_capture_element->SendUIMessage( UIM_BUTTONDOWN_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );
+			*result = m_mouseover_element->SendUIMessage( UIM_BUTTONDOWN_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );
 			return true;
 		}
 		return false;
@@ -321,7 +328,7 @@ namespace UILib
 		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
 
-		if( (m_bEditMode?DetectHandler( m_capture_element->GetWindowRect(), pt ) == -1:true) && m_mouseover_element != m_capture_element )
+		if( (m_bEditMode?DetectHandler( m_capture_element, pt ) == -1:true) && m_mouseover_element != m_capture_element )
 		{
 			if( m_capture_element ) m_capture_element->SetFocus(false);
 			m_capture_element = m_mouseover_element;
@@ -407,8 +414,8 @@ namespace UILib
 			x_point pt( LOWORD(lParam), HIWORD(lParam) );
 			if (pDesktop->IsPointIn(pt))
 			{
-				pt.x-=pDesktop->m_WindowRect.left;
-				pt.y-=pDesktop->m_WindowRect.top;
+				//pt.x+=pDesktop->m_WindowRect.left;
+				//pt.y+=pDesktop->m_WindowRect.top;
 
 				//分发消息
 				switch (uMsg)
