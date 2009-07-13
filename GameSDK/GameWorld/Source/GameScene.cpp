@@ -63,9 +63,9 @@ bool CMap::OnEnumChild( int nID, CXObject* pObj, LPVOID pParam )
 		if( pMapObj->IsType( TypeDynamic ) )
 		{
 			CDynamic* pMan = static_cast< CDynamic* >( pMapObj );
-			_variant_t IsRun;
+			CXVariant IsRun;
 			pMan->GetLocalAttrib( Dynamic_attrMoveState, IsRun );
-			if( V_BOOL( &IsRun ) )
+			if( IsRun )
 			{
 				param->pMap->MoveObject( *pMan, pMan->GetDirection(), pMan->GetSpeed()*param->fDeltaTime );
 			}

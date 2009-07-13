@@ -31,7 +31,7 @@ void CGameObject::SetCollisionSize( int nWidth, int nHeight )
 	m_siCollision.cy = nHeight;
 }
 
-BOOL CGameObject::Think( int nObjID, int nEvent, LPCSTR lpBuf, size_t nSize )
+BOOL CGameObject::Think( int nObjID, int nEvent, _lpcstr lpBuf, size_t nSize )
 {
 	CGameObject* pObj = static_cast< CGameObject* >( CXObjectList::GetInstance().GetObj( nObjID ) );
 	return m_pAI->Think( pObj, nEvent, lpBuf, nSize );

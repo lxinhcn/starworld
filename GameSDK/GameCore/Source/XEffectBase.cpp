@@ -9,17 +9,17 @@ CXEffect::CXEffect( int nEffectID )
 	m_nLv			= 0;
 	ZeroMemory( m_fParam, sizeof( m_fParam ) );	// 效果参量
 
-	m_bEffected		= FALSE;	// 是否已经转移了作用
+	m_bEffected		= false;	// 是否已经转移了作用
 }
 
 CXEffect::~CXEffect(void)
 {
-	CNodeList::iterator iter = m_NodeList.begin();
-	while( iter !=m_NodeList.end() )
-	{
-		delete (*iter);
-		iter++;
-	}
+	//CNodeList::iterator iter = m_NodeList.begin();
+	//while( iter !=m_NodeList.end() )
+	//{
+	//	delete (*iter);
+	//	iter++;
+	//}
 	m_NodeList.clear();
 }
 
@@ -68,17 +68,17 @@ int CXEffect::DoEffect( CXObject* pObj, bool bRemove )
 				if( lpEntry && pObj->IsType( lpEntry->nType ) )
 				{
 					( this->*lpEntry->pDoEffect )( pObj, lpEntry->nAttribID, lpEntry->nType, lpEntry->bPersent, bRemove );
-					EFFECT_ENTRY* pEffectNode = AllocEffectItem();
-					pEffectNode->nID		= lpEntry->nID;
-					pEffectNode->nAttribID	= lpEntry->nAttribID;
-					pEffectNode->nType		= lpEntry->nType;
-					pEffectNode->bPersent	= lpEntry->bPersent;
-					pEffectNode->pDoEffect	= lpEntry->pDoEffect;
-					pEffectNode->nNextEffID = lpEntry->nNextEffID;
+					const EFFECT_ENTRY* pEffectNode = lpEntry;//AllocEffectItem();
+					//pEffectNode->nID		= lpEntry->nID;
+					//pEffectNode->nAttribID	= lpEntry->nAttribID;
+					//pEffectNode->nType		= lpEntry->nType;
+					//pEffectNode->bPersent	= lpEntry->bPersent;
+					//pEffectNode->pDoEffect	= lpEntry->pDoEffect;
+					//pEffectNode->nNextEffID = lpEntry->nNextEffID;
 
 					m_NodeList.push_back( pEffectNode );
 
-					m_bEffected += bRemove?-1:1;	// 标志自己的效果已经被转移了
+					m_bEffected += (bRemove?-1:1);	// 标志自己的效果已经被转移了
 
 					ASSERT_MSG( nEffectID != lpEntry->nNextEffID, _T("引起循环作用，程序可能因此死锁，至崩溃！") );
 					nEffectID = lpEntry->nNextEffID;	// 下一个作用
@@ -91,7 +91,7 @@ int CXEffect::DoEffect( CXObject* pObj, bool bRemove )
 			}
 		}
 		//ASSERT_MSG( !m_NodeList.empty(), "none effect be found" );
-		return TRUE;
+		return true;
 	}
 
 	// 已经将所有作用缓存在NodeList中，这样直接就可以执行了。不用再次去查表！
@@ -105,10 +105,10 @@ int CXEffect::DoEffect( CXObject* pObj, bool bRemove )
 			( *citer )->bPersent,
 			bRemove );
 
-		m_bEffected += bRemove?-1:1;	// 标志自己的效果已经被转移了
+		m_bEffected += (bRemove?-1:1);	// 标志自己的效果已经被转移了
 		citer++;
 	}
-	return TRUE;
+	return true;
 }
 
 int	CXEffect::DoDefaultEffect( CXObject* pObj, int nAttribID, int nType, bool bPersent, bool bRemove )

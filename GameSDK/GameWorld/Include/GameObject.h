@@ -62,19 +62,19 @@ public:
 	// 直接世界坐标
 	inline void GetPos( float& fPosX, float& fPosY, float& fPosZ )const
 	{
-		_variant_t PosX, PosY, PosZ;
+		CXVariant PosX, PosY, PosZ;
 
 		GetLocalAttrib( Mapobj_attrPosX, PosX );
 		GetLocalAttrib( Mapobj_attrPosY, PosY );
 		GetLocalAttrib( Mapobj_attrPosZ, PosZ );
-		fPosX = V_R4(&PosX);
-		fPosY = V_R4(&PosY);
-		fPosZ = V_R4(&PosZ);
+		fPosX = PosX;
+		fPosY = PosY;
+		fPosZ = PosZ;
 	}
 
-	inline float	GetPosX()const{	_variant_t PosX; GetLocalAttrib( Mapobj_attrPosX, PosX ); return V_R4(&PosX); }
-	inline float	GetPosY()const{	_variant_t PosY; GetLocalAttrib( Mapobj_attrPosY, PosY ); return V_R4(&PosY); }
-	inline float	GetPosZ()const{ _variant_t PosZ; GetLocalAttrib( Mapobj_attrPosZ, PosZ ); return V_R4(&PosZ); }
+	inline float	GetPosX()const{	CXVariant PosX; GetLocalAttrib( Mapobj_attrPosX, PosX ); return PosX; }
+	inline float	GetPosY()const{	CXVariant PosY; GetLocalAttrib( Mapobj_attrPosY, PosY ); return PosY; }
+	inline float	GetPosZ()const{ CXVariant PosZ; GetLocalAttrib( Mapobj_attrPosZ, PosZ ); return PosZ; }
 
 	inline void		SetPosX( float fPosX )	{ SetLocalAttrib( Mapobj_attrPosX, fPosX ); }
 	inline void		SetPosY( float fPosY )	{ SetLocalAttrib( Mapobj_attrPosX, fPosY ); }
@@ -97,7 +97,7 @@ public:
 	CXObjectAI*	GetObjectAI(){ return m_pAI; }
 	BOOL		SetMap( CMap* pMap );
 
-	BOOL	Think( int nObjID, int nEvent, LPCSTR lpBuf, size_t nSize );
+	BOOL	Think( int nObjID, int nEvent, _lpcstr lpBuf, size_t nSize );
 	//////////////////////////////////////////////////////////////////////////
 	// return 是否完成所有动作	[TRUE - 全部完成] [FALSE - 仍有动作需要等待]
 	virtual BOOL DoAction( const CMap& Map );
@@ -108,7 +108,7 @@ public:
 	/************************************************************************/
 	/* 用户参数设置                                                         */
 	/************************************************************************/
-	void		SetCustomParam( LPVOID pParam ) { m_pCustomParam = pParam; }
+	void		SetCustomParam( void* pParam ) { m_pCustomParam = pParam; }
 	LPVOID		GetCustomParam() const			{ return m_pCustomParam; }
 
 	/************************************************************************/
@@ -148,8 +148,8 @@ public:
 
 	void	Run( bool bRun )			{ SetLocalAttrib( Dynamic_attrMoveState, bRun ); }
 	void	SetSpeed( float fSpeed )	{ SetLocalAttrib( Dynamic_attrSpeed, fSpeed ); }
-	float	GetSpeed()					{ _variant_t Speed( 0.0f ); GetLocalAttrib( Dynamic_attrSpeed, Speed ); return V_R4(&Speed); }
+	float	GetSpeed()					{ CXVariant Speed( 0.0f ); GetLocalAttrib( Dynamic_attrSpeed, Speed ); return Speed; }
 
 	void	SetDirection( float fAngle ){ SetLocalAttrib( Dynamic_attrDirection, fAngle ); }
-	float	GetDirection()				{ _variant_t Angle( 0.0f ); GetLocalAttrib( Dynamic_attrDirection, Angle ); return V_R4(&Angle); }
+	float	GetDirection()				{ CXVariant Angle( 0.0f ); GetLocalAttrib( Dynamic_attrDirection, Angle ); return Angle; }
 };

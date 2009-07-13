@@ -99,7 +99,7 @@ void	CXObject::EnumChild( EnumChildCallback CallbackFunc, LPVOID pParam )
 	{
 		int nID = *iter;
 		++iter;
-		if( CallbackFunc( nID, objlist.GetObj( nID ), pParam ) == FALSE ) break;
+		if( CallbackFunc( nID, objlist.GetObj( nID ), pParam ) == false ) break;
 	}
 }
 

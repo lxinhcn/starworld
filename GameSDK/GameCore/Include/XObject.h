@@ -1,13 +1,7 @@
 #ifndef _XOBJECT_
 #define _XOBJECT_
 
-#include <comutil.h>
 #include "Defines.h"
-#ifdef _DEBUG
-#pragma comment( lib, "comsuppwd.lib" )
-#else
-#pragma comment( lib, "comsuppw.lib" )
-#endif
 #ifdef CORE_EXPORTS
 #define CORE_API __declspec(dllexport)
 #else
@@ -70,9 +64,43 @@ public:
 	CXObject*	operator []( int nID ){ return m_pObjList[nID]; }
 };
 
+class CAttrib;
+class CORE_API CXVariant
+{
+friend class CAttrib;
+public:
+	enum var_type{ type_float, type_integer, };
+
+private:
+	var_type t;
+	union
+	{
+		float	fValue;
+		int		nValue;
+	};
+
+public:
+	CXVariant(){ t = type_integer; nValue = 0; }
+	CXVariant( const CXVariant& rsh ){ t = rsh.t; fValue = rsh.fValue; }
+	CXVariant( float rsh ){ t = type_float; fValue = rsh; }
+	CXVariant( int rsh ){ t = type_integer; nValue = rsh; }
+
+	bool operator==( const CXVariant& val )const{ return val.t == t; }
+	bool operator==( float val )const{ return t == type_float && val == fValue; }
+	bool operator==( int val )const{ return t == type_integer && val == nValue; }
+
+	CXVariant& operator=( const CXVariant& val ){ t = val.t; fValue = val.fValue; return *this; }
+	CXVariant& operator=( float val ){ t = type_float; fValue = val; return *this; }
+	CXVariant& operator=( int val ){ t = type_integer; nValue = val; return *this; }
+
+	operator int()const{ if( t != type_integer ) throw( t ); return nValue; }
+	operator float()const{ if( t != type_float ) throw( t ); return fValue; }
+	operator bool()const{ if( t != type_integer ) throw( t ); return nValue != 0; }
+};
+
 struct CORE_API AttribValueListener
 {
-	virtual BOOL OnAttribChange( _variant_t OldValue, _variant_t NewValue ) = 0;
+	virtual bool OnAttribChange( CXVariant& OldValue, CXVariant NewValue ) = 0;
 };
 
 class CORE_API CAttrib
@@ -95,19 +123,19 @@ public:
 		mListener = pListener;
 	}
 
-	void ChangeValue( BOOL bPersent, const _variant_t& Val )
+	void ChangeValue( bool bPersent, const CXVariant& Val )
 	{
 		// DoDefaultEffect 函数的调用在这里会出问题。小心，回头再改吧！
-		switch( V_VT(&Val) )
+		switch( Val.t )
 		{
-		case VT_I4:
+		case CXVariant::type_integer:
 			{
 				int nTmpValue = 0;
 
 				if( bPersent )
-					nTmpValue = V_INT(&NowValue) + (int)( V_INT(&Value) * V_INT(&Val) / 100.0f );
+					nTmpValue = NowValue.nValue + (int)( Value.nValue * Val.nValue / 100.0f );
 				else
-					nTmpValue = V_INT(&NowValue) + V_INT(&Val);
+					nTmpValue = NowValue.nValue + Val.nValue;
 
 				if( ( mListener == NULL ) || ( mListener && mListener->OnAttribChange( NowValue, nTmpValue ) ) )
 				{
@@ -115,29 +143,14 @@ public:
 				}
 			}
 			break;
-		case VT_R4:
+		case CXVariant::type_float:
 			{
 				float fTmpValue = 0.0f;
 
 				if( bPersent )
-					fTmpValue = V_R4(&NowValue) + V_R4(&Value) * V_R4(&Val) / 100.0f;
+					fTmpValue = NowValue.fValue + Value.fValue * Val.fValue / 100.0f;
 				else
-					fTmpValue = V_R4(&NowValue) + V_R4(&Val);
-
-				if( ( mListener == NULL ) || ( mListener && mListener->OnAttribChange( NowValue, fTmpValue ) ) )
-				{
-					NowValue = fTmpValue;
-				}
-			}
-			break;
-		case VT_R8:
-			{
-				double fTmpValue = 0.0f;
-
-				if( bPersent )
-					fTmpValue = V_R8(&NowValue) + V_R8(&Value) * V_R8(&Val) / 100.0f;
-				else
-					fTmpValue = V_R8(&NowValue) + V_R8(&Val);
+					fTmpValue = NowValue.fValue + Val.fValue;
 
 				if( ( mListener == NULL ) || ( mListener && mListener->OnAttribChange( NowValue, fTmpValue ) ) )
 				{
@@ -148,7 +161,7 @@ public:
 		}
 	}
 
-	void	SetValue( const _variant_t& Val )
+	void	SetValue( const CXVariant& Val )
 	{ 
 		if( Val == NowValue )
 		{
@@ -161,12 +174,12 @@ public:
 		}
 	}
 
-	const _variant_t&	GetValue()const { return NowValue; }
+	const CXVariant&	GetValue()const { return NowValue; }
 
 private:
 	AttribValueListener* mListener;
-	_variant_t Value;		// 基准值
-	_variant_t NowValue;	// 当前值,经过换算的值
+	CXVariant Value;		// 基准值
+	CXVariant NowValue;	// 当前值,经过换算的值
 };
 
 /************************************************************************/
@@ -196,81 +209,81 @@ private:
 public:
 	static	int		GetPointType()				{ return TYPE; }
 	virtual int		GetType()const				{ return TYPE; }
-	virtual BOOL	IsType( uint32 dwType )const	{ if( GetPointType() == dwType ) return TRUE; else return TBase::IsType( dwType );}
-	static	BOOL	IsTypeOf( uint32 dwType )	{ if( GetPointType() == dwType ) return TRUE; else return TBase::IsTypeOf( dwType );}
+	virtual bool	IsType( uint32 dwType )const	{ if( GetPointType() == dwType ) return true; else return TBase::IsType( dwType );}
+	static	bool	IsTypeOf( uint32 dwType )	{ if( GetPointType() == dwType ) return true; else return TBase::IsTypeOf( dwType );}
 
-	virtual BOOL SetAttribListener( int nType, int nIndex, AttribValueListener* pListener )
+	virtual bool SetAttribListener( int nType, int nIndex, AttribValueListener* pListener )
 	{
 		if( GetPointType() == nType )
 		{
 			return SetLocalAttribListener( nIndex, pListener );
 		}
-		if( GetPointType() == TBase::GetPointType() )	return FALSE;
+		if( GetPointType() == TBase::GetPointType() )	return false;
 		return TBase::SetAttribListener( nType, nIndex, pListener );
 	}
 
-	virtual BOOL GetAttrib( int nType, int nIndex, _variant_t& Value )
+	virtual bool GetAttrib( int nType, int nIndex, CXVariant& Value )
 	{
 		if( GetPointType() == nType )
 		{
 			return GetLocalAttrib( nIndex, Value );
 		}
-		if( GetPointType() == TBase::GetPointType() )	return FALSE;
+		if( GetPointType() == TBase::GetPointType() )	return false;
 		return TBase::GetAttrib( nType, nIndex, Value );
 	}
 
-	virtual BOOL SetAttrib( int nType, int nIndex, _variant_t Value )
+	virtual bool SetAttrib( int nType, int nIndex, CXVariant Value )
 	{
 		if( GetPointType() == nType )
 		{
 			return SetLocalAttrib( nIndex, Value );
 		}
-		if( GetPointType() == TBase::GetPointType() )	return FALSE;
+		if( GetPointType() == TBase::GetPointType() )	return false;
 		return TBase::SetAttrib( nType, nIndex, Value );
 	}
 
-	virtual BOOL ChangeValue( int nType, int nIndex, _variant_t Value, bool bPersent )
+	virtual bool ChangeValue( int nType, int nIndex, CXVariant Value, bool bPersent )
 	{
 		if( GetPointType() == nType )
 		{
 			return ChangeLocalValue( nIndex, Value, bPersent );
 		}
-		if( GetPointType() == TBase::GetPointType() )	return FALSE;
+		if( GetPointType() == TBase::GetPointType() )	return false;
 		return TBase::ChangeValue( nType, nIndex, Value, bPersent );
 	}
 
-	BOOL SetLocalAttribListener( int nIndex, AttribValueListener* pListener )
+	bool SetLocalAttribListener( int nIndex, AttribValueListener* pListener )
 	{
 		ASSERT_MSG( nIndex >= 0 && nIndex < nAttribCount, _T("属性值超出范围") );
-		if( nIndex < 0 || nIndex >= nAttribCount )	return FALSE;
+		if( nIndex < 0 || nIndex >= nAttribCount )	return false;
 		_attrib[nIndex].SetListener( pListener );
-		return TRUE;
+		return true;
 	}
 
 	// 取类的本地属性
-	BOOL GetLocalAttrib( int nIndex, _variant_t& Value )const
+	bool GetLocalAttrib( int nIndex, CXVariant& Value )const
 	{
 		ASSERT_MSG( nIndex >= 0 && nIndex < nAttribCount, _T("属性值超出范围") );
-		if( nIndex < 0 || nIndex >= nAttribCount )	return FALSE;
+		if( nIndex < 0 || nIndex >= nAttribCount )	return false;
 		Value = _attrib[nIndex].GetValue();
-		return TRUE;
+		return true;
 	}
 
 	// 设置本地属性
-	BOOL SetLocalAttrib( int nIndex, const _variant_t& Value )
+	bool SetLocalAttrib( int nIndex, const CXVariant& Value )
 	{
 		ASSERT_MSG( nIndex >= 0 && nIndex < nAttribCount, _T("属性值超出范围") );
-		if( nIndex < 0 || nIndex >= nAttribCount )	return FALSE;
+		if( nIndex < 0 || nIndex >= nAttribCount )	return false;
 		_attrib[nIndex].SetValue( Value );
-		return TRUE;
+		return true;
 	}
 
-	BOOL ChangeLocalValue( int nIndex, const _variant_t& Value, bool bPersent )
+	bool ChangeLocalValue( int nIndex, const CXVariant& Value, bool bPersent )
 	{
 		ASSERT_MSG( nIndex >= 0 && nIndex < nAttribCount, _T("属性值超出范围") );
-		if( nIndex < 0 || nIndex >= nAttribCount )	return FALSE;
+		if( nIndex < 0 || nIndex >= nAttribCount )	return false;
 		_attrib[nIndex].ChangeValue( bPersent, Value );
-		return TRUE;
+		return true;
 	}
 
 	// 字符串属性表
@@ -288,14 +301,14 @@ public:
 		return TBase::GetStrAttrib( nType, szName );
 	}
 
-	virtual BOOL SetStrAttrib( int nType, _lpctstr szName, _lpctstr strValue )
+	virtual bool SetStrAttrib( int nType, _lpctstr szName, _lpctstr strValue )
 	{
-		if( strValue == NULL || szName == NULL )	return FALSE;
+		if( strValue == NULL || szName == NULL )	return false;
 		if( GetPointType() == nType )
 		{
-			_strAttrib[szName] = strValue;	return TRUE;
+			_strAttrib[szName] = strValue;	return true;
 		}
-		if( GetPointType() == TBase::GetPointType() )	return FALSE;
+		if( GetPointType() == TBase::GetPointType() )	return false;
 		return TBase::SetStrAttrib( nType, szName, strValue );
 	}
 
@@ -315,12 +328,12 @@ public:
 		return TBase::GetBufAttrib( nType, szName );
 	}
 
-	virtual BOOL SetBufAttrib( int nType, _lpctstr szName, LPVOID lpData )
+	virtual bool SetBufAttrib( int nType, _lpctstr szName, LPVOID lpData )
 	{
 		if( GetPointType() == nType )
 		{
 			_bufAttrib[szName] = lpData;
-			return TRUE;
+			return true;
 		}
 		if( GetPointType() == TBase::GetPointType() )	return NULL;
 		return TBase::SetBufAttrib( nType, szName, lpData );
@@ -358,21 +371,21 @@ public:
 	const	int		GetObjID()const				{ return m_nID;					}
 	static	int		GetPointType()				{ return TypeObjectbase;		}
 	virtual int		GetType()const				{ return TypeObjectbase;		}
-	virtual BOOL	IsType( uint32 dwType )const	{ return TypeObjectbase == dwType;}
-	static	BOOL	IsTypeOf( uint32 dwType )	{ return TypeObjectbase == dwType;}
+	virtual bool	IsType( uint32 dwType )const{ return TypeObjectbase == dwType;}
+	static	bool	IsTypeOf( uint32 dwType )	{ return TypeObjectbase == dwType;}
 
-	BOOL	IsKindOf( uint32 dwType )			{ if( this == NULL ) return FALSE;else return IsType( dwType ); }
+	bool	IsKindOf( uint32 dwType )			{ if( this == NULL ) return false;else return IsType( dwType ); }
 
-	virtual BOOL	SetAttribListener( int nType, int nIndex, AttribValueListener* pListener )	{ return FALSE; }
-	virtual BOOL	GetAttrib( int nType, int nIndex, _variant_t& Value )const					{ return FALSE; }
-	virtual BOOL	SetAttrib( int nType, int nIndex, _variant_t Value )						{ return FALSE; }
-	virtual BOOL	ChangeValue( int nType, int nIndex, _variant_t Value, bool bPersent )		{ return FALSE; }
+	virtual bool	SetAttribListener( int nType, int nIndex, AttribValueListener* pListener )	{ return false; }
+	virtual bool	GetAttrib( int nType, int nIndex, CXVariant& Value )const					{ return false; }
+	virtual bool	SetAttrib( int nType, int nIndex, CXVariant Value )						{ return false; }
+	virtual bool	ChangeValue( int nType, int nIndex, CXVariant Value, bool bPersent )		{ return false; }
 
 	virtual _lpctstr	GetStrAttrib( int nType, _lpctstr szName )const					{ return NULL; }
-	virtual BOOL		SetStrAttrib( int nType, _lpctstr szName, _lpctstr strValue )	{ return FALSE;}
+	virtual bool		SetStrAttrib( int nType, _lpctstr szName, _lpctstr strValue )	{ return false;}
 
-	virtual LPVOID	GetBufAttrib( int nType, _lpctstr szName )const					{ return NULL; }
-	virtual BOOL	SetBufAttrib( int nType, _lpctstr szName, LPVOID lpData )		{ return FALSE; }
+	virtual void*	GetBufAttrib( int nType, _lpctstr szName )const					{ return NULL; }
+	virtual bool	SetBufAttrib( int nType, _lpctstr szName, LPVOID lpData )		{ return false; }
 
 	/************************************************************************/
 	/* 层级关系函数
@@ -396,10 +409,10 @@ protected:
 	/************************************************************************/
 	/* 设置的一些事件响应虚函数。
 	/************************************************************************/
-	virtual bool OnParentChange( int nOldID, int nNewID ){ return TRUE; }
-	virtual bool OnAddChild( int nID ){ return TRUE; }
-	virtual bool OnRemoveChild( int nID, bool bRelease ){ return TRUE; }
-	virtual bool OnDestroy(){ return TRUE; }
+	virtual bool OnParentChange( int nOldID, int nNewID ){ return true; }
+	virtual bool OnAddChild( int nID ){ return true; }
+	virtual bool OnRemoveChild( int nID, bool bRelease ){ return true; }
+	virtual bool OnDestroy(){ return true; }
 	// 属性变更时调用，用于通知属性变更
 	// nType	:	属性的类型层次
 	// nIndex	:	属性的索引

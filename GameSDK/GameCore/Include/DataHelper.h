@@ -151,11 +151,11 @@ namespace XGC
 		operator LPRECT() throw();
 		operator LPCRECT() const throw();
 
-		// returns TRUE if rectangle has no area
+		// returns true if rectangle has no area
 		BOOL IsRectEmpty() const throw();
-		// returns TRUE if rectangle is at (0,0) and has no area
+		// returns true if rectangle is at (0,0) and has no area
 		BOOL IsRectNull() const throw();
-		// returns TRUE if point is within rectangle
+		// returns true if point is within rectangle
 		BOOL PtInRect(POINT point) const throw();
 
 		// Operations
@@ -167,7 +167,7 @@ namespace XGC
 		void SetRectEmpty() throw();
 		// copy from another rectangle
 		void CopyRect(LPCRECT lpSrcRect) throw();
-		// TRUE if exactly the same as another rectangle
+		// true if exactly the same as another rectangle
 		BOOL EqualRect(LPCRECT lpRect) const throw();
 
 		// Inflate rectangle's width and height by
