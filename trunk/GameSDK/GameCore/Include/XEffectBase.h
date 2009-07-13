@@ -46,17 +46,17 @@ protected:\
 
 #define EFFECT_DECLEAR( EffectID, AttribID, AttrType, IsPersent, pDoEffect, nNextEffectID )\
 	{ EffectID, AttribID, AttrType, IsPersent,\
-	( DoEffectFunc )( static_cast< BOOL ( CXEffect::* )( CXObject*, int, int, bool, bool ) >( &pDoEffect ) ), \
+	( DoEffectFunc )( static_cast< bool ( CXEffect::* )( CXObject*, int, int, bool, bool ) >( &pDoEffect ) ), \
 	nNextEffectID },\
 
 #define EFFECT_DEFAULT( EffectID, AttribID, AttrType, nNextEffectID )\
-	{ EffectID, AttribID, AttrType, FALSE,\
-	( DoEffectFunc )( static_cast< BOOL ( CXEffect::* )( CXObject*, int, int, bool, bool ) >( &DoDefaultEffect ) ), \
+	{ EffectID, AttribID, AttrType, false,\
+	( DoEffectFunc )( static_cast< bool ( CXEffect::* )( CXObject*, int, int, bool, bool ) >( &DoDefaultEffect ) ), \
 	nNextEffectID },\
 
 #define EFFECT_DEFAULT_PERSENT( EffectID, AttribID, AttrType, nNextEffectID )\
-	{ EffectID, AttribID, AttrType, TRUE,\
-	( DoEffectFunc )( static_cast< BOOL ( CXEffect::* )( CXObject*, int, int, bool, bool ) >( &DoDefaultEffect ) ), \
+	{ EffectID, AttribID, AttrType, true,\
+	( DoEffectFunc )( static_cast< bool ( CXEffect::* )( CXObject*, int, int, bool, bool ) >( &DoDefaultEffect ) ), \
 	nNextEffectID },\
 
 #define END_EFFECT_TABLE()\
@@ -105,10 +105,10 @@ private:
 	BYTE	m_nOwnerType;	// 所有者类型 -对象， -状态，
 
 protected:
-	typedef std::list< EFFECT_ENTRY* >	CNodeList;	// 作用节点列表
+	typedef std::list< const EFFECT_ENTRY* >	CNodeList;	// 作用节点列表
 
 	CNodeList	m_NodeList;
-	BOOL		m_bEffected;	// 是否已经转移了作用
+	int			m_bEffected;	// 是否已经转移了作用
 
 	const EFFECT_ENTRY*	FindEffectEntry( const EFFECT_ENTRY* lpEntry, int nEffectID );
 	EFFECT_ENTRY* AllocEffectItem(){ return new EFFECT_ENTRY; }
@@ -248,7 +248,7 @@ protected:
 	typedef std::list< CXEffect* >	CNodeList;	// 作用节点列表
 
 	CNodeList	m_NodeList;
-	BOOL		m_bStated;	// 是否已经转移了作用
+	bool		m_bStated;	// 是否已经转移了作用
 
 public:
 	CXStatus( int nStatueID );
@@ -256,8 +256,8 @@ public:
 
 	CXEffect*	AddEffect( int nEffectID );
 
-	int		DoStatus( CXObject* pObj, BOOL bRemove = FALSE );
-	int		DoDefaultStatus( CXObject* pObj, BOOL bRemove );
+	int		DoStatus( CXObject* pObj, bool bRemove = false );
+	int		DoDefaultStatus( CXObject* pObj, bool bRemove );
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -300,7 +300,7 @@ CXEffect* CXStatus< typename T >::AddEffect( int nEffectID )
 }
 
 template< typename T>
-int CXStatus< typename T >::DoStatus( CXObject* pObj, BOOL bRemove /* = FALSE  */ )
+int CXStatus< typename T >::DoStatus( CXObject* pObj, bool bRemove /* = false  */ )
 {
 	CNodeList::const_iterator citer = m_NodeList.begin();
 	while( citer != m_NodeList.end() )
@@ -308,5 +308,5 @@ int CXStatus< typename T >::DoStatus( CXObject* pObj, BOOL bRemove /* = FALSE  *
 		(*citer)->DoEffect( pObj, bRemove );
 		citer++;
 	}
-	return TRUE;
+	return true;
 }
