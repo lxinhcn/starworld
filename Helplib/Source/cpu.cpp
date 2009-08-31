@@ -151,6 +151,8 @@ int CPU::GetUsage( int* pSystemUsage, TKTime* pUpTime )
     // sTime != 0
 
     TKLong div = ( time - sTime );
+	if( div == 0 )
+		return sLastCpuProcess;
         
     // for the system
     if( s_pfnGetSystemTimes != NULL )

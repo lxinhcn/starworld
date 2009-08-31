@@ -47,6 +47,7 @@
 #include "include\netselect.h"
 #include "include\tls.h"
 #include "include\xtimer.h"
+#include "include\cpu.h"
 
 #pragma comment( lib, "ws2_32.lib" )
 #pragma comment( lib, "winmm.lib" )
