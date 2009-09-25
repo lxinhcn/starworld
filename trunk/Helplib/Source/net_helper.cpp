@@ -13,22 +13,14 @@ namespace net_helper
 
 		size_t size = 0;
 		const char* szAnyANSI = NULL;
-#if defined( _UNICODE )
 		USES_CONVERSION;
-		szAnyANSI = W2A( szAny );
-#else
-		szAnyANSI = (const char* )szAny;
-#endif // _UNICODE
+		szAnyANSI = T2A( szAny );
 		host = gethostbyname( szAnyANSI );
 		if( host == NULL )
 		{
 			return NULL;
 		}
-#if defined( _UNICODE )
-		return A2W( (char *)inet_ntoa(*(struct in_addr *)(host->h_addr)) );
-#else
-		return (char *)inet_ntoa(*(struct in_addr *)(host->h_addr));
-#endif // _UNICODE
+		return A2T( (char *)inet_ntoa(*(struct in_addr *)(host->h_addr)) );
 	}
 
 	//--------------------------------------------------------------------------------------------------------//
