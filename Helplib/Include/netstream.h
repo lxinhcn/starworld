@@ -25,7 +25,7 @@ public:
 	char*	
 		detach();
 
-	void
+	CNetInStream& 
 		write( const char* pszbuf, size_t size );
 	// reset all state of this class 
 	// for example, now site , len, buffer point and so on
