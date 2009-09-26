@@ -13,7 +13,7 @@
 
 namespace net_helper
 {
-	LPCTSTR TOOLLIB_API get_ip( LPCTSTR szAny );
+	TOOLLIB_API char* get_ip( const char* szAny );
 
 	//--------------------------------------------------------------------------------------------------------//
 	// D2Hex

@@ -5,7 +5,7 @@
 //==========================================
 #include "stdafx.h"
 
-#include <dbghelp.h>
+#include "dbghelp.h"
 #include "exception_report.h"
 
 #pragma comment(linker, "/defaultlib:dbghelp.lib")
@@ -15,14 +15,85 @@
 //
 // Declare the static variables of the WheatyExceptionReport class
 //
+enum BasicType  // Stolen from CVCONST.H in the DIA 2.0 SDK
+{
+	btNoType = 0,
+	btVoid = 1,
+	btChar = 2,
+	btWChar = 3,
+	btInt = 6,
+	btUInt = 7,
+	btFloat = 8,
+	btBCD = 9,
+	btBool = 10,
+	btLong = 13,
+	btULong = 14,
+	btCurrency = 25,
+	btDate = 26,
+	btVariant = 27,
+	btComplex = 28,
+	btBit = 29,
+	btBSTR = 30,
+	btHresult = 31
+};
+
+class WheatyExceptionReport
+{
+public:
+
+	WheatyExceptionReport( );
+	~WheatyExceptionReport( );
+
+	void SetLogFileName( PTSTR pszLogFileName );
+
+
+	// entry point where control comes on an unhandled exception
+	static LONG WINAPI WheatyUnhandledExceptionFilter(
+		PEXCEPTION_POINTERS pExceptionInfo );
+
+private:
+
+	static LPWSTR buildsymbolsearchpath ();
+
+	// where report info is extracted and generated 
+	static void GenerateExceptionReport( PEXCEPTION_POINTERS pExceptionInfo );
+
+	// Helper functions
+	static LPTSTR GetExceptionString( DWORD dwCode );
+	static BOOL GetLogicalAddress(  PVOID addr, PTSTR szModule, DWORD len,
+		DWORD& section, DWORD& offset );
+
+	static void WriteStackDetails( PCONTEXT pContext, bool bWriteVariables );
+
+	static BOOL CALLBACK EnumerateSymbolsCallback(PSYMBOL_INFO,ULONG, PVOID);
+
+	static bool FormatSymbolValue( PSYMBOL_INFO, STACKFRAME *, char * pszBuffer, unsigned cbBuffer );
+
+	static char * DumpTypeIndex( char *, DWORD64, DWORD, unsigned, DWORD_PTR, bool & );
+
+	static char * FormatOutputValue( char * pszCurrBuffer, BasicType basicType, DWORD64 length, PVOID pAddress );
+
+	static BasicType GetBasicType( DWORD typeIndex, DWORD64 modBase );
+
+	static int __cdecl _tprintf(const TCHAR * format, ...);
+
+	// Variables used by the class
+	static TCHAR m_szLogFileName[MAX_PATH];
+	static LPTOP_LEVEL_EXCEPTION_FILTER m_previousFilter;
+	static HANDLE m_hReportFile;
+	static HANDLE m_hProcess;
+};
+
 TCHAR WheatyExceptionReport::m_szLogFileName[MAX_PATH];
 LPTOP_LEVEL_EXCEPTION_FILTER WheatyExceptionReport::m_previousFilter;
 HANDLE WheatyExceptionReport::m_hReportFile;
 HANDLE WheatyExceptionReport::m_hProcess;
 
-// Declare global instance of class
-WheatyExceptionReport g_WheatyExceptionReport;
-
+void InstallCrashHandler()
+{
+	// Declare global instance of class
+	static WheatyExceptionReport sWheatyExceptionReport;
+}
 //============================== Class Methods =============================
 
 WheatyExceptionReport::WheatyExceptionReport( )   // Constructor
@@ -52,7 +123,7 @@ WheatyExceptionReport::WheatyExceptionReport( )   // Constructor
 //============
 WheatyExceptionReport::~WheatyExceptionReport( )
 {
-    SetUnhandledExceptionFilter( m_previousFilter );
+    m_previousFilter = SetUnhandledExceptionFilter( m_previousFilter );
 }
 
 //==============================================================
@@ -208,7 +279,7 @@ LPWSTR WheatyExceptionReport::buildsymbolsearchpath ()
 void WheatyExceptionReport::GenerateExceptionReport(
     PEXCEPTION_POINTERS pExceptionInfo )
 {
-	//ASSERT(false);
+	ASSERT(false);
     // Start out with a banner
     _tprintf(_T("//=====================================================\r\n"));
 
@@ -254,7 +325,7 @@ void WheatyExceptionReport::GenerateExceptionReport(
 	LPWSTR p = buildsymbolsearchpath();
 	LPSTR symbolpath = W2A( p );
 	SymSetOptions(SYMOPT_LOAD_LINES | SYMOPT_UNDNAME);
-	if (!SymInitialize( GetCurrentProcess(), symbolpath, FALSE ) )
+	if (!SymInitialize( GetCurrentProcess(), symbolpath, TRUE ) )
 	{
 		_tprintf( _T("WARNING: Visual Leak Detector: The symbol handler failed to initialize (error=%lu).\n")
 			_T("    File and function names will probably not be available in call stacks.\n"), GetLastError() );
@@ -281,12 +352,12 @@ void WheatyExceptionReport::GenerateExceptionReport(
     trashableContext = *pCtx;
     WriteStackDetails( &trashableContext, true );
 
-    _tprintf( _T("========================\r\n") );
-    _tprintf( _T("Global Variables\r\n") );
+    //_tprintf( _T("========================\r\n") );
+    //_tprintf( _T("Global Variables\r\n") );
 
-    SymEnumSymbols( GetCurrentProcess(),
-                    (DWORD64)GetModuleHandle(szFaultingModule),
-                    0, EnumerateSymbolsCallback, 0 );
+    //SymEnumSymbols( GetCurrentProcess(),
+    //                (DWORD64)GetModuleHandle(szFaultingModule),
+    //                0, EnumerateSymbolsCallback, 0 );
 	#else
 	WriteStackDetails( &trashableContext, false );
     
@@ -527,7 +598,7 @@ WheatyExceptionReport::EnumerateSymbolsCallback(
     PVOID         UserContext )
 {
 
-    char szBuffer[2048];
+    char szBuffer[1024*32];
 	USES_CONVERSION;
 
     __try
@@ -628,6 +699,9 @@ char * WheatyExceptionReport::DumpTypeIndex(
         DWORD_PTR offset,
         bool & bHandled )
 {
+	if( nestingLevel > 5 ) 
+		return pszCurrBuffer;
+
     bHandled = false;
 
     // Get the name of the symbol.  This will either be a Type name (if a UDT),

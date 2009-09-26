@@ -47,7 +47,7 @@ char* CNetInStream::detach()
 // 从当前位置附加缓冲区
 // pszbuf	:	附加的缓冲区首址
 // size		:	附加缓冲区的大小
-void CNetInStream::write( const char* pszbuf, size_t size )
+CNetInStream& CNetInStream::write( const char* pszbuf, size_t size )
 {
 	if( size > m_nBufSize - m_nNowSite )
 	{
@@ -59,6 +59,7 @@ void CNetInStream::write( const char* pszbuf, size_t size )
 		memcpy( m_pbuf + m_nNowSite, pszbuf, size );
 	}
 	m_nNowSite += size;
+	return *this;
 }
 
 // 复位缓冲区偏移量

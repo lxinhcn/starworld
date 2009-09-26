@@ -6,21 +6,18 @@
 #pragma comment( lib, "Wininet.lib" )
 namespace net_helper
 {
-	LPCTSTR get_ip( LPCTSTR szAny )
+	char* get_ip( const char *pszAny )
 	{
 		struct hostent *host;
-		if ( szAny == NULL) return NULL;
+		if ( pszAny == NULL) return NULL;
 
 		size_t size = 0;
-		const char* szAnyANSI = NULL;
-		USES_CONVERSION;
-		szAnyANSI = T2A( szAny );
-		host = gethostbyname( szAnyANSI );
+		host = gethostbyname( pszAny );
 		if( host == NULL )
 		{
 			return NULL;
 		}
-		return A2T( (char *)inet_ntoa(*(struct in_addr *)(host->h_addr)) );
+		return (char*)inet_ntoa(*(struct in_addr *)(host->h_addr));
 	}
 
 	//--------------------------------------------------------------------------------------------------------//
