@@ -1,0 +1,49 @@
+MLuaBind changes:
+
+* 0.06
+- MLuaBind uses std::tr1 extensions instead of Loki Typetraits now. (vendor lock-in?.. hmm, yep!)
+- Fixed some issues for 64bit compilation, so MLuaBind works well on x64.
+
+
+* 0.05
+- Major meta-programming changes. Most of Loki typelists was removed for a faster compilation.
+- [const] void* pointers can be transmitted via lightuserdata now.
+	Transparently support void* pointers as return values and as parameters.
+- __cast_unsafe can convert void* pointers to desired class.
+- Minor bugfixes.
+
+
+* 0.04
+- Native support for enums (no need to convert to int type).
+- Constants within classes(i.e. from their namespaces) are now accessible from objects too.
+- Valid convestation from (T*)0 to nil and vice versa.
+- A LOT of changes in STL-binding code.
+- STL-binding code now work with STLPort and with containers <T*>.
+- Few major bugfixes:
+	- bug in constructor's parameters verbal output leads to undefined behaviour
+	- bug in member's operator= with constant right operand
+	- bug with not calling policies for a implicitly created objects
+- Code optimization for run and compilation time.
+- Client-side interface code switched to char* from std::string (breaking change).
+
+
+* 0.03:
+- Manual in html.
+- Convert<T> and BaseNoDynCast<T> adapters for classes.
+- Some code optimization for faster compilation
+- Minor bugfixes.
+
+
+* 0.02:
+- Switched to MIT licence.
+- Complex rewrites in C++ classes inheritance system. Upcast-ability resolution will
+work faster now, due to caching. A new cool __cast function can perform a complex safe
+convertion - either up\down cast(using dynamic_cast with downcast) or mixed up\down casts.
+See readme for details.
+- General ordering of Lua-exported functions. At this moment they contains:
+	__cast, __cast_unsafe, __const, __get_type, __get_typeex, __get_rtti_type.
+- Minor bugfixes.
+
+
+* 0.01:
+- Initial release.
