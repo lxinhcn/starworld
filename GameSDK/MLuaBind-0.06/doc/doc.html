@@ -1,0 +1,1012 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=windows-1251"
+ http-equiv="content-type">
+  <title>MLuaBind manual</title>
+  <meta content="Michael Kazakov" name="author">
+</head>
+<body>
+<div style="text-align: center; font-weight: bold;"><big><big><big>MLuaBind</big></big></big>
+<div style="text-align: left;">Contents<br>
+<a href="#mozTocId598392"></a>
+<ul id="mozToc">
+<!--mozToc h1 1 h3 2-->
+  <li><a href="#mozTocId918842">1. Introduction</a></li>
+  <li><a href="#mozTocId206441">2. Features</a></li>
+  <li><a href="#mozTocId90040">3. Building unbind</a></li>
+  <li><a href="#mozTocId672928">4. Hello world source code</a></li>
+  <li><a href="#mozTocId652686">5. MLuaBind structure</a></li>
+  <li><a href="#mozTocId903324">6. Binding free functions</a></li>
+  <li><a href="#mozTocId113089">7. Binding classes</a>
+    <ul>
+      <li><a href="#mozTocId249570">Constructors</a></li>
+      <li><a href="#mozTocId426532">Methods</a></li>
+      <li><a href="#mozTocId611336">Members</a></li>
+      <li><a href="#mozTocId340212">Operators</a></li>
+      <li><a href="#mozTocId758863">Constants</a></li>
+      <li><a href="#mozTocId113098">Conversion \ Inheritance</a></li>
+      <li><a href="#mozTocId452279">The dessert</a></li>
+    </ul>
+  </li>
+  <li><a href="#mozTocId930190">8. Calling Lua functions</a></li>
+  <li><a href="#mozTocId993278">9. Lua API</a></li>
+  <li><a href="#mozTocId352332">10. FAQ</a></li>
+</ul>
+<br style="font-weight: normal;">
+<h1 style="font-weight: normal;"><a class="mozTocH1"
+ name="mozTocId918842"></a>1. Introduction</h1>
+<div style="text-align: justify;"><span style="font-weight: normal;">MLuaBind
+is a library that helps you to make a cross-language(C++ to Lua and
+vice versa) communication. It was developed as a replacement for
+LuaBind library, which is nice but takes too much time to compile. The
+main idea was to keep source code as simple for compilation process as
+it's possible. Binding process in core takes to
+</span><span style="font-weight: normal;">instantiate </span><span
+ style="font-weight: normal;">template classes (overloaded by template
+parameters
+amount too) </span><span style="font-weight: normal;">which overrides</span><span
+ style="font-weight: normal;"> virtual methods in base classes and
+</span><span style="font-weight: normal;">delegates </span><span
+ style="font-weight: normal;">communication with client code thru them.<br>
+</span><span style="font-weight: normal;">At current moment this
+library
+assumes that you is known with LuaBind library and looking for
+alternative. This documentation is brief and contains general
+information. Much of metaprogramming code from Loki library was thrown
+away since version 0.06, which depends on std::tr1 extensions now.</span><br
+ style="font-weight: normal;">
+<span style="font-weight: normal;">Again, at current moment this
+library was developed against Windows platform and MSVC9 compiler, as
+they are my primary work field, but porting to another
+platform\compiler shouldn't be painful process. Please contact me if
+you're interesting in porting.</span><br style="font-weight: normal;">
+<span style="font-weight: normal;">If you have any questions or
+suggestions feel free to write at Mike.Kazakov@gmail.com.<br>
+<br>
+<br>
+Copyright (C) 2007-2009 Michael Kazakov.</span><span
+ style="font-weight: normal;"></span><br style="font-weight: normal;">
+<span style="font-weight: normal;">MLuaBind is released under the terms
+of the </span><a style="font-weight: normal;" class="reference"
+ href="http://www.opensource.org/licenses/mit-license.php">MIT license</a><span
+ style="font-weight: normal;">.</span><br style="font-weight: normal;">
+</div>
+<span style="font-weight: normal;">This library was highly inspired by <a
+ href="http://luabind.sourceforge.net/">LuaBind</a>&nbsp;</span><a
+ style="font-weight: normal;" class="reference"
+ href="http://www.boost.org/libraries/python"></a><span
+ style="font-weight: normal;">library written by Daniel Wallin and
+Arvid Norberg.</span><br>
+<span style="font-weight: normal;">Many thanks to Pavel Dogurevich for
+help and wholesome criticism. Kudos!</span>
+<h1 style="font-weight: normal;"><a class="mozTocH1"
+ name="mozTocId206441"></a>2. Features</h1>
+<span style="font-weight: normal;">Currently supports:</span><br
+ style="font-weight: normal;">
+<ul style="font-weight: normal;">
+  <li>Free functions binding</li>
+  <li>Name spaces binding</li>
+  <li>Constants binding</li>
+  <li>Classes binding</li>
+  <li>&nbsp;&nbsp;&nbsp; Constructors</li>
+  <li>&nbsp;&nbsp;&nbsp; Methods (class's methods and free functions as
+methods)</li>
+  <li>&nbsp;&nbsp;&nbsp; Member</li>
+  <li>&nbsp;&nbsp;&nbsp; Constants</li>
+  <li>&nbsp;&nbsp;&nbsp; Enums<br>
+  </li>
+  <li>&nbsp;&nbsp;&nbsp; Operators (using C++ operators and with
+methods)</li>
+  <li>&nbsp;&nbsp;&nbsp; Properties</li>
+  <li>&nbsp;&nbsp;&nbsp; Base classes</li>
+  <li>&nbsp;&nbsp;&nbsp; Smart pointers</li>
+  <li>&nbsp;&nbsp;&nbsp; Complex safe casting</li>
+  <li>Signature matching</li>
+  <li>Clearly support holding and passing T, T&amp;, T*, const T, const
+T&amp; or const T* objects</li>
+  <li>Implicit objects construction via one-parameter constructors</li>
+  <li>STL containers binding</li>
+  <li>Policies (currently only adopt is implemented)</li>
+  <li>Implicit casting via inheritance and smart ptrs</li>
+  <li>Lua functions calling</li>
+  <li>Transparent conversion to and from Unicode strings<br>
+  </li>
+</ul>
+<h1 style="font-weight: normal;"><a class="mozTocH1"
+ name="mozTocId90040"></a>3. Building mluabind</h1>
+<div style="text-align: justify;"><span style="font-weight: normal;">To
+build it you have to get Lua 5.1.x (I've developed it against Lua
+5.1.2) and </span><a style="font-weight: normal;"
+ href="http://sourceforge.net/projects/loki-lib/">Loki</a><span
+ style="font-weight: normal;"> library. MLuaBind was developed and
+tested under MSVS2008. Put all *.cpp files from /impl directory
+in your
+project and build it. To include interface for MLuaBind use
+./mluabind.h file. Lua and Loki includes are made via luainclude.h and
+lokiinclude.h files. Please note that MLuaBind relies on std::tr1
+extensions.</span><br style="font-weight: normal;">
+<span style="font-weight: normal;">You can check MLuaBind stability
+with /test/ directory - make a project and put all files from /test/
+there. </span><br style="font-weight: normal;">
+</div>
+<br style="font-weight: normal;">
+<h1 style="font-weight: normal;"><a class="mozTocH1"
+ name="mozTocId672928"></a>4. Hello world source code</h1>
+<span style="font-weight: normal;">Everything begins from HelloWorld,
+isn't it? Here is MLuaBind version, quite commented:</span><br
+ style="font-weight: normal;">
+<big style="font-weight: normal;"><br>
+</big>
+<div style="margin-left: 40px; font-weight: normal;"><big
+ style="font-family: monospace; color: rgb(0, 102, 0);"><code><small>#include
+&lt;mluabind/mluabind.h&gt;</small><br>
+<br>
+<small>struct Hello</small><br>
+<small>{</small><br>
+<small>&nbsp;&nbsp;&nbsp; std::string DoIt() { return "Hello World!"; };</small><br>
+<small>};</small><br>
+<br>
+<small>int main()</small><br>
+<small>{</small><br>
+<small>&nbsp;&nbsp;&nbsp; using namespace mluabind;</small><br>
+<br>
+<small>&nbsp;&nbsp;&nbsp; lua_State* luastate = lua_open();</small><br>
+<small>&nbsp;&nbsp;&nbsp; luaL_openlibs(luastate);</small><br>
+<br>
+<small>&nbsp;&nbsp;&nbsp; CHost host(luastate);</small><br>
+<small>&nbsp;&nbsp;&nbsp; BindStdLibrary(&amp;host);</small><br>
+<br>
+<small>&nbsp;&nbsp;&nbsp; host.Insert(</small><br>
+<small>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Class&lt;Hello&gt;("hello")</small><br>
+<small>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+.Constructor()</small><br>
+<small>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+.Method("DoIt", &amp;Hello::DoIt)</small><br>
+<small>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; );</small><br>
+<br>
+<small>&nbsp;&nbsp;&nbsp; luaL_dostring(luastate, </small><br>
+<small>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; "local obj = hello()\n"</small><br>
+<small>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; "print(obj.DoIt())");</small><br>
+<br>
+<small>&nbsp;&nbsp;&nbsp; return 0;</small><br>
+<small>};</small></code></big><small><br>
+</small></div>
+<br style="font-weight: normal;">
+<span style="font-weight: normal;">Now understand it string by string.</span><br
+ style="font-weight: normal;">
+<br style="font-weight: normal;">
+<div style="margin-left: 40px; font-weight: normal;"><big
+ style="color: rgb(0, 102, 0);"><code><small>#include
+&lt;mluabind/mluabind.h&gt;</small></code></big><br>
+</div>
+<span style="font-weight: normal;">Main header, wich includes mluabind
+module interface and lua headers</span><br style="font-weight: normal;">
+<br style="font-weight: normal; color: rgb(0, 102, 0);">
+<div style="margin-left: 40px; font-weight: normal;"><big
+ style="color: rgb(0, 102, 0);"><code><small>struct Hello</small></code></big><br
+ style="color: rgb(0, 102, 0);">
+<big style="color: rgb(0, 102, 0);"><code><small>{</small></code></big><br
+ style="color: rgb(0, 102, 0);">
+<big style="color: rgb(0, 102, 0);"><code><small>&nbsp;&nbsp;&nbsp;
+std::string DoIt() { return "Hello World!"; };</small></code></big><br
+ style="color: rgb(0, 102, 0);">
+<big style="color: rgb(0, 102, 0);"><code><small>};</small></code></big><br>
+</div>
+<span style="font-weight: normal;">Our class that will be exported to
+Lua.</span><br style="font-weight: normal;">
+<br style="font-weight: normal;">
+<big style="font-weight: normal;"><code><small>&nbsp;&nbsp;&nbsp; <span
+ style="color: rgb(0, 102, 0);">using namespace mluabind;</span><br>
+</small></code></big>
+<div style="text-align: justify;"><big style="font-weight: normal;"><code><small>All
+code in this library was written in mluabind namespace. All identifiers
+that are accessible directly in mluabind namespace are considered for
+end-client usage, and entire implementation lies in mluabind::impl
+namespace. The only class that has a body in mluabind namespace is
+CHost, other entities in this namespace are generally wrapping some
+functionality from impl namespace.</small></code></big><br>
+<big style="font-weight: normal;"><code></code></big></div>
+<br style="font-weight: normal;">
+<big
+ style="font-family: monospace; color: rgb(0, 102, 0); font-weight: normal;"><code><small>&nbsp;&nbsp;&nbsp;
+lua_State* luastate = lua_open();</small><br>
+<small>&nbsp;&nbsp;&nbsp; luaL_openlibs(luastate);</small></code></big><br
+ style="font-weight: normal;">
+<span style="font-weight: normal;">Opening Lua state and binding it's
+standard libraries. Quite general.<br>
+</span><big
+ style="font-family: monospace; color: rgb(0, 102, 0); font-weight: normal;"><code><small><br>
+&nbsp;&nbsp;&nbsp; CHost host(luastate);</small></code></big><br>
+<div style="text-align: justify;"><span style="font-weight: normal;">Create
+a CHost variable - a heart of all system. It holds information about
+registered classes and functions, performing an interaction with lua
+tables (namespaces in C++) and gives ability to call Lua functions as
+they are in C++ code. Do not kill this variable while you want to
+interact with Lua!</span><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;"><br>
+</span><big
+ style="font-family: monospace; color: rgb(0, 102, 0); font-weight: normal;"><code><small>&nbsp;&nbsp;&nbsp;
+BindStdLibrary(&amp;host);<br>
+</small></code></big>
+<div style="text-align: justify;"><span style="font-weight: normal;">Says
+that we want to use some pre-written binding code from mluabind. At
+current moment this binds std::string and std::wstring classes (as
+std.string and std.wstring in Lua) and some functions from CLIB math
+library. Please note that mluabind's ability to work clearly with
+std::(w)string types is not a hard coded feature, but a general-usage
+code (look at stl_basic_string.h file for details).</span><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;"><br>
+</span><big
+ style="font-family: monospace; color: rgb(0, 102, 0); font-weight: normal;"><code><small>&nbsp;&nbsp;&nbsp;
+host.Insert(</small><br>
+<small>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+Class&lt;Hello&gt;("hello")</small><br>
+<small>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+.Constructor()</small><br>
+<small>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+.Method("DoIt", &amp;Hello::DoIt)</small><br>
+<small>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; );</small></code></big><br>
+<div style="text-align: justify;"><span style="font-weight: normal;">Registration
+itself. Translation in human language is: "please, Host, remember a
+Hello class, that will present in Lua as "hello", add a default
+constructor to it and populate it with DoIt method, which points to<span
+ style="font-family: mon;"> &amp;Hello::DoIt in C++</span></span><span
+ style="font-weight: normal;">". Quite simple.</span><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;"><br>
+</span>
+<div style="margin-left: 40px;"><big
+ style="font-family: monospace; color: rgb(0, 102, 0); font-weight: normal;"><code><small>luaL_dostring(luastate,
+</small></code></big><br>
+</div>
+<span style="font-weight: normal;">Ask Lua to perform some string.<br>
+<br>
+</span>
+<div style="margin-left: 40px;"><big
+ style="font-family: monospace; color: rgb(0, 102, 0); font-weight: normal;"><code><small>"local
+obj = hello()\n"</small></code></big><br>
+</div>
+<div style="text-align: justify;"><span style="font-weight: normal;">Creates
+a variable obj with hello class (Hello in C++) with a default
+constructor.</span><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;"><br style="font-weight: normal;">
+</span>
+<div style="margin-left: 40px;"><big
+ style="font-family: monospace; color: rgb(0, 102, 0); font-weight: normal;"><code><small>"print(obj.DoIt())");</small></code></big><br
+ style="font-weight: normal;">
+</div>
+<div style="text-align: justify;"><span style="font-weight: normal;">He're
+it goes. We are calling DoIt method of obj: obj.DoIt(). NOTE! "." here
+is not a bug. MLuaBind gives an ability to call methods via "."
+operator, but not with Lua syntax-crutch ":". If we wrote obj:DoIt()
+MLuaBind will respond as error that DoIt method doesn't accept a Hello
+object.</span><br>
+<span style="font-weight: normal;">Going next: DoIt(). Remember that
+DoIt method in fact returns a std::string variable? So mluabind creates
+a variable in lua with a copy constructor from it (performance issues
+about returning objects by value is not a theme to discuss). And, after
+DoIt was called </span><span style="font-weight: normal;">a FULL COPY
+of C++ std::string object lives </span><span
+ style="font-weight: normal;">in lua stack. You can use all it's
+methods as for example assign, find, replace and even iterators!
+MLuaBind's std::string binds also inserts a __tostring Lua operator, so
+print function converts it to string (in fact __tostring points to
+c_str in binding code. again, take a look at stl_basic_string.h). And,
+voila, we get at screen:</span><br>
+<span style="font-weight: normal;"></span></div>
+<div style="margin-left: 40px;"><span
+ style="font-weight: normal; color: rgb(0, 102, 0);">Hello World!</span><br>
+<span style="font-weight: normal;"></span></div>
+<br>
+<span style="font-weight: normal;">It can be made directly: </span><big
+ style="font-family: monospace; color: rgb(0, 102, 0); font-weight: normal;"><code><small>print(hello().DoIt())")</small></code></big><span
+ style="font-weight: normal;">and via many other ways.</span><br
+ style="font-weight: normal;">
+<br>
+<h1><a class="mozTocH1" name="mozTocId652686"></a><span
+ style="font-weight: normal;">5. MLuaBind structure</span></h1>
+<span style="font-weight: normal;">Below is a approximate inheritance
+and usage map:</span><br>
+<br>
+CHost<br>
+*--- GenericFunction &lt;--- &lt;T&gt;FunctionClass(X) *--- Policies<br>
+*--- GenericConstant &lt;--- &lt;T&gt;CustomConstant<br>
+*--- GenericClass &lt;--<br>
+&nbsp;&lt;T&gt;CustomClass -^<br>
+*--- GenericMethod &lt;-- &lt;T&gt;MethodClass(X) *--- Policies<br>
+*--- GenericConstructor &lt;-- &lt;T&gt; ConstructorClass(X) *---
+Policies<br>
+*--- GenericMember<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &lt;--
+&lt;T&gt; MemberClass<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &lt;--
+&lt;T&gt;PropertyClass<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &lt;--
+&lt;T&gt;FreePropertyClass<br>
+*--- GenericConstant &lt;--- &lt;T&gt;CustomConstant<br>
+*--- ClassConvertAdapter<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &lt;--
+ClassUpCastConvertAdapter<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &lt;--
+ClassInheritanceConvertAdapter<br>
+<big
+ style="font-family: monospace; color: rgb(0, 102, 0); font-weight: normal;"><br>
+</big>
+<div style="text-align: justify;"><span style="font-weight: normal;">Any
+registation process can be done with CHost variable. Host assumes that
+LuaState given to him is not used by another host, this can cause
+undefined behavior. </span><span style="font-weight: normal;">CHost::Insert
+has four forms, that
+accept a class (mluabind::Class), function(mluabind::Function),
+constant(mluabind::Constant) or declarator(mluabind::Declare).
+Declarator is a composition of this types which allow you insert
+information about many entities at once or put them in a particular
+namespace. For example if you want to register many functions you can
+write </span><br>
+<span style="font-weight: normal;"></span></div>
+<div style="margin-left: 40px;"><code><span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;<span
+ style="color: rgb(0, 102, 0);"> host.Insert(Function(...));</span></span><br
+ style="color: rgb(0, 102, 0);">
+<span style="font-weight: normal; color: rgb(0, 102, 0);">&nbsp;&nbsp;&nbsp;
+...</span><br style="color: rgb(0, 102, 0);">
+<span style="font-weight: normal; color: rgb(0, 102, 0);">&nbsp;&nbsp;&nbsp;
+host.Insert(Function(...));</span></code><br>
+</div>
+<span style="font-weight: normal;">or</span><br
+ style="font-weight: normal;">
+<div style="margin-left: 40px;"><code style="color: rgb(0, 102, 0);"><span
+ style="font-weight: normal;">&nbsp;&nbsp;&nbsp; host.Insert(Declare()</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
++Function(...)</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; ...</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
++Function(...) );</span></code><br>
+<span style="font-weight: normal;"></span></div>
+<div style="text-align: justify;"><span style="font-weight: normal;">Using
+declarators is the only way to put something in particular namespace.
+For example, a part of source code from BindStdLibrary is:</span><br>
+<span style="font-weight: normal;"></span></div>
+<div style="margin-left: 40px;"><code><span
+ style="font-weight: normal; color: rgb(0, 102, 0);">bool
+BindStdLibrary(CHost *_host)</span><br style="color: rgb(0, 102, 0);">
+<span style="font-weight: normal; color: rgb(0, 102, 0);">{</span><br
+ style="color: rgb(0, 102, 0);">
+<span style="font-weight: normal; color: rgb(0, 102, 0);">&nbsp;&nbsp;&nbsp;
+_host-&gt;Insert</span><br style="color: rgb(0, 102, 0);">
+<span style="font-weight: normal; color: rgb(0, 102, 0);">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; &nbsp;(Declare("std")</span><br
+ style="color: rgb(0, 102, 0);">
+<span style="font-weight: normal; color: rgb(0, 102, 0);">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; &nbsp;+BindBasicString&lt;std::string&gt;("string")</span><br
+ style="color: rgb(0, 102, 0);">
+<span style="font-weight: normal; color: rgb(0, 102, 0);">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; &nbsp;+BindBasicString&lt;std::wstring&gt;("wstring")</span></code><br>
+<span style="font-weight: normal;"></span></div>
+<div style="text-align: justify;"><span style="font-weight: normal;">Declarators
+can include other declarators and nameless declarators are not treat as
+a namespaces, only as a compositions.</span><br>
+<span style="font-weight: normal;">Good formatting here is an open
+question, you can use the following format:</span><br>
+<span style="font-weight: normal;"></span></div>
+<div style="margin-left: 40px;"><code><span
+ style="font-weight: normal; color: rgb(0, 102, 0);">host.Insert(</span><br
+ style="color: rgb(0, 102, 0);">
+<span style="font-weight: normal; color: rgb(0, 102, 0);">&nbsp;&nbsp;&nbsp;
+Declare("top_namespace")</span><br style="color: rgb(0, 102, 0);">
+<span style="font-weight: normal; color: rgb(0, 102, 0);">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; +Class&lt;SomeClass&gt;...</span><br
+ style="color: rgb(0, 102, 0);">
+<span style="font-weight: normal; color: rgb(0, 102, 0);">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; +Function(...)</span><br
+ style="color: rgb(0, 102, 0);">
+<span style="font-weight: normal; color: rgb(0, 102, 0);">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; +(Declare("inner_namespace")</span><br
+ style="color: rgb(0, 102, 0);">
+<span style="font-weight: normal; color: rgb(0, 102, 0);">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; +...</span><br
+ style="color: rgb(0, 102, 0);">
+<span style="font-weight: normal; color: rgb(0, 102, 0);">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; +...</span><br
+ style="color: rgb(0, 102, 0);">
+<span style="font-weight: normal; color: rgb(0, 102, 0);">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; )</span><br
+ style="color: rgb(0, 102, 0);">
+<span style="font-weight: normal; color: rgb(0, 102, 0);">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; )</span><br style="color: rgb(0, 102, 0);">
+<span style="font-weight: normal; color: rgb(0, 102, 0);">&nbsp;&nbsp;&nbsp;
+);</span></code><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;"><br>
+</span>
+<h1><a class="mozTocH1" name="mozTocId903324"></a><span
+ style="font-weight: normal;">6. Binding free functions</span></h1>
+<span style="font-weight: normal;">Use Function function to register
+free functions. Here is a code from std::rand function:</span><span
+ style="font-weight: normal;"><br>
+</span>
+<div style="margin-left: 40px;"><code style="color: rgb(0, 102, 0);"><span
+ style="font-weight: normal;">host.Insert(Declare("std") +
+Function("rand", &amp;::std::rand))</span></code><br>
+</div>
+<br>
+<span style="font-weight: normal;">If you want to bind overloaded
+function - specify it explicilty:<br>
+</span>
+<div style="margin-left: 40px;"><code style="color: rgb(0, 102, 0);"><span
+ style="font-weight: normal;">+Function("abs", (double (*)(double))
+&amp;::std::abs)</span></code><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;"><br>
+If you want to move ownership of return value to Lua code - use Adopt
+policy:<br>
+</span>
+<div style="margin-left: 40px;"><code style="color: rgb(0, 102, 0);"><span
+ style="font-weight: normal;">std::string *S() { return new
+std::string("test"); };</span><br>
+<span style="font-weight: normal;">...</span><br>
+<span style="font-weight: normal;">host.Insert( Function("S", &amp;S,
+Adopt(-1) ) );</span></code><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;">Of cource you can register such
+function without adoption and get a memory leaks.<br>
+<br>
+</span>
+<div style="text-align: justify;"><span style="font-weight: normal;">Signature
+matching. It is, and all. If mluabind can't match signatures to get
+best fitted or any fitted you will get a human-readable error produced
+by CHost::Error (this is a virtual function, your code can override it
+for custom error handling ).</span><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;"><br>
+</span>
+<h1><a class="mozTocH1" name="mozTocId113089"></a><span
+ style="font-weight: normal;">7. Binding classes</span></h1>
+<span style="font-weight: normal;">Use Class function to register a
+class:<br>
+</span>
+<div style="margin-left: 40px;"><code style="color: rgb(0, 102, 0);"><span
+ style="font-weight: normal;">host.Insert( Class&lt;A&gt;("") )</span><br>
+<span style="font-weight: normal;">or </span><br>
+<span style="font-weight: normal;"></span><span
+ style="font-weight: normal;">host.Insert( Class&lt;A&gt;() )</span></code><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;">If you skip class name mluabind will
+use typeid name for it. This can be useful when registering a smart
+pointers.</span><span style="font-weight: normal;"><br>
+<br>
+</span>
+<h3><a class="mozTocH3" name="mozTocId249570"></a><span
+ style="font-weight: normal;">Constructors</span></h3>
+<span style="font-weight: normal;">To register a constructor use a
+Constructor method:<br>
+</span>
+<div style="text-align: left;">
+<div style="margin-left: 40px;"><code style="color: rgb(0, 102, 0);"><span
+ style="font-weight: normal;">host.Insert(</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+Class&lt;std::string&gt;("string")</span><br>
+<span style="font-weight: normal;"></span><span
+ style="font-weight: normal;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+.Constructor()</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; .Constructor&lt;const char*&gt;()</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; .Constructor&lt;const char*, size_t&gt;()</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; ...</span><br>
+<span style="font-weight: normal;">)</span></code><br>
+</div>
+<span style="font-weight: normal;"></span></div>
+<div style="text-align: justify;"><span style="font-weight: normal;">Here
+is a partial registration of std::string class with 3 constructors - a
+default constructor(by the fact without any passed parameters - is also
+could be a constructor with one default parameter), constructor that
+accepts a string, and constructor that accepts a string and a
+numerical. When you're creating object in Lua using constructors, they
+are matched by parameters as functions, methods or operators.</span><br>
+<span style="font-weight: normal;"></span></div>
+<h3><a class="mozTocH3" name="mozTocId426532"></a><span
+ style="font-weight: normal;">Methods</span></h3>
+<span style="font-weight: normal;">To register a method use a Method
+method:<br>
+</span>
+<div style="margin-left: 40px;"><code style="color: rgb(0, 102, 0);"><span
+ style="font-weight: normal;">host.Insert(</span></code><br>
+<code style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+Class&lt;std::string&gt;("string")</span></code><br>
+<code style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+...</span></code><br>
+<code style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; .Method("c_str", &amp;</span></code><code
+ style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">std::string</span></code><code
+ style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">::c_str)</span></code><br>
+<code style="color: rgb(0, 102, 0);"><span style="font-weight: normal;"></span><span
+ style="font-weight: normal;"></span><span style="font-weight: normal;"></span><span
+ style="font-weight: normal;">&nbsp;&nbsp;&nbsp; ...</span></code><br>
+<code style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">)</span></code><br>
+</div>
+<div style="text-align: justify;"><span style="font-weight: normal;">Overloaded
+methods work exactly as overloaded functions. Methods can be or can not
+be const. If they are non-const Lua script can't call them from const
+object, it will cause error. You can bind free functions as they are
+methods of some class:</span><br>
+<span style="font-weight: normal;"></span></div>
+<div style="margin-left: 40px;"><code style="color: rgb(0, 102, 0);"><span
+ style="font-weight: normal;">const char* CSTR(std::string *_s) {
+return _s-&gt;c_str(); };</span></code><br>
+<code style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">...</span></code><br>
+<code style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">host.Insert(</span></code><br>
+<code style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+Class&lt;std::string&gt;("string")</span></code><br>
+<code style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+...</span></code><br>
+<code style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; .Method("c_str", &amp;</span></code><code
+ style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">CSTR</span></code><code
+ style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">)</span></code><br>
+<code style="color: rgb(0, 102, 0);"><span style="font-weight: normal;"></span><span
+ style="font-weight: normal;"></span><span style="font-weight: normal;"></span><span
+ style="font-weight: normal;">&nbsp;&nbsp;&nbsp; ...</span></code><br>
+<code style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">)</span></code><br>
+</div>
+<span style="font-weight: normal;">They must receive T* or const T* as
+a first parameter. In const T* case they are treaten as const methods
+and vice versa.<br>
+<br>
+</span>
+<h3><a class="mozTocH3" name="mozTocId611336"></a><span
+ style="font-weight: normal;">Members</span></h3>
+<span style="font-weight: normal;">To register a member use a Member
+method:<br>
+</span>
+<div style="margin-left: 40px;"><code style="color: rgb(0, 102, 0);"><span
+ style="font-weight: normal;">struct MyClass</span><br>
+<span style="font-weight: normal;">{</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; MyClass(const
+std::string&amp; _s):m_String(_s){};</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; const std::string
+&amp;GetString() const { return m_String; };</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; void
+SetString(const std::string &amp;_s) { m_String = _s; };</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; std::string
+m_String;</span><br>
+<span style="font-weight: normal;">};</span><br>
+<span style="font-weight: normal;">const std::string
+&amp;GetString(const MyClass* obj) { return obj-&gt;m_String; };</span><br>
+<span style="font-weight: normal;">void SetString(MyClass* obj, const
+std::string &amp;_s) { obj-&gt;m_String = _s; };</span><br>
+<span style="font-weight: normal;">...</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; host.Insert(</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Class&lt;MyClass&gt;("MyClass")</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+.Constructor&lt;const std::string&amp;&gt;()</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+.Member("m_String", &amp;MyClass::m_String)</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+.Member("String1", &amp;MyClass::GetString, &amp;MyClass::SetString)</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+.Member("String2", &amp;MyClass::GetString)</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+.Member("String3", &amp;GetString, &amp;SetString)</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+.Member("String4", &amp;GetString)</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; );</span></code><br>
+<span style="font-weight: normal;"></span></div>
+<div style="text-align: justify;"><span style="font-weight: normal;">m_String
+field is bind by different ways here. Most simple - bind it directly (</span><code
+ style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">.Member("m_String",
+&amp;MyClass::m_String)</span></code><span style="font-weight: normal;">),
+and Lua code can access it thru ".m_String" code. Currently there's
+only read\write direct binding.</span><br>
+<span style="font-weight: normal;">Second variant (</span><code
+ style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">.Member("String1",
+&amp;MyClass::GetString, &amp;MyClass::SetString)</span></code><span
+ style="font-weight: normal;">) - bind it as a read\write property
+(".String1").</span><br>
+<span style="font-weight: normal;">Third variant (</span><code
+ style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">.Member("String2",
+&amp;MyClass::GetString)</span></code><span style="font-weight: normal;">)
+- bind it as a read-only property (".String2")</span><br>
+<span style="font-weight: normal;">Fourth variant (</span><code
+ style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">.Member("String3",
+&amp;GetString, &amp;SetString)</span></code><span
+ style="font-weight: normal;">) - bind it as read\write property with
+free functions (".String3")</span><br>
+<span style="font-weight: normal;">Last variant (</span><code
+ style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">.Member("String4",
+&amp;GetString)</span></code><span style="font-weight: normal;">) -
+bind it as read-only property with free functions (".String4")</span><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;"><br>
+</span>
+<h3><a class="mozTocH3" name="mozTocId340212"></a><span
+ style="font-weight: normal;">Operators</span></h3>
+<span style="font-weight: normal;">Of cource, you can use Operator
+method to bind them ;)<br>
+There are 2 ways to register operators for class. One way - almost as
+in LuaBind. Second - with almost different opproach.<br>
+First way example(part of std::basic_string binding):<br>
+</span>
+<div style="margin-left: 40px; color: rgb(0, 102, 0);"><code><span
+ style="font-weight: normal;">.Operator(const_self + const_self)</span><br>
+<span style="font-weight: normal;">.Operator(const_self == const_self)</span><br>
+<span style="font-weight: normal;">.Operator(const_self ==
+other&lt;const _T::value_type*&gt;())</span><br>
+<span style="font-weight: normal;">.Operator(other&lt;const
+_T::value_type*&gt;() == const_self)</span></code><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;">Quite like LuaBind, nothing to
+comment. There is one little 'but" - when you have to register Lua
+operator, which has no C++ equivalent.<br>
+C++ definitely hasn't "__tostring" and ".." operators :)<br>
+In std::basic_string binding of ".." operator this is done thru
+internal structures:<br>
+</span>
+<div style="margin-left: 40px;"><code style="color: rgb(0, 102, 0);"><span
+ style="font-weight: normal;">.Operator(impl::BinaryOperatorBaseHolder&lt;ConCat,
+true, true, const _T&gt;())</span><br>
+<span style="font-weight: normal;">.Operator(impl::BinaryOperatorBaseHolder&lt;ConCat,
+true, true, const _T::value_type*&gt;())</span><br>
+<span style="font-weight: normal;">.Operator(impl::BinaryOperatorBaseHolder&lt;ConCat,
+true, false, const _T::value_type*&gt;())</span></code><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;">Those scary string gives an ability
+to perform following operations in Lua:<br>
+</span>
+<div style="margin-left: 40px;"><code style="color: rgb(0, 102, 0);"><span
+ style="font-weight: normal;">std.string("1") .. std.string("2")</span><br>
+<span style="font-weight: normal;">std.string("1") .. "2"</span><br>
+<span style="font-weight: normal;">"1" .. std.string("2")</span></code><br>
+<span style="font-weight: normal;"></span></div>
+<div style="text-align: justify;"><span style="font-weight: normal;">NOTE!
+MLuaBind supports implicit object creating when passing something
+somewhere as a parameter, almost like C++. So in example above we can
+drop operators with const char *, as mluabind can create
+std::basic_string objects from them, but this will cause performance
+penalties.</span><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;"><br>
+</span>
+<div style="text-align: justify;"><span style="font-weight: normal;">Second
+way - tell mluabind "use THIS method\function for THAT operator". Such
+approach is necessary when you have to bind a unary operator, or when
+operator has no C++ equivalent. You can use methods or free functions
+for this binding, like methods registration. For example, code for
+binding "__tostring" operator in std::basic_string:</span><br>
+<span style="font-weight: normal;"></span></div>
+<div style="margin-left: 40px; text-align: justify;"><code
+ style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">.Operator(Str,
+&amp;_T::c_str)</span></code><br>
+<span style="font-weight: normal;"></span></div>
+<div style="text-align: justify;"><span style="font-weight: normal;">Quite
+easy, isn't it? Here is operator codes listing:</span><br>
+<span style="font-weight: normal;">Add(+), Sub(-), Mul(*), Div(/),
+Mod(%), Unm(unary -), Eq(==), Lt(&lt;), Le(&lt;=), Str(__tostring),
+ConCat(__concat), Call(__call).</span><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;"><br>
+</span>
+<h3><a class="mozTocH3" name="mozTocId758863"></a><span
+ style="font-weight: normal;">Constants</span></h3>
+<div style="text-align: justify;"><span style="font-weight: normal;">Use
+Constant\Enum method to define them. Again, std::string:</span><br>
+<span style="font-weight: normal;"></span></div>
+<div style="margin-left: 40px; text-align: justify;"><code
+ style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">.Enum("npos",
+std::string::npos)</span></code><br>
+<span style="font-weight: normal;"></span></div>
+<div style="text-align: justify;"><span style="font-weight: normal;">It
+can be accessed as "std.string.npos" </span><span
+ style="font-weight: normal;">in Lua</span><span
+ style="font-weight: normal;">. Also the can be accessed via object:
+"local a = std.string() \n local b = a.npos".<br>
+When you declare enum in fact a lot of workaround code is used to bring
+syntax-clear usage. So, it will be better to define anything but enums
+with Constant method.<br>
+I.e. defining float/double/int/something as Enum is not a good decision.<br>
+Constant can be any type in fact, not
+only build-in Lua types. You can register all that you want into some
+namespace.</span><br>
+<span style="font-weight: normal;">For example (from
+test_namespace.cpp):</span><br>
+<span style="font-weight: normal;"><code>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; <span
+ style="color: rgb(0, 102, 0);">... some class C declared here ...</span></code></span><br>
+<span style="font-weight: normal;"></span></div>
+<div style="margin-left: 40px; text-align: justify;"><code
+ style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; static C obj_inst;</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; host.Insert(</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Declare("namespace")</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; ...</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
++Class&lt;C&gt;("C")</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; ...</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; .Constant("instance", &amp;obj_inst)</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; );</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+&nbsp;&nbsp; &nbsp;&nbsp; ...</span></code><br>
+<span style="font-weight: normal;"></span></div>
+<div style="text-align: justify;"><span style="font-weight: normal;">Something
+like a singleton was defined above - a variable obj_inst is stored in
+Lua as a pointer and is accessible as "namespace.C.instance". You can
+register them as const &amp;, const *, &amp;, *, by value or even by
+const value.</span><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;"><br>
+</span>
+<h3><a class="mozTocH3" name="mozTocId113098"></a><span
+ style="font-weight: normal;">Conversion \ Inheritance</span></h3>
+<div style="text-align: justify;"><span style="font-weight: normal;">First
+of all - a few words about possible conversions in mluabind (for
+current moment of course). Generally there are three type conversion
+mechanisms:</span><br>
+<span style="font-weight: normal;">1) Implicit Up casts. While
+searching for method, member or operator for some object by name,
+Mluabind can go up through&nbsp; conversion\inheritance hierarchy (yep,
+those searches are
+performed at run time). Or when you have a function that accept A, but
+you have variable with type B, which is derived from A - mluabind
+certainly</span> <span style="font-weight: normal;">will implicitly
+convert it for you. On the other hand, it can be a conversion from
+smart pointer to it's content. Thus any smart pointer in Lua can
+interact exactly as an underlying type. This make possible even force
+iterators(STL or from other libraries) to grant it's value's interface.
+And, the last, implicit up casts can be made when class has registered
+conversion operator (like "operator A&amp;()" from above). Up cast
+conversions can be made with any links amount, mluabind can perform A
+-&gt; B -&gt; C -&gt; ... conversion at once.</span><br>
+<span style="font-weight: normal;">2) Implicit object creation via
+constructors with one parameter. That's most like C++, but in MLuaBind
+there's no "explicit" keyword, so any registered constructor with one
+parameter can be used to produce a temporary object for parameter
+passing.</span><br>
+<span style="font-weight: normal;">3) Explicit down casts. That's
+exactly like dynamic_cast in C++, but have one nice feature, read below
+about it. This casts are always explicit, MLuaBind won't do it itself
+for you.</span><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;"><br>
+<span style="font-weight: bold;">Inheritance declaration</span>.
+Consider a code below:<br>
+</span>
+<div style="margin-left: 40px;"><code style="color: rgb(0, 102, 0);"><span
+ style="font-weight: normal;">struct A{...};</span><br>
+<span style="font-weight: normal;">struct B:A{...};</span><br>
+<span style="font-weight: normal;">...</span><br>
+<span style="font-weight: normal;">host.Insert(Declare()</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
++Class&lt;A&gt;("A")</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; ...</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp;
++Class&lt;B&gt;("B")</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+.Base&lt;A&gt;()</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; ...)</span></code><br>
+<span style="font-weight: normal;"></span></div>
+<div style="text-align: justify;"><span style="font-weight: normal;">To
+register a base for some class you have to put .Base&lt;T&gt;() code in
+your declaration. If there are many base classes, specify them one by
+one with Base method.</span><br>
+<span style="font-weight: normal;">This declaration assumes that
+classes in A-B hierarchy has a virtual methods tables and
+dynamic_cast mechanism can work. If your classes hasn't virtual
+methods or your project was built without RTTI information then you can
+use BaseNoDynCast method, that creates a
+inheritance link only upwards, without down-cast code. So, to speak
+general - Base creates two&nbsp; directional links between classes -
+for up casts and for down casts. And </span><span
+ style="font-weight: normal;">BaseNoDynCast creates one link for up
+casts.</span><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;"><br>
+<span style="font-weight: bold;">Smart pointer declaration</span>.Use
+SmartPtr method to register it:<br>
+</span>
+<div style="margin-left: 40px;"><code style="color: rgb(0, 102, 0);"><span
+ style="font-weight: normal;">host.Insert(
+Class&lt;Loki::SmartPtr&lt;std::string&gt; &gt;().</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; SmartPtr&lt;</span><span
+ style="font-weight: normal;">std::string</span><span
+ style="font-weight: normal;">&gt;() );</span></code><br>
+<span style="font-weight: normal;"></span></div>
+<div style="text-align: justify;"><span style="font-weight: normal;">After
+this you can use smart pointers (loki smart pointers here) in your Lua
+code as they are true objects. Difference with LuaBind is that here
+smart pointers for some class are complete individual entities, they
+can have their methods, members and so on. In MLuaBind you can register
+many smart pointers to one class and smart pointer to many classes and
+so on. There's no restrictions, just that smart pointer class must have
+unary operator *, that returns a reference to underlying object. Smart
+pointers to some class can interact within Lua code exactly as those
+class's objects can. MLuaBind treat smart pointers as an
+inheritance(for up casts) in fact. So you can imagine that
+SmartPtr&lt;A&gt; is inherited from A for Lua code, this approach gives
+many benefits.</span><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;"><br>
+</span><span style="font-weight: normal;"><span
+ style="font-weight: bold;">Conversion to some type</span>. Use
+Convert&lt;Type&gt;() method to register it and have operator
+Type&amp;()
+in your class. This conversion works exactly as conversion from smart
+pointers. Nothing more to say.<br>
+<br>
+</span>
+<div style="text-align: justify;">
+<h3><a class="mozTocH3" name="mozTocId452279"></a><span
+ style="font-weight: normal;">The dessert</span></h3>
+<span style="font-weight: normal;">What is complex safe casting? First
+of all - ability to perform safe casts in C++ dynamic_cast manner.
+Upcasts are made implicitly when you pass object as a parameter, or
+when you're accessing it via "." operator.When you have object A* which
+points at B in fact, but was retrieved as a A and you need B interface
+- you can write "<code style="color: rgb(0, 102, 0);">myobj =
+__cast(myobj, B)</code>". If your A* isn't actualy B* you'll get nil. <span
+ style="color: rgb(0, 102, 0);">__cast</span> and <span
+ style="color: rgb(0, 102, 0);">__cast_unsafe</span> functions accept <span
+ style="color: rgb(0, 102, 0);">__cast(myobj, B)</span> or <span
+ style="color: rgb(0, 102, 0);">__cast(myobj, "B")</span> form.</span><br>
+<span style="font-weight: normal;">Another feature of <span
+ style="color: rgb(0, 102, 0);">__cast</span> function is an ability to
+perform a mixed up\down casts. Consider that you're developing a GUI
+and have classes gui::BaseWidget and</span><br>
+<span style="font-weight: normal;">gui::ButtonWidget. Your system is
+written in right way and all widgets are stored in smart pointers.
+Something like this:<br>
+</span><span style="font-weight: normal;">ButtonWidget --&gt; ...
+--&gt; </span><span style="font-weight: normal;">BaseWidget&nbsp;
+&lt;-- smart_ptr&lt;BaseWidget&gt;<br>
+What
+if you have to get button widget with "OK" ID from Lua code and access
+it's interface? In general your code should looks like this:</span><br>
+<span style="font-weight: normal;"></span></div>
+<div style="margin-left: 40px; text-align: justify;"><code
+ style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">local
+widget_smart_ptr = Window.GetWidgetByID("OK")</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; -- grabs this
+button from some window's widgets container</span><br>
+<span style="font-weight: normal;">local widget = widget_smart_ptr.get()</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; -- get widget
+from smart pointer (of cource you can operate it directly as a
+gui::BaseWidget class)</span><br>
+<span style="font-weight: normal;">local button = __cast(widget,
+gui.ButtonWidget)</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; -- casts basic
+widget to button widget</span><br>
+<span style="font-weight: normal;">button.DoSomething()</span></code><br>
+<span style="font-weight: normal;"></span></div>
+<div style="text-align: justify;"><span style="font-weight: normal;">Note
+that all smart pointers access operations or other conversions are
+treat as a simple up casts.</span><br>
+<span style="font-weight: normal;">With mixed cast you can do the same
+much easier:</span><br>
+<span style="font-weight: normal;"></span></div>
+<div style="margin-left: 40px; text-align: justify;"><code
+ style="color: rgb(0, 102, 0);"><span style="font-weight: normal;">__cast(Window.GetWidgetByID("OK"),
+gui.ButtonWidget).DoSomething()</span></code><br>
+<span style="font-weight: normal;"></span></div>
+<div style="text-align: justify;"><span style="font-weight: normal;">In
+this example mluabind will try direct up cast first, then try down
+casts and then tries to reach gui::ButtonWidget via up cast and
+the following down cast.</span><br>
+<span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;"><br>
+</span>
+<h1><a class="mozTocH1" name="mozTocId930190"></a><span
+ style="font-weight: normal;">8. Calling Lua functions</span></h1>
+<span style="font-weight: normal;">Use CHost::CallLuaFunction&lt;&gt;
+to perfrom a call of function. It's template parameter tells mluabind
+that return type do you expect. Here is an example:<br>
+</span>
+<div style="margin-left: 40px;"><code style="color: rgb(0, 102, 0);"><span
+ style="font-weight: normal;">Lua:<br>
+function MyFunction(a, b)</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; a.assign(a + b)</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; return a</span><br>
+<span style="font-weight: normal;">end</span><br>
+<span style="font-weight: normal;"><span style="font-family: monospace;">C++:</span></span><br>
+<span style="font-weight: normal;">std::string *s =
+host.CallLuaFunction&lt;std::string*&gt;("MyFunction", new
+std::string("abra"), std::string("cadabra"));</span><br>
+<span style="font-weight: normal;">assert(*s == "abracadabra");<br>
+delete s;<br>
+</span></code><span style="font-weight: normal;"></span></div>
+<span style="font-weight: normal;">If mluabind can't find requested
+function or if it's result can not be converted to desired type
+CHost::Error will be used.<br>
+<br>
+</span>
+<h1><a class="mozTocH1" name="mozTocId993278"></a><span
+ style="font-weight: normal;">9. Lua API</span></h1>
+<div style="text-align: justify;"><span style="font-weight: normal;">MLuaBind
+"system" functions that are always exported to Lua are listed below:</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; <code><span
+ style="color: rgb(0, 102, 0);">obj __const(obj, [const])</span></code>
+Takes object from first parameter and makes it const if second
+parameter is true or there's no second parameter. Make object non-const
+if second parameter is false. Returns entire object.</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; <code><span
+ style="color: rgb(0, 102, 0);">string __get_type(obj)</span></code>
+Returns Lua-presentation information about object's type in form
+"LuaName"</span><br>
+<span style="font-weight: normal;"></span><span
+ style="font-weight: normal;">&nbsp;&nbsp;&nbsp; <code><span
+ style="color: rgb(0, 102, 0);">string __get_typeex(obj)</span></code>
+Returns Lua-presentation information about object's type in form
+"LuaName[ const][ owned]". Const word at the end signals that object is
+constant and owned word singnals that ownership for this object is at
+Lua side.</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; <code
+ style="color: rgb(0, 102, 0);">string __get_rtti_type(obj)</code>
+Retuns a covered C++ typeid information about object's type.</span><br>
+<span style="font-weight: normal;">&nbsp;&nbsp;&nbsp; <code
+ style="color: rgb(0, 102, 0);">newobj __cast(obj, dest_type)</code>
+Returns a new variable, that is obj cast to dest_type if this
+conversion is possible, nil otherwise. This cast is honest and always
+return a meaning value. If paraters are ommitted, or if it failed to
+found a desired destination class, function will call CHost::Error.</span><br>
+<span style="font-weight: normal;"></span><span
+ style="font-weight: normal;">&nbsp;&nbsp;&nbsp; <code
+ style="color: rgb(0, 102, 0);">newobj __cast_unsafe(obj, dest_type)</code>
+</span><span style="font-weight: normal;">Returns a new variable, that
+is obj cast to dest_type. This cast is a fast and dirty approarch, it
+performs without any checks. It can be compared with C-style convesions
+via void*. Can easily crush your program.<br>
+<br>
+<br>
+</span>
+<h1><a class="mozTocH1" name="mozTocId352332"></a><span
+ style="font-weight: normal;">10. FAQ</span></h1>
+Is MLuaBind stable enough to use in a production code?<br>
+&nbsp;&nbsp;&nbsp; <span style="font-weight: normal;">There're a LOT
+of asserts and checks in it's code. Together with generic tests they
+can give some stability guarantee, however any library can contain bugs.<br>
+&nbsp;&nbsp;&nbsp; MLuaBind was used at least in one game project - in
+casual game Hyperballoid 2, which heavily relies on this library and
+run fairly good :)<br>
+<br>
+</span></div>
+</div>
+</div>
+<span style="font-weight: bold;">There is an ability to inherit C++
+classes in Lua?<br>
+</span>&nbsp;&nbsp;&nbsp; Well, nowhere. I've worked on this field
+about a month, but results where not satisfactory, so none of that
+experimental code appears in release version.<br>
+&nbsp;&nbsp;&nbsp; Anyway, practical necessity to derive classes in Lua
+is an open question.<br>
+<br>
+<span style="font-weight: bold;">How NULL-pointers are treated?</span><br>
+&nbsp;&nbsp;&nbsp; Any pointer T* that is a NULL-pointer represent as
+NIL in Lua. So, if you pass a NULL-pointer in Lua any type information
+about this pointer will be lost.<br>
+&nbsp;&nbsp;&nbsp; And on the contrary - any NIL variable in Lua can be
+converted to any pointer of type T as (T*)0.<br>
+&nbsp;&nbsp;&nbsp; Such compromise gives both an ability to operate
+with "no object" entity on one side and guarantees that any object in
+Lua will be consistent and other side.<br>
+<br>
+</body>
+</html>
