@@ -23,7 +23,7 @@ namespace UILib
 		virtual ~CGuiSystem(void);
 
 	public:
-		bool Initialize( HWND hWnd, _lpcstr lpszPath, const XUI_FontAttribute& fontAttr, XUI_IMouse* pCursor );
+		bool Initialize( HWND hWnd, _lpcstr lpszPath );
 		void Unitialize();
 
 		void SetEditMode( bool bMode );
@@ -32,8 +32,12 @@ namespace UILib
 		// 设置图片路径
 		_lpcstr	GetResourcePath();
 
+		void SetDefaultFont( XUI_IFont *pFont ){ m_pDefaultFont	= pFont; }
+		void SetDefaultCursor( XUI_IMouse *pCursor ){ m_pCursor = pCursor; }
+
 		XUI_IFont*	GetDefaultFont()const{ return m_pDefaultFont; }
 		XUI_IMouse*	GetMouseCursor()const{ return m_pCursor; }
+
 	protected:
 
 		// 是否初始化

@@ -44,6 +44,8 @@
 #include <DbgHelp.h>
 
 #include <hge.h>
+#include <hgesprite.h>
+#include <hgeanim.h>
 #include <hgefont.h>
 
 // ¸¨Öú¿â

@@ -102,6 +102,24 @@ namespace UILib
 		virtual void	RenderEx( float x, float y, float rot, float hscale, float vscale ) = 0;
 	};
 
+	struct XUI_IAnimation
+	{
+		virtual void Play() = 0;
+		virtual void Stop() = 0;
+		virtual void Resume() = 0;
+		virtual void Update( float fDelta ) = 0;
+		virtual void Render( float x, float y ) = 0;
+
+		virtual void	SetCurrentFrame( int nFrame ) = 0;
+		virtual int		GetCurrentFrame()const = 0;
+
+		virtual void	SetSpeed( float fFPS ) = 0;
+		virtual float	GetSpeed()const = 0;
+
+		virtual void	SetFrames( int nFrames ) = 0;
+		virtual int		GetFrames()const = 0;
+	};
+
 	struct XUI_IFont	:	protected	XUI_FontAttribute
 	{
 		XUI_IFont(){}
@@ -139,7 +157,6 @@ namespace UILib
 		virtual bool	IsMouseOver()const = 0;
 	};
 
-
 	typedef void		(*pfnSetClipping)	( int32 x, int32 y, int32 w, int32 h );
 	typedef void		(*pfnDrawText)		( _lpcwstr lpszText, XUI_IFont* pFont, float x, float y );
 	typedef void		(*pfnDrawCharacter)	( _wchar lpszText, XUI_IFont* pFont, float x, float y );
@@ -149,6 +166,7 @@ namespace UILib
 	typedef void		(*pfnDrawSprite)	( const XUI_ISprite* Tex,int nX, int nY, int nWidth, int nHeight );
 	typedef XUI_ISprite*(*pfnCreateSprite)	( _lpcstr filename, float x, float y, float w, float h );
 	typedef XUI_ISprite*(*pfnCreateSpriteEx)( const XUI_SpriteAttribute& SpriteAttribute );
+	typedef XUI_IAnimation*(*pfnLoadCursor)	( _lpcstr filename );
 	typedef void		(*pfnDestroySprite)	( XUI_ISprite* pSprite );
 	typedef XUI_IFont*	(*pfnCreateFont)	( _lpcstr lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias );
 	typedef XUI_IFont*	(*pfnCreateFontEx)	( const XUI_FontAttribute& FontAttribute );

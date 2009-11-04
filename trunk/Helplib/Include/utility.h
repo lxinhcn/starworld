@@ -126,19 +126,30 @@ namespace helper
 	TOOLLIB_API std::wstring s2ws(const char* s);
 
 #ifdef _UNICODE
-	#define XA2T( a )	helper::s2ws( a ).c_str()
-	#define XT2A( t )	helper::ws2s( t ).c_str()
-	#define XW2T( w )	std::wstring( a ).c_str()
-	#define XT2W( t )	std::wstring( t ).c_str()
+	#define XA2T( a )		helper::s2ws( a ).c_str()
+	#define XA2TSTR( a )	helper::s2ws( a )
+	#define XT2A( t )		helper::ws2s( t ).c_str()
+	#define XT2ASTR( t )	helper::ws2s( t )
+	#define XW2T( w )		std::wstring( a ).c_str()
+	#define XW2TSTR( w )	std::wstring( a )
+	#define XT2W( t )		std::wstring( t ).c_str()
+	#define XT2WSTR( t )	std::wstring( t )
 #else
-	#define XA2T( a )	std::string( a ).c_str()
-	#define XT2A( t )	std::string( t ).c_str()
-	#define XW2T( w )	helper::ws2s( a ).c_str()
-	#define XT2W( t )	helper::s2ws( t ).c_str()
+	#define XA2T( a )		std::string( a ).c_str()
+	#define XA2TSTR( a )	std::string( a )
+	#define XT2A( t )		std::string( t ).c_str()
+	#define XT2ASTR( t )	std::string( t )
+	#define XW2T( w )		helper::ws2s( a ).c_str()
+	#define XW2TSTR( w )	helper::ws2s( a )
+	#define XT2W( t )		helper::s2ws( t ).c_str()
+	#define XT2WSTR( t )	helper::s2ws( t )
 #endif
 
-	#define XA2W( a )	helper::s2ws( a ).c_str()
-	#define XW2A( w )	helper::ws2s( w ).c_str()
+	#define XA2W( a )		helper::s2ws( a ).c_str()
+	#define XW2A( w )		helper::ws2s( w ).c_str()
+	#define XA2WSTR( a )	helper::s2ws( a )
+	#define XW2ASTR( w )	helper::ws2s( w )
+
 	class TOOLLIB_API CErrorDescribe
 	{
 	public:
