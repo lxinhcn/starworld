@@ -19,31 +19,41 @@ CTextureManager::~CTextureManager()
 // describe	: 得到路径指定的纹理句柄
 // return	: 纹理句柄
 //---------------------------------------------------------------------//
-HTEXTURE CTextureManager::GetTexture( _lpcstr lpszTexpath )
+HTEXTURE CTextureManager::GetTexture( _lpcstr key, _lpstr data, size_t size )
 {
-	if( lpszTexpath == NULL ) return NULL;
-	CTextureMap::iterator iter = m_TextureMap.find( lpszTexpath );
+	if( key == NULL ) return NULL;
+	CTextureMap::iterator iter = m_TextureMap.find( key );
 	if( iter != m_TextureMap.end() )
 	{
 		return iter->second;
 	}
 
 	HGE* hge = Application::Instance().getEngine();
-	HTEXTURE h = hge->Texture_Load( ( std::string() + RESOURCEPATH + lpszTexpath ).c_str() );
-	m_TextureMap[lpszTexpath] = h;
+	HTEXTURE h = NULL;
+	if( data && size )
+	{
+		h = hge->Texture_Load( data, size );
+	}
+	else
+	{
+		std::string path = std::string() + GuiSystem::Instance().GetResourcePath() + key;
+		h = hge->Texture_Load( path.c_str() );
+	}
+	m_TextureMap[key] = h;
 	return h;
 }
 
 void CTextureManager::Clear()
 {
 	HGE* hge = hgeCreate( HGE_VERSION );
-	CTextureMap::iterator iter = m_TextureMap.begin();
-	while( iter != m_TextureMap.end() )
+	CTextureMap::iterator iterMap = m_TextureMap.begin();
+	while( iterMap != m_TextureMap.end() )
 	{
-		hge->Texture_Free( iter->second );
-		++iter;
+		hge->Texture_Free( iterMap->second );
+		++iterMap;
 	}
 	m_TextureMap.clear();
+
 	hge->Release();
 }
 //////////////////////////////////////////////////////////////////////////
@@ -204,43 +214,43 @@ void CClientFont::Render( float x, float y, _tchar szChar )const
 CXMouse::CXMouse( CXMouse::CursorDefine* cursor, int count )
 : m_nCount( count )
 , m_nCurIndex( 0 )
-, m_pCursorArray( NULL )
+, m_pCursorArray( cursor )
 , m_nTimerHandle( -1 )
 {
-	m_pCursorArray = new XUI_IMouse::CursorDefine[count];
-	for( int i = 0; i < count; ++i )
-	{
-		m_pCursorArray[i].m_frame_count = cursor[i].m_frame_count;
-		m_pCursorArray[i].m_frame_seq = cursor[i].m_frame_seq;
-		m_pCursorArray[i].m_cur_frame = 0;
-		m_pCursorArray[i].m_texture = XUI_CreateSprite( cursor[i].m_filename, 1.0f*i*cursor[i].m_width, 0.0f, 1.0f*cursor[i].m_width, 1.0f*cursor[i].m_height*cursor[i].m_frame_count );
-		m_pCursorArray[i].m_texture->SetCenter( cursor[i].m_hotx, cursor[i].m_hoty );
-	}
+	//m_pCursorArray = new XUI_IMouse::CursorDefine[count];
+	//for( int i = 0; i < count; ++i )
+	//{
+	//	m_pCursorArray[i].m_frame_count = cursor[i].m_frame_count;
+	//	m_pCursorArray[i].m_frame_seq = cursor[i].m_frame_seq;
+	//	m_pCursorArray[i].m_cur_frame = 0;
+	//	m_pCursorArray[i].m_texture = XUI_CreateSprite( cursor[i].m_filename, 1.0f*i*cursor[i].m_width, 0.0f, 1.0f*cursor[i].m_width, 1.0f*cursor[i].m_height*cursor[i].m_frame_count );
+	//	m_pCursorArray[i].m_texture->SetCenter( cursor[i].m_hotx, cursor[i].m_hoty );
+	//}
 	SetMouse( XUI_MOUSE_ARROW );
 }
 
 CXMouse::~CXMouse()
 {
-	GuiSystem::Instance().KillTimer( m_nTimerHandle );
-	for( int i = 0; i < m_nCount; ++i )
-	{
-		XUI_DestroySprite( m_pCursorArray[i].m_texture );
-	}
-	delete[] m_pCursorArray;
+	//GuiSystem::Instance().KillTimer( m_nTimerHandle );
+	//for( int i = 0; i < m_nCount; ++i )
+	//{
+	//	XUI_DestroySprite( m_pCursorArray[i].m_texture );
+	//}
+	//delete[] m_pCursorArray;
 }
 
 bool	CXMouse::OnTimer( unsigned int handle, unsigned short& repeat, unsigned int& timer )
 {
-	repeat = 1;
-	XUI_IMouse::CursorDefine* pCursor = m_pCursorArray + m_nCurIndex;
-	if( pCursor )
-	{
-		++pCursor->m_cur_frame;
-		if( pCursor->m_texture )
-			pCursor->m_texture->SetUV( 
-				pCursor->m_texture->GetU0(), pCursor->m_cur_frame%pCursor->m_frame_count*1.0f/pCursor->m_frame_count,
-				pCursor->m_texture->GetU1(), pCursor->m_cur_frame%pCursor->m_frame_count*1.0f/pCursor->m_frame_count + 1 );
-	}
+	//repeat = 1;
+	//XUI_IMouse::CursorDefine* pCursor = m_pCursorArray + m_nCurIndex;
+	//if( pCursor )
+	//{
+	//	++pCursor->m_cur_frame;
+	//	if( pCursor->m_texture )
+	//		pCursor->m_texture->SetUV( 
+	//			pCursor->m_texture->GetU0(), pCursor->m_cur_frame%pCursor->m_frame_count*1.0f/pCursor->m_frame_count,
+	//			pCursor->m_texture->GetU1(), pCursor->m_cur_frame%pCursor->m_frame_count*1.0f/pCursor->m_frame_count + 1 );
+	//}
 	return true;
 }
 
@@ -261,26 +271,39 @@ int32	CXMouse::GetMouseWheel()
 
 void	CXMouse::RenderMouse()
 {
-	float x, y;
-	GetMousePos( &x, &y );
-	XUI_IMouse::CursorDefine* pCursor = m_pCursorArray + m_nCurIndex;
-	if( pCursor && pCursor->m_texture )
-	{
-		pCursor->m_texture->Render( x, y );
-	}
+	return;
+	//float x, y;
+	//GetMousePos( &x, &y );
+	//CursorDefine* pCursor = m_pCursorArray + m_nCurIndex;
+	//if( pCursor && pCursor->m_texture )
+	//{
+	//	pCursor->m_texture->Render( x, y );
+	//}
 }
 
 void	CXMouse::SetMouse( uint16 id )
 {
+	//if( id < m_nCount )
+	//{
+	//	XUI_IMouse::CursorDefine* pCursor = m_pCursorArray + m_nCurIndex;
+	//	GuiSystem::Instance().KillTimer( m_nTimerHandle );
+	//	if( pCursor && pCursor->m_frame_seq )
+	//		m_nTimerHandle = GuiSystem::Instance().SetTimer( event_function( this, &CXMouse::OnTimer ), 1, TIMER_SECOND(pCursor->m_frame_seq/16) );
+	//	else
+	//		m_nTimerHandle = -1;
+	//	m_nCurIndex = id;
+	//}
+
 	if( id < m_nCount )
 	{
-		XUI_IMouse::CursorDefine* pCursor = m_pCursorArray + m_nCurIndex;
-		GuiSystem::Instance().KillTimer( m_nTimerHandle );
-		if( pCursor && pCursor->m_frame_seq )
-			m_nTimerHandle = GuiSystem::Instance().SetTimer( event_function( this, &CXMouse::OnTimer ), 1, TIMER_SECOND(pCursor->m_frame_seq/16) );
+		CursorDefine* pCursor = m_pCursorArray + m_nCurIndex;
+		if( pCursor->hCursor )
+			SetCursor( pCursor->hCursor );
 		else
-			m_nTimerHandle = -1;
-		m_nCurIndex = id;
+		{
+			pCursor->hCursor = LoadCursor( NULL, pCursor->pszCursor );
+			SetCursor( pCursor->hCursor );
+		}
 	}
 }
 
@@ -318,6 +341,74 @@ bool	CXMouse::IsMouseOver()const
 {
 	return Application::Instance()->Input_IsMouseOver();
 }
+
+//////////////////////////////////////////////////////////////////////////
+CClientAnimation::CClientAnimation( HTEXTURE hTex, int nFrames, float FPS, float x, float y, float w, float h )
+: m_Animation( hTex, nFrames, FPS, x, y, w, h )
+{
+
+}
+
+CClientAnimation::~CClientAnimation()
+{
+
+}
+
+void CClientAnimation::Play()
+{
+	m_Animation.Play();
+}
+
+void CClientAnimation::Stop()
+{
+	m_Animation.Stop();
+}
+
+void CClientAnimation::Resume()
+{
+	m_Animation.Resume();
+}
+
+void CClientAnimation::Update( float fDelta )
+{
+	m_Animation.Update( fDelta );
+}
+
+void CClientAnimation::Render( float x, float y )
+{
+	m_Animation.Render( x, y );
+}
+
+void CClientAnimation::SetCurrentFrame( int nFrame )
+{
+	m_Animation.SetFrame( nFrame );
+}
+
+int	CClientAnimation::GetCurrentFrame()const
+{
+	return m_Animation.GetFrame();
+}
+
+void CClientAnimation::SetSpeed( float fFPS )
+{
+	m_Animation.SetSpeed( fFPS );
+}
+
+float CClientAnimation::GetSpeed()const
+{
+	return m_Animation.GetSpeed();
+}
+
+void CClientAnimation::SetFrames( int nFrames )
+{
+	m_Animation.SetFrames( nFrames );
+}
+
+int	CClientAnimation::GetFrames()const
+{
+	return m_Animation.GetFrames();
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 static void _SetClipping( int32 x, int32 y, int32 w, int32 h )

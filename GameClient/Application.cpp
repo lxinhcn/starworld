@@ -6,22 +6,40 @@
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 600
 
+//CXMouse::CursorDefine Cursors[14] = 
+//{
+//	{  0,  0, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_ARROW			0
+//	{ 16, 16, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_TEXT				1
+//	{ 16, 16, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_CROSS			2
+//	{ 16, 16, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_SIZENESW			3
+//	{ 16, 16, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_SIZENS			4
+//	{ 16, 16, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_SIZENWSE			5
+//	{ 16, 16, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_SIZEWE			6
+//	{ 16, 16, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_SIZEALL			7
+//	{ 16, 16, 32, 32, 8, 1, "media\\cursor.png" },// XUI_MOUSE_WAIT				8
+//	{  0,  0, 32, 32, 8, 1, "media\\cursor.png" },// XUI_MOUSE_BUSY				9
+//	{  0,  0, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_HAND				10
+//	{  0, 32, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_HANDWRITE		11
+//	{ 16, 16, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_STOP				12
+//	{  0,  0, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_HELP				13
+//};
+
 CXMouse::CursorDefine Cursors[14] = 
 {
-	{  0,  0, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_ARROW				0
-	{ 16, 16, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_TEXT				1
-	{ 16, 16, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_CROSS				2
-	{ 16, 16, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_SIZENESW			3
-	{ 16, 16, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_SIZENS				4
-	{ 16, 16, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_SIZENWSE			5
-	{ 16, 16, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_SIZEWE				6
-	{ 16, 16, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_SIZEALL				7
-	{ 16, 16, 32, 32, 8, 1, "cursor.png" },// XUI_MOUSE_WAIT				8
-	{  0,  0, 32, 32, 8, 1, "cursor.png" },// XUI_MOUSE_BUSY				9
-	{  0,  0, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_HAND				10
-	{  0, 32, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_HANDWRITE			11
-	{ 16, 16, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_STOP				12
-	{  0,  0, 32, 32, 1, 0, "cursor.png" },// XUI_MOUSE_HELP				13
+	{ 0, IDC_ARROW },
+	{ 0, IDC_IBEAM },
+	{ 0, IDC_CROSS },
+	{ 0, IDC_SIZENESW },
+	{ 0, IDC_SIZENS },
+	{ 0, IDC_SIZENWSE },
+	{ 0, IDC_SIZEWE },
+	{ 0, IDC_SIZEALL },
+	{ 0, IDC_WAIT },
+	{ 0, IDC_WAIT },
+	{ 0, IDC_ARROW },
+	{ 0, IDC_ARROW },
+	{ 0, IDC_NO },
+	{ 0, IDC_HELP },
 };
 
 CApplication::CApplication(void)
@@ -122,6 +140,8 @@ bool CApplication::Initialize()
 	m_hge->System_SetState(HGE_SCREENWIDTH, SCREEN_WIDTH);
 	m_hge->System_SetState(HGE_SCREENHEIGHT, SCREEN_HEIGHT);
 	m_hge->System_SetState(HGE_SCREENBPP, 32);
+	m_hge->System_SetState(HGE_SCREENBPP, 32);
+	m_hge->System_SetState(HGE_HIDEMOUSE, false);
 
 	// m_hge->System_SetState(HGE_DONTSUSPEND, true );
 
@@ -143,12 +163,15 @@ bool CApplication::Initialize()
 		return false;
 	}
 
-	GuiSystem::Instance().Initialize( 
-		m_hge->System_GetState(HGE_HWND), 
-		"..\\Resource\\ui\\", 
-		XUI_FontAttribute( "宋体", 18, false, false, false ),
-		new CXMouse( Cursors, 14 )
-		);
+	// 初始化UI系统
+	GuiSystem::Instance().Initialize( m_hge->System_GetState(HGE_HWND), "..\\Resource\\UI\\" );
+
+	// 设置默认字体
+	GuiSystem::Instance().SetDefaultFont( XUI_CreateFontEx( XUI_FontAttribute( "宋体", 18, false, false, false ) ) );
+
+	// 设置光标系统
+	GuiSystem::Instance().SetDefaultCursor( new CXMouse( Cursors, 14 ) );
+
 	UICommander::Instance().ProcessCommand( _T("load main.xml") );
 
 	helper::restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "RegisterClassA",	m_pRegisterClass );
@@ -168,6 +191,7 @@ void CApplication::UnInitialize()
 	// Clean up and shutdown
 
 	delete GuiSystem::Instance().GetMouseCursor();
+	delete GuiSystem::Instance().GetDefaultFont();
 	GuiSystem::Instance().Unitialize();
 	TextureManager::Instance().Clear();
 	// m_hge->System_Shutdown();

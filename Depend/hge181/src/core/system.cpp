@@ -774,8 +774,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 
 		case WM_SETCURSOR:
-			if(pHGE->bActive && LOWORD(lparam)==HTCLIENT && pHGE->bHideMouse) SetCursor(NULL);
-			else SetCursor(LoadCursor(NULL, IDC_ARROW));
+			if(pHGE->bActive && LOWORD(lparam)==HTCLIENT && pHGE->bHideMouse) 
+				SetCursor(NULL);
+			else 
+				SetCursor(LoadCursor(NULL, IDC_ARROW));
 			return FALSE;
 
 		case WM_SYSKEYDOWN:

@@ -1,7 +1,6 @@
 #pragma once
 #include "GfxFont.h"
-#include "Canvas.h"
-
+#include <hash_map>
 using namespace UILib;
 
 class CTextureManager
@@ -16,7 +15,7 @@ public:
 	// describe	: 得到路径指定的纹理句柄
 	// return	: 纹理句柄
 	//---------------------------------------------------------------------//
-	HTEXTURE GetTexture( _lpcstr lpszTexpath );
+	HTEXTURE GetTexture( _lpcstr lpszTexpath, _lpstr data = 0, size_t size = 0 );
 
 	//---------------------------------------------------------------------//
 	// describe	: 清除所有资源
@@ -25,7 +24,7 @@ public:
 	void Clear();
 
 private:
-	typedef std::map< std::string, HTEXTURE >	CTextureMap;
+	typedef stdext::hash_map< std::string, HTEXTURE >	CTextureMap;
 	CTextureMap		m_TextureMap;	// 纹理映射
 };
 typedef Loki::SingletonHolder< CTextureManager, Loki::CreateStatic >	TextureManager;
@@ -48,18 +47,25 @@ typedef Loki::SingletonHolder< CFontManager, Loki::CreateStatic >	FontManager;
 
 struct CXMouse	:	public XUI_IMouse
 {
+	//struct CursorDefine
+	//{
+	//	byte			m_hotx;			// 热点X坐标
+	//	byte			m_hoty;			// 热点Y坐标
+	//	byte			m_width;		// 鼠标宽度
+	//	byte			m_height;		// 鼠标高度
+	//	byte			m_frame_count;	// 帧数
+	//	byte			m_frame_seq;	
+	//	_lpcstr			m_filename;		// 文件名
+	//};
+
 	struct CursorDefine
 	{
-		byte			m_hotx;			// 热点X坐标
-		byte			m_hoty;			// 热点Y坐标
-		byte			m_width;		// 鼠标宽度
-		byte			m_height;		// 鼠标高度
-		byte			m_frame_count;	// 帧数
-		byte			m_frame_seq;	
-		_lpcstr			m_filename;		// 文件名
+		HCURSOR		hCursor;
+		LPTSTR		pszCursor;
 	};
 
 	CXMouse( CursorDefine* cursor, int count );
+	//LoadCursor( _lpstr lpszPathname );
 	virtual ~CXMouse();
 	virtual void	GetMousePos( float *x, float *y );
 	virtual void	SetMousePos( float x, float y );
@@ -76,7 +82,8 @@ struct CXMouse	:	public XUI_IMouse
 
 	bool OnTimer( unsigned int handle, unsigned short& repeat, unsigned int& timer );
 private:
-	XUI_IMouse::CursorDefine*	m_pCursorArray;
+	//XUI_IMouse::CursorDefine*	m_pCursorArray;
+	CursorDefine	*m_pCursorArray;
 	int32			m_nCount;
 	int32			m_nCurIndex;
 	uint32			m_nTimerHandle;
@@ -139,6 +146,31 @@ public:
 	void Render( float x, float y, _tchar szChar )const;
 private:
 	GfxFont*	m_pFont;
+};
+
+class CClientAnimation	:	public XUI_IAnimation
+{
+public:
+	CClientAnimation( HTEXTURE hTex, int nFrames, float FPS, float x, float y, float w, float h );
+	~CClientAnimation();
+
+	virtual void Play();
+	virtual void Stop();
+	virtual void Resume();
+	virtual void Update( float fDelta );
+	virtual void Render( float x, float y );
+
+	virtual void	SetCurrentFrame( int nFrame );
+	virtual int		GetCurrentFrame()const;
+
+	virtual void	SetSpeed( float fFPS );
+	virtual float	GetSpeed()const;
+
+	virtual void	SetFrames( int nFrames );
+	virtual int		GetFrames()const;
+
+private:
+	hgeAnimation	m_Animation;
 };
 
 void init_canvas();

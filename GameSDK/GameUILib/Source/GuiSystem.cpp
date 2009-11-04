@@ -35,7 +35,7 @@ namespace UILib
 		m_pDesktop = NULL;
 	}
 
-	bool CGuiSystem::Initialize( HWND hWnd, _lpcstr lpszPath, const XUI_FontAttribute& fontAttr, XUI_IMouse* pCursor )
+	bool CGuiSystem::Initialize( HWND hWnd, _lpcstr lpszPath )
 	{
 		if( m_bInitialized )	return TRUE;
 
@@ -43,9 +43,6 @@ namespace UILib
 		m_resource_path	= path;
 		free( (void*)path ); 
 		path = NULL;
-
-		m_pCursor				= pCursor;
-		m_pDefaultFont			= XUI_CreateFont( fontAttr.name.c_str(), fontAttr.size, fontAttr.bold, fontAttr.italic, fontAttr.antialias );	// 设置字体
 
 		// 初始化lua脚本系统
 		Lua::Instance().Initialize();
@@ -68,7 +65,7 @@ namespace UILib
 
 	void CGuiSystem::Unitialize()
 	{
-		XUI_DestroyFont( m_pDefaultFont );
+		m_pDefaultFont = NULL;
 		m_pCursor = NULL;
 	}
 
@@ -202,7 +199,6 @@ namespace UILib
 		{
 			m_pDesktop->Update( m_nowtime, fDelta );
 		}
-
 	}
 
 	bool CGuiSystem::onMouseMove(XUI_Wnd* pElement, const x_point& pt, UINT sysKeys, long_ptr *result )
