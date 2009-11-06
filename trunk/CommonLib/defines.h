@@ -27,11 +27,26 @@
 	typedef std::wstring			_string;
 	typedef std::wstringstream		_stringstream;
 	typedef wchar_t					_tchar;
+
+	#define INCSZ( pch )			( ++pch )
+	#define INCNSZ( pch, count )	( pch+=count )
+	#define CMPSZ( pch1, pch2 )		( pch1 == pch2 )
+	#define EQUSZ( pch1, pch2 )		( *pch1 = *pch2 )
+	#define DEFCH( ch )				( ch )
 #else
 	typedef std::string				_string;
 	typedef std::stringstream		_stringstream;
 	typedef char					_tchar;
+
+	#define INCSZ( pch )			( pch = _mbsinc( pch ) )
+	#define INCNSZ( pch, count )	( pch = _mbsninc( pch, count ) )
+	#define CMPSZ( pch1, pch2 )		( _mbccmp( pch1, ( const UCHAR* )pch2 ) )
+	#define EQUSZ( pch1, pch2 )		( _mbccpy( pch1, pch2 ) )
+	#define DEFCH( ch )				( ( const unsigned char* )&ch[0] )
 #endif
+
+typedef std::string		_astring;
+typedef std::wstring	_wstring;
 
 #if !defined(_point64)
 	#if !defined(__midl) && (defined(_X86_) || defined(_MIX86)) && _MSC_VER >= 1300

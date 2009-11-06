@@ -5,42 +5,6 @@
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 600
 
-//CXMouse::CursorDefine Cursors[14] = 
-//{
-//	{  0,  0, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_ARROW			0
-//	{ 16, 16, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_TEXT				1
-//	{ 16, 16, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_CROSS			2
-//	{ 16, 16, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_SIZENESW			3
-//	{ 16, 16, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_SIZENS			4
-//	{ 16, 16, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_SIZENWSE			5
-//	{ 16, 16, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_SIZEWE			6
-//	{ 16, 16, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_SIZEALL			7
-//	{ 16, 16, 32, 32, 8, 1, "media\\cursor.png" },// XUI_MOUSE_WAIT				8
-//	{  0,  0, 32, 32, 8, 1, "media\\cursor.png" },// XUI_MOUSE_BUSY				9
-//	{  0,  0, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_HAND				10
-//	{  0, 32, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_HANDWRITE		11
-//	{ 16, 16, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_STOP				12
-//	{  0,  0, 32, 32, 1, 0, "media\\cursor.png" },// XUI_MOUSE_HELP				13
-//};
-
-CXMouse::CursorDefine Cursors[14] = 
-{
-	{ 0, IDC_ARROW },
-	{ 0, IDC_IBEAM },
-	{ 0, IDC_CROSS },
-	{ 0, IDC_SIZENESW },
-	{ 0, IDC_SIZENS },
-	{ 0, IDC_SIZENWSE },
-	{ 0, IDC_SIZEWE },
-	{ 0, IDC_SIZEALL },
-	{ 0, IDC_WAIT },
-	{ 0, IDC_WAIT },
-	{ 0, IDC_ARROW },
-	{ 0, IDC_ARROW },
-	{ 0, IDC_NO },
-	{ 0, IDC_HELP },
-};
-
 CApplication::CApplication(void)
 : m_pDefWindowProc( NULL )
 , m_pRegisterClass( NULL )
@@ -124,7 +88,6 @@ bool CApplication::RenderFunc()
 	Application::Instance()->Gfx_Clear(0);
 	Application::Instance().Render();
 	GuiSystem::Instance().Render();
-	GuiSystem::Instance().Update( Application::Instance()->Timer_GetDelta() );
 	Application::Instance()->Gfx_EndScene();
 
 	return false;
@@ -146,7 +109,7 @@ bool CApplication::Initialize()
 	m_hge->System_SetState(HGE_SCREENHEIGHT, SCREEN_HEIGHT);
 	m_hge->System_SetState(HGE_SCREENBPP, 32);
 	m_hge->System_SetState(HGE_SCREENBPP, 32);
-	m_hge->System_SetState(HGE_HIDEMOUSE, false);
+	m_hge->System_SetState(HGE_HIDEMOUSE, true);
 
 	// m_hge->System_SetState(HGE_DONTSUSPEND, true );
 
@@ -175,7 +138,7 @@ bool CApplication::Initialize()
 	GuiSystem::Instance().SetDefaultFont( XUI_CreateFontEx( XUI_FontAttribute( "宋体", 18, false, false, false ) ) );
 
 	// 设置光标系统
-	GuiSystem::Instance().SetDefaultCursor( new CXMouse( Cursors, 14 ) );
+	GuiSystem::Instance().SetDefaultCursor( new CClientMouse( "Config.xml" ) );
 
 	UICommander::Instance().ProcessCommand( _T("load main.xml") );
 
@@ -205,6 +168,8 @@ void CApplication::UnInitialize()
 
 bool CApplication::UpdateLogic( float fDelta )
 {
+	GuiSystem::Instance().Update( fDelta );
+
 	if( m_hge->System_GetState( HGE_DONTSUSPEND ) )
 	{
 		int ch = 0;

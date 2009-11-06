@@ -56,7 +56,7 @@ namespace UILib
 
 	struct XUI_AnimationAttribute
 	{
-		_astring	path;
+		_astring	key;
 		int			frames;
 		float		fps;
 		float		x, y, w, h;
@@ -126,6 +126,9 @@ namespace UILib
 
 		virtual void	SetFrames( int nFrames ) = 0;
 		virtual int		GetFrames()const = 0;
+
+		virtual void	SetCenter( float x, float y ) = 0;
+		virtual void	GetCenter( float &x, float &y )const = 0;
 	};
 
 	struct XUI_IFont	:	protected	XUI_FontAttribute
@@ -156,6 +159,7 @@ namespace UILib
 		virtual bool	IsPressedMButton()const = 0;
 		virtual bool	IsReleaseMButton()const = 0;
 		virtual bool	IsMouseOver()const = 0;
+		virtual void	UpdateMouse( float fDeltaTime ) = 0;
 	};
 
 	typedef void		(*pfnSetClipping)	( _int32 x, _int32 y, _int32 w, _int32 h );
@@ -167,9 +171,10 @@ namespace UILib
 	typedef void		(*pfnDrawSprite)	( const XUI_ISprite* Tex,int nX, int nY, int nWidth, int nHeight );
 	typedef XUI_ISprite*(*pfnCreateSprite)	( _lpcstr filename, float x, float y, float w, float h );
 	typedef XUI_ISprite*(*pfnCreateSpriteEx)( const XUI_SpriteAttribute& SpriteAttribute );
+	typedef void		(*pfnDestroySprite)	( XUI_ISprite* pSprite );
 	typedef XUI_IAnimation*	(*pfnCreateAnimation)( _lpcstr filename, int frames, float fps, float x, float y, float w, float h );
 	typedef XUI_IAnimation*	(*pfnCreateAnimationEx)	( const XUI_AnimationAttribute& AnimationAttribute );
-	typedef void		(*pfnDestroySprite)	( XUI_ISprite* pSprite );
+	typedef void		(*pfnDestroyAnimation)( XUI_IAnimation* pAnimation );
 	typedef XUI_IFont*	(*pfnCreateFont)	( _lpcstr lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias );
 	typedef XUI_IFont*	(*pfnCreateFontEx)	( const XUI_FontAttribute& FontAttribute );
 	typedef void		(*pfnDestroyFont)	( XUI_IFont* pFont );
@@ -187,6 +192,7 @@ namespace UILib
 	extern pfnCreateAnimation	XUI_CreateAnimation;
 	extern pfnCreateAnimationEx	XUI_CreateAnimationEx;
 	extern pfnDestroySprite		XUI_DestroySprite;
+	extern pfnDestroyAnimation	XUI_DestroyAnimation;
 	extern pfnCreateFont		XUI_CreateFont;
 	extern pfnCreateFontEx		XUI_CreateFontEx;
 	extern pfnDestroyFont		XUI_DestroyFont;

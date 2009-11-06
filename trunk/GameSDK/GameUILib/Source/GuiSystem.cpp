@@ -190,6 +190,12 @@ namespace UILib
 			m_timer_anchor += 0.1f;
 			m_timer.active();
 		}
+
+		if( m_pCursor )
+		{
+			m_pCursor->UpdateMouse( fDelta );
+		}
+
 		SLB::LuaCall< void(float, float) >( Lua::Instance().getState(), "UIUpdateEntry" )( m_nowtime, fDelta );
 		if( m_pDesktop )
 		{
