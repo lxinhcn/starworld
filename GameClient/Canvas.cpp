@@ -39,8 +39,39 @@ HTEXTURE CTextureManager::GetTexture( _lpcstr key, _lpstr data, size_t size )
 		std::string path = std::string() + GuiSystem::Instance().GetResourcePath() + key;
 		h = hge->Texture_Load( path.c_str() );
 	}
-	m_TextureMap[key] = h;
+
+	CTextureMap::_Pairib ret = m_TextureMap.insert( CTextureMap::value_type( key, h ) );
+	if( !ret.second )
+	{
+		hge->Texture_Free(h);
+		return NULL;
+	}
 	return h;
+}
+
+//---------------------------------------------------------------------//
+// describe	: 创建纹理
+// return	: 纹理句柄
+//---------------------------------------------------------------------//
+HTEXTURE CTextureManager::CreateTexture( _lpcstr key, int w, int h )
+{
+	if( key == NULL ) return NULL;
+	CTextureMap::iterator iter = m_TextureMap.find( key );
+	if( iter != m_TextureMap.end() )
+	{
+		return NULL;
+	}
+
+	HGE* hge = Application::Instance().getEngine();
+	HTEXTURE t = hge->Texture_Create( w, h );
+	CTextureMap::_Pairib ret = m_TextureMap.insert( CTextureMap::value_type( key, t ) );
+	if( !ret.second )
+	{
+		hge->Texture_Free(t);
+		return NULL;
+	}
+
+	return t;
 }
 
 void CTextureManager::Clear()
@@ -97,6 +128,11 @@ CClientSprite::CClientSprite( _lpcstr _path, float _x, float _y, float _w, float
 , m_u0(0.0f), m_v0(0.0f), m_u1(1.0f), m_v1(1.0f)
 {
 	path = _path, x = _x, y = _y, w = _w, h = _h;
+	HTEXTURE hTexture = TextureManager::Instance().GetTexture( _path );
+	if( hTexture )
+	{
+		m_pSprite = new hgeSprite( hTexture, x, y, w, h );
+	}
 }
 
 CClientSprite::~CClientSprite()
@@ -107,19 +143,6 @@ CClientSprite::~CClientSprite()
 void CClientSprite::Release()
 {
 	delete this;
-}
-
-bool CClientSprite::LoadTexture( _lpcstr lpszFileName, float x, float y, float w, float h )
-{
-	if( lpszFileName == NULL ) return FALSE;
-
-	HTEXTURE hTexture = TextureManager::Instance().GetTexture( lpszFileName );
-	if( !hTexture ) return FALSE;
-	HGE* hge = Application::Instance().getEngine();
-
-	m_pSprite = new hgeSprite( hTexture, x, y, w, h );
-	if( m_pSprite == NULL ) return false;
-	return true;
 }
 
 void CClientSprite::SetCenter( float x, float y )
@@ -211,142 +234,144 @@ void CClientFont::Render( float x, float y, _tchar szChar )const
 //////////////////////////////////////////////////////////////////////////
 // 鼠标功能类
 //////////////////////////////////////////////////////////////////////////
-CXMouse::CXMouse( CXMouse::CursorDefine* cursor, int count )
-: m_nCount( count )
-, m_nCurIndex( 0 )
-, m_pCursorArray( cursor )
+CClientMouse::CClientMouse( _lpcstr pszCursorConfig )
+: m_nCurIndex( 0 )
 , m_nTimerHandle( -1 )
 {
-	//m_pCursorArray = new XUI_IMouse::CursorDefine[count];
-	//for( int i = 0; i < count; ++i )
-	//{
-	//	m_pCursorArray[i].m_frame_count = cursor[i].m_frame_count;
-	//	m_pCursorArray[i].m_frame_seq = cursor[i].m_frame_seq;
-	//	m_pCursorArray[i].m_cur_frame = 0;
-	//	m_pCursorArray[i].m_texture = XUI_CreateSprite( cursor[i].m_filename, 1.0f*i*cursor[i].m_width, 0.0f, 1.0f*cursor[i].m_width, 1.0f*cursor[i].m_height*cursor[i].m_frame_count );
-	//	m_pCursorArray[i].m_texture->SetCenter( cursor[i].m_hotx, cursor[i].m_hoty );
-	//}
+	TiXmlDocument doc;
+	if( doc.LoadFile( pszCursorConfig ) )
+	{
+		_lpstr path = _strdup( pszCursorConfig );
+		_lpstr end = strrchr( path, _T('\\') );
+		if( end ) *(end+1) = 0;
+
+		TiXmlElement *pRoot = doc.FirstChildElement( "cursor" );
+		if( pRoot )
+		{
+			TiXmlElement* pTextureConfig = pRoot->FirstChildElement( "texture" );
+			const char* mtex_name = pTextureConfig->Attribute( "filename" );
+			for( TiXmlElement *pElement = pTextureConfig->FirstChildElement( "cursor" );
+				pElement != NULL;
+				pElement = pElement->NextSiblingElement( "cursor" )
+				)
+			{
+				int idx = pElement->IntAttribute("index");
+				if( idx >= _countof(m_pCursor) ) continue;
+				XUI_IAnimation *pCursor = m_pCursor[idx];
+				pCursor = XUI_CreateAnimation( 
+					pElement->Attribute( "texture" ) 
+					pElement->IntAttribute( "frames", 1 ),
+					pElement->FloatAttribute( "fps", 1.0f ),
+					pElement->FloatAttribute( "x" ),
+					pElement->FloatAttribute( "y" ),
+					pElement->FloatAttribute( "w" ),
+					pElement->FloatAttribute( "h" ) );
+				pCursor->SetCenter( pElement->FloatAttribute( "hotx" ), pElement->FloatAttribute( "hoty" ) );
+			}
+		}
+		free( path );
+	}
 	SetMouse( XUI_MOUSE_ARROW );
 }
 
-CXMouse::~CXMouse()
+CClientMouse::~CClientMouse()
 {
-	//GuiSystem::Instance().KillTimer( m_nTimerHandle );
-	//for( int i = 0; i < m_nCount; ++i )
-	//{
-	//	XUI_DestroySprite( m_pCursorArray[i].m_texture );
-	//}
-	//delete[] m_pCursorArray;
+	for( int i = 0; i < _countof(m_pCursor); ++i )
+	{
+		XUI_DestroyAnimation( m_pCursor[i] );
+	}
 }
 
-bool	CXMouse::OnTimer( unsigned int handle, unsigned short& repeat, unsigned int& timer )
+void CClientMouse::UpdateMouse( float fDeltaTime )
 {
-	//repeat = 1;
-	//XUI_IMouse::CursorDefine* pCursor = m_pCursorArray + m_nCurIndex;
-	//if( pCursor )
-	//{
-	//	++pCursor->m_cur_frame;
-	//	if( pCursor->m_texture )
-	//		pCursor->m_texture->SetUV( 
-	//			pCursor->m_texture->GetU0(), pCursor->m_cur_frame%pCursor->m_frame_count*1.0f/pCursor->m_frame_count,
-	//			pCursor->m_texture->GetU1(), pCursor->m_cur_frame%pCursor->m_frame_count*1.0f/pCursor->m_frame_count + 1 );
-	//}
-	return true;
+	m_pCursor[m_nCurIndex]->Update( fDeltaTime );
 }
 
-void	CXMouse::GetMousePos( float *x, float *y )
+void CClientMouse::GetMousePos( float *x, float *y )
 {
-	Application::Instance()->Input_GetMousePos( x, y );
+	POINT pt;
+	GetCursorPos( &pt );
+	ScreenToClient(Application::Instance()->System_GetState(HGE_HWND), &pt);
+	*x = (float)pt.x;
+	*y = (float)pt.y;
 }
 
-void	CXMouse::SetMousePos( float x, float y )
+void	CClientMouse::SetMousePos( float x, float y )
 {
-	Application::Instance()->Input_SetMousePos( x, y );
+	POINT pt;
+	pt.x=(long)x; pt.y=(long)y;
+	ClientToScreen(Application::Instance()->System_GetState(HGE_HWND), &pt);
+	SetCursorPos(pt.x,pt.y);
 }
 
-_int32	CXMouse::GetMouseWheel()
+_int32	CClientMouse::GetMouseWheel()
 {
 	return Application::Instance()->Input_GetMouseWheel();
 }
 
-void	CXMouse::RenderMouse()
+void	CClientMouse::RenderMouse()
 {
-	return;
-	//float x, y;
-	//GetMousePos( &x, &y );
-	//CursorDefine* pCursor = m_pCursorArray + m_nCurIndex;
-	//if( pCursor && pCursor->m_texture )
-	//{
-	//	pCursor->m_texture->Render( x, y );
-	//}
+	float x, y;
+	GetMousePos( &x, &y );
+	XUI_IAnimation *pCursor = m_pCursor[m_nCurIndex];
+	pCursor->Render( x, y );
 }
 
-void	CXMouse::SetMouse( _uint16 id )
+void	CClientMouse::SetMouse( _uint16 id )
 {
-	//if( id < m_nCount )
-	//{
-	//	XUI_IMouse::CursorDefine* pCursor = m_pCursorArray + m_nCurIndex;
-	//	GuiSystem::Instance().KillTimer( m_nTimerHandle );
-	//	if( pCursor && pCursor->m_frame_seq )
-	//		m_nTimerHandle = GuiSystem::Instance().SetTimer( event_function( this, &CXMouse::OnTimer ), 1, TIMER_SECOND(pCursor->m_frame_seq/16) );
-	//	else
-	//		m_nTimerHandle = -1;
-	//	m_nCurIndex = id;
-	//}
-
-	if( id < m_nCount )
+	if( id < _countof(m_pCursor) )
 	{
-		CursorDefine* pCursor = m_pCursorArray + m_nCurIndex;
-		if( pCursor->hCursor )
-			SetCursor( pCursor->hCursor );
-		else
-		{
-			pCursor->hCursor = LoadCursor( NULL, pCursor->pszCursor );
-			SetCursor( pCursor->hCursor );
-		}
+		m_nCurIndex = id;
 	}
 }
 
-bool	CXMouse::IsPressedLButton()const
+bool	CClientMouse::IsPressedLButton()const
 {
 	return Application::Instance()->Input_KeyDown(HGEK_LBUTTON);
 }
 
-bool	CXMouse::IsReleaseLButton()const
+bool	CClientMouse::IsReleaseLButton()const
 {
 	return Application::Instance()->Input_KeyUp(HGEK_LBUTTON);
 }
 
-bool	CXMouse::IsPressedRButton()const
+bool	CClientMouse::IsPressedRButton()const
 {
 	return Application::Instance()->Input_KeyDown(HGEK_RBUTTON);
 }
 
-bool	CXMouse::IsReleaseRButton()const
+bool	CClientMouse::IsReleaseRButton()const
 {
 	return Application::Instance()->Input_KeyUp(HGEK_RBUTTON);
 }
 
-bool	CXMouse::IsPressedMButton()const
+bool	CClientMouse::IsPressedMButton()const
 {
 	return Application::Instance()->Input_KeyDown(HGEK_MBUTTON);
 }
 
-bool	CXMouse::IsReleaseMButton()const
+bool	CClientMouse::IsReleaseMButton()const
 {
 	return Application::Instance()->Input_KeyUp(HGEK_MBUTTON);
 }
 
-bool	CXMouse::IsMouseOver()const
+bool	CClientMouse::IsMouseOver()const
 {
 	return Application::Instance()->Input_IsMouseOver();
 }
 
 //////////////////////////////////////////////////////////////////////////
-CClientAnimation::CClientAnimation( HTEXTURE hTex, int nFrames, float FPS, float x, float y, float w, float h )
-: m_Animation( hTex, nFrames, FPS, x, y, w, h )
+CClientAnimation::CClientAnimation( _lpcstr filename, int frames, float fps, float x, float y, float w, float h )
+: m_pAnimation( NULL )
 {
-
+	m_pAnimation = new hgeAnimation( 
+		TextureManager::Instance().GetTexture( filename ),
+		frames,
+		fps,
+		x,
+		y,
+		w,
+		h );
 }
 
 CClientAnimation::~CClientAnimation()
@@ -356,57 +381,67 @@ CClientAnimation::~CClientAnimation()
 
 void CClientAnimation::Play()
 {
-	m_Animation.Play();
+	m_pAnimation->Play();
 }
 
 void CClientAnimation::Stop()
 {
-	m_Animation.Stop();
+	m_pAnimation->Stop();
 }
 
 void CClientAnimation::Resume()
 {
-	m_Animation.Resume();
+	m_pAnimation->Resume();
 }
 
 void CClientAnimation::Update( float fDelta )
 {
-	m_Animation.Update( fDelta );
+	m_pAnimation->Update( fDelta );
 }
 
 void CClientAnimation::Render( float x, float y )
 {
-	m_Animation.Render( x, y );
+	m_pAnimation->Render( x, y );
 }
 
 void CClientAnimation::SetCurrentFrame( int nFrame )
 {
-	m_Animation.SetFrame( nFrame );
+	m_pAnimation->SetFrame( nFrame );
 }
 
 int	CClientAnimation::GetCurrentFrame()const
 {
-	return m_Animation.GetFrame();
+	return m_pAnimation->GetFrame();
 }
 
 void CClientAnimation::SetSpeed( float fFPS )
 {
-	m_Animation.SetSpeed( fFPS );
+	m_pAnimation->SetSpeed( fFPS );
 }
 
 float CClientAnimation::GetSpeed()const
 {
-	return m_Animation.GetSpeed();
+	return m_pAnimation->GetSpeed();
 }
 
 void CClientAnimation::SetFrames( int nFrames )
 {
-	m_Animation.SetFrames( nFrames );
+	m_pAnimation->SetFrames( nFrames );
 }
 
 int	CClientAnimation::GetFrames()const
 {
-	return m_Animation.GetFrames();
+	return m_pAnimation->GetFrames();
+}
+
+void CClientAnimation::SetCenter( float x, float y )
+{
+	m_pAnimation->SetHotSpot( x, y );
+}
+
+void CClientAnimation::GetCenter( float &x, float &y )const
+{
+	m_pAnimation->GetHotSpot( &x, &y );
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -476,13 +511,7 @@ static void _DrawSprite( const XUI_ISprite* Tex, int nX, int nY, int nWidth, int
 
 static XUI_ISprite* _CreateSprite( _lpcstr filename, float x, float y, float w, float h )
 {
-	CClientSprite* pTexture = new CClientSprite( filename, x, y, w, h);
-	if( pTexture->LoadTexture( filename, x, y, w, h ) )
-	{
-		return pTexture;
-	}
-	delete pTexture;
-	return NULL;
+	return new CClientSprite( filename, x, y, w, h);
 }
 
 static XUI_ISprite* _CreateSpriteEx( const XUI_SpriteAttribute& SpriteAttribute )
@@ -493,6 +522,22 @@ static XUI_ISprite* _CreateSpriteEx( const XUI_SpriteAttribute& SpriteAttribute 
 static void _DestroySprite( XUI_ISprite* pTexture )
 {
 	delete pTexture;
+}
+
+static XUI_IAnimation* _CreateAnimation( _lpcstr filename, int frames, float fps, float x, float y, float w, float h )
+{
+	return new CClientAnimation( filename, frames, fps, x, y, w, h );
+}
+
+static XUI_IAnimation* _CreateAnimationEx( const XUI_AnimationAttribute& AnimationAttribute )
+{
+	const XUI_AnimationAttribute& a = AnimationAttribute;
+	return new CClientAnimation( a.key.c_str(), a.frames, a.fps, a.x, a.y, a.w, a.h );
+}
+
+static void _DestroyAnimation( XUI_IAnimation *pAnimation )
+{
+	delete pAnimation;
 }
 
 static XUI_IFont* _CreateFont( _lpcstr lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias )
@@ -532,6 +577,9 @@ void init_canvas()
 	UILib::XUI_CreateSprite		= _CreateSprite;
 	UILib::XUI_CreateSpriteEx	= _CreateSpriteEx;
 	UILib::XUI_DestroySprite	= _DestroySprite;
+	UILib::XUI_CreateAnimation	= _CreateAnimation;
+	UILib::XUI_CreateAnimationEx= _CreateAnimationEx;
+	UILib::XUI_DestroyAnimation = _DestroyAnimation;
 	UILib::XUI_CreateFont		= _CreateFont;
 	UILib::XUI_CreateFontEx		= _CreateFontEx;
 	UILib::XUI_DestroyFont		= _DestroyFont;

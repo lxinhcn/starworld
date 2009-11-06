@@ -4,20 +4,23 @@
 
 namespace UILib
 {
-	pfnSetClipping		XUI_SetClipping		= 0;	//   XUI_SetClipping( int x, int y, int w, int h );
-	pfnDrawText			XUI_DrawText		= 0;	//   XUI_DrawText( _lpcstr lpszText, XUI_IFont* pFont, float x, float y );
-	pfnDrawCharacter	XUI_DrawCharacter	= 0;	//   XUI_DrawCharacter( _tchar lpszText, XUI_IFont* pFont, float x, float y );
-	pfnDrawRect			XUI_DrawRect		= 0;	//   XUI_DrawRect( const xgcRect& rcDest, _uint32 dwBorderColor, _uint32 dwBkColor );
-	pfnDrawPolygon		XUI_DrawPolygon		= 0;	//   XUI_DrawPolygon( const xgcPoint* ptArray, _uint32* dwColorArray, _uint32 nCount, uint16* pTriListArray, int32 nTriCount );
-	pfnDrawLine			XUI_DrawLine		= 0;	//   XUI_DrawLine( float x0, float y0, float x1, float y1 );
-	pfnDrawSprite		XUI_DrawSprite		= 0;	//   XUI_DrawSprite( const XUI_ISprite* Tex,int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect );
-	pfnCreateSprite		XUI_CreateSprite	= 0;	//   XUI_CreateSprite( _lpcstr filename, float x, float y, float w, float h );
-	pfnCreateSpriteEx	XUI_CreateSpriteEx	= 0;	//   XUI_CreateSpriteEx( const XUI_SpriteAttribute& SpriteAttribute );
-	pfnDestroySprite	XUI_DestroySprite	= 0;	//   XUI_DestroySprite( XUI_ISprite* pSprite );
-	pfnCreateFont		XUI_CreateFont		= 0;	//   XUI_CreateFont( _lpcstr lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias );
-	pfnCreateFontEx		XUI_CreateFontEx	= 0;	//   XUI_CreateFontEx( const XUI_FontAttribute& FontAttribute );
-	pfnDestroyFont		XUI_DestroyFont		= 0;	//   XUI_DestroyFont( XUI_IFont* pFont );
-	pfnDefWindowProc	XUI_DefWindowProc	= 0;	//   XUI_DefWindowProc( __in HWND hWnd, __in UINT Msg, __in WPARAM wParam, __in LPARAM lParam);
+	pfnSetClipping			XUI_SetClipping			= 0;	//   XUI_SetClipping( int x, int y, int w, int h );
+	pfnDrawText				XUI_DrawText			= 0;	//   XUI_DrawText( _lpcstr lpszText, XUI_IFont* pFont, float x, float y );
+	pfnDrawCharacter		XUI_DrawCharacter		= 0;	//   XUI_DrawCharacter( _tchar lpszText, XUI_IFont* pFont, float x, float y );
+	pfnDrawRect				XUI_DrawRect			= 0;	//   XUI_DrawRect( const xgcRect& rcDest, _uint32 dwBorderColor, _uint32 dwBkColor );
+	pfnDrawPolygon			XUI_DrawPolygon			= 0;	//   XUI_DrawPolygon( const xgcPoint* ptArray, _uint32* dwColorArray, _uint32 nCount, uint16* pTriListArray, int32 nTriCount );
+	pfnDrawLine				XUI_DrawLine			= 0;	//   XUI_DrawLine( float x0, float y0, float x1, float y1 );
+	pfnDrawSprite			XUI_DrawSprite			= 0;	//   XUI_DrawSprite( const XUI_ISprite* Tex,int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect );
+	pfnCreateSprite			XUI_CreateSprite		= 0;	//   XUI_CreateSprite( _lpcstr filename, float x, float y, float w, float h );
+	pfnCreateSpriteEx		XUI_CreateSpriteEx		= 0;	//   XUI_CreateSpriteEx( const XUI_SpriteAttribute& SpriteAttribute );
+	pfnDestroySprite		XUI_DestroySprite		= 0;	//   XUI_DestroySprite( XUI_ISprite* pSprite );
+	pfnCreateAnimation		XUI_CreateAnimation		= 0;	//	 XUI_CreateAnimation( _lpcstr filename, int frames, float fps, float x, float y, float w, float h );
+	pfnCreateAnimationEx	XUI_CreateAnimationEx	= 0;	//	 XUI_CreateAnimation( _lpcstr filename, int frames, float fps, float x, float y, float w, float h );( const XUI_AnimationAttribute& AnimationAttribute );
+	pfnDestroyAnimation		XUI_DestroyAnimation	= 0;	//	 XUI_DestroyAnimation( XUI_IAnimation* pAnimation );
+	pfnCreateFont			XUI_CreateFont			= 0;	//   XUI_CreateFont( _lpcstr lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias );
+	pfnCreateFontEx			XUI_CreateFontEx		= 0;	//   XUI_CreateFontEx( const XUI_FontAttribute& FontAttribute );
+	pfnDestroyFont			XUI_DestroyFont			= 0;	//   XUI_DestroyFont( XUI_IFont* pFont );
+	pfnDefWindowProc		XUI_DefWindowProc		= 0;	//   XUI_DefWindowProc( __in HWND hWnd, __in UINT Msg, __in WPARAM wParam, __in LPARAM lParam);
 
 	void XUI_DrawTextA( _lpcstr lpszText, XUI_IFont* pFont, float x, float y )
 	{

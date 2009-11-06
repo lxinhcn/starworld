@@ -15,7 +15,13 @@ public:
 	// describe	: 得到路径指定的纹理句柄
 	// return	: 纹理句柄
 	//---------------------------------------------------------------------//
-	HTEXTURE GetTexture( _lpcstr lpszTexpath, _lpstr data = 0, size_t size = 0 );
+	HTEXTURE GetTexture( _lpcstr key, _lpstr data = 0, size_t size = 0 );
+
+	//---------------------------------------------------------------------//
+	// describe	: 创建纹理
+	// return	: 纹理句柄
+	//---------------------------------------------------------------------//
+	HTEXTURE CreateTexture( _lpcstr key, int w, int h );
 
 	//---------------------------------------------------------------------//
 	// describe	: 清除所有资源
@@ -45,28 +51,12 @@ private:
 };
 typedef Loki::SingletonHolder< CFontManager, Loki::CreateStatic >	FontManager;
 
-struct CXMouse	:	public XUI_IMouse
+struct CClientMouse	:	public XUI_IMouse
 {
-	//struct CursorDefine
-	//{
-	//	byte			m_hotx;			// 热点X坐标
-	//	byte			m_hoty;			// 热点Y坐标
-	//	byte			m_width;		// 鼠标宽度
-	//	byte			m_height;		// 鼠标高度
-	//	byte			m_frame_count;	// 帧数
-	//	byte			m_frame_seq;	
-	//	_lpcstr			m_filename;		// 文件名
-	//};
+	XUI_IAnimation	*m_CursorAni[14];
 
-	struct CursorDefine
-	{
-		HCURSOR		hCursor;
-		LPTSTR		pszCursor;
-	};
-
-	CXMouse( CursorDefine* cursor, int count );
-	//LoadCursor( _lpstr lpszPathname );
-	virtual ~CXMouse();
+	CClientMouse( _lpcstr pszCursorConfig );
+	virtual ~CClientMouse();
 	virtual void	GetMousePos( float *x, float *y );
 	virtual void	SetMousePos( float x, float y );
 	virtual _int32	GetMouseWheel();
@@ -80,13 +70,12 @@ struct CXMouse	:	public XUI_IMouse
 	virtual bool	IsReleaseMButton()const;
 	virtual bool	IsMouseOver()const;
 
-	bool OnTimer( unsigned int handle, unsigned short& repeat, unsigned int& timer );
+	virtual void	UpdateMouse( float fDeltaTime );
 private:
-	//XUI_IMouse::CursorDefine*	m_pCursorArray;
-	CursorDefine	*m_pCursorArray;
 	_int32			m_nCount;
 	_int32			m_nCurIndex;
 	_uint32			m_nTimerHandle;
+	XUI_IAnimation	*m_pCursor[14];
 };
 
 class CClientSprite	:	public UILib::XUI_ISprite
@@ -151,7 +140,7 @@ private:
 class CClientAnimation	:	public XUI_IAnimation
 {
 public:
-	CClientAnimation( HTEXTURE hTex, int nFrames, float FPS, float x, float y, float w, float h );
+	CClientAnimation( _lpcstr filename, int frames, float fps, float x, float y, float w, float h );
 	~CClientAnimation();
 
 	virtual void Play();
@@ -169,8 +158,11 @@ public:
 	virtual void	SetFrames( int nFrames );
 	virtual int		GetFrames()const;
 
+	virtual void	SetCenter( float x, float y );
+	virtual void	GetCenter( float &x, float &y )const;
+
 private:
-	hgeAnimation	m_Animation;
+	hgeAnimation	*m_pAnimation;
 };
 
 void init_canvas();
