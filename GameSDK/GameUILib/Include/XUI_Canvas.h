@@ -50,13 +50,21 @@ namespace UILib
 		bool save_file( TiXmlElement* pNode );
 		bool load_file( TiXmlElement* pNode );
 
-		std::string	path;
+		_astring	path;
+		float		x, y, w, h;
+	};
+
+	struct XUI_AnimationAttribute
+	{
+		_astring	path;
+		int			frames;
+		float		fps;
 		float		x, y, w, h;
 	};
 
 	struct XUI_FontAttribute
 	{
-		std::string		name;
+		_astring		name;
 		int				size;
 		bool			bold, italic, antialias;
 
@@ -135,13 +143,6 @@ namespace UILib
 
 	struct XUI_IMouse
 	{
-		struct CursorDefine
-		{
-			byte			m_frame_count;	// 帧数
-			byte			m_frame_seq;	// 帧间隔时间 一字节定点数，整数部分为高位，小数部分为低位
-			byte			m_cur_frame;	// 当前帧索引
-			XUI_ISprite*	m_texture;		// 帧指针
-		};
 		virtual ~XUI_IMouse(){}
 		virtual void	GetMousePos( float *x, float *y ) = 0;
 		virtual void	SetMousePos( float x, float y ) = 0;
@@ -166,7 +167,8 @@ namespace UILib
 	typedef void		(*pfnDrawSprite)	( const XUI_ISprite* Tex,int nX, int nY, int nWidth, int nHeight );
 	typedef XUI_ISprite*(*pfnCreateSprite)	( _lpcstr filename, float x, float y, float w, float h );
 	typedef XUI_ISprite*(*pfnCreateSpriteEx)( const XUI_SpriteAttribute& SpriteAttribute );
-	typedef XUI_IAnimation*(*pfnLoadCursor)	( _lpcstr filename );
+	typedef XUI_IAnimation*	(*pfnCreateAnimation)( _lpcstr filename, int frames, float fps, float x, float y, float w, float h );
+	typedef XUI_IAnimation*	(*pfnCreateAnimationEx)	( const XUI_AnimationAttribute& AnimationAttribute );
 	typedef void		(*pfnDestroySprite)	( XUI_ISprite* pSprite );
 	typedef XUI_IFont*	(*pfnCreateFont)	( _lpcstr lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias );
 	typedef XUI_IFont*	(*pfnCreateFontEx)	( const XUI_FontAttribute& FontAttribute );
@@ -182,6 +184,8 @@ namespace UILib
 	extern pfnDrawSprite		XUI_DrawSprite;
 	extern pfnCreateSprite		XUI_CreateSprite;
 	extern pfnCreateSpriteEx	XUI_CreateSpriteEx;
+	extern pfnCreateAnimation	XUI_CreateAnimation;
+	extern pfnCreateAnimationEx	XUI_CreateAnimationEx;
 	extern pfnDestroySprite		XUI_DestroySprite;
 	extern pfnCreateFont		XUI_CreateFont;
 	extern pfnCreateFontEx		XUI_CreateFontEx;

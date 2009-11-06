@@ -725,6 +725,12 @@ int TiXmlElement::IntAttribute( const char* name, int nDefault ) const
 	return pattr?atoi( pattr ):nDefault;
 }
 
+float TiXmlElement::FloatAttribute( const char* name, float fDefault ) const
+{
+	const char* pattr = Attribute(name);
+	return pattr?atof(Attribute(name)):fDefault;
+}
+
 bool TiXmlElement::BoolAttribute( const char* name, bool bDefault ) const
 {
 	const char* pattr = Attribute(name);

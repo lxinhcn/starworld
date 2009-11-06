@@ -883,6 +883,7 @@ public:
 
 
 	int IntAttribute( const char* name, int nDefault = 0 ) const;		//ll//////////////////////////////////////////////////////////////////////
+	float FloatAttribute( const char* name, float fDefault = 0.0f ) const;
 	bool BoolAttribute( const char* name, bool bDefault = false ) const;	//ll//////////////////////////////////////////////////////////////////////
 
 

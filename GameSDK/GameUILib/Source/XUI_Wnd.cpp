@@ -72,41 +72,41 @@ namespace UILib
 
 	bool XUI_Wnd::onButtonDown(int button, const xgcPoint& pt, UINT sysKeys)
 	{
-		UINT id=0;
-		switch (button)
-		{
-		case 0:
-			id=EV_MOUSELBTDOWN;
-			SendUIMessage( EV_MOUSELBTDOWN, sysKeys, MAKELONG( pt.x, pt.y ) );
-			break;
-		case 1:
-			id=EV_MOUSERBTDOWN;
-			SendUIMessage( EV_MOUSERBTDOWN, sysKeys, MAKELONG( pt.x, pt.y ) );
-			break;
-		case 2:
-			id=EV_MOUSEMBTDOWN;
-			break;
-		}
+		//UINT id=0;
+		//switch (button)
+		//{
+		//case 0:
+		//	id=EV_MOUSELBTDOWN;
+		//	SendUIMessage( EV_MOUSELBTDOWN, sysKeys, MAKELONG( pt.x, pt.y ) );
+		//	break;
+		//case 1:
+		//	id=EV_MOUSERBTDOWN;
+		//	SendUIMessage( EV_MOUSERBTDOWN, sysKeys, MAKELONG( pt.x, pt.y ) );
+		//	break;
+		//case 2:
+		//	id=EV_MOUSEMBTDOWN;
+		//	break;
+		//}
 		return false;
 	}
 
 	bool XUI_Wnd::onButtonUp(int button, const xgcPoint& pt, UINT sysKeys)
 	{
-		UINT id=0;
-		switch (button)
-		{
-		case 0:
-			id=EV_MOUSELBTUP;
-			SendUIMessage( EV_MOUSELBTUP, sysKeys, MAKELONG( pt.x, pt.y ) );
-			break;
-		case 1:
-			id=EV_MOUSERBTUP;
-			SendUIMessage( EV_MOUSERBTUP, sysKeys, MAKELONG( pt.x, pt.y ) );
-			break;
-		case 2:
-			id=EV_MOUSEMBTUP;
-			break;
-		}
+		//UINT id=0;
+		//switch (button)
+		//{
+		//case 0:
+		//	id=EV_MOUSELBTUP;
+		//	SendUIMessage( EV_MOUSELBTUP, sysKeys, MAKELONG( pt.x, pt.y ) );
+		//	break;
+		//case 1:
+		//	id=EV_MOUSERBTUP;
+		//	SendUIMessage( EV_MOUSERBTUP, sysKeys, MAKELONG( pt.x, pt.y ) );
+		//	break;
+		//case 2:
+		//	id=EV_MOUSEMBTUP;
+		//	break;
+		//}
 		return false;
 	}
 
@@ -148,15 +148,21 @@ namespace UILib
 	void XUI_Wnd::ClientToScreen( xgcPoint& pt )const
 	{
 		AdjustPoint(pt, true);
-		pt += m_WindowRect.TopLeft();
-		if (m_pParent) return m_pParent->ClientToScreen( pt );
+		if (m_pParent)
+		{
+			pt += m_pParent->GetWindowRect().TopLeft();
+			return m_pParent->ClientToScreen( pt );
+		}
 	}
 
 	void XUI_Wnd::ClientToScreen( xgcRect& rc )const
 	{
 		AdjustWindow( rc, true);
-		rc += m_WindowRect.TopLeft();
-		if (m_pParent) return m_pParent->ClientToScreen( rc );
+		if( m_pParent )
+		{
+			rc += m_pParent->GetWindowRect().TopLeft();
+			return m_pParent->ClientToScreen( rc );
+		}
 	}
 
 	//将一个坐标从屏幕坐标转换成控件坐标
@@ -164,16 +170,20 @@ namespace UILib
 	{
 		AdjustPoint( pt, false );
 		if( m_pParent )
+		{
 			m_pParent->ScreenToClient( pt );
-		pt -= m_WindowRect.TopLeft();
+			pt -= m_pParent->GetWindowRect().TopLeft();
+		}
 	}
 
 	void XUI_Wnd::ScreenToClient( xgcRect& rc )const
 	{
 		AdjustWindow( rc, false );
 		if( m_pParent )
+		{
 			m_pParent->ScreenToClient( rc );
-		rc -= m_WindowRect.TopLeft();
+			rc -= m_pParent->GetWindowRect().TopLeft();
+		}
 	}
 
 	int XUI_Wnd::FindChild(XUI_Wnd* pElement) const
