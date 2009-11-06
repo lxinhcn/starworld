@@ -1,14 +1,14 @@
 <cursor>
 	<texture filename = "media\cursor.png" count = 14>
-		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
-		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
-		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
-		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
-		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
-		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
-		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
-		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
-		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
-		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
+		<cursor hotx = "0" hoty = "0" x = "0" y = "0" w = "40" h = "40" frames = "1" texture = "cursor\Arrow.png">
+		<cursor hotx = "0" hoty = "0" x = "0" y = "0" w = "16" h = "16" frames = "1" >
+		<cursor hotx = "0" hoty = "0" x = "0" y = "0" w = "16" h = "16" frames = "1" >
+		<cursor hotx = "0" hoty = "0" x = "0" y = "0" w = "16" h = "16" frames = "1" >
+		<cursor hotx = "0" hoty = "0" x = "0" y = "0" w = "16" h = "16" frames = "1" >
+		<cursor hotx = "0" hoty = "0" x = "0" y = "0" w = "16" h = "16" frames = "1" >
+		<cursor hotx = "0" hoty = "0" x = "0" y = "0" w = "16" h = "16" frames = "1" >
+		<cursor hotx = "0" hoty = "0" x = "0" y = "0" w = "16" h = "16" frames = "1" >
+		<cursor hotx = "0" hoty = "0" x = "0" y = "0" w = "16" h = "16" frames = "1" >
+		<cursor hotx = "0" hoty = "0" x = "0" y = "0" w = "16" h = "16" frames = "1" >
 	</texture>
 </cursor>
