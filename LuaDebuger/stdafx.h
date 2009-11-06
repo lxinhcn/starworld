@@ -28,7 +28,7 @@ extern "C"
 #include <sstream>
 
 #include <process.h>
-#include "helplib.h"
+#include "commonlib.h"
 
 #ifdef _UNICODE
 typedef std::wstring		_string;

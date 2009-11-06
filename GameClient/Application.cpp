@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include "Application.h"
 #include "Canvas.h"
-#include "ClientMap.h"
 
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 600
@@ -43,8 +42,7 @@ CXMouse::CursorDefine Cursors[14] =
 };
 
 CApplication::CApplication(void)
-: m_console( _T("UICommander"), 40, 100 )
-, m_pDefWindowProc( NULL )
+: m_pDefWindowProc( NULL )
 , m_pRegisterClass( NULL )
 {
 	init_canvas();
@@ -87,11 +85,18 @@ bool CApplication::FrameFunc()
 		UILib::SetupDebuger();
 		break;
 	case HGEK_F9:
-		Application::Instance()->System_SetState( HGE_DONTSUSPEND, true );
-		GuiSystem::Instance().SetEditMode( true );
-		printf( "UICommander start successful. Enter edit mode.\n" );
+		{
+			AllocConsole();
+			freopen("CONOUT$","w+t",stdout); 
+			freopen("CONIN$","r+t",stdin); 
+
+			Application::Instance()->System_SetState( HGE_DONTSUSPEND, true );
+			GuiSystem::Instance().SetEditMode( true );
+			printf( "UICommander start successful. Enter edit mode.\n" );
+		}
 		break;
 	case HGEK_F8:
+		FreeConsole();
 		Application::Instance()->System_SetState( HGE_DONTSUSPEND, false );
 		GuiSystem::Instance().SetEditMode( false );
 		printf( "UICommander closed. Quit edit mode.\n" );
@@ -153,8 +158,8 @@ bool CApplication::Initialize()
 		m_pRegisterClass	= ( pfnRegisterClass )GetProcAddress( hUser32, "RegisterClassA" );
 		m_pDispatchMessage	= (pfnDispatchMessage)GetProcAddress( hUser32, "DispatchMessageA" );
 
-		helper::patchimport( GetModuleHandle( _T("hge.dll") ), "User32.dll", NULL, "RegisterClassA", UIRegisterClass );
-		helper::patchimport( GetModuleHandle( _T("hge.dll") ), "User32.dll", NULL, "DispatchMessageA", UIDispatchMessage );
+		patchimport( GetModuleHandle( _T("hge.dll") ), "User32.dll", NULL, "RegisterClassA", UIRegisterClass );
+		patchimport( GetModuleHandle( _T("hge.dll") ), "User32.dll", NULL, "DispatchMessageA", UIDispatchMessage );
 	}
 
 	// 初始化回调函数
@@ -174,7 +179,7 @@ bool CApplication::Initialize()
 
 	UICommander::Instance().ProcessCommand( _T("load main.xml") );
 
-	helper::restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "RegisterClassA",	m_pRegisterClass );
+	restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "RegisterClassA",	m_pRegisterClass );
 	return true;
 }
 
@@ -186,8 +191,8 @@ void CApplication::Run()
 
 void CApplication::UnInitialize()
 {
-	helper::restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "DefWindowProcA",	m_pDefWindowProc );
-	helper::restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "DispatchMessageA", m_pDispatchMessage );
+	restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "DefWindowProcA",	m_pDefWindowProc );
+	restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "DispatchMessageA", m_pDispatchMessage );
 	// Clean up and shutdown
 
 	delete GuiSystem::Instance().GetMouseCursor();
@@ -213,6 +218,9 @@ bool CApplication::UpdateLogic( float fDelta )
 					DWORD dwRead = 0;
 					while(true)
 					{
+						HANDLE hInput = GetStdHandle( STD_INPUT_HANDLE );
+						SetConsoleActiveScreenBuffer( hInput );
+
 						_tprintf( _T(">>") );
 						ReadConsole( GetStdHandle( STD_INPUT_HANDLE ), szCommand, _countof(szCommand), &dwRead, NULL  );
 						if( dwRead <= 2 ) break;
@@ -221,8 +229,13 @@ bool CApplication::UpdateLogic( float fDelta )
 							ASSERT_MSG( false, _T("超长的输入串，你太牛了。") );
 							break;
 						}
-						szCommand[dwRead] = 0;
-						UICommander::Instance().ProcessCommand( szCommand );
+						else
+						{
+							szCommand[dwRead] = 0;
+							UICommander::Instance().ProcessCommand( szCommand );
+						}
+						HANDLE hOutput = GetStdHandle( STD_OUTPUT_HANDLE );
+						SetConsoleActiveScreenBuffer( hOutput );
 					}
 				}
 				break;
@@ -235,7 +248,7 @@ bool CApplication::UpdateLogic( float fDelta )
 void CApplication::Render()
 {
 	//static byte i = 0;
-	//XUI_DrawRect( x_rect( 1, 1, SCREEN_WIDTH, SCREEN_HEIGHT ), -1, ARGB( 0xff*sin(++i*3.1415/0xff), 0xcc, 0xcc, 0xcc ) );
+	//XUI_DrawRect( xgcRect( 1, 1, SCREEN_WIDTH, SCREEN_HEIGHT ), -1, ARGB( 0xff*sin(++i*3.1415/0xff), 0xcc, 0xcc, 0xcc ) );
 	// m_hge->Gfx_SetClipping( 0, 0, 100, 100 );
-	XUI_DrawRect( x_rect( 1, 1, SCREEN_WIDTH, SCREEN_HEIGHT ), -1, ARGB( 0xcc, 0xcc, 0xcc, 0xcc ) );
+	XUI_DrawRect( xgcRect( 1, 1, SCREEN_WIDTH, SCREEN_HEIGHT ), -1, ARGB( 0xcc, 0xcc, 0xcc, 0xcc ) );
 }

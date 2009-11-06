@@ -126,12 +126,12 @@ inline void GfxFont::Render(float x, float y, const wchar_t text )
 }
 
 // 设置与获取颜色
-void GfxFont::SetColor( uint32 dwColor, int i )
+void GfxFont::SetColor( _uint32 dwColor, int i )
 {
 	m_pSprite->SetColor(dwColor,i);
 }
 
-uint32 GfxFont::GetColor(int i)
+_uint32 GfxFont::GetColor(int i)
 {
 	return m_pSprite->GetColor(i);
 }
@@ -255,7 +255,7 @@ inline void GfxFont::CacheCharacter(unsigned int idx, wchar_t c)
 
 		MAT2 mat2 = {{0,1},{0,0},{0,0},{0,1}};
 		GLYPHMETRICS gm;
-		uint32 nLen = ::GetGlyphOutlineW(m_hMemDC,nChar,m_nAntialias,&gm,0,NULL,&mat2);
+		_uint32 nLen = ::GetGlyphOutlineW(m_hMemDC,nChar,m_nAntialias,&gm,0,NULL,&mat2);
 
 		HTEXTURE hTex = m_pHGE->Texture_Create(gm.gmBlackBoxX,gm.gmBlackBoxY);
 		if (NULL == hTex) return;

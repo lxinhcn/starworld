@@ -48,33 +48,33 @@ namespace UILib
 			.static_inherits< TiXmlNode >()
 			;
 
-		Class< x_rect >( "ui::Rect" )
+		Class< xgcRect >( "ui::Rect" )
 			.constructor< long, long, long, long >()
-			.member( "left",	&x_rect::left )
-			.member( "top",		&x_rect::top	)
-			.member( "right",	&x_rect::right )
-			.member( "bottom",	&x_rect::bottom )
-			.set( "members",	&show_members< x_rect > )
-			.set( "save",		&save_file< x_rect > )
-			.set( "load",		&load_file< x_rect > )
+			.member( "left",	&xgcRect::left )
+			.member( "top",		&xgcRect::top	)
+			.member( "right",	&xgcRect::right )
+			.member( "bottom",	&xgcRect::bottom )
+			.set( "members",	&show_members< xgcRect > )
+			.set( "save",		&save_file< xgcRect > )
+			.set( "load",		&load_file< xgcRect > )
 			;
 
-		Class< x_point >( "ui::Point" )
+		Class< xgcPoint >( "ui::Point" )
 			.constructor< long, long >()
-			.member( "x", &x_point::x )
-			.member( "y", &x_point::y )
-			.set( "members",	&show_members< x_point > )
-			.set( "save",		&save_file< x_point > )
-			.set( "load",		&load_file< x_point > )
+			.member( "x", &xgcPoint::x )
+			.member( "y", &xgcPoint::y )
+			.set( "members",	&show_members< xgcPoint > )
+			.set( "save",		&save_file< xgcPoint > )
+			.set( "load",		&load_file< xgcPoint > )
 			;
 
-		Class< x_size >( "ui::Size" )
+		Class< xgcSize >( "ui::Size" )
 			.constructor< long, long >()
-			.member( "cx", &x_size::cx )
-			.member( "cy", &x_size::cy )
-			.set( "members",	&show_members< x_size > )
-			.set( "save",		&save_file< x_size > )
-			.set( "load",		&load_file< x_size > )
+			.member( "cx", &xgcSize::cx )
+			.member( "cy", &xgcSize::cy )
+			.set( "members",	&show_members< xgcSize > )
+			.set( "save",		&save_file< xgcSize > )
+			.set( "load",		&load_file< xgcSize > )
 			;
 
 		Class< XUI_SpriteAttribute >( "ui::XUI_SpriteAttribute" )
@@ -138,7 +138,7 @@ namespace UILib
 			.static_inherits< XUI_Base >()
 			.set( "MoveWindow",		&XUI_Wnd::MoveWindow )
 			.set( "OffsetWindow",	&XUI_Wnd::Offset )
-			.set( "SendUIMessage",	reinterpret_cast< ulong ( UILib::XUI_Wnd::* )( uint32, ulong, ulong ) >( &XUI_Wnd::SendUIMessage ) )
+			.set( "SendUIMessage",	reinterpret_cast< _ulong ( UILib::XUI_Wnd::* )( _uint32, _ulong, _ulong ) >( &XUI_Wnd::SendUIMessage ) )
 			.set( "members",		&XUI_Wnd::show_members )
 			.set( "save",			&XUI_Wnd::save_file )
 			.set( "load",			&XUI_Wnd::load_file )
@@ -262,7 +262,7 @@ namespace UILib
 			SLB::LuaCall< bool( unsigned int /*handle*/, unsigned short& /*repeat*/, unsigned int& /*timer*/) > function;
 		};
 
-		return GuiSystem::Instance().SetTimer( event_function( call( function ) ), repeat, timer );
+		return GuiSystem::Instance().SetTimer( TimerFunction( call( function ) ), repeat, timer );
 	}
 
 	//////////////////////////////////////////////////////////////////////////

@@ -5,6 +5,7 @@
 #include <deque>
 #include <algorithm>
 #include <direct.h>
+#include <time.h>
 #include "DebugerInterface.h"
 
 struct LuaDebuger::Impl
@@ -364,7 +365,7 @@ void LuaDebuger::makestack( lua_State *L, lua_Debug *ar )
 				varvalue = "thread";
 				break;
 			}
-			sf->variants.push_back( Impl::variant( XA2T( varname ), XA2T( varvalue ), index ) );
+			sf->variants.push_back( Impl::variant( varname, varvalue.c_str(), index ) );
 			lua_pop(L,1);
 		}
 		m_pImpl->lstack.push_back( sf );

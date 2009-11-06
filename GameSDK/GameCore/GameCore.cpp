@@ -2,11 +2,18 @@
 //
 
 #include "stdafx.h"
-bool APIENTRY DllMain( HANDLE hModule, 
-                       DWORD  ul_reason_for_call, 
-                       LPVOID lpReserved
-					 )
+#include "GameCore.h"
+
+CORE_API CGameTriggerMgr*	ThisTriggerMgr()
 {
-    return true;
+	core_thread* l = reinterpret_cast< core_thread* >( TlsGetValue( dwTlsIndex ) );
+	ASSERT_POINTER( l );
+	return l->trigger_mgr;
 }
 
+CORE_API CTimerManager* ThisTimer()
+{
+	core_thread* l = reinterpret_cast< core_thread* >( TlsGetValue( dwTlsIndex ) );
+	ASSERT_POINTER( l );
+	return l->timer;
+}

@@ -1,5 +1,5 @@
 #include "XUI_Canvas.h"
-#include "Helplib.h"
+#include "GuiHeader.h"
 #include "tinyxml.h"
 
 namespace UILib
@@ -7,8 +7,8 @@ namespace UILib
 	pfnSetClipping		XUI_SetClipping		= 0;	//   XUI_SetClipping( int x, int y, int w, int h );
 	pfnDrawText			XUI_DrawText		= 0;	//   XUI_DrawText( _lpcstr lpszText, XUI_IFont* pFont, float x, float y );
 	pfnDrawCharacter	XUI_DrawCharacter	= 0;	//   XUI_DrawCharacter( _tchar lpszText, XUI_IFont* pFont, float x, float y );
-	pfnDrawRect			XUI_DrawRect		= 0;	//   XUI_DrawRect( const x_rect& rcDest, uint32 dwBorderColor, uint32 dwBkColor );
-	pfnDrawPolygon		XUI_DrawPolygon		= 0;	//   XUI_DrawPolygon( const x_point* ptArray, uint32* dwColorArray, uint32 nCount, uint16* pTriListArray, int32 nTriCount );
+	pfnDrawRect			XUI_DrawRect		= 0;	//   XUI_DrawRect( const xgcRect& rcDest, _uint32 dwBorderColor, _uint32 dwBkColor );
+	pfnDrawPolygon		XUI_DrawPolygon		= 0;	//   XUI_DrawPolygon( const xgcPoint* ptArray, _uint32* dwColorArray, _uint32 nCount, uint16* pTriListArray, int32 nTriCount );
 	pfnDrawLine			XUI_DrawLine		= 0;	//   XUI_DrawLine( float x0, float y0, float x1, float y1 );
 	pfnDrawSprite		XUI_DrawSprite		= 0;	//   XUI_DrawSprite( const XUI_ISprite* Tex,int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect );
 	pfnCreateSprite		XUI_CreateSprite	= 0;	//   XUI_CreateSprite( _lpcstr filename, float x, float y, float w, float h );

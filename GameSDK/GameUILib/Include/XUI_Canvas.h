@@ -126,7 +126,7 @@ namespace UILib
 		XUI_IFont( const XUI_FontAttribute& FontAttrib ): XUI_FontAttribute( FontAttrib ){}
 		virtual ~XUI_IFont(){}
 
-		virtual VOID SetColor( uint32 color ) = 0;
+		virtual VOID SetColor( _uint32 color ) = 0;
 		virtual SIZE GetStringSize( _lpctstr lpszString ) = 0;
 
 		virtual INT GetCharacterWidth( _tchar szChar ) = 0;
@@ -145,9 +145,9 @@ namespace UILib
 		virtual ~XUI_IMouse(){}
 		virtual void	GetMousePos( float *x, float *y ) = 0;
 		virtual void	SetMousePos( float x, float y ) = 0;
-		virtual int32	GetMouseWheel() = 0;
+		virtual _int32	GetMouseWheel() = 0;
 		virtual void	RenderMouse() = 0;
-		virtual void	SetMouse( uint16 id ) = 0;
+		virtual void	SetMouse( _uint16 id ) = 0;
 		virtual bool	IsPressedLButton()const = 0;
 		virtual bool	IsReleaseLButton()const = 0;
 		virtual bool	IsPressedRButton()const = 0;
@@ -157,12 +157,12 @@ namespace UILib
 		virtual bool	IsMouseOver()const = 0;
 	};
 
-	typedef void		(*pfnSetClipping)	( int32 x, int32 y, int32 w, int32 h );
+	typedef void		(*pfnSetClipping)	( _int32 x, _int32 y, _int32 w, _int32 h );
 	typedef void		(*pfnDrawText)		( _lpcwstr lpszText, XUI_IFont* pFont, float x, float y );
 	typedef void		(*pfnDrawCharacter)	( _wchar lpszText, XUI_IFont* pFont, float x, float y );
-	typedef void		(*pfnDrawRect)		( const x_rect& rc, uint32 bordercolor, uint32 backgroundcolor );	//没有边框的矩形背景
-	typedef void		(*pfnDrawLine)		( float x0, float y0, float x1, float y1, uint32 color );
-	typedef void		(*pfnDrawPolygon)	( const x_point* ptArray, uint32* dwColorArray, uint32 nCount, uint16* pTriListArray, int32 nTriCount );
+	typedef void		(*pfnDrawRect)		( const xgcRect& rc, _uint32 bordercolor, _uint32 backgroundcolor );	//没有边框的矩形背景
+	typedef void		(*pfnDrawLine)		( float x0, float y0, float x1, float y1, _uint32 color );
+	typedef void		(*pfnDrawPolygon)	( const xgcPoint* ptArray, _uint32* dwColorArray, _uint32 nCount, _uint16* pTriListArray, _int32 nTriCount );
 	typedef void		(*pfnDrawSprite)	( const XUI_ISprite* Tex,int nX, int nY, int nWidth, int nHeight );
 	typedef XUI_ISprite*(*pfnCreateSprite)	( _lpcstr filename, float x, float y, float w, float h );
 	typedef XUI_ISprite*(*pfnCreateSpriteEx)( const XUI_SpriteAttribute& SpriteAttribute );

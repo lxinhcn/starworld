@@ -12,28 +12,28 @@
 
 namespace XGC
 {
-	class x_size;
-	class x_point;
-	class x_rect;
+	class xgcSize;
+	class xgcPoint;
+	class xgcRect;
 
 	/////////////////////////////////////////////////////////////////////////////
-	// x_size - An extent, similar to Windows SIZE structure.
+	// xgcSize - An extent, similar to Windows SIZE structure.
 
-	class CORE_API x_size : public tagSIZE
+	class CORE_API xgcSize : public tagSIZE
 	{
 	public:
 
 		// Constructors
 		// construct an uninitialized size
-		x_size() throw();
+		xgcSize() throw();
 		// create from two integers
-		x_size(int initCX, int initCY) throw();
+		xgcSize(int initCX, int initCY) throw();
 		// create from another size
-		x_size(SIZE initSize) throw();
+		xgcSize(SIZE initSize) throw();
 		// create from a point
-		x_size(POINT initPt) throw();
+		xgcSize(POINT initPt) throw();
 		// create from a DWORD: cx = LOWORD(dw) cy = HIWORD(dw)
-		x_size(DWORD dwSize) throw();
+		xgcSize(DWORD dwSize) throw();
 
 		// Operations
 		BOOL operator==(SIZE size) const throw();
@@ -42,38 +42,38 @@ namespace XGC
 		void operator-=(SIZE size) throw();
 		void SetSize(int CX, int CY) throw();
 
-		// Operators returning x_size values
-		x_size operator+(SIZE size) const throw();
-		x_size operator-(SIZE size) const throw();
-		x_size operator-() const throw();
+		// Operators returning xgcSize values
+		xgcSize operator+(SIZE size) const throw();
+		xgcSize operator-(SIZE size) const throw();
+		xgcSize operator-() const throw();
 
-		// Operators returning x_point values
-		x_point operator+(POINT point) const throw();
-		x_point operator-(POINT point) const throw();
+		// Operators returning xgcPoint values
+		xgcPoint operator+(POINT point) const throw();
+		xgcPoint operator-(POINT point) const throw();
 
-		// Operators returning x_rect values
-		x_rect operator+(const RECT* lpRect) const throw();
-		x_rect operator-(const RECT* lpRect) const throw();
+		// Operators returning xgcRect values
+		xgcRect operator+(const RECT* lpRect) const throw();
+		xgcRect operator-(const RECT* lpRect) const throw();
 	};
 
 	/////////////////////////////////////////////////////////////////////////////
-	// x_point - A 2-D point, similar to Windows POINT structure.
+	// xgcPoint - A 2-D point, similar to Windows POINT structure.
 
-	class CORE_API x_point : public tagPOINT
+	class CORE_API xgcPoint : public tagPOINT
 	{
 	public:
 		// Constructors
 
 		// create an uninitialized point
-		x_point() throw();
+		xgcPoint() throw();
 		// create from two integers
-		x_point(int initX, int initY) throw();
+		xgcPoint(int initX, int initY) throw();
 		// create from another point
-		x_point(POINT initPt) throw();
+		xgcPoint(POINT initPt) throw();
 		// create from a size
-		x_point(SIZE initSize) throw();
+		xgcPoint(SIZE initSize) throw();
 		// create from an LPARAM: x = LOWORD(dw) y = HIWORD(dw)
-		x_point(LPARAM dwPoint) throw();
+		xgcPoint(LPARAM dwPoint) throw();
 
 
 		// Operations
@@ -91,39 +91,39 @@ namespace XGC
 		void operator+=(POINT point) throw();
 		void operator-=(POINT point) throw();
 
-		// Operators returning x_point values
-		x_point operator+(SIZE size) const throw();
-		x_point operator-(SIZE size) const throw();
-		x_point operator-() const throw();
-		x_point operator+(POINT point) const throw();
+		// Operators returning xgcPoint values
+		xgcPoint operator+(SIZE size) const throw();
+		xgcPoint operator-(SIZE size) const throw();
+		xgcPoint operator-() const throw();
+		xgcPoint operator+(POINT point) const throw();
 
-		// Operators returning x_size values
-		x_size operator-(POINT point) const throw();
+		// Operators returning xgcSize values
+		xgcSize operator-(POINT point) const throw();
 
-		// Operators returning x_rect values
-		x_rect operator+(const RECT* lpRect) const throw();
-		x_rect operator-(const RECT* lpRect) const throw();
+		// Operators returning xgcRect values
+		xgcRect operator+(const RECT* lpRect) const throw();
+		xgcRect operator-(const RECT* lpRect) const throw();
 	};
 
 	/////////////////////////////////////////////////////////////////////////////
-	// x_rect - A 2-D rectangle, similar to Windows RECT structure.
+	// xgcRect - A 2-D rectangle, similar to Windows RECT structure.
 
-	class CORE_API x_rect : public tagRECT
+	class CORE_API xgcRect : public tagRECT
 	{
 		// Constructors
 	public:
 		// uninitialized rectangle
-		x_rect() throw();
+		xgcRect() throw();
 		// from left, top, right, and bottom
-		x_rect(int l, int t, int r, int b) throw();
+		xgcRect(int l, int t, int r, int b) throw();
 		// copy constructor
-		x_rect(const RECT& srcRect) throw();
+		xgcRect(const RECT& srcRect) throw();
 		// from a pointer to another rect
-		x_rect(LPCRECT lpSrcRect) throw();
+		xgcRect(LPCRECT lpSrcRect) throw();
 		// from a point and size
-		x_rect(POINT point, SIZE size) throw();
+		xgcRect(POINT point, SIZE size) throw();
 		// from two points
-		x_rect(POINT topLeft, POINT bottomRight) throw();
+		xgcRect(POINT topLeft, POINT bottomRight) throw();
 
 		// Attributes (in addition to RECT members)
 
@@ -132,22 +132,22 @@ namespace XGC
 		// returns the height
 		int Height() const throw();
 		// returns the size
-		x_size Size() const throw();
+		xgcSize Size() const throw();
 		// reference to the top-left point
-		x_point& TopLeft() throw();
+		xgcPoint& TopLeft() throw();
 		// reference to the bottom-right point
-		x_point& BottomRight() throw();
+		xgcPoint& BottomRight() throw();
 		// const reference to the top-left point
-		const x_point& TopLeft() const throw();
+		const xgcPoint& TopLeft() const throw();
 		// const reference to the bottom-right point
-		const x_point& BottomRight() const throw();
+		const xgcPoint& BottomRight() const throw();
 		// the geometric center point of the rectangle
-		x_point CenterPoint() const throw();
+		xgcPoint CenterPoint() const throw();
 		// swap the left and right
 		void SwapLeftRight() throw();
 		static void WINAPI SwapLeftRight(LPRECT lpRect) throw();
 
-		// convert between x_rect and LPRECT/LPCRECT (no need for &)
+		// convert between xgcRect and LPRECT/LPCRECT (no need for &)
 		operator LPRECT() throw();
 		operator LPCRECT() const throw();
 
@@ -225,228 +225,228 @@ namespace XGC
 		void operator&=(const RECT& rect) throw();
 		void operator|=(const RECT& rect) throw();
 
-		// Operators returning x_rect values
-		x_rect operator+(POINT point) const throw();
-		x_rect operator-(POINT point) const throw();
-		x_rect operator+(LPCRECT lpRect) const throw();
-		x_rect operator+(SIZE size) const throw();
-		x_rect operator-(SIZE size) const throw();
-		x_rect operator-(LPCRECT lpRect) const throw();
-		x_rect operator&(const RECT& rect2) const throw();
-		x_rect operator|(const RECT& rect2) const throw();
-		x_rect MulDiv(int nMultiplier, int nDivisor) const throw();
+		// Operators returning xgcRect values
+		xgcRect operator+(POINT point) const throw();
+		xgcRect operator-(POINT point) const throw();
+		xgcRect operator+(LPCRECT lpRect) const throw();
+		xgcRect operator+(SIZE size) const throw();
+		xgcRect operator-(SIZE size) const throw();
+		xgcRect operator-(LPCRECT lpRect) const throw();
+		xgcRect operator&(const RECT& rect2) const throw();
+		xgcRect operator|(const RECT& rect2) const throw();
+		xgcRect MulDiv(int nMultiplier, int nDivisor) const throw();
 	};
-	inline x_size::x_size() throw()
+	inline xgcSize::xgcSize() throw()
 	{ /* random filled */ }
-	inline x_size::x_size(int initCX, int initCY) throw()
+	inline xgcSize::xgcSize(int initCX, int initCY) throw()
 	{ cx = initCX; cy = initCY; }
-	inline x_size::x_size(SIZE initSize) throw()
+	inline xgcSize::xgcSize(SIZE initSize) throw()
 	{ *(SIZE*)this = initSize; }
-	inline x_size::x_size(POINT initPt) throw()
+	inline xgcSize::xgcSize(POINT initPt) throw()
 	{ *(POINT*)this = initPt; }
-	inline x_size::x_size(DWORD dwSize) throw()
+	inline xgcSize::xgcSize(DWORD dwSize) throw()
 	{
 		cx = (short)LOWORD(dwSize);
 		cy = (short)HIWORD(dwSize);
 	}
-	inline BOOL x_size::operator==(SIZE size) const throw()
+	inline BOOL xgcSize::operator==(SIZE size) const throw()
 	{ return (cx == size.cx && cy == size.cy); }
-	inline BOOL x_size::operator!=(SIZE size) const throw()
+	inline BOOL xgcSize::operator!=(SIZE size) const throw()
 	{ return (cx != size.cx || cy != size.cy); }
-	inline void x_size::operator+=(SIZE size) throw()
+	inline void xgcSize::operator+=(SIZE size) throw()
 	{ cx += size.cx; cy += size.cy; }
-	inline void x_size::operator-=(SIZE size) throw()
+	inline void xgcSize::operator-=(SIZE size) throw()
 	{ cx -= size.cx; cy -= size.cy; }
-	inline void x_size::SetSize(int CX, int CY) throw()
+	inline void xgcSize::SetSize(int CX, int CY) throw()
 	{ cx = CX; cy = CY; }	
-	inline x_size x_size::operator+(SIZE size) const throw()
-	{ return x_size(cx + size.cx, cy + size.cy); }
-	inline x_size x_size::operator-(SIZE size) const throw()
-	{ return x_size(cx - size.cx, cy - size.cy); }
-	inline x_size x_size::operator-() const throw()
-	{ return x_size(-cx, -cy); }
-	inline x_point x_size::operator+(POINT point) const throw()
-	{ return x_point(cx + point.x, cy + point.y); }
-	inline x_point x_size::operator-(POINT point) const throw()
-	{ return x_point(cx - point.x, cy - point.y); }
-	inline x_rect x_size::operator+(const RECT* lpRect) const throw()
-	{ return x_rect(lpRect) + *this; }
-	inline x_rect x_size::operator-(const RECT* lpRect) const throw()
-	{ return x_rect(lpRect) - *this; }
+	inline xgcSize xgcSize::operator+(SIZE size) const throw()
+	{ return xgcSize(cx + size.cx, cy + size.cy); }
+	inline xgcSize xgcSize::operator-(SIZE size) const throw()
+	{ return xgcSize(cx - size.cx, cy - size.cy); }
+	inline xgcSize xgcSize::operator-() const throw()
+	{ return xgcSize(-cx, -cy); }
+	inline xgcPoint xgcSize::operator+(POINT point) const throw()
+	{ return xgcPoint(cx + point.x, cy + point.y); }
+	inline xgcPoint xgcSize::operator-(POINT point) const throw()
+	{ return xgcPoint(cx - point.x, cy - point.y); }
+	inline xgcRect xgcSize::operator+(const RECT* lpRect) const throw()
+	{ return xgcRect(lpRect) + *this; }
+	inline xgcRect xgcSize::operator-(const RECT* lpRect) const throw()
+	{ return xgcRect(lpRect) - *this; }
 
-	// x_point
-	inline x_point::x_point() throw()
+	// xgcPoint
+	inline xgcPoint::xgcPoint() throw()
 	{ /* random filled */ }
-	inline x_point::x_point(int initX, int initY) throw()
+	inline xgcPoint::xgcPoint(int initX, int initY) throw()
 	{ x = initX; y = initY; }
-	inline x_point::x_point(POINT initPt) throw()
+	inline xgcPoint::xgcPoint(POINT initPt) throw()
 	{ *(POINT*)this = initPt; }
-	inline x_point::x_point(SIZE initSize) throw()
+	inline xgcPoint::xgcPoint(SIZE initSize) throw()
 	{ *(SIZE*)this = initSize; }
-	inline x_point::x_point(LPARAM dwPoint) throw()
+	inline xgcPoint::xgcPoint(LPARAM dwPoint) throw()
 	{
 		x = (short)LOWORD(dwPoint);
 		y = (short)HIWORD(dwPoint);
 	}
-	inline void x_point::Offset(int xOffset, int yOffset) throw()
+	inline void xgcPoint::Offset(int xOffset, int yOffset) throw()
 	{ x += xOffset; y += yOffset; }
-	inline void x_point::Offset(POINT point) throw()
+	inline void xgcPoint::Offset(POINT point) throw()
 	{ x += point.x; y += point.y; }
-	inline void x_point::Offset(SIZE size) throw()
+	inline void xgcPoint::Offset(SIZE size) throw()
 	{ x += size.cx; y += size.cy; }
-	inline void x_point::SetPoint(int X, int Y) throw()
+	inline void xgcPoint::SetPoint(int X, int Y) throw()
 	{ x = X; y = Y; }
-	inline BOOL x_point::operator==(POINT point) const throw()
+	inline BOOL xgcPoint::operator==(POINT point) const throw()
 	{ return (x == point.x && y == point.y); }
-	inline BOOL x_point::operator!=(POINT point) const throw()
+	inline BOOL xgcPoint::operator!=(POINT point) const throw()
 	{ return (x != point.x || y != point.y); }
-	inline void x_point::operator+=(SIZE size) throw()
+	inline void xgcPoint::operator+=(SIZE size) throw()
 	{ x += size.cx; y += size.cy; }
-	inline void x_point::operator-=(SIZE size) throw()
+	inline void xgcPoint::operator-=(SIZE size) throw()
 	{ x -= size.cx; y -= size.cy; }
-	inline void x_point::operator+=(POINT point) throw()
+	inline void xgcPoint::operator+=(POINT point) throw()
 	{ x += point.x; y += point.y; }
-	inline void x_point::operator-=(POINT point) throw()
+	inline void xgcPoint::operator-=(POINT point) throw()
 	{ x -= point.x; y -= point.y; }
-	inline x_point x_point::operator+(SIZE size) const throw()
-	{ return x_point(x + size.cx, y + size.cy); }
-	inline x_point x_point::operator-(SIZE size) const throw()
-	{ return x_point(x - size.cx, y - size.cy); }
-	inline x_point x_point::operator-() const throw()
-	{ return x_point(-x, -y); }
-	inline x_point x_point::operator+(POINT point) const throw()
-	{ return x_point(x + point.x, y + point.y); }
-	inline x_size x_point::operator-(POINT point) const throw()
-	{ return x_size(x - point.x, y - point.y); }
-	inline x_rect x_point::operator+(const RECT* lpRect) const throw()
-	{ return x_rect(lpRect) + *this; }
-	inline x_rect x_point::operator-(const RECT* lpRect) const throw()
-	{ return x_rect(lpRect) - *this; }
+	inline xgcPoint xgcPoint::operator+(SIZE size) const throw()
+	{ return xgcPoint(x + size.cx, y + size.cy); }
+	inline xgcPoint xgcPoint::operator-(SIZE size) const throw()
+	{ return xgcPoint(x - size.cx, y - size.cy); }
+	inline xgcPoint xgcPoint::operator-() const throw()
+	{ return xgcPoint(-x, -y); }
+	inline xgcPoint xgcPoint::operator+(POINT point) const throw()
+	{ return xgcPoint(x + point.x, y + point.y); }
+	inline xgcSize xgcPoint::operator-(POINT point) const throw()
+	{ return xgcSize(x - point.x, y - point.y); }
+	inline xgcRect xgcPoint::operator+(const RECT* lpRect) const throw()
+	{ return xgcRect(lpRect) + *this; }
+	inline xgcRect xgcPoint::operator-(const RECT* lpRect) const throw()
+	{ return xgcRect(lpRect) - *this; }
 
-	// x_rect
-	inline x_rect::x_rect() throw()
+	// xgcRect
+	inline xgcRect::xgcRect() throw()
 	{ /* random filled */ }
-	inline x_rect::x_rect(int l, int t, int r, int b) throw()
+	inline xgcRect::xgcRect(int l, int t, int r, int b) throw()
 	{ left = l; top = t; right = r; bottom = b; }
-	inline x_rect::x_rect(const RECT& srcRect) throw()
+	inline xgcRect::xgcRect(const RECT& srcRect) throw()
 	{ ::CopyRect(this, &srcRect); }
-	inline x_rect::x_rect(LPCRECT lpSrcRect) throw()
+	inline xgcRect::xgcRect(LPCRECT lpSrcRect) throw()
 	{ ::CopyRect(this, lpSrcRect); }
-	inline x_rect::x_rect(POINT point, SIZE size) throw()
+	inline xgcRect::xgcRect(POINT point, SIZE size) throw()
 	{ right = (left = point.x) + size.cx; bottom = (top = point.y) + size.cy; }
-	inline x_rect::x_rect(POINT topLeft, POINT bottomRight) throw()
+	inline xgcRect::xgcRect(POINT topLeft, POINT bottomRight) throw()
 	{ left = topLeft.x; top = topLeft.y;
 	right = bottomRight.x; bottom = bottomRight.y; }
-	inline int x_rect::Width() const throw()
+	inline int xgcRect::Width() const throw()
 	{ return right - left; }
-	inline int x_rect::Height() const throw()
+	inline int xgcRect::Height() const throw()
 	{ return bottom - top; }
-	inline x_size x_rect::Size() const throw()
-	{ return x_size(right - left, bottom - top); }
-	inline x_point& x_rect::TopLeft() throw()
-	{ return *((x_point*)this); }
-	inline x_point& x_rect::BottomRight() throw()
-	{ return *((x_point*)this+1); }
-	inline const x_point& x_rect::TopLeft() const throw()
-	{ return *((x_point*)this); }
-	inline const x_point& x_rect::BottomRight() const throw()
-	{ return *((x_point*)this+1); }
-	inline x_point x_rect::CenterPoint() const throw()
-	{ return x_point((left+right)/2, (top+bottom)/2); }
-	inline void x_rect::SwapLeftRight() throw()
+	inline xgcSize xgcRect::Size() const throw()
+	{ return xgcSize(right - left, bottom - top); }
+	inline xgcPoint& xgcRect::TopLeft() throw()
+	{ return *((xgcPoint*)this); }
+	inline xgcPoint& xgcRect::BottomRight() throw()
+	{ return *((xgcPoint*)this+1); }
+	inline const xgcPoint& xgcRect::TopLeft() const throw()
+	{ return *((xgcPoint*)this); }
+	inline const xgcPoint& xgcRect::BottomRight() const throw()
+	{ return *((xgcPoint*)this+1); }
+	inline xgcPoint xgcRect::CenterPoint() const throw()
+	{ return xgcPoint((left+right)/2, (top+bottom)/2); }
+	inline void xgcRect::SwapLeftRight() throw()
 	{ SwapLeftRight(LPRECT(this)); }
-	inline void WINAPI x_rect::SwapLeftRight(LPRECT lpRect) throw()
+	inline void WINAPI xgcRect::SwapLeftRight(LPRECT lpRect) throw()
 	{ LONG temp = lpRect->left; lpRect->left = lpRect->right; lpRect->right = temp; }
-	inline x_rect::operator LPRECT() throw()
+	inline xgcRect::operator LPRECT() throw()
 	{ return this; }
-	inline x_rect::operator LPCRECT() const throw()
+	inline xgcRect::operator LPCRECT() const throw()
 	{ return this; }
-	inline BOOL x_rect::IsRectEmpty() const throw()
+	inline BOOL xgcRect::IsRectEmpty() const throw()
 	{ return ::IsRectEmpty(this); }
-	inline BOOL x_rect::IsRectNull() const throw()
+	inline BOOL xgcRect::IsRectNull() const throw()
 	{ return (left == 0 && right == 0 && top == 0 && bottom == 0); }
-	inline BOOL x_rect::PtInRect(POINT point) const throw()
+	inline BOOL xgcRect::PtInRect(POINT point) const throw()
 	{ return ::PtInRect(this, point); }
-	inline void x_rect::SetRect(int x1, int y1, int x2, int y2) throw()
+	inline void xgcRect::SetRect(int x1, int y1, int x2, int y2) throw()
 	{ ::SetRect(this, x1, y1, x2, y2); }
-	inline void x_rect::SetRect(POINT topLeft, POINT bottomRight) throw()
+	inline void xgcRect::SetRect(POINT topLeft, POINT bottomRight) throw()
 	{ ::SetRect(this, topLeft.x, topLeft.y, bottomRight.x, bottomRight.y); }
-	inline void x_rect::SetRectEmpty() throw()
+	inline void xgcRect::SetRectEmpty() throw()
 	{ ::SetRectEmpty(this); }
-	inline void x_rect::CopyRect(LPCRECT lpSrcRect) throw()
+	inline void xgcRect::CopyRect(LPCRECT lpSrcRect) throw()
 	{ ::CopyRect(this, lpSrcRect); }
-	inline BOOL x_rect::EqualRect(LPCRECT lpRect) const throw()
+	inline BOOL xgcRect::EqualRect(LPCRECT lpRect) const throw()
 	{ return ::EqualRect(this, lpRect); }
-	inline void x_rect::InflateRect(int x, int y) throw()
+	inline void xgcRect::InflateRect(int x, int y) throw()
 	{ ::InflateRect(this, x, y); }
-	inline void x_rect::InflateRect(SIZE size) throw()
+	inline void xgcRect::InflateRect(SIZE size) throw()
 	{ ::InflateRect(this, size.cx, size.cy); }
-	inline void x_rect::DeflateRect(int x, int y) throw()
+	inline void xgcRect::DeflateRect(int x, int y) throw()
 	{ ::InflateRect(this, -x, -y); }
-	inline void x_rect::DeflateRect(SIZE size) throw()
+	inline void xgcRect::DeflateRect(SIZE size) throw()
 	{ ::InflateRect(this, -size.cx, -size.cy); }
-	inline void x_rect::OffsetRect(int x, int y) throw()
+	inline void xgcRect::OffsetRect(int x, int y) throw()
 	{ ::OffsetRect(this, x, y); }
-	inline void x_rect::OffsetRect(POINT point) throw()
+	inline void xgcRect::OffsetRect(POINT point) throw()
 	{ ::OffsetRect(this, point.x, point.y); }
-	inline void x_rect::OffsetRect(SIZE size) throw()
+	inline void xgcRect::OffsetRect(SIZE size) throw()
 	{ ::OffsetRect(this, size.cx, size.cy); }
-	inline void x_rect::MoveToY(int y) throw()
+	inline void xgcRect::MoveToY(int y) throw()
 	{ bottom = Height() + y; top = y; }
-	inline void x_rect::MoveToX(int x) throw()
+	inline void xgcRect::MoveToX(int x) throw()
 	{ right = Width() + x; left = x; }
-	inline void x_rect::MoveToXY(int x, int y) throw()
+	inline void xgcRect::MoveToXY(int x, int y) throw()
 	{ MoveToX(x); MoveToY(y); }
-	inline void x_rect::MoveToXY(POINT pt) throw()
+	inline void xgcRect::MoveToXY(POINT pt) throw()
 	{ MoveToX(pt.x); MoveToY(pt.y); }
-	inline BOOL x_rect::IntersectRect(LPCRECT lpRect1, LPCRECT lpRect2) throw()
+	inline BOOL xgcRect::IntersectRect(LPCRECT lpRect1, LPCRECT lpRect2) throw()
 	{ return ::IntersectRect(this, lpRect1, lpRect2);}
-	inline BOOL x_rect::UnionRect(LPCRECT lpRect1, LPCRECT lpRect2) throw()
+	inline BOOL xgcRect::UnionRect(LPCRECT lpRect1, LPCRECT lpRect2) throw()
 	{ return ::UnionRect(this, lpRect1, lpRect2); }
-	inline void x_rect::operator=(const RECT& srcRect) throw()
+	inline void xgcRect::operator=(const RECT& srcRect) throw()
 	{ ::CopyRect(this, &srcRect); }
-	inline BOOL x_rect::operator==(const RECT& rect) const throw()
+	inline BOOL xgcRect::operator==(const RECT& rect) const throw()
 	{ return ::EqualRect(this, &rect); }
-	inline BOOL x_rect::operator!=(const RECT& rect) const throw()
+	inline BOOL xgcRect::operator!=(const RECT& rect) const throw()
 	{ return !::EqualRect(this, &rect); }
-	inline void x_rect::operator+=(POINT point) throw()
+	inline void xgcRect::operator+=(POINT point) throw()
 	{ ::OffsetRect(this, point.x, point.y); }
-	inline void x_rect::operator+=(SIZE size) throw()
+	inline void xgcRect::operator+=(SIZE size) throw()
 	{ ::OffsetRect(this, size.cx, size.cy); }
-	inline void x_rect::operator+=(LPCRECT lpRect) throw()
+	inline void xgcRect::operator+=(LPCRECT lpRect) throw()
 	{ InflateRect(lpRect); }
-	inline void x_rect::operator-=(POINT point) throw()
+	inline void xgcRect::operator-=(POINT point) throw()
 	{ ::OffsetRect(this, -point.x, -point.y); }
-	inline void x_rect::operator-=(SIZE size) throw()
+	inline void xgcRect::operator-=(SIZE size) throw()
 	{ ::OffsetRect(this, -size.cx, -size.cy); }
-	inline void x_rect::operator-=(LPCRECT lpRect) throw()
+	inline void xgcRect::operator-=(LPCRECT lpRect) throw()
 	{ DeflateRect(lpRect); }
-	inline void x_rect::operator&=(const RECT& rect) throw()
+	inline void xgcRect::operator&=(const RECT& rect) throw()
 	{ ::IntersectRect(this, this, &rect); }
-	inline void x_rect::operator|=(const RECT& rect) throw()
+	inline void xgcRect::operator|=(const RECT& rect) throw()
 	{ ::UnionRect(this, this, &rect); }
-	inline x_rect x_rect::operator+(POINT pt) const throw()
-	{ x_rect rect(*this); ::OffsetRect(&rect, pt.x, pt.y); return rect; }
-	inline x_rect x_rect::operator-(POINT pt) const throw()
-	{ x_rect rect(*this); ::OffsetRect(&rect, -pt.x, -pt.y); return rect; }
-	inline x_rect x_rect::operator+(SIZE size) const throw()
-	{ x_rect rect(*this); ::OffsetRect(&rect, size.cx, size.cy); return rect; }
-	inline x_rect x_rect::operator-(SIZE size) const throw()
-	{ x_rect rect(*this); ::OffsetRect(&rect, -size.cx, -size.cy); return rect; }
-	inline x_rect x_rect::operator+(LPCRECT lpRect) const throw()
-	{ x_rect rect(this); rect.InflateRect(lpRect); return rect; }
-	inline x_rect x_rect::operator-(LPCRECT lpRect) const throw()
-	{ x_rect rect(this); rect.DeflateRect(lpRect); return rect; }
-	inline x_rect x_rect::operator&(const RECT& rect2) const throw()
-	{ x_rect rect; ::IntersectRect(&rect, this, &rect2);
+	inline xgcRect xgcRect::operator+(POINT pt) const throw()
+	{ xgcRect rect(*this); ::OffsetRect(&rect, pt.x, pt.y); return rect; }
+	inline xgcRect xgcRect::operator-(POINT pt) const throw()
+	{ xgcRect rect(*this); ::OffsetRect(&rect, -pt.x, -pt.y); return rect; }
+	inline xgcRect xgcRect::operator+(SIZE size) const throw()
+	{ xgcRect rect(*this); ::OffsetRect(&rect, size.cx, size.cy); return rect; }
+	inline xgcRect xgcRect::operator-(SIZE size) const throw()
+	{ xgcRect rect(*this); ::OffsetRect(&rect, -size.cx, -size.cy); return rect; }
+	inline xgcRect xgcRect::operator+(LPCRECT lpRect) const throw()
+	{ xgcRect rect(this); rect.InflateRect(lpRect); return rect; }
+	inline xgcRect xgcRect::operator-(LPCRECT lpRect) const throw()
+	{ xgcRect rect(this); rect.DeflateRect(lpRect); return rect; }
+	inline xgcRect xgcRect::operator&(const RECT& rect2) const throw()
+	{ xgcRect rect; ::IntersectRect(&rect, this, &rect2);
 	return rect; }
-	inline x_rect x_rect::operator|(const RECT& rect2) const throw()
-	{ x_rect rect; ::UnionRect(&rect, this, &rect2);
+	inline xgcRect xgcRect::operator|(const RECT& rect2) const throw()
+	{ xgcRect rect; ::UnionRect(&rect, this, &rect2);
 	return rect; }
-	inline BOOL x_rect::SubtractRect(LPCRECT lpRectSrc1, LPCRECT lpRectSrc2) throw()
+	inline BOOL xgcRect::SubtractRect(LPCRECT lpRectSrc1, LPCRECT lpRectSrc2) throw()
 	{ return ::SubtractRect(this, lpRectSrc1, lpRectSrc2); }
 
-	inline void x_rect::NormalizeRect() throw()
+	inline void xgcRect::NormalizeRect() throw()
 	{
 		int nTemp;
 		if (left > right)
@@ -463,33 +463,33 @@ namespace XGC
 		}
 	}
 
-	inline void x_rect::InflateRect(LPCRECT lpRect) throw()
+	inline void xgcRect::InflateRect(LPCRECT lpRect) throw()
 	{
 		left -= lpRect->left;		top -= lpRect->top;
 		right += lpRect->right;		bottom += lpRect->bottom;
 	}
 
-	inline void x_rect::InflateRect(int l, int t, int r, int b) throw()
+	inline void xgcRect::InflateRect(int l, int t, int r, int b) throw()
 	{
 		left -= l;			top -= t;
 		right += r;			bottom += b;
 	}
 
-	inline void x_rect::DeflateRect(LPCRECT lpRect) throw()
+	inline void xgcRect::DeflateRect(LPCRECT lpRect) throw()
 	{
 		left += lpRect->left;	top += lpRect->top;
 		right -= lpRect->right;	bottom -= lpRect->bottom;
 	}
 
-	inline void x_rect::DeflateRect(int l, int t, int r, int b) throw()
+	inline void xgcRect::DeflateRect(int l, int t, int r, int b) throw()
 	{
 		left += l;		top += t;
 		right -= r;		bottom -= b;
 	}
 
-	inline x_rect x_rect::MulDiv(int nMultiplier, int nDivisor) const throw()
+	inline xgcRect xgcRect::MulDiv(int nMultiplier, int nDivisor) const throw()
 	{
-		return x_rect(
+		return xgcRect(
 			::MulDiv(left, nMultiplier, nDivisor),
 			::MulDiv(top, nMultiplier, nDivisor),
 			::MulDiv(right, nMultiplier, nDivisor),

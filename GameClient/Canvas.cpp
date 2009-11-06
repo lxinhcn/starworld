@@ -193,7 +193,7 @@ INT	CClientFont::GetCharacterHeight()
 	return m_pFont->GetCharacterHeight();
 }
 
-void	CClientFont::SetColor( uint32 dwColor )
+void	CClientFont::SetColor( _uint32 dwColor )
 {
 	m_pFont->SetColor( dwColor );
 }
@@ -264,7 +264,7 @@ void	CXMouse::SetMousePos( float x, float y )
 	Application::Instance()->Input_SetMousePos( x, y );
 }
 
-int32	CXMouse::GetMouseWheel()
+_int32	CXMouse::GetMouseWheel()
 {
 	return Application::Instance()->Input_GetMouseWheel();
 }
@@ -281,7 +281,7 @@ void	CXMouse::RenderMouse()
 	//}
 }
 
-void	CXMouse::SetMouse( uint16 id )
+void	CXMouse::SetMouse( _uint16 id )
 {
 	//if( id < m_nCount )
 	//{
@@ -411,7 +411,7 @@ int	CClientAnimation::GetFrames()const
 
 //////////////////////////////////////////////////////////////////////////
 
-static void _SetClipping( int32 x, int32 y, int32 w, int32 h )
+static void _SetClipping( _int32 x, _int32 y, _int32 w, _int32 h )
 {
 	Application::Instance()->Gfx_SetClipping( x, y, w, h );
 }
@@ -437,7 +437,7 @@ static void _DrawCharacter( _tchar szChar, UILib::XUI_IFont* pFont, float x, flo
 }
 
 //没有边框的矩形背景
-static void _DrawRect( const x_rect& rc, uint32 bordercolor, uint32 backgroundcolor/* = -1*/ )
+static void _DrawRect( const xgcRect& rc, _uint32 bordercolor, _uint32 backgroundcolor/* = -1*/ )
 {
 	HGE* hge = hgeCreate(HGE_VERSION);
 
@@ -458,12 +458,12 @@ static void _DrawRect( const x_rect& rc, uint32 bordercolor, uint32 backgroundco
 	hge->Release();
 }
 
-static void _DrawLine( float x0, float y0, float x1, float y1, uint32 color )
+static void _DrawLine( float x0, float y0, float x1, float y1, _uint32 color )
 {
 	Application::Instance()->Gfx_RenderLine( x0, y0, x1, y1, color );
 }
 
-static void _DrawPolygon( const x_point* ptArray, uint32* dwColorArray, uint32 nCount, uint16* pTriListArray, int32 nTriCount )
+static void _DrawPolygon( const xgcPoint* ptArray, _uint32* dwColorArray, _uint32 nCount, _uint16* pTriListArray, _int32 nTriCount )
 {
 	// Application::Instance()->Gfx_RenderTriple
 }

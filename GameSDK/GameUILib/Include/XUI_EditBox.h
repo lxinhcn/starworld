@@ -12,7 +12,7 @@ namespace UILib
 		~XUI_EditBox(void);
 
 		//重绘，通过实现这个方法来表现空间的外观
-		virtual void RenderSelf( const x_point& adjust );
+		virtual void RenderSelf( const xgcPoint& adjust );
 
 		void SetText( const std::string &t );
 		std::string GetText()const;
@@ -22,7 +22,7 @@ namespace UILib
 		//参数说明：
 		//pt，鼠标的坐标，相对于控件
 		//sysKeys，各种重要按键的状态，参见MSDN	
-		virtual	bool onMouseMove(const x_point& pt, UINT sysKeys);
+		virtual	bool onMouseMove(const xgcPoint& pt, UINT sysKeys);
 		virtual bool onMouseEnter();
 		virtual bool onMouseLeave();
 		//鼠标按键事件
@@ -30,33 +30,33 @@ namespace UILib
 		//button，按下的键，0-左键，1-右键，2-中键
 		//pt，鼠标的坐标
 		//sysKeys，各种重要按键的状态，参见MSDN
-		virtual	bool onButtonDown(int button, const x_point& pt, UINT sysKeys);
-		virtual	bool onButtonUp(int button, const x_point& pt, UINT sysKeys);
+		virtual	bool onButtonDown(int button, const xgcPoint& pt, UINT sysKeys);
+		virtual	bool onButtonUp(int button, const xgcPoint& pt, UINT sysKeys);
 
 		//键盘
 		//参数说明
 		//keycode，按下的键
 		//sysKeys，各种重要按键的状态，参见MSDN
-		virtual	bool onKeyDown(uint32 keycode, UINT sysKeys);
-		virtual	bool onKeyUp(uint32 keycode, UINT sysKeys);
+		virtual	bool onKeyDown(_uint32 keycode, UINT sysKeys);
+		virtual	bool onKeyUp(_uint32 keycode, UINT sysKeys);
 
 		//参数说明
 		//c，输入的字符
 		//sysKeys，各种重要按键的状态，参见MSDN
-		virtual bool onChar(uint32 c, UINT sysKeys);
+		virtual bool onChar(_uint32 c, UINT sysKeys);
 
 		//输入法
 		//参见MSDN
-		virtual bool onImeComp(uint32 wParam, uint32 lParam);
-		virtual bool onImeEndComp(uint32 wParam, uint32 lParam);
-		virtual bool onImeNotify(uint32 wParam, uint32 lParam);
+		virtual bool onImeComp(_uint32 wParam, _uint32 lParam);
+		virtual bool onImeEndComp(_uint32 wParam, _uint32 lParam);
+		virtual bool onImeNotify(_uint32 wParam, _uint32 lParam);
 
 		//获得焦点
 		virtual void onGetFocus();
 		//失去焦点
 		virtual void onLostFocus();
 
-		virtual unsigned int OnMoveWindow( x_rect& rcWindow );
+		virtual unsigned int OnMoveWindow( xgcRect& rcWindow );
 
 		// virtual LRESULT OnWndMsg( UINT nMsg, WPARAM wParam, LPARAM lParam );
 	protected:
@@ -128,10 +128,10 @@ namespace UILib
 		size_t			m_nCurLineNumber;	// 当前行索引
 		size_t			m_CaratPos;			// 光标位置
 		text			m_text;				// 行记录
-		uint32			m_dwBorderColor, m_dwBackgroundColor;
+		_uint32			m_dwBorderColor, m_dwBackgroundColor;
 
 		bool	m_bControl, m_bShift;
-		x_size	m_WindowSize;				// 视窗大小
+		xgcSize	m_WindowSize;				// 视窗大小
 
 		unsigned int	m_CaratTimerHandler;
 		bool			m_bShowCarat;

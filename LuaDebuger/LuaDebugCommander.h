@@ -10,13 +10,13 @@ public:
 	bool	initialize( const char* lpszPipename, ProcessRetCmd fn );
 	bool	command( const char* cmd );
 
-	buffer*	getBuffer();
-	void	releaseBuffer( buffer* buf );
+	_command_buffer*	getBuffer();
+	void	releaseBuffer( _command_buffer* buf );
 	bool	waitSignal( DWORD dwTimer = INFINITE );
 protected:
 	void	Signal();
 	void	command();
-	buffer*	result();
+	_command_buffer*	result();
 
 private:
 	static unsigned int __stdcall pipe( void* param );
@@ -24,8 +24,8 @@ private:
 	HANDLE		m_hPipe;
 	HANDLE		m_hThread;
 	HANDLE		m_hSignal;
-	buffer		*m_buffer_head;
-	buffer		*m_buffer_tail;
+	_command_buffer		*m_buffer_head;
+	_command_buffer		*m_buffer_tail;
 
 	bool		m_bWork;
 	run_mode	m_mode;

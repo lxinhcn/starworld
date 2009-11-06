@@ -34,13 +34,12 @@ namespace UILib
 		}
 
 		TiXmlDocument Doc;
-		USES_CONVERSION;
-		char* p = T2A( m_strTemplate.c_str() );
+		const char* p = XT2A( m_strTemplate );
 		if( Doc.LoadFile( p ) )
 		{
 			TiXmlElement* pElement = Doc.FirstChildElement( "DESKTOP" );
 			CreateFromXMLNode( pElement );
-			x_rect rc;
+			xgcRect rc;
 
 			rc.left		= pElement->IntAttribute( "X" );
 			rc.top		= pElement->IntAttribute( "Y" );
@@ -153,19 +152,19 @@ namespace UILib
 	{
 		if( m_pParent )
 		{
-			x_rect rc = m_pParent->GetWindowRect();
+			xgcRect rc = m_pParent->GetWindowRect();
 			int nOffsetX = rc.Width()/2 - GetWindowRect().Width()/2;
 			int nOffsetY = rc.Height()/2 - GetWindowRect().Height()/2;
 			Offset( nOffsetX, nOffsetY );
 		}
 	}
 
-	void XUI_Dialog::RenderSelf( const x_point& adjust )
+	void XUI_Dialog::RenderSelf( const xgcPoint& adjust )
 	{
 		XUI_Window::RenderSelf( adjust );
 	}
 
-	bool XUI_Dialog::onKeyUp(uint32 keycode, UINT sysKeys)
+	bool XUI_Dialog::onKeyUp(_uint32 keycode, UINT sysKeys)
 	{
 		// 通过Tab键在控件中切换
 		if( m_bFocused && keycode == VK_TAB )

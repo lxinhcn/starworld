@@ -330,26 +330,6 @@ namespace Private
 	};
 
 	template< class T >
-	struct TypeImpl_Integer< T* >
-	{
-		static void push(lua_State *L, T* v)
-		{
-			lua_pushlightuserdata(L,v);
-		}
-
-		static T* get(lua_State *L, int p)
-		{
-			T* v = (T*)lua_touserdata(L,p);
-			return v;
-		}
-
-		static bool check(lua_State *L, int pos)
-		{
-			return (lua_islightuserdata(L,pos) != 0);
-		}
-	};
-
-	template< class T >
 	struct TypeImpl_Number
 	{
 		static void push(lua_State *L, T v)
@@ -388,26 +368,6 @@ namespace Private
 		}
 	};
 
-	template< class T >
-	struct TypeImpl_Number< T* >
-	{
-		static void push(lua_State *L, T* v)
-		{
-			lua_pushlightuserdata(L,v);
-		}
-
-		static T* get(lua_State *L, int p)
-		{
-			T* v = (T*)lua_touserdata(L,p);
-			return v;
-		}
-
-		static bool check(lua_State *L, int pos)
-		{
-			return (lua_islightuserdata(L,pos) != 0);
-		}
-	};
-
 #define	DEFINE_TYPE_INTEGER( _type ) template<> struct Type< _type >	:	public TypeImpl_Integer< _type >{}
 #define	DEFINE_TYPE_NUMBER( _type ) template<> struct Type< _type >	:	public TypeImpl_Number< _type >{}
 
@@ -424,16 +384,12 @@ namespace Private
 	DEFINE_TYPE_NUMBER( const _type );\
 	DEFINE_TYPE_NUMBER( _type& );\
 	DEFINE_TYPE_NUMBER( const _type& );\
-	DEFINE_TYPE_NUMBER( _type* );\
-	DEFINE_TYPE_NUMBER( const _type* );\
 
 #define DEFINE_UNSIGNED( _type )\
 	DEFINE_TYPE_INTEGER( unsigned _type );\
 	DEFINE_TYPE_INTEGER( const unsigned _type );\
 	DEFINE_TYPE_INTEGER( unsigned _type& );\
 	DEFINE_TYPE_INTEGER( const unsigned _type& );\
-	DEFINE_TYPE_INTEGER( unsigned _type* );\
-	DEFINE_TYPE_INTEGER( const unsigned _type* );\
 
 	//////////////////////////////////////////////////////////////////////////
 	// define type
@@ -1216,14 +1172,59 @@ namespace Private
 		}
 	};
 
-	//////////////////////////////////////////////////////////////////////////
-	// 不能使用宽字节串，lua不支持
+	// Type specialization for <const wchar_t*>
 	template<>
-	struct Type<const wchar_t*>;
+	struct Type<wchar_t*>
+	{
+		static void push(lua_State *L, wchar_t* v)
+		{
+			SLB_DEBUG_CALL; 
+			SLB_DEBUG(6, "Push char* = %s",v);
+			size_t s = wcslen(v) + 1 ;
+			lua_pushlstring(L,(const char*)v,s*sizeof(wchar_t));
+		}
 
+		static const wchar_t* get(lua_State *L, int p)
+		{
+			SLB_DEBUG_CALL; 
+			const wchar_t* v = (const wchar_t*) lua_tolstring(L,p,NULL);
+			SLB_DEBUG(6,"Get const char* (pos %d) = %s",p,v);
+			return v;
+		}
+
+		static bool check(lua_State *L, int pos)
+		{
+			SLB_DEBUG_CALL; 
+			return (lua_isstring(L,pos) != 0);
+		}
+	};
+
+	// Type specialization for <const char*>
 	template<>
-	struct Type< wchar_t* >;
-	//////////////////////////////////////////////////////////////////////////
+	struct Type<const wchar_t*>
+	{
+		static void push(lua_State *L, const wchar_t* v)
+		{
+			SLB_DEBUG_CALL; 
+			SLB_DEBUG(6, "Push const char* = %s",v);
+			size_t s = wcslen(v) + 1 ;
+			lua_pushlstring(L,(const char*)v,s*sizeof(wchar_t));
+		}
+
+		static const wchar_t* get(lua_State *L, int p)
+		{
+			SLB_DEBUG_CALL; 
+			const wchar_t* v = (const wchar_t*) lua_tolstring(L,p,NULL);
+			SLB_DEBUG(6,"Get const char* (pos %d) = %s",p,v);
+			return v;
+		}
+
+		static bool check(lua_State *L, int pos)
+		{
+			SLB_DEBUG_CALL; 
+			return (lua_isstring(L,pos) != 0);
+		}
+	};
 
 	template<>
 	struct Type< LuaObject >
@@ -1239,7 +1240,9 @@ namespace Private
 		{
 			SLB_DEBUG_CALL; 
 			SLB_DEBUG(8,"Get<T=%s>(L=%p, pos = %i)", typeid(T).name(), L, pos);
-			int ref = luaL_ref( L, pos );
+			lua_pushvalue( L, pos );
+			int ref = luaL_ref( L, LUA_REGISTRYINDEX );
+			int type = lua_type( L, pos );
 			return LuaObject( L, ref );
 		}
 
@@ -1291,7 +1294,8 @@ namespace Private
 		{
 			SLB_DEBUG_CALL; 
 			SLB_DEBUG(8,"Get<T=%s>(L=%p, pos = %i)", typeid(T).name(), L, pos);
-			int ref = luaL_ref( L, pos );
+			lua_pushvalue( L, pos );
+			int ref = luaL_ref( L, LUA_REGISTRYINDEX );
 			return LuaObject( L, ref );
 		}
 
@@ -1316,7 +1320,8 @@ namespace Private
 		{
 			SLB_DEBUG_CALL; 
 			SLB_DEBUG(8,"Get<T=%s>(L=%p, pos = %i)", typeid(T).name(), L, pos);
-			int ref = luaL_ref( L, pos );
+			lua_pushvalue( L, pos );
+			int ref = luaL_ref( L, LUA_REGISTRYINDEX );
 			return LuaObject( L, ref );
 		}
 

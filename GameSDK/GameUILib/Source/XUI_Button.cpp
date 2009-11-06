@@ -32,10 +32,10 @@ namespace UILib
 			m_pButtonSkin->SetUV( 0.25f*m_enState, 0.0f, 0.25f*(m_enState+1), 1.0f );
 	}
 
-	void XUI_Button::RenderSelf( const x_point& adjust )
+	void XUI_Button::RenderSelf( const xgcPoint& adjust )
 	{
 		//±³¾°
-		x_point pt( m_WindowRect.TopLeft() + adjust );
+		xgcPoint pt( m_WindowRect.TopLeft() + adjust );
 		int nWidth	= m_WindowRect.Width();
 		int nHeight	= m_WindowRect.Height();
 
@@ -60,7 +60,7 @@ namespace UILib
 		return XUI_Wnd::onMouseLeave();
 	}
 
-	bool XUI_Button::onButtonDown(int button, const x_point& pt, UINT sysKeys)
+	bool XUI_Button::onButtonDown(int button, const xgcPoint& pt, UINT sysKeys)
 	{
 		if (button==0)
 		{
@@ -69,12 +69,12 @@ namespace UILib
 		return XUI_Wnd::onButtonDown(button, pt, sysKeys);
 	}
 
-	bool XUI_Button::onButtonUp(int button, const x_point& pt, UINT sysKeys)
+	bool XUI_Button::onButtonUp(int button, const xgcPoint& pt, UINT sysKeys)
 	{
 		if ( button == 0 )
 		{
 			// doAction();
-			//x_point pt2 = ClientToScreen( pt );
+			//xgcPoint pt2 = ClientToScreen( pt );
 			SetState( MouseOver );
 			SendUIMessage( WM_COMMAND, MAKELONG( GetID(), EV_BNCLICKED ), 0 );
 		}
@@ -86,7 +86,7 @@ namespace UILib
 		return XUI_Wnd::onButtonUp(button, pt, sysKeys);
 	}
 
-	bool XUI_Button::onKeyDown(uint32 keycode, UINT sysKeys)
+	bool XUI_Button::onKeyDown(_uint32 keycode, UINT sysKeys)
 	{
 		if( m_bFocused && keycode == VK_RETURN )
 		{

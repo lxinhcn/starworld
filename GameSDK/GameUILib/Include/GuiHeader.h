@@ -23,5 +23,5 @@
 	#include "slb\SLB.hpp"
 
 	// »ù´¡¸¨Öú¿â
-	#include "Helplib.h"
+	#include "CommonLib.h"
 #endif

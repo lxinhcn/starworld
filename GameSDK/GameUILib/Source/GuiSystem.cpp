@@ -50,7 +50,7 @@ namespace UILib
 		XUI_IME::Initialize();
 		m_hWnd = hWnd;
 
-		x_rect rcWindow;
+		xgcRect rcWindow;
 		GetClientRect( hWnd, rcWindow );
 		m_windowsize = rcWindow.Size();
 
@@ -80,14 +80,14 @@ namespace UILib
 	{
 		if ( m_pDesktop )
 		{
-			m_pDesktop->Render( x_rect( 0, 0, m_windowsize.cx, m_windowsize.cy ) );
+			m_pDesktop->Render( xgcRect( 0, 0, m_windowsize.cx, m_windowsize.cy ) );
 			XUI_SetClipping( 0, 0, m_windowsize.cx, m_windowsize.cy );
 
 			if( m_bEditMode && m_capture_element )
 			{
 				//XUI_Wnd* pWnd = GetRoot();
 				//while( pWnd->m_pChildFocusedOn ) pWnd = pWnd->m_pChildFocusedOn;
-				x_rect rc = m_capture_element->GetWindowRect();
+				xgcRect rc = m_capture_element->GetWindowRect();
 				if( m_capture_element->GetParent() )
 					m_capture_element->GetParent()->ClientToScreen( rc );
 				RenderEditFrame( rc );
@@ -109,11 +109,11 @@ namespace UILib
 		}
 	}
 
-	void CGuiSystem::RenderEditFrame( const x_rect& rc )
+	void CGuiSystem::RenderEditFrame( const xgcRect& rc )
 	{
 		XUI_DrawRect( rc, XUI_ARGB(0xff,0,0,0), XUI_ARGB(0x40,80,80,80) );
 
-		x_rect rch( -2, -2, 2, 2 );
+		xgcRect rch( -2, -2, 2, 2 );
 		rch.OffsetRect( rc.TopLeft() );
 		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
 
@@ -139,17 +139,17 @@ namespace UILib
 		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
 	}
 
-	uint32 CGuiSystem::DetectHandler( XUI_Wnd* pElement, const x_point &pt )
+	_uint32 CGuiSystem::DetectHandler( XUI_Wnd* pElement, const xgcPoint &pt )
 	{
-		x_rect rc = pElement->GetWindowRect();
-		x_point ptt( pt );
+		xgcRect rc = pElement->GetWindowRect();
+		xgcPoint ptt( pt );
 		if( pElement->GetParent() )
 		{
 			pElement->GetParent()->ScreenToClient( ptt );
 		}
 
 		int i = 0;
-		x_rect rch( -2, -2, 2, 2 );
+		xgcRect rch( -2, -2, 2, 2 );
 		rch.OffsetRect( rc.TopLeft() );
 		if( rch.PtInRect( pt ) ) return i;
 		++i;
@@ -192,7 +192,7 @@ namespace UILib
 		while( m_nowtime - m_timer_anchor >= 0.1f )
 		{
 			m_timer_anchor += 0.1f;
-			m_timer.timer();
+			m_timer.active();
 		}
 		SLB::LuaCall< void(float, float) >( Lua::Instance().getState(), "UIUpdateEntry" )( m_nowtime, fDelta );
 		if( m_pDesktop )
@@ -201,9 +201,9 @@ namespace UILib
 		}
 	}
 
-	bool CGuiSystem::onMouseMove(XUI_Wnd* pElement, const x_point& pt, UINT sysKeys, long_ptr *result )
+	bool CGuiSystem::onMouseMove(XUI_Wnd* pElement, const xgcPoint& pt, UINT sysKeys, long_ptr *result )
 	{
-		x_point pt_old = m_mouse_old;
+		xgcPoint pt_old = m_mouse_old;
 		m_mouse_old = pt;
 		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
@@ -216,7 +216,7 @@ namespace UILib
 			{
 				if( sysKeys & MK_LBUTTON )
 				{
-					const x_rect& r = m_capture_element->GetWindowRect();
+					const xgcRect& r = m_capture_element->GetWindowRect();
 					long dx = pt.x - pt_old.x;
 					long dy = pt.y - pt_old.y;
 					switch( m_nCurHandle )
@@ -299,7 +299,7 @@ namespace UILib
 		return false;
 	}
 
-	bool CGuiSystem::onButtonDown( XUI_Wnd* pElement, uint32 nButton, const x_point& pt, UINT sysKeys, long_ptr *result )
+	bool CGuiSystem::onButtonDown( XUI_Wnd* pElement, _uint32 nButton, const xgcPoint& pt, UINT sysKeys, long_ptr *result )
 	{
 		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
@@ -319,7 +319,7 @@ namespace UILib
 		return false;
 	}
 
-	bool CGuiSystem::onButtonUp( XUI_Wnd* pElement, uint32 nButton, const x_point& pt, UINT sysKeys, long_ptr *result )
+	bool CGuiSystem::onButtonUp( XUI_Wnd* pElement, _uint32 nButton, const xgcPoint& pt, UINT sysKeys, long_ptr *result )
 	{
 		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
@@ -354,7 +354,7 @@ namespace UILib
 			break;
 		case WM_SIZE:
 			{
-				x_rect rcWindow;
+				xgcRect rcWindow;
 				GetClientRect( m_hWnd, rcWindow );
 				m_windowsize = rcWindow.Size();
 			}
@@ -371,13 +371,13 @@ namespace UILib
 			break;
 			//输入法
 		case WM_IME_COMPOSITION:
-			ret = onImeComp( m_pDesktop, (uint32)wParam, (uint32)lParam, &result );
+			ret = onImeComp( m_pDesktop, (_uint32)wParam, (_uint32)lParam, &result );
 			break;
 		case WM_IME_ENDCOMPOSITION:
-			ret = onImeEndComp( m_pDesktop, (uint32)wParam, (uint32)lParam, &result );
+			ret = onImeEndComp( m_pDesktop, (_uint32)wParam, (_uint32)lParam, &result );
 			break;
 		case WM_IME_NOTIFY:
-			ret = onImeNotify( m_pDesktop, (uint32)wParam, (uint32)lParam, &result );
+			ret = onImeNotify( m_pDesktop, (_uint32)wParam, (_uint32)lParam, &result );
 			break;
 		default:
 			if( uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST )
@@ -407,7 +407,7 @@ namespace UILib
 		if ( pDesktop )
 		{
 			//获取鼠标的坐标
-			x_point pt( LOWORD(lParam), HIWORD(lParam) );
+			xgcPoint pt( LOWORD(lParam), HIWORD(lParam) );
 			if (pDesktop->IsPointIn(pt))
 			{
 				//pt.x+=pDesktop->m_WindowRect.left;
@@ -443,7 +443,7 @@ namespace UILib
 		return ret;
 	}
 
-	bool CGuiSystem::onKeyDown( XUI_Wnd* pElement, uint32 dwVirtualCode, UINT sysKeys, long_ptr *result )
+	bool CGuiSystem::onKeyDown( XUI_Wnd* pElement, _uint32 dwVirtualCode, UINT sysKeys, long_ptr *result )
 	{
 		if( m_capture_element == NULL ) return false;
 		if( !m_capture_element->IsEnable() ) return false;
@@ -455,7 +455,7 @@ namespace UILib
 		return false;
 	}
 
-	bool CGuiSystem::onKeyUp(XUI_Wnd* pElement, uint32 dwVirtualCode, UINT sysKeys, long_ptr *result )
+	bool CGuiSystem::onKeyUp(XUI_Wnd* pElement, _uint32 dwVirtualCode, UINT sysKeys, long_ptr *result )
 	{
 		if( m_capture_element == NULL ) return false;
 		if( !m_capture_element->IsEnable() ) return false;
@@ -467,7 +467,7 @@ namespace UILib
 		return false;
 	}
 
-	bool CGuiSystem::onChar(XUI_Wnd* pElement, uint32 dwChar, UINT sysKeys, long_ptr *result )
+	bool CGuiSystem::onChar(XUI_Wnd* pElement, _uint32 dwChar, UINT sysKeys, long_ptr *result )
 	{
 		if( m_capture_element == NULL ) return false;
 		if( !m_capture_element->IsEnable() ) return false;
@@ -495,20 +495,20 @@ namespace UILib
 			switch(uMsg)
 			{
 			case WM_KEYDOWN:
-				ret = onKeyDown(pDesktop, (uint32)wParam, (UINT)lParam, result );
+				ret = onKeyDown(pDesktop, (_uint32)wParam, (UINT)lParam, result );
 				break;
 			case WM_KEYUP:
-				ret = onKeyUp(pDesktop, (uint32)wParam, (UINT)lParam, result );
+				ret = onKeyUp(pDesktop, (_uint32)wParam, (UINT)lParam, result );
 				break;
 			case WM_CHAR:
-				ret = onChar(pDesktop, (uint32)wParam, (UINT)lParam, result );
+				ret = onChar(pDesktop, (_uint32)wParam, (UINT)lParam, result );
 				break;
 			}
 		}
 		return ret;
 	}
 
-	bool CGuiSystem::onImeComp(XUI_Wnd* pElement, uint32 wParam, uint32 lParam, long_ptr *result )
+	bool CGuiSystem::onImeComp(XUI_Wnd* pElement, _uint32 wParam, _uint32 lParam, long_ptr *result )
 	{
 		//if (pElement->m_pChildFocusedOn)
 		//	return onImeComp( pElement->m_pChildFocusedOn, wParam, lParam, result );
@@ -517,7 +517,7 @@ namespace UILib
 		return ( m_capture_element != NULL )?m_capture_element->onImeComp( wParam, lParam ):false;
 	}
 
-	bool CGuiSystem::onImeEndComp(XUI_Wnd* pElement, uint32 wParam, uint32 lParam, long_ptr *result )
+	bool CGuiSystem::onImeEndComp(XUI_Wnd* pElement, _uint32 wParam, _uint32 lParam, long_ptr *result )
 	{
 		//if( pElement->m_pChildFocusedOn )
 		//	return onImeEndComp( pElement->m_pChildFocusedOn, wParam, lParam, result );
@@ -526,7 +526,7 @@ namespace UILib
 		return ( m_capture_element != NULL )?m_capture_element->onImeEndComp( wParam, lParam ):false;
 	}
 
-	bool CGuiSystem::onImeNotify(XUI_Wnd* pElement, uint32 wParam, uint32 lParam, long_ptr *result )
+	bool CGuiSystem::onImeNotify(XUI_Wnd* pElement, _uint32 wParam, _uint32 lParam, long_ptr *result )
 	{
 		//if (pElement->m_pChildFocusedOn)
 		//	return onImeNotify( pElement->m_pChildFocusedOn, wParam, lParam, result );
@@ -551,7 +551,7 @@ namespace UILib
 				bool ret = m_pDesktop->CreateFromXMLNode( pNode->ToElement() );
 				float x, y;
 				m_pCursor->GetMousePos( &x, &y );
-				m_capture_element = m_pDesktop->FindChildInPoint( x_point( (long)x, (long)y ) );
+				m_capture_element = m_pDesktop->FindChildInPoint( xgcPoint( (long)x, (long)y ) );
 				return ret;
 			}
 		}
@@ -641,9 +641,9 @@ namespace UILib
 		m_ModalList.pop_front();
 	}
 
-	unsigned int CGuiSystem::SetTimer( event_function function, unsigned short repeat, unsigned short timer )
+	unsigned int CGuiSystem::SetTimer( TimerFunction function, unsigned short repeat, unsigned short timer )
 	{
-		return m_timer.insert_event( new xtimer::event_interface( function, repeat, timer ) );
+		return m_timer.insert_event( function, repeat, timer );
 	}
 
 	void CGuiSystem::KillTimer( unsigned int handle )

@@ -55,7 +55,7 @@ namespace UILib
 	//事件处理
 	//鼠标
 	//返回 true 则父控件将不继续处理该消息
-	bool XUI_Wnd::onMouseMove(const x_point& pt, UINT sysKeys)
+	bool XUI_Wnd::onMouseMove(const xgcPoint& pt, UINT sysKeys)
 	{
 		return false;
 	}
@@ -70,7 +70,7 @@ namespace UILib
 		return false;
 	}
 
-	bool XUI_Wnd::onButtonDown(int button, const x_point& pt, UINT sysKeys)
+	bool XUI_Wnd::onButtonDown(int button, const xgcPoint& pt, UINT sysKeys)
 	{
 		UINT id=0;
 		switch (button)
@@ -90,7 +90,7 @@ namespace UILib
 		return false;
 	}
 
-	bool XUI_Wnd::onButtonUp(int button, const x_point& pt, UINT sysKeys)
+	bool XUI_Wnd::onButtonUp(int button, const xgcPoint& pt, UINT sysKeys)
 	{
 		UINT id=0;
 		switch (button)
@@ -111,33 +111,33 @@ namespace UILib
 	}
 
 	//键盘
-	bool XUI_Wnd::onKeyDown(uint32 keycode, UINT sysKeys)
+	bool XUI_Wnd::onKeyDown(_uint32 keycode, UINT sysKeys)
 	{
 		return false;
 	}
 
-	bool XUI_Wnd::onKeyUp(uint32 keycode, UINT sysKeys)
+	bool XUI_Wnd::onKeyUp(_uint32 keycode, UINT sysKeys)
 	{
 		return false;
 	}
 
-	bool XUI_Wnd::onChar(uint32 c, UINT sysKeys)
+	bool XUI_Wnd::onChar(_uint32 c, UINT sysKeys)
 	{
 		return false;
 	}
 
 	//输入法
-	bool XUI_Wnd::onImeComp(uint32 wParam, uint32 lParam)
+	bool XUI_Wnd::onImeComp(_uint32 wParam, _uint32 lParam)
 	{
 		return false;
 	}
 
-	bool XUI_Wnd::onImeEndComp(uint32 wParam, uint32 lParam)
+	bool XUI_Wnd::onImeEndComp(_uint32 wParam, _uint32 lParam)
 	{
 		return false;
 	}
 
-	bool XUI_Wnd::onImeNotify(uint32 wParam, uint32 lParam)
+	bool XUI_Wnd::onImeNotify(_uint32 wParam, _uint32 lParam)
 	{
 		return false;
 	}
@@ -145,14 +145,14 @@ namespace UILib
 	//end of 事件处理
 
 	//将一个坐标从控件坐标转换成屏幕坐标
-	void XUI_Wnd::ClientToScreen( x_point& pt )const
+	void XUI_Wnd::ClientToScreen( xgcPoint& pt )const
 	{
 		AdjustPoint(pt, true);
 		pt += m_WindowRect.TopLeft();
 		if (m_pParent) return m_pParent->ClientToScreen( pt );
 	}
 
-	void XUI_Wnd::ClientToScreen( x_rect& rc )const
+	void XUI_Wnd::ClientToScreen( xgcRect& rc )const
 	{
 		AdjustWindow( rc, true);
 		rc += m_WindowRect.TopLeft();
@@ -160,7 +160,7 @@ namespace UILib
 	}
 
 	//将一个坐标从屏幕坐标转换成控件坐标
-	void XUI_Wnd::ScreenToClient( x_point& pt )const
+	void XUI_Wnd::ScreenToClient( xgcPoint& pt )const
 	{
 		AdjustPoint( pt, false );
 		if( m_pParent )
@@ -168,7 +168,7 @@ namespace UILib
 		pt -= m_WindowRect.TopLeft();
 	}
 
-	void XUI_Wnd::ScreenToClient( x_rect& rc )const
+	void XUI_Wnd::ScreenToClient( xgcRect& rc )const
 	{
 		AdjustWindow( rc, false );
 		if( m_pParent )
@@ -240,9 +240,9 @@ namespace UILib
 	}
 
 	//寻找在某个坐标上的控件
-	XUI_Wnd* XUI_Wnd::FindChildInPoint(const x_point &pt, uint32 *deep )
+	XUI_Wnd* XUI_Wnd::FindChildInPoint(const xgcPoint &pt, _uint32 *deep )
 	{
-		x_point adjust( pt );
+		xgcPoint adjust( pt );
 		AdjustPoint( adjust, true);
 		for (int i=(int)m_pChildren.size()-1; i>=0; i--)
 		{
@@ -289,7 +289,7 @@ namespace UILib
 	// 移动对象
 	void XUI_Wnd::MoveWindow(int left, int top, int right, int bottom, bool notify )
 	{
-		x_rect oldRect = m_WindowRect;
+		xgcRect oldRect = m_WindowRect;
 		m_WindowRect.SetRect( left, top, right, bottom );
 		Validate();
 		if( notify )
@@ -391,17 +391,17 @@ namespace UILib
 		m_bFocused=bFocused;
 	}
 
-	BOOL XUI_Wnd::IsPointIn(const x_point& pt)
+	BOOL XUI_Wnd::IsPointIn(const xgcPoint& pt)
 	{
 		return m_WindowRect.PtInRect( pt );
 	}
 
-	void XUI_Wnd::Render(const x_rect& clipper)
+	void XUI_Wnd::Render(const xgcRect& clipper)
 	{
 		if (!m_bVisible)		return;
 
 		//计算可见区域
-		x_rect clpSelf( m_WindowRect + clipper.TopLeft() );
+		xgcRect clpSelf( m_WindowRect + clipper.TopLeft() );
 
 		if( clpSelf.IntersectRect( clpSelf, clipper ) )
 		{
@@ -453,7 +453,7 @@ namespace UILib
 		}
 	}
 
-	void XUI_Wnd::RenderSelf( const x_point& adjust )
+	void XUI_Wnd::RenderSelf( const xgcPoint& adjust )
 	{
 		if( m_pBackGround )
 		{
@@ -461,7 +461,7 @@ namespace UILib
 		}
 	}
 
-	long_ptr XUI_Wnd::SendUIMessage( uint32 nMsg, uint_ptr wParam, long_ptr lParam )
+	long_ptr XUI_Wnd::SendUIMessage( _uint32 nMsg, uint_ptr wParam, long_ptr lParam )
 	{
 		//if( m_pChildFocusedOn )
 		//{

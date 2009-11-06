@@ -139,12 +139,12 @@ bool LuaDebugCommander::command( const char* cmd )
 	return WriteFile( m_hPipe, cmd, (DWORD)(strlen(cmd)+1), &dwWrite, NULL ) == TRUE;
 }
 
-buffer* LuaDebugCommander::result()
+_command_buffer* LuaDebugCommander::result()
 {
 	DWORD dwRead = 0;
 	if( PeekNamedPipe( m_hPipe, NULL, 0, NULL, NULL, &dwRead ) && dwRead > 0 )
 	{
-		buffer* b = new buffer;
+		_command_buffer* b = new _command_buffer;
 		if( ReadFile( m_hPipe, b->data, _countof(b->data), (DWORD*)&b->size, NULL ) )
 		{
 			b->data[b->size]	= 0;
@@ -164,18 +164,18 @@ buffer* LuaDebugCommander::result()
 	return false;
 }
 
-buffer*	LuaDebugCommander::getBuffer()
+_command_buffer*	LuaDebugCommander::getBuffer()
 {
-	buffer* tmp = m_buffer_head;
+	_command_buffer* tmp = m_buffer_head;
 	m_buffer_head = m_buffer_tail = NULL;
 	return tmp;
 }
 
-void LuaDebugCommander::releaseBuffer( buffer* buf )
+void LuaDebugCommander::releaseBuffer( _command_buffer* buf )
 {
 	while( buf )
 	{
-		buffer* tmp = buf;
+		_command_buffer* tmp = buf;
 		buf = buf->next;
 		delete tmp;
 	}
@@ -188,7 +188,7 @@ unsigned int __stdcall LuaDebugCommander::pipe( void* param )
 	{
 		while( pCommander->m_bWork )
 		{
-			buffer* buf = pCommander->result();
+			_command_buffer* buf = pCommander->result();
 			if( buf && pCommander->m_RetFunc != NULL )
 			{
 				buf->next = NULL;
@@ -229,7 +229,7 @@ LuaDebugCommander* Create_Commander( const char* pipe, ProcessRetCmd fn )
 	return pCommander;
 }
 
-buffer* Debug_Command( LuaDebugCommander* Debuger, const char* szFmt, ... )
+_command_buffer* Debug_Command( LuaDebugCommander* Debuger, const char* szFmt, ... )
 {
 	if( !Debuger ) return NULL;
 
@@ -251,7 +251,7 @@ buffer* Debug_Command( LuaDebugCommander* Debuger, const char* szFmt, ... )
 	return NULL;
 }
 
-void Debug_ReleaseBuffer( LuaDebugCommander* Debuger, buffer* buf )
+void Debug_ReleaseBuffer( LuaDebugCommander* Debuger, _command_buffer* buf )
 {
 	Debuger->releaseBuffer( buf );
 }
