@@ -88,8 +88,7 @@ namespace UILib
 				//XUI_Wnd* pWnd = GetRoot();
 				//while( pWnd->m_pChildFocusedOn ) pWnd = pWnd->m_pChildFocusedOn;
 				xgcRect rc = m_capture_element->GetWindowRect();
-				if( m_capture_element->GetParent() )
-					m_capture_element->GetParent()->ClientToScreen( rc );
+				m_capture_element->ClientToScreen( rc );
 				RenderEditFrame( rc );
 			}
 
@@ -143,10 +142,7 @@ namespace UILib
 	{
 		xgcRect rc = pElement->GetWindowRect();
 		xgcPoint ptt( pt );
-		if( pElement->GetParent() )
-		{
-			pElement->GetParent()->ScreenToClient( ptt );
-		}
+		pElement->ClientToScreen( rc );
 
 		int i = 0;
 		xgcRect rch( -2, -2, 2, 2 );
@@ -291,10 +287,9 @@ namespace UILib
 			m_mouseover_element = pEnterElement;
 		}
 
-		if( m_mouseover_element->onMouseMove(pt, sysKeys) )
+		if( m_mouseover_element->onMouseMove(pt, sysKeys) == false )
 		{
 			*result = m_mouseover_element->SendUIMessage( UIM_MOUSEMOVE, MAKELONG(pt.x,pt.y), sysKeys );
-			return true;
 		}
 		return false;
 	}
@@ -304,17 +299,26 @@ namespace UILib
 		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
 
-		// XUI_Wnd* pChild = pElement->FindChildInPoint(pt);
-
-		if( m_bEditMode )
+		if( m_bEditMode && m_capture_element )
 		{
 			m_nCurHandle = DetectHandler( m_capture_element, pt );
-			return true;
+			if( m_nCurHandle == -1 )
+			{
+				m_capture_element = m_mouseover_element;
+			}
 		}
-		else if( m_mouseover_element && m_mouseover_element->onButtonDown( nButton, pt, sysKeys ) )
+		else if( !m_bEditMode && m_capture_element )
 		{
-			*result = m_mouseover_element->SendUIMessage( UIM_BUTTONDOWN_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );
-			return true;
+			if( m_capture_element != m_mouseover_element) 
+			{
+				m_capture_element->SetFocus(false);
+				m_capture_element = m_mouseover_element;
+			}
+
+			if( m_capture_element->onButtonDown( nButton, pt, sysKeys ) == false )
+			{
+				*result = m_capture_element->SendUIMessage( UIM_BUTTONDOWN_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );
+			}
 		}
 		return false;
 	}
@@ -324,21 +328,13 @@ namespace UILib
 		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
 
-		if( (m_bEditMode?DetectHandler( m_capture_element, pt ) == -1:true) && m_mouseover_element != m_capture_element )
+		if( !m_bEditMode && m_capture_element )
 		{
-			if( m_capture_element ) m_capture_element->SetFocus(false);
-			m_capture_element = m_mouseover_element;
-			if( m_capture_element ) m_capture_element->SetFocus(true);
-		}
-
-		if( m_bEditMode )
-		{
-			return true;
-		}
-		else if( m_capture_element && m_capture_element->onButtonUp( nButton, pt, sysKeys ) )
-		{
-			*result = m_capture_element->SendUIMessage( UIM_BUTTONUP_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );
-			return true;
+			m_capture_element->SetFocus( true );
+			if( m_capture_element->onButtonUp( nButton, pt, sysKeys ) == false )
+			{
+				*result = m_capture_element->SendUIMessage( UIM_BUTTONUP_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );
+			}
 		}
 		return false;
 	}

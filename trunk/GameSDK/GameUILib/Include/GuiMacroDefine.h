@@ -159,21 +159,3 @@ const UI_MSGMAP* theClass::GetMessageMap() const \
 
 #define UI_WINDOWPOSCHANGE() \
 	UI_NOTIFY( id, EV_WINDOWPOSCHANGE£¨pfnProc )
-
-
-// UNICODE ∂®“Â
-#ifdef UNICODE
-typedef	std::wstring	_string;
-#define INCSZ( pch )			( ++pch )
-#define INCNSZ( pch, count )	( pch+=count )
-#define CMPSZ( pch1, pch2 )		( pch1 == pch2 )
-#define EQUSZ( pch1, pch2 )		( *pch1 = *pch2 )
-#define DEFCH( ch )				( ch )
-#else
-typedef	std::string		_string;
-#define INCSZ( pch )			( pch = _mbsinc( pch ) )
-#define INCNSZ( pch, count )	( pch = _mbsninc( pch, count ) )
-#define CMPSZ( pch1, pch2 )		( !_mbccmp( pch1, ( const UCHAR* )pch2 ) )
-#define EQUSZ( pch1, pch2 )		( _mbccpy( pch1, pch2 ) )
-#define DEFCH( ch )				( ( const unsigned char* )&ch[0] )
-#endif
