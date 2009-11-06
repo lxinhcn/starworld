@@ -1,0 +1,14 @@
+<cursor>
+	<texture filename = "media\cursor.png" count = 14>
+		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
+		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
+		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
+		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
+		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
+		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
+		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
+		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
+		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
+		<cursor x = "0" y = "0" w = "16" h = "16" count = 1 >
+	</texture>
+</cursor>
