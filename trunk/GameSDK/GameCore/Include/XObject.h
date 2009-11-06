@@ -1,7 +1,6 @@
 #ifndef _XOBJECT_
 #define _XOBJECT_
 
-#include "Defines.h"
 #ifdef CORE_EXPORTS
 #define CORE_API __declspec(dllexport)
 #else
@@ -9,428 +8,432 @@
 #endif	//CORE_EXPORTS
 #pragma warning( disable:4251 )
 
+#include <map>
+#include <set>
+#include <loki/Function.h>
+#include <loki/Factory.h>
+#include <loki/TypeTraits.h>
+
+#include "XAttribute.h"
 /************************************************************************/
-/* 列表系统，属性系统，以及对象基础类的实现                               */
+/* 列表系统，属性系统，以及对象基础类的实现                             */
 /************************************************************************/
+
 #define INVALID_OBJID -1
 #define INVALID_ATTRIBID -1
-#define OBJ_MAX	65535
+#define INVALID_TYPE_VALUE -1
+#define INVALID_ATTRIBUTE			(*(CAttribute*)(NULL))
+#define INVALID_ATTRIBUTE_VALUE		(*(CXVariant*)(NULL))
+#define OBJ_MAX	0xffffff
+#define OBJ_MIN	0xffff
+
+#define OBJST_NORMAL	0 
+#define OBJST_DESTROY	1
+
+#define GET_LOCAL_VALUE( CLASS, CLASS_PTR, INDEX )		static_cast< CLASS* >( CLASS_PTR )->GetLocalAttrib( INDEX )
+#define SET_LOCAL_VALUE( CLASS, CLASS_PTR, INDEX, V )	static_cast< CLASS* >( CLASS_PTR )->SetLocalAttrib( INDEX, V )
+#define INIT_LOCAL_VALUE( CLASS, CLASS_PTR, INDEX, V )	static_cast< CLASS* >( CLASS_PTR )->InitLocalAttrib( INDEX, V )
 
 #define		TypeObjectbase				0
-
-#define		TypeScene					0x30000000
-
-#define		TypeEvent					0x20000000
-#define			TypeMapevent			0x21000000
-#define			TypeObjevent			0x22000000
-
-#define		TypeMapobj					0x10000000
-#define			TypeDynamic				0x11000000
-#define				TypeSprite			0x11100000
-#define			TypeItem				0x12000000
-#define			TypeBuild				0x13000000
-
-#define		TypeEffect					0x00000001
+#define		TypeAction					0x00000001
+#define		TypeStatus					0x00000002
 /************************************************************************/
 
-#include <list>
-#include <map>
-class CXObject;
 
-//----------------------------------------------------------------------//
-
-/************************************************************************/
-/* CXObjectList 类，实现了一个静态的指针列表，用来通过ID的方式转化对象指针。
-/************************************************************************/
-class CORE_API CXObjectList
+namespace XGC
 {
-friend class CXObject;
-protected:
-	CXObjectList( int nLen );
-	~CXObjectList();
+	class CXObject;
 
-	int		AddObj( CXObject* pObj );
-	void	DelObj( int nID );
+	//----------------------------------------------------------------------//
 
-	CXObject**	m_pObjList;
-	int			m_nLen;
-	int			m_nCurID;
-	int			m_nCount;
-public:
-	static CXObjectList& GetInstance();
-	bool IsValidID( int nID ) { return nID != INVALID_OBJID && nID >= 0 && nID < m_nLen; }
-
-	CXObject*	GetObj( int nID ){ return IsValidID( nID )?m_pObjList[nID]:NULL; }
-	CXObject*	operator []( int nID ){ return m_pObjList[nID]; }
-};
-
-class CAttrib;
-class CORE_API CXVariant
-{
-friend class CAttrib;
-public:
-	enum var_type{ type_float, type_integer, };
-
-private:
-	var_type t;
-	union
+	typedef _uint32 identifier;
+	/************************************************************************/
+	/* CXObjectList 类，实现了一个静态的指针列表，用来通过ID的方式转化对象指针。
+	/************************************************************************/
+	class CORE_API CXObjectList
 	{
-		float	fValue;
-		int		nValue;
+	friend class CXObject;
+	protected:
+		CXObjectList( size_t nLen );
+		~CXObjectList();
+
+		identifier	AddObj( CXObject* pObj );
+		void		DelObj( identifier nID );
+
+		struct object_handle
+		{
+			unsigned int	position:24;	// 位置位域
+			unsigned int	round:7;		// 轮询位域
+			unsigned int	flag:1;			// 对象位置标志, 1 为服务器使用, 0 为客户端使用.服务器上的对象,最高位永不会使用0;
+		};
+
+		CXObject**	m_pObjList;
+		size_t		m_nLen;
+		size_t		m_nCurID;
+		size_t		m_nRound;
+		size_t		m_nCount;
+	public:
+		static CXObjectList& GetInstance();
+		inline bool IsValidID( object_handle& h );
+
+		inline CXObject* GetObj( identifier nID )
+		{ 
+			object_handle& h = (object_handle&)nID; 
+			return IsValidID( h )?m_pObjList[h.position]:NULL; 
+		}
+
+		inline CXObject* GetObj( identifier nID, _uint32 type );
+
+		inline CXObject* operator []( identifier nID ){ object_handle h = *(object_handle*)&nID; return m_pObjList[h.position]; }
 	};
 
-public:
-	CXVariant(){ t = type_integer; nValue = 0; }
-	CXVariant( const CXVariant& rsh ){ t = rsh.t; fValue = rsh.fValue; }
-	CXVariant( float rsh ){ t = type_float; fValue = rsh; }
-	CXVariant( int rsh ){ t = type_integer; nValue = rsh; }
-
-	bool operator==( const CXVariant& val )const{ return val.t == t; }
-	bool operator==( float val )const{ return t == type_float && val == fValue; }
-	bool operator==( int val )const{ return t == type_integer && val == nValue; }
-
-	CXVariant& operator=( const CXVariant& val ){ t = val.t; fValue = val.fValue; return *this; }
-	CXVariant& operator=( float val ){ t = type_float; fValue = val; return *this; }
-	CXVariant& operator=( int val ){ t = type_integer; nValue = val; return *this; }
-
-	operator int()const{ if( t != type_integer ) throw( t ); return nValue; }
-	operator float()const{ if( t != type_float ) throw( t ); return fValue; }
-	operator bool()const{ if( t != type_integer ) throw( t ); return nValue != 0; }
-};
-
-struct CORE_API AttribValueListener
-{
-	virtual bool OnAttribChange( CXVariant& OldValue, CXVariant NewValue ) = 0;
-};
-
-class CORE_API CAttrib
-{
-public:
-	CAttrib()
-	: Value( 0 )
-	, NowValue( 0 )
-	, mListener( NULL )
+	/************************************************************************/
+	/* CXObjectT 模版实现了属性系统，该模版在每个类层次上实现一个属性列表，但在存取
+	/* 时需要明确存取的属性是位于哪个类层次上的，这通过一个类的类值来指定（暂无其他方法）。
+	/************************************************************************/
+	template < typename ThisClassT, typename BaseClassT, unsigned int ClassType, int nAttribCount >
+	class XObjTypeT	:	public BaseClassT
 	{
-	}
+	public:
+		typedef XObjTypeT BaseClass;
+		typedef typename Loki::Int2Type< ClassType >	ClassIdentify;
+	protected:
+	#define XOBJECT_REPEAT(N) \
+		template< CLIB_ENUM_D(N, class T) > \
+		XObjTypeT( CLIB_PARAM_D(N,T,&P) )\
+			: BaseClassT( CLIB_ENUM_D(N,P) )\
+		{\
+			ASSERT_MSG( IsTypeOf( TypeObjectbase ), _T("错误的继承类型。") );\
+			ZeroMemory( _attrib, sizeof( _attrib ) );\
+		}\
+	
+	// CLIB_MAIN_REPEAT(10,XOBJECT_REPEAT)
+	CLIB_MAIN_REPEAT(10,XOBJECT_REPEAT)
+	#undef SLB_REPEAT
+	#undef XOBJECT_REPEAT
 
-	~CAttrib()
-	{
-
-	}
-
-	void SetListener( AttribValueListener* pListener )
-	{
-		mListener = pListener;
-	}
-
-	void ChangeValue( bool bPersent, const CXVariant& Val )
-	{
-		// DoDefaultEffect 函数的调用在这里会出问题。小心，回头再改吧！
-		switch( Val.t )
-		{
-		case CXVariant::type_integer:
-			{
-				int nTmpValue = 0;
-
-				if( bPersent )
-					nTmpValue = NowValue.nValue + (int)( Value.nValue * Val.nValue / 100.0f );
-				else
-					nTmpValue = NowValue.nValue + Val.nValue;
-
-				if( ( mListener == NULL ) || ( mListener && mListener->OnAttribChange( NowValue, nTmpValue ) ) )
-				{
-					NowValue = nTmpValue;
-				}
-			}
-			break;
-		case CXVariant::type_float:
-			{
-				float fTmpValue = 0.0f;
-
-				if( bPersent )
-					fTmpValue = NowValue.fValue + Value.fValue * Val.fValue / 100.0f;
-				else
-					fTmpValue = NowValue.fValue + Val.fValue;
-
-				if( ( mListener == NULL ) || ( mListener && mListener->OnAttribChange( NowValue, fTmpValue ) ) )
-				{
-					NowValue = fTmpValue;
-				}
-			}
-			break;
-		}
-	}
-
-	void	SetValue( const CXVariant& Val )
-	{ 
-		if( Val == NowValue )
-		{
-			return;
-		}
-		if( ( mListener == NULL ) || ( mListener && mListener->OnAttribChange( NowValue, Val ) ) )
-		{
-			Value = Val;
-			NowValue = Val; 
-		}
-	}
-
-	const CXVariant&	GetValue()const { return NowValue; }
-
-private:
-	AttribValueListener* mListener;
-	CXVariant Value;		// 基准值
-	CXVariant NowValue;	// 当前值,经过换算的值
-};
-
-/************************************************************************/
-/* CXObjectT 模版实现了属性系统，该模版在每个类层次上实现一个属性列表，但在存取
-/* 时需要明确存取的属性是位于哪个类层次上的，这通过一个类的类值来指定（暂无其他方法）。
-/************************************************************************/
-template < typename TBase, int TYPE, int nAttribCount = 1 >
-class XObjTypeT	:	public TBase
-{
-protected:
 	XObjTypeT()
 	{
 		ASSERT_MSG( IsTypeOf( TypeObjectbase ), _T("错误的继承类型。") );
 		ZeroMemory( _attrib, sizeof( _attrib ) );
 	}
 
-private:
-	// 里面的各个元素,在第一时间确定所属类型,之后不能更改类型.
-	CAttrib _attrib[nAttribCount];
-
-	typedef std::map< _string, _string >	CStrAttribMap;
-	typedef std::map< _string, LPVOID >		CBufAttribMap;
-
-	CStrAttribMap	_strAttrib;
-	CBufAttribMap	_bufAttrib;
-
-public:
-	static	int		GetPointType()				{ return TYPE; }
-	virtual int		GetType()const				{ return TYPE; }
-	virtual bool	IsType( uint32 dwType )const	{ if( GetPointType() == dwType ) return true; else return TBase::IsType( dwType );}
-	static	bool	IsTypeOf( uint32 dwType )	{ if( GetPointType() == dwType ) return true; else return TBase::IsTypeOf( dwType );}
-
-	virtual bool SetAttribListener( int nType, int nIndex, AttribValueListener* pListener )
+	template<>
+	XObjTypeT( const ThisClassT& src )
+		: BaseClassT( src )
 	{
-		if( GetPointType() == nType )
+		ASSERT_MSG( IsTypeOf( TypeObjectbase ), _T("错误的继承类型。") );
+		memcpy( (void*)_attrib, (void*)src._attrib, sizeof(_attrib) );
+	}
+
+	private:
+		// 里面的各个元素,在第一时间确定所属类型,之后不能更改类型.
+		CAttrib _attrib[nAttribCount];
+
+	public:
+		static	_uint32	GetPointType()				{ return ClassType; }
+		virtual _uint32	GetType()const				{ return ClassType; }
+		virtual bool	IsTypeOf( _uint32 dwType )const	{ if( GetPointType() == dwType ) return true; else return BaseClassT::IsTypeOf( dwType );}
+		static	bool	IsPointOf( _uint32 dwType )		{ if( GetPointType() == dwType ) return true; else return BaseClassT::IsPointOf( dwType );}
+
+		virtual CAttribute GetAttribute( int nType, int nIndex, bool bNotifyListener = false )
 		{
-			return SetLocalAttribListener( nIndex, pListener );
-		}
-		if( GetPointType() == TBase::GetPointType() )	return false;
-		return TBase::SetAttribListener( nType, nIndex, pListener );
-	}
-
-	virtual bool GetAttrib( int nType, int nIndex, CXVariant& Value )
-	{
-		if( GetPointType() == nType )
-		{
-			return GetLocalAttrib( nIndex, Value );
-		}
-		if( GetPointType() == TBase::GetPointType() )	return false;
-		return TBase::GetAttrib( nType, nIndex, Value );
-	}
-
-	virtual bool SetAttrib( int nType, int nIndex, CXVariant Value )
-	{
-		if( GetPointType() == nType )
-		{
-			return SetLocalAttrib( nIndex, Value );
-		}
-		if( GetPointType() == TBase::GetPointType() )	return false;
-		return TBase::SetAttrib( nType, nIndex, Value );
-	}
-
-	virtual bool ChangeValue( int nType, int nIndex, CXVariant Value, bool bPersent )
-	{
-		if( GetPointType() == nType )
-		{
-			return ChangeLocalValue( nIndex, Value, bPersent );
-		}
-		if( GetPointType() == TBase::GetPointType() )	return false;
-		return TBase::ChangeValue( nType, nIndex, Value, bPersent );
-	}
-
-	bool SetLocalAttribListener( int nIndex, AttribValueListener* pListener )
-	{
-		ASSERT_MSG( nIndex >= 0 && nIndex < nAttribCount, _T("属性值超出范围") );
-		if( nIndex < 0 || nIndex >= nAttribCount )	return false;
-		_attrib[nIndex].SetListener( pListener );
-		return true;
-	}
-
-	// 取类的本地属性
-	bool GetLocalAttrib( int nIndex, CXVariant& Value )const
-	{
-		ASSERT_MSG( nIndex >= 0 && nIndex < nAttribCount, _T("属性值超出范围") );
-		if( nIndex < 0 || nIndex >= nAttribCount )	return false;
-		Value = _attrib[nIndex].GetValue();
-		return true;
-	}
-
-	// 设置本地属性
-	bool SetLocalAttrib( int nIndex, const CXVariant& Value )
-	{
-		ASSERT_MSG( nIndex >= 0 && nIndex < nAttribCount, _T("属性值超出范围") );
-		if( nIndex < 0 || nIndex >= nAttribCount )	return false;
-		_attrib[nIndex].SetValue( Value );
-		return true;
-	}
-
-	bool ChangeLocalValue( int nIndex, const CXVariant& Value, bool bPersent )
-	{
-		ASSERT_MSG( nIndex >= 0 && nIndex < nAttribCount, _T("属性值超出范围") );
-		if( nIndex < 0 || nIndex >= nAttribCount )	return false;
-		_attrib[nIndex].ChangeValue( bPersent, Value );
-		return true;
-	}
-
-	// 字符串属性表
-	virtual _lpctstr GetStrAttrib( int nType, _lpctstr szName )
-	{
-		if( GetPointType() == nType )
-		{
-			CStrAttribMap::const_iterator citer = _strAttrib.find( szName );
-			if( citer != _strAttrib.end() )
+			if( GetPointType() == nType )
 			{
-				const _string& str = citer->second;	return str.c_str();
+				return GetLocalAttribute( nIndex, bNotifyListener );
+			}
+			return BaseClassT::GetAttribute( nType, nIndex, bNotifyListener );
+		}
+
+		virtual CXVariant GetAttrib( int nType, int nIndex )const
+		{
+			if( GetPointType() == nType )
+			{
+				return GetLocalAttrib( nIndex );
+			}
+			return BaseClassT::GetAttrib( nType, nIndex );
+		}
+
+		virtual void SetAttrib( int nType, int nIndex, CXVariant Value, bool bNotifyListener = false )
+		{
+			if( GetPointType() == nType )
+			{
+				SetLocalAttrib( nIndex, Value, bNotifyListener );
+			}
+			else
+			{
+				BaseClassT::SetAttrib( nType, nIndex, Value, bNotifyListener );
 			}
 		}
-		if( GetPointType() == TBase::GetPointType() )	return NULL;
-		return TBase::GetStrAttrib( nType, szName );
-	}
 
-	virtual bool SetStrAttrib( int nType, _lpctstr szName, _lpctstr strValue )
-	{
-		if( strValue == NULL || szName == NULL )	return false;
-		if( GetPointType() == nType )
+		__inline CAttribute GetLocalAttribute( int nIndex, bool bNotifyListener = false )
 		{
-			_strAttrib[szName] = strValue;	return true;
+			ASSERT_MSG( nIndex >= 0 && nIndex < nAttribCount, _T("属性值超出范围") );
+			if( nIndex < 0 || nIndex >= nAttribCount )	return INVALID_ATTRIBUTE;
+			if( bNotifyListener )
+				return CAttribute( _attrib[nIndex], m_Listener, GetPointType(), nIndex );
+			else
+				return CAttribute( _attrib[nIndex] );
 		}
-		if( GetPointType() == TBase::GetPointType() )	return false;
-		return TBase::SetStrAttrib( nType, szName, strValue );
+
+		// 取类的本地属性
+		__inline CXVariant GetLocalAttrib( int nIndex )const
+		{
+			ASSERT_MSG( nIndex >= 0 && nIndex < nAttribCount, _T("属性值超出范围") );
+			if( nIndex < 0 || nIndex >= nAttribCount )	return INVALID_ATTRIBUTE_VALUE;
+			return _attrib[nIndex].GetValue();
+		}
+
+		// 设置本地属性
+		__inline void SetLocalAttrib( int nIndex, CXVariant Value, bool bNotifyListener = false )
+		{
+			ASSERT_MSG( nIndex >= 0 && nIndex < nAttribCount, _T("属性值超出范围") );
+			if( nIndex < 0 || nIndex >= nAttribCount )	return;
+			_attrib[nIndex].SetValue( Value );
+			if( bNotifyListener && m_Listener )
+			{
+				m_Listener( GetPointType(), nIndex, Value );
+			}
+		}
+
+		__inline void InitLocalAttrib( int nIndex, CXVariant Value )
+		{
+			ASSERT_MSG( nIndex >= 0 && nIndex < nAttribCount, _T("属性值超出范围") );
+			if( nIndex < 0 || nIndex >= nAttribCount )	return;
+			_attrib[nIndex].InitValue( Value );
+		}
+	};
+
+	/************************************************************************/
+	/* CXObjectT 模版实现了属性系统，该模版在每个类层次上实现一个属性列表，但在存取
+	/* 时需要明确存取的属性是位于哪个类层次上的，这通过一个类的类值来指定（暂无其他方法）。
+	/************************************************************************/
+	template < typename ThisClassT, typename BaseClassT, unsigned int ClassType >
+	class XObjOnlyTypeT : public BaseClassT
+	{
+	public:
+		typedef XObjOnlyTypeT BaseClass;
+		typedef typename Loki::Int2Type< ClassType >	ClassIdentify;
+	protected:
+	#define XOBJECT_REPEAT(N) \
+	template< CLIB_ENUM_D(N, class T) > \
+	XObjOnlyTypeT( CLIB_PARAM_D(N,T,&P) )\
+		: BaseClassT( CLIB_ENUM_D(N,P) )\
+	{\
+		ASSERT_MSG( IsTypeOf( TypeObjectbase ), _T("错误的继承类型。") );\
+	}\
+
+	CLIB_MAIN_REPEAT(10,XOBJECT_REPEAT)
+	#undef SLB_REPEAT
+	#undef XOBJECT_REPEAT
+
+	XObjOnlyTypeT()
+	{
+		ASSERT_MSG( IsTypeOf( TypeObjectbase ), _T("错误的继承类型。") );
 	}
 
-	// 缓冲区属性表
-	virtual LPVOID GetBufAttrib( int nType, _lpctstr szName )
+	template<>
+	XObjOnlyTypeT( const ThisClassT& src )
+		: BaseClassT( src )
 	{
-		if( GetPointType() == nType )
+		ASSERT_MSG( IsTypeOf( TypeObjectbase ), _T("错误的继承类型。") );
+	}
+
+	public:
+		static	_uint32	GetPointType()				{ return ClassType; }
+		virtual _uint32	GetType()const				{ return ClassType; }
+		virtual bool	IsTypeOf( _uint32 dwType )const	{ if( GetPointType() == dwType ) return true; else return BaseClassT::IsTypeOf( dwType );}
+		static	bool	IsPointOf( _uint32 dwType )		{ if( GetPointType() == dwType ) return true; else return BaseClassT::IsPointOf( dwType );}
+	};
+
+	/************************************************************************/
+	/* CXObject 类，所有带有对象属性的基础类。这里定义了一组属性系统的接口，并提
+	/* 供了底层实现。
+	/* 同时，CXObject类实现了自动列表，当对象生成后，将自己插入对象列表中，并初始化
+	/* 当前ID
+	/************************************************************************/
+	/*	:	public XObjTypeT< CXObjectBase, EN_OBJECT, 1 > */
+	class CORE_API CXObject
+	{
+	protected:
+		CXObject();
+		CXObject( bool bIsParent, bool bIsTypeList );
+		virtual	~CXObject();
+
+	protected:
+		const _byte	m_bIsParent;	// 是否为子物体的父
+		const _byte	m_bIsTypeList;	// 是否分类子物体
+
+		_byte m_nStatus;	// 当前状态
+
+		ListenFunction	m_Listener;
+		bool IsDestroy()const{ return m_nStatus&OBJST_DESTROY; }
+	private:
+		identifier	m_nID;
+		identifier	m_nParentID;	// 父物体ID
+
+		typedef std::set< identifier >			CChildList;
+		typedef std::map< int, CChildList >		CTypeList;
+		typedef std::map< _string, _string >	CStrAttribMap;
+
+		CChildList		m_ChildList;	// 子物体列表
+		CTypeList		m_TypeList;		// 子物体分类表
+		CStrAttribMap	m_strAttrib;
+
+	public:
+		const	identifier	GetObjID()const			{ return m_nID; }
+		static	_uint32		GetPointType()			{ return TypeObjectbase; }
+		static	bool		IsPointOf( _uint32 dwType )		{ return TypeObjectbase == dwType;}
+		virtual _uint32		GetType()const			{ return TypeObjectbase; }
+		virtual bool		IsTypeOf( _uint32 dwType )const	{ return TypeObjectbase == dwType;}
+
+		virtual CXVariant	GetAttrib( int nType, int nIndex )const	{ ASSERT( false ); return INVALID_ATTRIBUTE_VALUE; }
+		virtual void		SetAttrib( int nType, int nIndex, CXVariant Value, bool bNotifyListener = false ){ ASSERT( false ); }
+		virtual CAttribute	GetAttribute( int nType, int nIndex, bool bNotifyListener = false ){ ASSERT( false ); return INVALID_ATTRIBUTE; }
+
+		// 字符串属性表
+		_lpctstr GetStrAttrib( _lpctstr szName )
 		{
-			CBufAttribMap::const_iterator citer = _bufAttrib.find( szName );
-			if( citer != _bufAttrib.end() )
+			CStrAttribMap::const_iterator citer = m_strAttrib.find( szName );
+			if( citer != m_strAttrib.end() )
 			{
-				LPVOID p = citer->second;	return p;
+				const _string& str = citer->second;	
+				return str.c_str();
 			}
 			return NULL;
 		}
-		if( GetPointType() == TBase::GetPointType() )	return NULL;
-		return TBase::GetBufAttrib( nType, szName );
-	}
 
-	virtual bool SetBufAttrib( int nType, _lpctstr szName, LPVOID lpData )
-	{
-		if( GetPointType() == nType )
+		bool SetStrAttrib( _lpctstr szName, _lpctstr strValue )
 		{
-			_bufAttrib[szName] = lpData;
+			if( strValue == NULL || szName == NULL )	
+				return false;
+
+			m_strAttrib[szName] = strValue;	
 			return true;
 		}
-		if( GetPointType() == TBase::GetPointType() )	return NULL;
-		return TBase::SetBufAttrib( nType, szName, lpData );
-	}
 
-};
+		// 字符串属性表
+		bool GetStrAttribA( _lpcstr szName, _string& strValue )
+		{
+			CStrAttribMap::const_iterator citer = m_strAttrib.find( XA2TSTR( szName ) );
+			if( citer != m_strAttrib.end() )
+			{
+				strValue = citer->second;
+				return true;
+			}
+			return false;
+		}
 
-/************************************************************************/
-/* CXObject 类，所有带有对象属性的基础类。这里定义了一组属性系统的接口，并提
-/* 供了底层实现。
-/* 同时，CXObject类实现了自动列表，当对象生成后，将自己插入对象列表中，并初始化
-/* 当前ID
-/************************************************************************/
-/*	:	public XObjTypeT< CXObjectBase, EN_OBJECT, 1 > */
-typedef bool (*EnumChildCallback)( int nID, CXObject* pObj, LPVOID pParam );
-class CORE_API CXObject
-{
-protected:
-	CXObject();
-	virtual	~CXObject();
+		bool SetStrAttribA( _lpcstr szName, _lpcstr strValue )
+		{
+			if( szName == NULL )
+				return false;
 
-private:
-	int m_nID;
-	int	m_nParentID;	// 父物体ID
+			if( strValue == NULL )
+				m_strAttrib.erase( XA2TSTR(szName) );
 
-	typedef std::list< int >	CChildList;
+			m_strAttrib[XA2TSTR(szName)] = XA2TSTR( strValue );
+			return true;
+		}
 
-	CChildList	m_ChildList;	// 子物体列表
-	_string		m_strName;		// 对象名字
+		//---------------------------------------------------//
+		// [9/17/2009 Albert]
+		// Description:	设置监听函数
+		//---------------------------------------------------//
+		void SetAttributeListener( ListenFunction &Fn )
+		{
+			m_Listener = Fn;
+		}
 
-public:
-	void			SetName( _lpctstr lpszName )	{ m_strName = lpszName;			}
-	_lpctstr		GetName()const				{ return m_strName.c_str();		}
+		/************************************************************************/
+		/* 层级关系函数
+		/************************************************************************/
+		// 设置父对象
+		void	SetParent( identifier nID ) { m_nParentID = nID; }
+		// 得到父对象ID
+		identifier	GetParent()const { return m_nParentID; }
+		// 添加子对象ID
+		__inline 
+		bool	AddChild( identifier nID, bool bChangeParent = true );
+		bool	AddChild( CXObject* pObj, bool bChangeParent = true );
+		// 删除子对象ID
+		__inline 
+		void	RemoveChild( identifier nID, bool bRelease = false );
+		void	RemoveChild( CXObject* pObj, bool bRelease = false );
+		// 枚举子对象
+		template< class _Func >
+		_uint32	EnumChild( _Func &CallbackFunc, int nTypeFilter )
+		{
+			CChildList& child = ( nTypeFilter != INVALID_TYPE_VALUE )?m_TypeList[nTypeFilter]:m_ChildList;
 
-	const	int		GetObjID()const				{ return m_nID;					}
-	static	int		GetPointType()				{ return TypeObjectbase;		}
-	virtual int		GetType()const				{ return TypeObjectbase;		}
-	virtual bool	IsType( uint32 dwType )const{ return TypeObjectbase == dwType;}
-	static	bool	IsTypeOf( uint32 dwType )	{ return TypeObjectbase == dwType;}
+			CChildList::const_iterator cb = child.begin();
+			CChildList::const_iterator ce = child.end();
+			for( ; cb != ce; ++cb )
+			{
+				if( CallbackFunc( *cb ) )
+					return *cb;
+			}
 
-	bool	IsKindOf( uint32 dwType )			{ if( this == NULL ) return false;else return IsType( dwType ); }
+			return INVALID_OBJID;
+		}
 
-	virtual bool	SetAttribListener( int nType, int nIndex, AttribValueListener* pListener )	{ return false; }
-	virtual bool	GetAttrib( int nType, int nIndex, CXVariant& Value )const					{ return false; }
-	virtual bool	SetAttrib( int nType, int nIndex, CXVariant Value )						{ return false; }
-	virtual bool	ChangeValue( int nType, int nIndex, CXVariant Value, bool bPersent )		{ return false; }
+		/************************************************************************/
+		// 销毁对象
+		bool	Destroy();
+		// 销毁所有子对象
+		void	DestroyAllChild();
 
-	virtual _lpctstr	GetStrAttrib( int nType, _lpctstr szName )const					{ return NULL; }
-	virtual bool		SetStrAttrib( int nType, _lpctstr szName, _lpctstr strValue )	{ return false;}
+		//---------------------------------------------------//
+		// [9/21/2009 Albert]
+		// Description:	销毁所有子对象
+		//---------------------------------------------------//
+		void	DestroyAllChild( int nType );
 
-	virtual void*	GetBufAttrib( int nType, _lpctstr szName )const					{ return NULL; }
-	virtual bool	SetBufAttrib( int nType, _lpctstr szName, LPVOID lpData )		{ return false; }
+		// 获取子对象数量
+		size_t	GetChildrenCount()const{ return m_ChildList.size(); }
+		size_t	GetChildrenCount( int nType )const
+		{ 
+			CTypeList::const_iterator i = m_TypeList.find( nType ); 
+			return i == m_TypeList.end()?0:i->second.size();
+		}
 
-	/************************************************************************/
-	/* 层级关系函数
-	/************************************************************************/
-	// 设置父对象
-	void	SetParent( int nID ) { m_nParentID = nID; }
-	// 得到父对象ID
-	int		GetParent()const { return m_nParentID; }
-	// 添加子对象ID
-	void	AddChild( int nID );
-	// 删除子对象ID
-	void	RemoveChild( int nID, bool bRelease = false );
-	// 枚举子对象
-	void	EnumChild( EnumChildCallback CallbackFunc, LPVOID pParam = NULL );
-	/************************************************************************/
-	// 销毁对象
-	bool	Destroy();
-	// 销毁所有子对象
-	void	DestroyAllChild();
-protected:
-	/************************************************************************/
-	/* 设置的一些事件响应虚函数。
-	/************************************************************************/
-	virtual bool OnParentChange( int nOldID, int nNewID ){ return true; }
-	virtual bool OnAddChild( int nID ){ return true; }
-	virtual bool OnRemoveChild( int nID, bool bRelease ){ return true; }
-	virtual bool OnDestroy(){ return true; }
-	// 属性变更时调用，用于通知属性变更
-	// nType	:	属性的类型层次
-	// nIndex	:	属性的索引
-	// nNewValue:	属性的值
-	// return	:	-ture 允许更改	-false 阻止更改
-	// 暂时无用
-	//virtual bool OnAttribChange( int nType, int nIndex, int nNewValue ){ return true; }
-};
+	private:
+		/************************************************************************/
+		/* 设置的一些事件响应虚函数。
+		/************************************************************************/
 
-/************************************************************************/
-/* 一个属性系统的演示，通过模版派生，可以很容易的继承属性系统，避免了重复代码
-/* 模版参数指定了派生基类， 类型值，和整型属性个数
-/************************************************************************/
-//class CXItem	:	public XObjTypeT< CXObject, TypeItem, 20 >
-//{
-//public:
-//	CXItem(){};
-//	~CXItem(){};
-//};
+		//---------------------------------------------------//
+		// [8/3/2009 Albert]
+		// Description:	增加子节点前调用
+		// return :		true - 确认增加子节点, false - 子节点被否决,添加节点失败.
+		//---------------------------------------------------//
+		virtual bool PreAddChild( CXObject* pChild ){ return true; }
 
+		//---------------------------------------------------//
+		// [8/3/2009 Albert]
+		// Description:	增加子节点前调用
+		// return :		true - 确认移除子节点, false - 子节点被否决,移除子节点失败.
+		//---------------------------------------------------//
+		virtual bool PreRemoveChild( CXObject* pChild, bool bRelease ){ return true; }
+
+		//---------------------------------------------------//
+		// [8/3/2009 Albert]
+		// Description:	加入子节点后调用
+		//---------------------------------------------------//
+		virtual void OnAddChild( CXObject* pChild ){}
+
+		//---------------------------------------------------//
+		// [8/3/2009 Albert]
+		// Description:	删除子节点后调用,此时对象尚未被删除
+		//---------------------------------------------------//
+		virtual void OnRemoveChild( CXObject* pChild, bool bRelease ){}
+
+		//---------------------------------------------------//
+		// [8/3/2009 Albert]
+		// Description:	对象被删除时调用,此时对象尚未被上除
+		//---------------------------------------------------//
+		virtual void OnDestroy(){}
+	};
+
+}
 #endif //_XOBJECT_

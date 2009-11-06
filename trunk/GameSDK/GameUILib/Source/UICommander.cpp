@@ -47,7 +47,7 @@ namespace UILib
 
 	bool FindChildByIndex( XUI_Wnd* pXUI_Wnd, LPVOID lpParam )
 	{
-		uint32& count = *(uint32*)lpParam;
+		_uint32& count = *(_uint32*)lpParam;
 		if( LOWORD( count ) == HIWORD( count ) )
 			return true;
 		count = MAKELONG( LOWORD( count ) + 1, HIWORD( count ) );
@@ -64,11 +64,11 @@ namespace UILib
 
 	bool BuildChildTree( XUI_Wnd* pXUI_Wnd, LPVOID lpParam )
 	{
-		uint32& count = *(uint32*)lpParam;
+		_uint32& count = *(_uint32*)lpParam;
 		for( WORD i = 0; i < LOWORD( count ); ++i ) _tprintf( _T("     ") );
 		_tprintf( _T("|--[%03d] %s < %s >\n"), HIWORD(count), pXUI_Wnd->GetName().c_str(), pXUI_Wnd->GetLable() );
 
-		uint32 child = MAKELONG( LOWORD( count ) + 1, 0 );
+		_uint32 child = MAKELONG( LOWORD( count ) + 1, 0 );
 		pXUI_Wnd->ForAllChild( BuildChildTree, (LPVOID)&child );
 		count = MAKELONG( LOWORD( count ), HIWORD( count ) +1 );
 		return false;
@@ -100,7 +100,7 @@ namespace UILib
 				if( *section == 0 )
 				{
 					// using index select child
-					uint32 p = MAKELONG(0,_ttoi(child.c_str()));
+					_uint32 p = MAKELONG(0,_ttoi(child.c_str()));
 					pXUI_Wnd = pCurElement->ForAllChild( FindChildByIndex, (LPVOID)&p );
 				}
 				else
@@ -237,7 +237,7 @@ namespace UILib
 		{
 			if( pDesktop == m_pCurElement )
 			{
-				_putts( _T("Connot delete Desktop.") );
+				_cputts( _T("Connot delete Desktop.") );
 				return false;
 			}
 
@@ -310,7 +310,7 @@ namespace UILib
 	bool CUICommander::cmd_tree( Params& param )
 	{
 		if( !m_pCurElement ) return true;
-		uint32 count = 1;
+		_uint32 count = 1;
 
 		XUI_Wnd* pTreeRoot = ( param.size() == 0 )?m_pCurElement:GetElementByPath( param[0].c_str() );
 		_tprintf( _T("[%03d] %s < %s >\n"), HIWORD(count), pTreeRoot->GetName().c_str(), pTreeRoot->GetLable() );

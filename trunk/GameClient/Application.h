@@ -54,7 +54,6 @@ private:
 
 	struct		mouse_cursor;
 	static		mouse_cursor m_cursor_table;
-	CConsole	m_console;
 };
 
 typedef Loki::SingletonHolder< CApplication, Loki::CreateStatic > Application;

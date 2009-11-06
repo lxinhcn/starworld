@@ -27,7 +27,7 @@ namespace UILib
 			m_WindowSize.cy		= m_WindowRect.Height()/pFont->GetCharacterHeight();
 		}
 
-		m_CaratTimerHandler = GuiSystem::Instance().SetTimer( event_function( this, &XUI_EditBox::CaratTimerUpdate ), 1, TIMER_SECOND(0.5f) );
+		m_CaratTimerHandler = GuiSystem::Instance().SetTimer( TimerFunction( this, &XUI_EditBox::CaratTimerUpdate ), 1, TIMER_SECOND(0.5f) );
 		m_text.push_back(_T(""));
 	}
 
@@ -97,14 +97,14 @@ namespace UILib
 	}
 
 	//重绘，通过实现这个方法来表现空间的外观
-	void XUI_EditBox::RenderSelf( const x_point& adjust )
+	void XUI_EditBox::RenderSelf( const xgcPoint& adjust )
 	{
 		__super::RenderSelf( adjust );
-		x_point pt = m_WindowRect.TopLeft() + adjust;
+		xgcPoint pt = m_WindowRect.TopLeft() + adjust;
 		XUI_DrawRect( m_WindowRect + adjust, m_dwBorderColor, m_dwBackgroundColor );
 
-		x_point CharPos = pt;
-		x_point CaratPos;
+		xgcPoint CharPos = pt;
+		xgcPoint CaratPos;
 		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
 
 		for( Position i = m_FirstLineNumber; i < m_text.size(); ++i )
@@ -153,7 +153,7 @@ namespace UILib
 				}
 
 				// 判断是否被绘制。
-				BOOL bRender = m_WindowRect.PtInRect( CharPos + x_point( pFont->GetCharacterWidth( c ), pFont->GetCharacterHeight() ) );
+				BOOL bRender = m_WindowRect.PtInRect( CharPos + xgcPoint( pFont->GetCharacterWidth( c ), pFont->GetCharacterHeight() ) );
 				if( _istprint( c ) )
 				{
 					// 是显示字符
@@ -209,7 +209,7 @@ namespace UILib
 		if( m_bFocused && XUI_IME::m_CompString[0] )
 		{
 			XUI_Window* pWnd = GuiSystem::Instance().GetDesktop( DEFAULT_DESKTOP );
-			const x_rect& rcWindow = pWnd->GetWindowRect();
+			const xgcRect& rcWindow = pWnd->GetWindowRect();
 			CaratPos.x = pFont->GetCharacterWidth( _T(' ') ) + ( (CaratPos.x + XUI_IME::m_CandList.rcCandidate.Width() > rcWindow.Width())?rcWindow.Width()-XUI_IME::m_CandList.rcCandidate.Width()-1:CaratPos.x);
 			if( CaratPos.x < 0 ) CaratPos.x = 0;
 
@@ -218,7 +218,7 @@ namespace UILib
 
 			XUI_SetClipping( CaratPos.x, CaratPos.y, XUI_IME::m_CandList.rcCandidate.Width(), pFont->GetCharacterHeight() + 2 );
 			XUI_DrawRect( 
-				x_rect( CaratPos, x_size( XUI_IME::m_CandList.rcCandidate.Width(), pFont->GetCharacterHeight() + 2 ) ),
+				xgcRect( CaratPos, xgcSize( XUI_IME::m_CandList.rcCandidate.Width(), pFont->GetCharacterHeight() + 2 ) ),
 				m_dwBorderColor, 
 				m_dwBackgroundColor );
 
@@ -241,7 +241,7 @@ namespace UILib
 				CaratPos.y += pFont->GetCharacterHeight() + 2;
 				XUI_SetClipping( CaratPos.x, CaratPos.y, XUI_IME::m_CandList.rcCandidate.Width(), XUI_IME::m_CandList.rcCandidate.Height() );
 				XUI_DrawRect( 
-					x_rect( CaratPos, XUI_IME::m_CandList.rcCandidate.Size() ),
+					xgcRect( CaratPos, XUI_IME::m_CandList.rcCandidate.Size() ),
 					m_dwBorderColor, 
 					m_dwBackgroundColor );
 
@@ -264,7 +264,7 @@ namespace UILib
 	//参数说明：
 	//pt，鼠标的坐标，相对于控件
 	//sysKeys，各种重要按键的状态，参见MSDN	
-	bool XUI_EditBox::onMouseMove(const x_point& pt, UINT sysKeys)
+	bool XUI_EditBox::onMouseMove(const xgcPoint& pt, UINT sysKeys)
 	{
 		return XUI_Wnd::onMouseMove( pt, sysKeys );
 	}
@@ -284,12 +284,12 @@ namespace UILib
 	//button，按下的键，0-左键，1-右键，2-中键
 	//pt，鼠标的坐标
 	//sysKeys，各种重要按键的状态，参见MSDN
-	bool XUI_EditBox::onButtonDown(int button, const x_point& pt, UINT sysKeys)
+	bool XUI_EditBox::onButtonDown(int button, const xgcPoint& pt, UINT sysKeys)
 	{
 		return XUI_Wnd::onButtonDown( button, pt, sysKeys );
 	}
 
-	bool XUI_EditBox::onButtonUp(int button, const x_point& pt, UINT sysKeys)
+	bool XUI_EditBox::onButtonUp(int button, const xgcPoint& pt, UINT sysKeys)
 	{
 		return XUI_Wnd::onButtonUp( button, pt, sysKeys );
 	}
@@ -298,7 +298,7 @@ namespace UILib
 	//参数说明
 	//keycode，按下的键
 	//sysKeys，各种重要按键的状态，参见MSDN
-	bool XUI_EditBox::onKeyDown(uint32 keycode, UINT sysKeys)
+	bool XUI_EditBox::onKeyDown(_uint32 keycode, UINT sysKeys)
 	{
 		switch( keycode )
 		{
@@ -497,7 +497,7 @@ namespace UILib
 		SetCurLineNumber( m_nCurLineNumber + 1 );
 	}
 
-	bool XUI_EditBox::onKeyUp( uint32 keycode, UINT sysKeys )
+	bool XUI_EditBox::onKeyUp( _uint32 keycode, UINT sysKeys )
 	{
 		switch( keycode )
 		{
@@ -515,7 +515,7 @@ namespace UILib
 	//参数说明
 	//c，输入的字符
 	//sysKeys，各种重要按键的状态，参见MSDN
-	bool XUI_EditBox::onChar(uint32 c, UINT sysKeys)
+	bool XUI_EditBox::onChar(_uint32 c, UINT sysKeys)
 	{
 		if( _istprint( c ) )
 		{
@@ -527,7 +527,7 @@ namespace UILib
 
 	//输入法
 	//参见MSDN
-	bool XUI_EditBox::onImeComp(uint32 wParam, uint32 lParam)
+	bool XUI_EditBox::onImeComp(_uint32 wParam, _uint32 lParam)
 	{
 		HWND hWnd = GuiSystem::Instance().GetHWND();
 		HIMC imc = XUI_IME::_ImmGetContext( hWnd );
@@ -639,13 +639,13 @@ namespace UILib
 		return true;
 	}
 
-	bool XUI_EditBox::onImeEndComp(uint32 wParam, uint32 lParam)
+	bool XUI_EditBox::onImeEndComp(_uint32 wParam, _uint32 lParam)
 	{
 		XUI_IME::ResetCompositionString();
 		return true;
 	}
 
-	bool XUI_EditBox::onImeNotify(uint32 wParam, uint32 lParam)
+	bool XUI_EditBox::onImeNotify(_uint32 wParam, _uint32 lParam)
 	{
 		switch( wParam )
 		{
@@ -683,7 +683,7 @@ namespace UILib
 
 					XUI_IME::CCandList& Watch = XUI_IME::m_CandList;
 					XUI_IME::m_CandList.l.clear();
-					for( uint32 i = lpCandList->dwPageStart; i < lpCandList->dwPageSize && i < MAX_CANDLIST; ++i )
+					for( _uint32 i = lpCandList->dwPageStart; i < lpCandList->dwPageSize && i < MAX_CANDLIST; ++i )
 					{
 						XUI_IME::m_CandList.l.push_back( (LPWSTR)((DWORD_PTR)lpCandList + lpCandList->dwOffset[i]) );
 					}
@@ -732,7 +732,7 @@ namespace UILib
 			onChar( (WPARAM)XUI_IME::m_CompString[i], 0 );
 	}
 
-	unsigned int XUI_EditBox::OnMoveWindow( x_rect& rcWindow )
+	unsigned int XUI_EditBox::OnMoveWindow( xgcRect& rcWindow )
 	{
 		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
 		if( pFont )

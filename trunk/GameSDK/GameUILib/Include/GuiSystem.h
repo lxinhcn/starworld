@@ -3,6 +3,7 @@
 
 #pragma once
 #include "XUI_Wnd.h"
+#include "timer_manager.h"
 #include <loki/Singleton.h>
 
 //界面系统，主要负责消息的转发
@@ -46,8 +47,8 @@ namespace UILib
 
 		//对应的窗口
 		HWND	m_hWnd;
-		x_size	m_windowsize;
-		x_point	m_mouse_old;
+		xgcSize	m_windowsize;
+		xgcPoint	m_mouse_old;
 
 	private:
 		//根
@@ -62,31 +63,31 @@ namespace UILib
 		XUI_IMouse		*m_pCursor;
 
 		std::string		m_resource_path;
-		xtimer			m_timer;
+		CTimerManager	m_timer;
 		float			m_nowtime;
 		float			m_timer_anchor;
 		bool			m_bEditMode;
 		int				m_nCurHandle;
-		x_point			m_mousedown;
+		xgcPoint			m_mousedown;
 		XUI_Wnd*		m_capture_element;
 		XUI_Wnd*		m_mouseover_element;
 	protected:
 		void SetFocus		( XUI_Wnd* pElement );
 
 		//消息处理，保证消息可以按照预定的方式转发
-		bool onMouseMove	( XUI_Wnd* pElement, const x_point& pt, uint32 sysKeys, long_ptr *result );
+		bool onMouseMove	( XUI_Wnd* pElement, const xgcPoint& pt, _uint32 sysKeys, long_ptr *result );
 		bool onMouseLeave	( XUI_Wnd* pElement );
-		//bool onButtonDbClick( XUI_Wnd* pElement, uint32 nButton, const x_point& pt, uint32 sysKeys, long_ptr *result );
-		bool onButtonDown	( XUI_Wnd* pElement, uint32 nButton, const x_point& pt, uint32 sysKeys, long_ptr *result );
-		bool onButtonUp		( XUI_Wnd* pElement, uint32 nButton, const x_point& pt, uint32 sysKeys, long_ptr *result );
+		//bool onButtonDbClick( XUI_Wnd* pElement, _uint32 nButton, const xgcPoint& pt, _uint32 sysKeys, long_ptr *result );
+		bool onButtonDown	( XUI_Wnd* pElement, _uint32 nButton, const xgcPoint& pt, _uint32 sysKeys, long_ptr *result );
+		bool onButtonUp		( XUI_Wnd* pElement, _uint32 nButton, const xgcPoint& pt, _uint32 sysKeys, long_ptr *result );
 
-		bool onKeyDown		( XUI_Wnd* pElement, uint32 dwVirtualCode, uint32 sysKeys, long_ptr *result );
-		bool onKeyUp		( XUI_Wnd* pElement, uint32 dwVirtualCode, uint32 sysKeys, long_ptr *result );
-		bool onChar			( XUI_Wnd* pElement, uint32 dwChar, uint32 sysKeys, long_ptr *result );
+		bool onKeyDown		( XUI_Wnd* pElement, _uint32 dwVirtualCode, _uint32 sysKeys, long_ptr *result );
+		bool onKeyUp		( XUI_Wnd* pElement, _uint32 dwVirtualCode, _uint32 sysKeys, long_ptr *result );
+		bool onChar			( XUI_Wnd* pElement, _uint32 dwChar, _uint32 sysKeys, long_ptr *result );
 
-		bool onImeComp		( XUI_Wnd* pElement, uint32 wParam, uint32 lParam, long_ptr *result );
-		bool onImeEndComp	( XUI_Wnd* pElement, uint32 wParam, uint32 lParam, long_ptr *result );
-		bool onImeNotify	( XUI_Wnd* pElement, uint32 wParam, uint32 lParam, long_ptr *result );
+		bool onImeComp		( XUI_Wnd* pElement, _uint32 wParam, _uint32 lParam, long_ptr *result );
+		bool onImeEndComp	( XUI_Wnd* pElement, _uint32 wParam, _uint32 lParam, long_ptr *result );
+		bool onImeNotify	( XUI_Wnd* pElement, _uint32 wParam, _uint32 lParam, long_ptr *result );
 
 		bool HandleMouse	( UINT uMsg, WPARAM wParam, LPARAM lParam, long_ptr *result );
 		bool HandleKeyboard	( UINT uMsg, WPARAM wParam, LPARAM lParam, long_ptr *result );
@@ -98,8 +99,8 @@ namespace UILib
 
 		//渲染
 		void Render();
-		void RenderEditFrame( const x_rect &rc );
-		uint32 DetectHandler(  XUI_Wnd* pElement, const x_point &pt );
+		void RenderEditFrame( const xgcRect &rc );
+		_uint32 DetectHandler(  XUI_Wnd* pElement, const xgcPoint &pt );
 
 		
 		//处理外部消息
@@ -120,7 +121,7 @@ namespace UILib
 		bool LoadFromFile( _lpcstr pszFilename );
 		bool SaveToFile( _lpcstr pszFilename );
 
-		unsigned int SetTimer( event_function function, unsigned short repeat, unsigned short timer );
+		unsigned int SetTimer( TimerFunction function, unsigned short repeat, unsigned short timer );
 		void KillTimer( unsigned int handle );
 	};
 

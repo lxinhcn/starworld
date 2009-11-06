@@ -27,16 +27,16 @@ namespace UILib
 		_string			m_strCaption;
 		XUI_ISprite*	m_pButtonSkin;
 		ButtonState		m_enState;
-		uint32			m_dwColor;
+		_uint32			m_dwColor;
 
-		void RenderSelf( const x_point& adjust );
+		void RenderSelf( const xgcPoint& adjust );
 
 		bool onMouseEnter();
 		bool onMouseLeave();
-		bool onButtonDown(int button, const x_point& pt, UINT sysKeys);
-		bool onButtonUp(int button, const x_point& pt, UINT sysKeys);
+		bool onButtonDown(int button, const xgcPoint& pt, UINT sysKeys);
+		bool onButtonUp(int button, const xgcPoint& pt, UINT sysKeys);
 		
-		bool onKeyDown(uint32 keycode, UINT sysKeys);
+		bool onKeyDown(_uint32 keycode, UINT sysKeys);
 
 		//»ñµÃ½¹µã
 		virtual void onGetFocus();
@@ -48,7 +48,7 @@ namespace UILib
 
 	public:
 		void SetText( _lpctstr sText);
-		void SetTextColor( uint32 dwColor ){ m_dwColor = dwColor; }
+		void SetTextColor( _uint32 dwColor ){ m_dwColor = dwColor; }
 		void SetState( ButtonState enState );
 	};
 }

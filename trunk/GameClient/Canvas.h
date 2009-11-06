@@ -69,9 +69,9 @@ struct CXMouse	:	public XUI_IMouse
 	virtual ~CXMouse();
 	virtual void	GetMousePos( float *x, float *y );
 	virtual void	SetMousePos( float x, float y );
-	virtual int32	GetMouseWheel();
+	virtual _int32	GetMouseWheel();
 	virtual void	RenderMouse();
-	virtual void	SetMouse( uint16 id );
+	virtual void	SetMouse( _uint16 id );
 	virtual bool	IsPressedLButton()const;
 	virtual bool	IsReleaseLButton()const;
 	virtual bool	IsPressedRButton()const;
@@ -84,9 +84,9 @@ struct CXMouse	:	public XUI_IMouse
 private:
 	//XUI_IMouse::CursorDefine*	m_pCursorArray;
 	CursorDefine	*m_pCursorArray;
-	int32			m_nCount;
-	int32			m_nCurIndex;
-	uint32			m_nTimerHandle;
+	_int32			m_nCount;
+	_int32			m_nCurIndex;
+	_uint32			m_nTimerHandle;
 };
 
 class CClientSprite	:	public UILib::XUI_ISprite
@@ -141,7 +141,7 @@ public:
 	virtual INT	GetCharacterHeight();
 
 public:
-	void SetColor( uint32 dwColor );
+	void SetColor( _uint32 dwColor );
 	void Render( float x, float y, _lpctstr lpszText )const;
 	void Render( float x, float y, _tchar szChar )const;
 private:

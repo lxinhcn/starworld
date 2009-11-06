@@ -41,43 +41,14 @@
 #include <vector>
 #include <strstream>
 
-#include <DbgHelp.h>
-
 #include <hge.h>
 #include <hgesprite.h>
 #include <hgeanim.h>
 #include <hgefont.h>
 
 // ¸¨Öú¿â
-#include "helplib.h"
+#include "CommonLib.h"
 #include "UILib.h"
 using namespace UILib;
 
-
 #include <loki/Singleton.h>
-
-#ifdef _DEBUG
-#pragma comment( lib, "atlsd.lib" )
-#else
-#pragma comment( lib, "atls.lib" )
-#endif
-#pragma comment( lib, "dbghelp.lib" )
-
-// TODO: reference additional headers your program requires here
-//#ifdef _DEBUG
-//#include <crtdbg.h>
-//#include <vld.h>
-//#define ASSERT		_ASSERTE
-//#define ASSERT_MSG	_RPT0
-//#else
-//#define ASSERT 
-//#define ASSERT_MSG 
-//#endif
-//
-//#ifdef _UNICODE
-//	typedef std::wstring _string;
-//#else
-//	typedef std::string _string;
-//#endif
-//
-

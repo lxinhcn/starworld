@@ -23,18 +23,18 @@ namespace UILib
 	{
 	}
 
-	void XUI_Window::AdjustPoint( x_point& pt, bool bClientToScreen )const
+	void XUI_Window::AdjustPoint( xgcPoint& pt, bool bClientToScreen )const
 	{
-		x_point ptAdjust( m_nOffsetX, m_nOffsetY );
+		xgcPoint ptAdjust( m_nOffsetX, m_nOffsetY );
 		if( bClientToScreen )
 			pt -= ptAdjust;
 		else
 			pt += ptAdjust;
 	}
 
-	void XUI_Window::AdjustPoint( x_rect& rc, bool bClientToScreen )const
+	void XUI_Window::AdjustPoint( xgcRect& rc, bool bClientToScreen )const
 	{
-		x_point ptAdjust( m_nOffsetX, m_nOffsetY );
+		xgcPoint ptAdjust( m_nOffsetX, m_nOffsetY );
 		if( bClientToScreen )
 			rc -= ptAdjust;
 		else
@@ -141,27 +141,23 @@ namespace UILib
 			{
 				if( strcmp( "CONTROL", pXMLChildElement->Value() ) == 0 )
 				{
-					USES_CONVERSION;
-					_lpctstr p = A2T( pXMLChildElement->Attribute( "Lable" ) );
-					if( p )
+					_string strLable = XA2T( pXMLChildElement->Attribute( "Lable" ) );
+					XUI_Wnd* pElement = CUIFactory::GetInstance().Creator( strLable.c_str() );
+					ASSERT_MSG( pElement, _T("无法创建控件") );
+					if( pElement )
 					{
-						XUI_Wnd* pElement = CUIFactory::GetInstance().Creator( p );
-						ASSERT_MSG( pElement, _T("无法创建控件") );
-						if( pElement )
+						AddChild( pElement );
+						Attribute = pXMLChildElement->FirstChild( "Attribute" );
+						pElement->load_file( Attribute->ToElement() );
+
+						pElement->SendUIMessage( UI_CREATE, 0, 0 );
+
+						if( pElement->IsKindOf( TypeWindow ) )
 						{
-							AddChild( pElement );
-							Attribute = pXMLChildElement->FirstChild( "Attribute" );
-							pElement->load_file( Attribute->ToElement() );
-
-							pElement->SendUIMessage( UI_CREATE, 0, 0 );
-
-							if( pElement->IsKindOf( TypeWindow ) )
-							{
-								if( ((XUI_Window*)pElement)->CreateFromXMLNode( pNodeChild ) == false ) return false;
-							}
+							if( ((XUI_Window*)pElement)->CreateFromXMLNode( pNodeChild ) == false ) return false;
 						}
 					}
-					//const x_rect& rc = pElement->GetRect();
+					//const xgcRect& rc = pElement->GetRect();
 					//if( rc.Width() > m_nPanelWidth )	m_nPanelWidth = rc.Width();
 					//if( rc.Height() > m_nPanelHeight )	m_nPanelHeight = rc.Height();
 				}
@@ -186,8 +182,7 @@ namespace UILib
 		{
 			XUI_Wnd* pXUI_Wnd = *citer;
 			TiXmlElement XmlElement("CONTROL");
-			USES_CONVERSION;
-			XmlElement.SetAttribute( "Lable", T2A(pXUI_Wnd->GetLable()) );
+			XmlElement.SetAttribute( "Lable", XT2A(pXUI_Wnd->GetLable()) );
 			if( pXUI_Wnd->IsKindOf( TypeWindow ) )
 				((XUI_Window*)pXUI_Wnd)->SaveToXMLNode( (TiXmlNode*)&XmlElement );
 			else

@@ -42,7 +42,7 @@ enum uiSig
 	uiSig_vb = uiSig_vw,	// VOID (BOOL)
 
 	uiSig_b_wl,				// BOOL (WPARAM,LPARAM)
-	uiSig_vwp,				// VOID (UINT,x_point)
+	uiSig_vwp,				// VOID (UINT,xgcPoint)
 	uiSig_v_v_ii,			// VOID (short,short)
 	uiSig_end
 };
@@ -85,7 +85,7 @@ namespace UILib
 		VOID ( XUI_Base::* pfn_vw )( WPARAM );
 
 		BOOL ( XUI_Base::* pfn_b_wl)(WPARAM, LPARAM);
-		VOID ( XUI_Base::* pfn_vwp )(UINT, x_point);
+		VOID ( XUI_Base::* pfn_vwp )(UINT, xgcPoint);
 
 		VOID ( XUI_Base::* pfn_v_v_ii)(short, short);
 	};
@@ -117,7 +117,7 @@ namespace UILib
 	private:
 		//事件响应
 		std::vector<XUI_Base*> m_pListeners;
-		uint32 m_nID;				// 控件ID用于消息映射
+		_uint32 m_nID;				// 控件ID用于消息映射
 
 	public:
 		void	SetID( UINT nID ){ m_nID = nID; }

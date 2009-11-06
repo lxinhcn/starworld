@@ -23,7 +23,7 @@ namespace UILib
 	static _lpctstr	g_pszIndicatior = g_aszIndicator[0];
 	static bool		g_bVerticalCand = true;
 	static bool		g_bChineseIME = true;
-	static uint32	g_dwState = IMEUI_STATE_OFF;
+	static _uint32	g_dwState = IMEUI_STATE_OFF;
 	static UINT		g_uCodePage = 0;
 
 	wchar_t				XUI_IME::m_CompString[MAX_COMPSTRING_SIZE];
@@ -35,7 +35,7 @@ namespace UILib
 	HINSTANCE			XUI_IME::m_hDllVer		= NULL;		// Version DLL handle
 	HIMC				XUI_IME::m_hImcDef		= NULL;		// Default input context
 	HKL					XUI_IME::m_hklCurrent	= NULL;	// Current keyboard layout of the process
-	x_rect				XUI_IME::m_rcWindow( 640, 480, 730, 500 );
+	xgcRect				XUI_IME::m_rcWindow( 640, 480, 730, 500 );
 
 	INPUTCONTEXT*	(WINAPI * XUI_IME::_ImmLockIMC)( HIMC );
 	BOOL			(WINAPI * XUI_IME::_ImmUnlockIMC)( HIMC );
@@ -144,7 +144,7 @@ namespace UILib
 		, dwPageSize(0)
 		, nReadingError(0) // Index of the error character
 		, bShowWindow(true)   // Whether the candidate list window is visible
-		, rcCandidate( x_rect( 0, 0, 100, 240 ) )
+		, rcCandidate( xgcRect( 0, 0, 100, 240 ) )
 	{
 	}
 
@@ -161,7 +161,7 @@ namespace UILib
 		{
 			XUI_DrawText( g_aszIndicator[INDICATOR_ENGLISH], pFont, (float)m_rcWindow.left, (float)m_rcWindow.top + 1 );
 		}
-		x_size strSize = pFont->GetStringSize( g_pszIndicatior );
+		xgcSize strSize = pFont->GetStringSize( g_pszIndicatior );
 
 		//XUI_DrawCharacter( )
 	}

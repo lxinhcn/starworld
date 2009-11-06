@@ -23,10 +23,10 @@ namespace UILib
 		void Destroy();
 	protected:
 		//绘制
-		void Render(const x_rect& clipper);
+		void Render(const xgcRect& clipper);
 
 		//重绘，通过实现这个方法来表现空间的外观
-		virtual void RenderSelf( const x_point& adjust );
+		virtual void RenderSelf( const xgcPoint& adjust );
 		virtual void Update( float timer, float delta );
 
 		//检查
@@ -42,7 +42,7 @@ namespace UILib
 		//参数说明：
 		//pt，鼠标的坐标，相对于控件
 		//sysKeys，各种重要按键的状态，参见MSDN	
-		virtual	bool onMouseMove(const x_point& pt, UINT sysKeys);
+		virtual	bool onMouseMove(const xgcPoint& pt, UINT sysKeys);
 		virtual bool onMouseEnter();
 		virtual bool onMouseLeave();
 
@@ -51,53 +51,53 @@ namespace UILib
 		//button，按下的键，0-左键，1-右键，2-中键
 		//pt，鼠标的坐标
 		//sysKeys，各种重要按键的状态，参见MSDN
-		virtual	bool onButtonDown(int button, const x_point& pt, UINT sysKeys);
-		virtual	bool onButtonUp(int button, const x_point& pt, UINT sysKeys);
+		virtual	bool onButtonDown(int button, const xgcPoint& pt, UINT sysKeys);
+		virtual	bool onButtonUp(int button, const xgcPoint& pt, UINT sysKeys);
 
 		//键盘
 		//参数说明
 		//keycode，按下的键
 		//sysKeys，各种重要按键的状态，参见MSDN
-		virtual	bool onKeyDown(uint32 keycode, UINT sysKeys);
-		virtual	bool onKeyUp(uint32 keycode, UINT sysKeys);
+		virtual	bool onKeyDown(_uint32 keycode, UINT sysKeys);
+		virtual	bool onKeyUp(_uint32 keycode, UINT sysKeys);
 		//参数说明
 		//c，输入的字符
 		//sysKeys，各种重要按键的状态，参见MSDN
-		virtual bool onChar(uint32 c, UINT sysKeys);
+		virtual bool onChar(_uint32 c, UINT sysKeys);
 
 		//输入法
 		//参见MSDN
-		virtual bool onImeComp(uint32 wParam, uint32 lParam);
-		virtual bool onImeEndComp(uint32 wParam, uint32 lParam);
-		virtual bool onImeNotify(uint32 wParam, uint32 lParam);
+		virtual bool onImeComp(_uint32 wParam, _uint32 lParam);
+		virtual bool onImeEndComp(_uint32 wParam, _uint32 lParam);
+		virtual bool onImeNotify(_uint32 wParam, _uint32 lParam);
 
 		//获得焦点
 		virtual void onGetFocus() {}
 		//失去焦点
 		virtual void onLostFocus() {}
 
-		virtual unsigned int OnMoveWindow( x_rect& rcWindow ){ return 0; }
+		virtual unsigned int OnMoveWindow( xgcRect& rcWindow ){ return 0; }
 	public:
 		virtual _lpctstr GetLable()const = 0;
 
 		// 发送消息
-		long_ptr SendUIMessage( uint32 nMsg, uint_ptr wParam, long_ptr lParam );
+		long_ptr SendUIMessage( _uint32 nMsg, uint_ptr wParam, long_ptr lParam );
 
 		void Release();
 
 		//坐标转换
-		void ScreenToClient( x_point& pt) const;
-		void ClientToScreen( x_point& pt) const;
-		void ScreenToClient( x_rect& rc ) const;
-		void ClientToScreen( x_rect& rc ) const;
+		void ScreenToClient( xgcPoint& pt) const;
+		void ClientToScreen( xgcPoint& pt) const;
+		void ScreenToClient( xgcRect& rc ) const;
+		void ClientToScreen( xgcRect& rc ) const;
 
 		//坐标修正，个别控件可以滚动，因此需要进行修正
-		virtual void AdjustPoint( x_point& pt, bool bClientToScreen )const { if( m_pParent ) m_pParent->AdjustPoint( pt, bClientToScreen ); }
-		virtual void AdjustWindow( x_rect& rc, bool bClientToScreen )const { if( m_pParent ) m_pParent->AdjustWindow( rc, bClientToScreen ); }
+		virtual void AdjustPoint( xgcPoint& pt, bool bClientToScreen )const { if( m_pParent ) m_pParent->AdjustPoint( pt, bClientToScreen ); }
+		virtual void AdjustWindow( xgcRect& rc, bool bClientToScreen )const { if( m_pParent ) m_pParent->AdjustWindow( rc, bClientToScreen ); }
 
 		//获取空间的显示区域
-		const x_rect& GetWindowRect()const { return m_WindowRect; }
-		const x_point& GetTopLeft()const{ return m_WindowRect.TopLeft(); }
+		const xgcRect& GetWindowRect()const { return m_WindowRect; }
+		const xgcPoint& GetTopLeft()const{ return m_WindowRect.TopLeft(); }
 
 		//--------------------------------------------------------------------------
 		//层次关系
@@ -109,7 +109,7 @@ namespace UILib
 		void DestroyAllChild();
 		void SetParent( XUI_Wnd* pParent ){ m_pParent = pParent; }
 		XUI_Wnd* GetParent(){return m_pParent;}
-		XUI_Wnd* FindChildInPoint( const x_point &pt, uint32* deep = NULL );
+		XUI_Wnd* FindChildInPoint( const xgcPoint &pt, _uint32* deep = NULL );
 		XUI_Wnd* FindChildByName( const _string& sName )const;
 		XUI_Wnd* FindChildByID( int nID )const;
 
@@ -132,7 +132,7 @@ namespace UILib
 		void BringToEnd();
 
 		//检测某一点是否在控件的显示区域内
-		virtual BOOL IsPointIn(const x_point& pt);
+		virtual BOOL IsPointIn(const xgcPoint& pt);
 
 		//--------------------------------------------------------------------------
 		// 设置控件属性
@@ -180,7 +180,7 @@ namespace UILib
 		bool			m_bTranslateParent;	// 是否将WM_COMMAND消息传给父控件
 
 		float			m_fZ;
-		x_rect			m_WindowRect;		// 位置和大小，相对于父控件
+		xgcRect			m_WindowRect;		// 位置和大小，相对于父控件
 
 		XUI_IFont*		m_pFont;
 		XUI_ISprite*	m_pBackGround;			// 背景图
@@ -194,8 +194,8 @@ namespace UILib
 	typedef struct DrawStruct
 	{
 		ICanvas*	pCanvas;
-		x_rect		rcClient;
-		x_rect		rcClipper;
+		xgcRect		rcClient;
+		xgcRect		rcClipper;
 		XUI_Wnd*	pCtrl;
 		LPARAM		lParam1;
 		LPARAM		lParam2;

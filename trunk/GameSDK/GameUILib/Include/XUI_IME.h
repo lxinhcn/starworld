@@ -47,21 +47,21 @@ namespace UILib
 		static HIMC			m_hImcDef;		// Default input context
 		static HKL			m_hklCurrent;	// Current keyboard layout of the process
 
-		static x_rect		m_rcWindow;
+		static xgcRect		m_rcWindow;
 		struct CCandList
 		{
 			CCandList();
 			std::list< std::wstring >	l;
 			std::string strBuffer;
-			int32	nCaretPos;
-			int32   nFirstSelected; // First character position of the selected string in HoriCand
-			int32   nHoriSelectedLen; // Length of the selected string in HoriCand
-			uint32	dwCount;       // Number of valid entries in the candidate list
-			uint32	dwSelection;   // Currently selected candidate entry relative to page top
-			uint32	dwPageSize;
-			int32   nReadingError; // Index of the error character
+			_int32	nCaretPos;
+			_int32	nFirstSelected; // First character position of the selected string in HoriCand
+			_int32	nHoriSelectedLen; // Length of the selected string in HoriCand
+			_uint32	dwCount;       // Number of valid entries in the candidate list
+			_uint32	dwSelection;   // Currently selected candidate entry relative to page top
+			_uint32	dwPageSize;
+			_int32	nReadingError; // Index of the error character
 			bool	bShowWindow;   // Whether the candidate list window is visible
-			x_rect	rcCandidate;   // Candidate rectangle computed and filled each time before rendered
+			xgcRect	rcCandidate;   // Candidate rectangle computed and filled each time before rendered
 		};
 
 		static CCandList	m_CandList;	// 输入法绘制结构。

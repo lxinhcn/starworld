@@ -47,9 +47,6 @@ namespace SLB {
 		obj.push();
 		int type = lua_type( _L, -1 );
 		_ref = luaL_ref( obj.m_state, LUA_REGISTRYINDEX );
-		lua_getref(_L,_ref);
-		type = lua_type( _L, -1 );
-		lua_pop(_L,2);
 	}
 
 	LuaCallBase::LuaCallBase( const LuaCallBase& rsh )

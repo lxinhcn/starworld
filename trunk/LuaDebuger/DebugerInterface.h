@@ -8,11 +8,11 @@ enum run_mode { lua_run, lua_debug, lua_stop };
 
 typedef class LuaDebugCommander LuaDebugCommander;
 
-struct buffer
+struct _command_buffer
 { 
 	char	data[BUFSIZE];
 	size_t	size;
-	buffer	*next;
+	_command_buffer	*next;
 };
 
 typedef std::vector< std::string >	Params;
@@ -23,7 +23,7 @@ extern bool PraseString( const char* lpszCommand, Params& param );
 #define CHECKBUF( B, T, V ) (B?(T==dsp_buffer?( B->data[0] == '$' || B->data[0] == '#' ):( ( B->data[0] == '@' && _strnicmp( V, B->data+1, strlen(V) ) == 0 ) || ( B->data[0] == '#' && (_strnicmp( V, B->data+1, strlen( V ) ) == 0 ) ) ) ):false)
 
 extern LuaDebugCommander* Create_Commander( const char* pipe, ProcessRetCmd fn );
-extern buffer* Debug_Command( LuaDebugCommander* Debuger, const char* szFmt, ... );
-extern void Debug_ReleaseBuffer( LuaDebugCommander* Debuger, buffer* buf );
+extern _command_buffer* Debug_Command( LuaDebugCommander* Debuger, const char* szFmt, ... );
+extern void Debug_ReleaseBuffer( LuaDebugCommander* Debuger, _command_buffer* buf );
 extern void Destroy_Commander( LuaDebugCommander* Debuger );
 #endif;
