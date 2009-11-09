@@ -66,10 +66,11 @@ namespace UILib
 	{
 		_astring		name;
 		int				size;
+		_uint32			color;
 		bool			bold, italic, antialias;
 
 		XUI_FontAttribute();
-		XUI_FontAttribute( const char* lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias );
+		XUI_FontAttribute( const char* lpszFont, int nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias );
 		XUI_FontAttribute( const XUI_FontAttribute& src );
 
 		bool operator==( const XUI_FontAttribute& rsh )const;
@@ -112,6 +113,7 @@ namespace UILib
 
 	struct XUI_IAnimation
 	{
+		virtual ~XUI_IAnimation(){}
 		virtual void Play() = 0;
 		virtual void Stop() = 0;
 		virtual void Resume() = 0;
@@ -175,7 +177,7 @@ namespace UILib
 	typedef XUI_IAnimation*	(*pfnCreateAnimation)( _lpcstr filename, int frames, float fps, float x, float y, float w, float h );
 	typedef XUI_IAnimation*	(*pfnCreateAnimationEx)	( const XUI_AnimationAttribute& AnimationAttribute );
 	typedef void		(*pfnDestroyAnimation)( XUI_IAnimation* pAnimation );
-	typedef XUI_IFont*	(*pfnCreateFont)	( _lpcstr lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias );
+	typedef XUI_IFont*	(*pfnCreateFont)	( _lpcstr lpszFontName, int nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias );
 	typedef XUI_IFont*	(*pfnCreateFontEx)	( const XUI_FontAttribute& FontAttribute );
 	typedef void		(*pfnDestroyFont)	( XUI_IFont* pFont );
 	typedef LRESULT		(CALLBACK *pfnDefWindowProc)( __in HWND hWnd, __in UINT Msg, __in WPARAM wParam, __in LPARAM lParam);

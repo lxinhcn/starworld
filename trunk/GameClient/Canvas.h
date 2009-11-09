@@ -43,7 +43,7 @@ private:
 	~CFontManager();
 
 public:
-	GfxFont* GetFont( _lpcstr lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias );
+	GfxFont* GetFont( _lpcstr lpszFont, int nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias );
 
 private:
 	typedef std::map< UILib::XUI_FontAttribute, GfxFont* >	CFontMap;
