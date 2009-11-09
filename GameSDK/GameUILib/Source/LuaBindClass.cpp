@@ -107,9 +107,10 @@ namespace UILib
 			;
 
 		Class< XUI_FontAttribute >( "ui::XUI_FontAttribute" )
-			.constructor< const char*, int, bool, bool, bool >()
+			.constructor< const char*, int, _uint32, bool, bool, bool >()
 			.member_readonly( "name", &XUI_FontAttribute::name )
 			.member_readonly( "size", &XUI_FontAttribute::size )
+			.member_readonly( "color", &XUI_FontAttribute::color )
 			.member_readonly( "bold", &XUI_FontAttribute::bold )
 			.member_readonly( "italic",		&XUI_FontAttribute::italic )
 			.member_readonly( "antialias",	&XUI_FontAttribute::antialias )

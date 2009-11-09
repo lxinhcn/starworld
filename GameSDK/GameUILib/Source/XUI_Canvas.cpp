@@ -24,7 +24,8 @@ namespace UILib
 
 	void XUI_DrawTextA( _lpcstr lpszText, XUI_IFont* pFont, float x, float y )
 	{
-		XUI_DrawText( XA2W(lpszText), pFont, x, y );
+		_string strText = XA2TSTR( lpszText );
+		XUI_DrawText( strText.c_str(), pFont, x, y );
 	}
 
 	void XUI_DrawCharacterA( const char* szMbs, XUI_IFont* pFont, float x, float y )
@@ -135,9 +136,10 @@ namespace UILib
 	}
 
 
-	XUI_FontAttribute::XUI_FontAttribute( const char* lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias )
+	XUI_FontAttribute::XUI_FontAttribute( const char* lpszFont, int nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias )
 		: name( lpszFont )
 		, size( nSize )
+		, color( dwColor )
 		, bold( bBold )
 		, italic( bItalic )
 		, antialias( bAntialias )
@@ -148,6 +150,7 @@ namespace UILib
 	XUI_FontAttribute::XUI_FontAttribute( const XUI_FontAttribute& src )
 		: name( src.name )
 		, size( src.size )
+		, color( src.color )
 		, bold( src.bold )
 		, italic( src.italic )
 		, antialias( src.antialias )
@@ -182,6 +185,7 @@ namespace UILib
 		{
 			pNode->SetAttribute( "name", name.c_str() );
 			pNode->IntAttribute( "size", size );
+			pNode->IntAttribute( "color", color );
 			pNode->BoolAttribute( "bold", bold );
 			pNode->BoolAttribute( "italic", italic );
 			pNode->BoolAttribute( "antialias", antialias );
@@ -197,6 +201,7 @@ namespace UILib
 			name = pElement->Attribute( "name" );
 			pElement->Attribute( "size", &size );
 
+			color		= pElement->IntAttribute( "color" );
 			bold		= pElement->BoolAttribute( "bold" );
 			italic		= pElement->BoolAttribute( "italic" );
 			antialias	= pElement->BoolAttribute( "antialias" );

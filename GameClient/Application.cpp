@@ -88,6 +88,7 @@ bool CApplication::RenderFunc()
 	Application::Instance()->Gfx_Clear(0);
 	Application::Instance().Render();
 	GuiSystem::Instance().Render();
+	GuiSystem::Instance().Update( Application::Instance()->Timer_GetDelta() );
 	Application::Instance()->Gfx_EndScene();
 
 	return false;
@@ -135,7 +136,7 @@ bool CApplication::Initialize()
 	GuiSystem::Instance().Initialize( m_hge->System_GetState(HGE_HWND), "..\\Resource\\UI\\" );
 
 	// 设置默认字体
-	GuiSystem::Instance().SetDefaultFont( XUI_CreateFontEx( XUI_FontAttribute( "宋体", 18, false, false, false ) ) );
+	GuiSystem::Instance().SetDefaultFont( XUI_CreateFontEx( XUI_FontAttribute( "宋体", 18, XUI_ARGB(255, 255, 255, 255), false, false, false ) ) );
 
 	// 设置光标系统
 	GuiSystem::Instance().SetDefaultCursor( new CClientMouse( "Config.xml" ) );
@@ -168,8 +169,6 @@ void CApplication::UnInitialize()
 
 bool CApplication::UpdateLogic( float fDelta )
 {
-	GuiSystem::Instance().Update( fDelta );
-
 	if( m_hge->System_GetState( HGE_DONTSUSPEND ) )
 	{
 		int ch = 0;

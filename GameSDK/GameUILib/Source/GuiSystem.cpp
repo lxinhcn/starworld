@@ -253,7 +253,7 @@ namespace UILib
 						break;
 					}
 				}
-				else if( m_nCurHandle = DetectHandler( m_capture_element, pt ) )
+				else if( ( m_nCurHandle = DetectHandler( m_capture_element, pt ) ) != -1 )
 				{
 					switch( m_nCurHandle )
 					{

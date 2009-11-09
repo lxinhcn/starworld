@@ -106,9 +106,9 @@ CFontManager::~CFontManager()
 	m_FontMap.clear();
 }
 
-GfxFont* CFontManager::GetFont( _lpcstr lpszFont, int nSize, bool bBold, bool bItalic, bool bAntialias )
+GfxFont* CFontManager::GetFont( _lpcstr lpszFont, int nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias )
 {
-	UILib::XUI_FontAttribute font( lpszFont, nSize, bBold, bItalic, bAntialias );
+	UILib::XUI_FontAttribute font( lpszFont, nSize, dwColor, bBold, bItalic, bAntialias );
 	CFontMap::iterator iter = m_FontMap.find( font );
 	if( iter != m_FontMap.end() )
 	{
@@ -239,27 +239,32 @@ CClientMouse::CClientMouse( _lpcstr pszCursorConfig )
 , m_nTimerHandle( -1 )
 {
 	TiXmlDocument doc;
-	if( doc.LoadFile( pszCursorConfig ) )
+	_astring strPathname( GuiSystem::Instance().GetResourcePath() );
+	strPathname += pszCursorConfig;
+
+	if( doc.LoadFile( strPathname.c_str() ) )
 	{
 		_lpstr path = _strdup( pszCursorConfig );
 		_lpstr end = strrchr( path, _T('\\') );
 		if( end ) *(end+1) = 0;
 
-		TiXmlElement *pRoot = doc.FirstChildElement( "cursor" );
+		TiXmlElement *pRoot = doc.FirstChildElement( "CURSOR" );
 		if( pRoot )
 		{
-			TiXmlElement* pTextureConfig = pRoot->FirstChildElement( "texture" );
-			const char* mtex_name = pTextureConfig->Attribute( "filename" );
-			for( TiXmlElement *pElement = pTextureConfig->FirstChildElement( "cursor" );
+			for( TiXmlElement *pElement = pRoot->FirstChildElement();
 				pElement != NULL;
-				pElement = pElement->NextSiblingElement( "cursor" )
+				pElement = pElement->NextSiblingElement()
 				)
 			{
-				int idx = pElement->IntAttribute("index");
+				_lpcstr pszArrow[] = { "ARROW","TEXT","CROSS","SIZENESW","SIZENS","SIZENWSE","SIZEWE","SIZEALL","WAIT","BUSY","HAND","HANDWRITE","STOP","HELP", };
+				_lpcstr pszValue = pElement->Value();
+				int idx = 0;
+				while( stricmp( pszArrow[idx], pszValue ) ) ++idx;
+
 				if( idx >= _countof(m_pCursor) ) continue;
-				XUI_IAnimation *pCursor = m_pCursor[idx];
+				XUI_IAnimation *&pCursor = m_pCursor[idx];
 				pCursor = XUI_CreateAnimation( 
-					pElement->Attribute( "texture" ) 
+					pElement->Attribute( "texture" ),
 					pElement->IntAttribute( "frames", 1 ),
 					pElement->FloatAttribute( "fps", 1.0f ),
 					pElement->FloatAttribute( "x" ),
@@ -270,6 +275,10 @@ CClientMouse::CClientMouse( _lpcstr pszCursorConfig )
 			}
 		}
 		free( path );
+	}
+	else
+	{
+		XGC_WRITELOGA( XUI, "cursor read error! reson: %s. line = %d, column = %d", doc.Error(), doc.ErrorRow(), doc.ErrorCol() );
 	}
 	SetMouse( XUI_MOUSE_ARROW );
 }
@@ -376,7 +385,7 @@ CClientAnimation::CClientAnimation( _lpcstr filename, int frames, float fps, flo
 
 CClientAnimation::~CClientAnimation()
 {
-
+	SAFE_DELETE( m_pAnimation );
 }
 
 void CClientAnimation::Play()
@@ -540,19 +549,20 @@ static void _DestroyAnimation( XUI_IAnimation *pAnimation )
 	delete pAnimation;
 }
 
-static XUI_IFont* _CreateFont( _lpcstr lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias )
+static XUI_IFont* _CreateFont( _lpcstr lpszFontName, int nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias )
 {
-	GfxFont* pGfxFont = FontManager::Instance().GetFont( lpszFontName, nSize, bBold, bItalic, bAntialias );
+	GfxFont* pGfxFont = FontManager::Instance().GetFont( lpszFontName, nSize, dwColor, bBold, bItalic, bAntialias );
 	if( pGfxFont )
 	{
-		return new CClientFont( XUI_FontAttribute( lpszFontName, nSize, bBold, bItalic, bAntialias ), pGfxFont );
+		pGfxFont->SetColor( dwColor );
+		return new CClientFont( XUI_FontAttribute( lpszFontName, nSize, dwColor, bBold, bItalic, bAntialias ), pGfxFont );
 	}
 	return NULL;
 }
 
 static XUI_IFont* _CreateFontEx( const XUI_FontAttribute& FontAttribute )
 {
-	return _CreateFont( FontAttribute.name.c_str(), FontAttribute.size, FontAttribute.bold, FontAttribute.italic, FontAttribute.antialias );
+	return _CreateFont( FontAttribute.name.c_str(), FontAttribute.size, FontAttribute.color, FontAttribute.bold, FontAttribute.italic, FontAttribute.antialias );
 }
 
 static void _DestroyFont( XUI_IFont* pFont )
