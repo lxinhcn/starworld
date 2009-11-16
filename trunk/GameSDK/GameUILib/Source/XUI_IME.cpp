@@ -21,10 +21,11 @@ namespace UILib
 		TEXT("En"),
 	};
 	static _lpctstr	g_pszIndicatior = g_aszIndicator[0];
+	static _tchar	g_pszDescript[260];
 	static bool		g_bVerticalCand = true;
 	static bool		g_bChineseIME = true;
 	static _uint32	g_dwState = IMEUI_STATE_OFF;
-	static UINT		g_uCodePage = 0;
+	static _uint32	g_uCodePage = 0;
 
 	wchar_t				XUI_IME::m_CompString[MAX_COMPSTRING_SIZE];
 	wchar_t				XUI_IME::m_CompStringAttr[MAX_COMPSTRING_SIZE];
@@ -51,6 +52,7 @@ namespace UILib
 	BOOL			(WINAPI * XUI_IME::_ImmSetOpenStatus)( HIMC, BOOL );
 	BOOL			(WINAPI * XUI_IME::_ImmGetConversionStatus)( HIMC, LPDWORD, LPDWORD );
 	HWND			(WINAPI * XUI_IME::_ImmGetDefaultIMEWnd)( HWND );
+	UINT			(WINAPI * XUI_IME::_ImmGetDescriptionW)( HKL, LPWSTR, UINT );
 	UINT			(WINAPI * XUI_IME::_ImmGetIMEFileNameA)( HKL, LPSTR, UINT );
 	UINT			(WINAPI * XUI_IME::_ImmGetVirtualKey)( HWND );
 	BOOL			(WINAPI * XUI_IME::_ImmNotifyIME)( HIMC, DWORD, DWORD, DWORD );
@@ -80,7 +82,9 @@ namespace UILib
 		if( m_hDllImm32 ) // Only need to do once
 			return true;
 
-		WCHAR wszPath[MAX_PATH+1];
+		wchar_t wszPath[MAX_PATH+1];
+		g_pszDescript[0] = 0;
+
 		if( !::GetSystemDirectory( wszPath, MAX_PATH+1 ) )
 			return false;
 		wcsncat( wszPath, L"\\imm32.dll", MAX_PATH );
@@ -102,6 +106,7 @@ namespace UILib
 			GETPROCADDRESS( m_hDllImm32, ImmGetConversionStatus );
 			GETPROCADDRESS( m_hDllImm32, ImmGetDefaultIMEWnd );
 			GETPROCADDRESS( m_hDllImm32, ImmGetIMEFileNameA );
+			GETPROCADDRESS( m_hDllImm32, ImmGetDescriptionW );
 			GETPROCADDRESS( m_hDllImm32, ImmGetVirtualKey );
 			GETPROCADDRESS( m_hDllImm32, ImmNotifyIME );
 			GETPROCADDRESS( m_hDllImm32, ImmSetConversionStatus );
@@ -152,18 +157,15 @@ namespace UILib
 	{
 		XUI_IFont* pFont = GuiSystem::Instance().GetDefaultFont();
 
-		XUI_DrawRect( m_rcWindow, XUI_ARGB(0xcc,0xaa, 0xaa, 0xaa), XUI_ARGB(0xcc,0x77, 0x77, 0x77) );
-		if( g_dwState == IMEUI_STATE_ON )
-		{
-			XUI_DrawText( g_pszIndicatior, pFont, (float)m_rcWindow.left, (float)m_rcWindow.top + 1 );
-		}
-		else
-		{
-			XUI_DrawText( g_aszIndicator[INDICATOR_ENGLISH], pFont, (float)m_rcWindow.left, (float)m_rcWindow.top + 1 );
-		}
-		xgcSize strSize = pFont->GetStringSize( g_pszIndicatior );
+		xgcSize IndicatiorSize = pFont->GetStringSize( g_pszIndicatior );
+		xgcSize DescriptSize = pFont->GetStringSize( g_pszDescript );
 
-		//XUI_DrawCharacter( )
+		m_rcWindow.right = m_rcWindow.left + IndicatiorSize.cx + DescriptSize.cx + 4;
+		m_rcWindow.bottom = m_rcWindow.top + __max( IndicatiorSize.cy, DescriptSize.cy ) + 2;
+
+		XUI_DrawRect( m_rcWindow, XUI_ARGB(0xcc,0xaa, 0xaa, 0xaa), XUI_ARGB(0xcc,0x77, 0x77, 0x77) );
+		XUI_DrawText( g_pszIndicatior, pFont, (float)m_rcWindow.left + 1, (float)m_rcWindow.top + 1 );
+		XUI_DrawText( g_pszDescript, pFont, (float)m_rcWindow.left + 3 + IndicatiorSize.cx, (float)m_rcWindow.top + 1 );
 	}
 
 	void XUI_IME::CheckInputLocale()
@@ -175,39 +177,47 @@ namespace UILib
 			return;
 		}
 		hklPrev = m_hklCurrent;
-		switch ( GETPRIMLANG() )
+		UINT ret = _ImmGetDescriptionW( hklPrev, g_pszDescript, _countof(g_pszDescript) );
+		g_pszDescript[ret] = 0;
+		// Hack to detect IME correctly. When IME is running as TIP, ImmIsIME() returns true for CHT US keyboard.
+		if( _ImmIsIME( hklPrev ) != 0 && ( ( 0xF0000000 & (DWORD_PTR)m_hklCurrent ) == 0xE0000000 ) )
 		{
-			// Simplified Chinese
-		case LANG_CHINESE:
-			g_bVerticalCand = true;
-			switch ( GETSUBLANG() )
+			switch ( GETPRIMLANG() )
 			{
-			case SUBLANG_CHINESE_SIMPLIFIED:
-				g_pszIndicatior = g_aszIndicator[INDICATOR_CHS];
-				//g_bVerticalCand = GetImeId() == 0;
+				// Simplified Chinese
+			case LANG_CHINESE:
+				g_bVerticalCand = true;
+				switch ( GETSUBLANG() )
+				{
+				case SUBLANG_CHINESE_SIMPLIFIED:
+					g_pszIndicatior = g_aszIndicator[INDICATOR_CHS];
+					g_bVerticalCand = false;
+					break;
+				case SUBLANG_CHINESE_TRADITIONAL:
+					g_pszIndicatior = g_aszIndicator[INDICATOR_CHT];
+					break;
+				default:	// unsupported sub-language
+					g_pszIndicatior = g_aszIndicator[INDICATOR_NON_IME];
+					break;
+				}
+				break;
+				// Korean
+			case LANG_KOREAN:
+				g_pszIndicatior = g_aszIndicator[INDICATOR_KOREAN];
 				g_bVerticalCand = false;
 				break;
-			case SUBLANG_CHINESE_TRADITIONAL:
-				g_pszIndicatior = g_aszIndicator[INDICATOR_CHT];
-				break;
-			default:	// unsupported sub-language
+				// Japanese
+			case LANG_JAPANESE:
+				g_pszIndicatior = g_aszIndicator[INDICATOR_JAPANESE];
+				g_bVerticalCand = true;
+				break;		   
+			default:
 				g_pszIndicatior = g_aszIndicator[INDICATOR_NON_IME];
-				break;
 			}
-			break;
-			// Korean
-		case LANG_KOREAN:
-			g_pszIndicatior = g_aszIndicator[INDICATOR_KOREAN];
-			g_bVerticalCand = false;
-			break;
-			// Japanese
-		case LANG_JAPANESE:
-			g_pszIndicatior = g_aszIndicator[INDICATOR_JAPANESE];
-			g_bVerticalCand = true;
-			break;		   
-		default:
-			g_pszIndicatior = g_aszIndicator[INDICATOR_NON_IME];
 		}
+		else
+			g_pszIndicatior = g_aszIndicator[INDICATOR_ENGLISH];
+
 		char szCodePage[8];
 		int iRc = GetLocaleInfoA( MAKELCID( GETLANG(), SORT_DEFAULT ), LOCALE_IDEFAULTANSICODEPAGE, szCodePage, _countof( szCodePage ) ); iRc;
 		g_uCodePage = atol( szCodePage );
@@ -223,7 +233,7 @@ namespace UILib
 
 		HIMC himc;
 		HWND hWnd = GuiSystem::Instance().GetHWND();
-		if( NULL != ( himc = _ImmGetContext( hWnd ) ) ) 
+		if( NULL != ( himc = _ImmGetContext( hWnd ) ) )  
 		{
 			if (g_bChineseIME) 
 			{
