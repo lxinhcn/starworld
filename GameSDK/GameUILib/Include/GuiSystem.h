@@ -77,7 +77,7 @@ namespace UILib
 		//消息处理，保证消息可以按照预定的方式转发
 		bool onMouseMove	( XUI_Wnd* pElement, const xgcPoint& pt, _uint32 sysKeys, long_ptr *result );
 		bool onMouseLeave	( XUI_Wnd* pElement );
-		//bool onButtonDbClick( XUI_Wnd* pElement, _uint32 nButton, const xgcPoint& pt, _uint32 sysKeys, long_ptr *result );
+		
 		bool onButtonDown	( XUI_Wnd* pElement, _uint32 nButton, const xgcPoint& pt, _uint32 sysKeys, long_ptr *result );
 		bool onButtonUp		( XUI_Wnd* pElement, _uint32 nButton, const xgcPoint& pt, _uint32 sysKeys, long_ptr *result );
 
@@ -85,12 +85,12 @@ namespace UILib
 		bool onKeyUp		( XUI_Wnd* pElement, _uint32 dwVirtualCode, _uint32 sysKeys, long_ptr *result );
 		bool onChar			( XUI_Wnd* pElement, _uint32 dwChar, _uint32 sysKeys, long_ptr *result );
 
-		bool onImeComp		( XUI_Wnd* pElement, _uint32 wParam, _uint32 lParam, long_ptr *result );
-		bool onImeEndComp	( XUI_Wnd* pElement, _uint32 wParam, _uint32 lParam, long_ptr *result );
-		bool onImeNotify	( XUI_Wnd* pElement, _uint32 wParam, _uint32 lParam, long_ptr *result );
+		bool onImeComp		( XUI_Wnd* pElement, int_ptr wParam, long_ptr lParam, long_ptr *result );
+		bool onImeEndComp	( XUI_Wnd* pElement, int_ptr wParam, long_ptr lParam, long_ptr *result );
+		bool onImeNotify	( XUI_Wnd* pElement, int_ptr wParam, long_ptr lParam, long_ptr *result );
 
-		bool HandleMouse	( UINT uMsg, WPARAM wParam, LPARAM lParam, long_ptr *result );
-		bool HandleKeyboard	( UINT uMsg, WPARAM wParam, LPARAM lParam, long_ptr *result );
+		bool HandleMouse	( _uint32 uMsg, int_ptr wParam, long_ptr lParam, long_ptr *result );
+		bool HandleKeyboard	( _uint32 uMsg, int_ptr wParam, long_ptr lParam, long_ptr *result );
 
 	public:
 		HWND GetHWND()const {return m_hWnd;}
@@ -104,7 +104,7 @@ namespace UILib
 
 		
 		//处理外部消息
-		LRESULT HandleMessage( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+		LRESULT HandleMessage( HWND hWnd, _uint32 uMsg, int_ptr wParam, long_ptr lParam );
 
 		void Update( float fDelta );
 		//////////////////////////////////////////////////////////////////////////

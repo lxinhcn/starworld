@@ -82,6 +82,7 @@ namespace UILib
 		static BOOL		(WINAPI * _ImmSetOpenStatus)( HIMC, BOOL );
 		static BOOL		(WINAPI * _ImmGetConversionStatus)( HIMC, LPDWORD, LPDWORD );
 		static HWND		(WINAPI * _ImmGetDefaultIMEWnd)( HWND );
+		static UINT		(WINAPI * _ImmGetDescriptionW)( HKL, LPWSTR, UINT );
 		static UINT		(WINAPI * _ImmGetIMEFileNameA)( HKL, LPSTR, UINT );
 		static UINT		(WINAPI * _ImmGetVirtualKey)( HWND );
 		static BOOL		(WINAPI * _ImmNotifyIME)( HIMC, DWORD, DWORD, DWORD );

@@ -27,7 +27,7 @@ namespace UILib
 			m_WindowSize.cy		= m_WindowRect.Height()/pFont->GetCharacterHeight();
 		}
 
-		m_CaratTimerHandler = GuiSystem::Instance().SetTimer( TimerFunction( this, &XUI_EditBox::CaratTimerUpdate ), 1, TIMER_SECOND(0.5f) );
+		m_CaratTimerHandler = GuiSystem::Instance().SetTimer( TimerFunction( this, &XUI_EditBox::CaratTimerUpdate ), 0, TIMER_SECOND(0.5f) );
 		m_text.push_back(_T(""));
 	}
 
@@ -39,8 +39,7 @@ namespace UILib
 	bool XUI_EditBox::CaratTimerUpdate( unsigned int handle, unsigned short& repeat, unsigned int& timer )
 	{
 		m_bShowCarat = !m_bShowCarat;
-		repeat = 1;
-		return true;
+		return false;
 	}
 
 	size_t XUI_EditBox::NaturalLine( size_t nLine )

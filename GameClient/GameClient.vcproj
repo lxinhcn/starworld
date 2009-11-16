@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Depend\hge181\include;&quot;..\Depend\Loki-0.1.6\Include&quot;;..\GameSDK\GameCore\Include;..\GameSDK\GameWorld\Include;..\GameSDK\SLB\Include;..\GameSDK\GameUILib\;..\CommonLib;&quot;..\Depend\Visual Leak Detector\include&quot;"
+				AdditionalIncludeDirectories="..\Depend\hge181\include;&quot;..\Depend\Loki-0.1.6\Include&quot;;..\GameSDK\GameCore\Include;..\GameSDK\GameWorld\Include;..\GameSDK\SLB\Include;..\GameSDK\GameUILib\;..\xgcBase\Common;&quot;..\Depend\Visual Leak Detector\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="hge.lib lua51.lib GameWorld.lib GameCore.lib GUI.lib CommonLib.lib Slb.lib loki_d.lib"
+				AdditionalDependencies="hge.lib lua51.lib GameWorld.lib GameCore.lib GUI.lib Common.lib Slb.lib loki_d.lib"
 				ShowProgress="2"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;..\lib\$(ConfigurationName)&quot;;..\Depend\DX81SDK\Lib;&quot;..\Depend\hge181\Lib\$(ConfigurationName)&quot;;&quot;..\Depend\loki-0.1.6\Lib&quot;;&quot;..\GameSDK\lua-5.1.4\src&quot;"
@@ -125,7 +125,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Depend\hge181\include;&quot;..\Depend\Loki-0.1.6\Include&quot;;..\GameSDK\GameCore\Include;..\GameSDK\GameWorld\Include;..\GameSDK\SLB\Include;..\GameSDK\GameUILib\;..\CommonLib;&quot;..\Depend\Visual Leak Detector\include&quot;"
+				AdditionalIncludeDirectories="..\Depend\hge181\include;&quot;..\Depend\Loki-0.1.6\Include&quot;;..\GameSDK\GameCore\Include;..\GameSDK\GameWorld\Include;..\GameSDK\SLB\Include;..\GameSDK\GameUILib\;..\xgcBase\Common;&quot;..\Depend\Visual Leak Detector\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="hge.lib lua51.lib GameCore.lib GUI.lib CommonLib.lib Slb.lib loki.lib"
+				AdditionalDependencies="hge.lib lua51.lib GameCore.lib GUI.lib Common.lib Slb.lib loki.lib"
 				ShowProgress="2"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;..\lib\$(ConfigurationName)&quot;;..\Depend\DX81SDK\Lib;&quot;..\Depend\hge181\Lib\$(ConfigurationName)&quot;;&quot;..\Depend\loki-0.1.6\Lib&quot;;&quot;..\GameSDK\lua-5.1.4\src&quot;"

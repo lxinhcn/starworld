@@ -203,7 +203,7 @@ namespace UILib
 		}
 	}
 
-	bool CGuiSystem::onMouseMove(XUI_Wnd* pElement, const xgcPoint& pt, UINT sysKeys, long_ptr *result )
+	bool CGuiSystem::onMouseMove(XUI_Wnd* pElement, const xgcPoint& pt, _uint32 sysKeys, long_ptr *result )
 	{
 		xgcPoint pt_old = m_mouse_old;
 		m_mouse_old = pt;
@@ -225,7 +225,6 @@ namespace UILib
 					{
 					case -1:
 						m_capture_element->MoveWindow( r.left+dx, r.top+dy, r.right+dx, r.bottom+dy );
-						// printf( "dx = %d, dy = %d x = %d,%d y = %d,%d\n", dx, dy, pt.x, pt_old.x, pt.y, pt_old.y );
 						break;
 					case 0:
 						m_capture_element->MoveWindow( r.left+dx, r.top+dy, r.right, r.bottom );
@@ -300,7 +299,7 @@ namespace UILib
 		return false;
 	}
 
-	bool CGuiSystem::onButtonDown( XUI_Wnd* pElement, _uint32 nButton, const xgcPoint& pt, UINT sysKeys, long_ptr *result )
+	bool CGuiSystem::onButtonDown( XUI_Wnd* pElement, _uint32 nButton, const xgcPoint& pt, _uint32 sysKeys, long_ptr *result )
 	{
 		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
@@ -329,7 +328,7 @@ namespace UILib
 		return false;
 	}
 
-	bool CGuiSystem::onButtonUp( XUI_Wnd* pElement, _uint32 nButton, const xgcPoint& pt, UINT sysKeys, long_ptr *result )
+	bool CGuiSystem::onButtonUp( XUI_Wnd* pElement, _uint32 nButton, const xgcPoint& pt, _uint32 sysKeys, long_ptr *result )
 	{
 		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
@@ -345,7 +344,7 @@ namespace UILib
 		return false;
 	}
 
-	LRESULT CGuiSystem::HandleMessage( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+	LRESULT CGuiSystem::HandleMessage( HWND hWnd, _uint32 uMsg, int_ptr wParam, long_ptr lParam )
 	{
 		bool ret = false;
 		long_ptr result = 0;
@@ -373,13 +372,13 @@ namespace UILib
 			break;
 			//输入法
 		case WM_IME_COMPOSITION:
-			ret = onImeComp( m_pDesktop, (_uint32)wParam, (_uint32)lParam, &result );
+			ret = onImeComp( m_pDesktop, wParam, lParam, &result );
 			break;
 		case WM_IME_ENDCOMPOSITION:
-			ret = onImeEndComp( m_pDesktop, (_uint32)wParam, (_uint32)lParam, &result );
+			ret = onImeEndComp( m_pDesktop, wParam, lParam, &result );
 			break;
 		case WM_IME_NOTIFY:
-			ret = onImeNotify( m_pDesktop, (_uint32)wParam, (_uint32)lParam, &result );
+			ret = onImeNotify( m_pDesktop, wParam, lParam, &result );
 			break;
 		default:
 			if( uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST )
@@ -396,7 +395,7 @@ namespace UILib
 	}
 
 	//处理鼠标
-	bool CGuiSystem::HandleMouse(UINT uMsg, WPARAM wParam, LPARAM lParam, long_ptr *result )
+	bool CGuiSystem::HandleMouse(_uint32 uMsg, int_ptr wParam, long_ptr lParam, long_ptr *result )
 	{
 		// 如果有模态对话框则将消息都发往模态对话框中
 		XUI_Window* pDesktop = m_pDesktop;
@@ -419,25 +418,25 @@ namespace UILib
 				switch (uMsg)
 				{
 				case WM_MOUSEMOVE:
-					ret = onMouseMove( pDesktop, pt, (UINT)wParam, result );
+					ret = onMouseMove( pDesktop, pt, wParam, result );
 					break;
 				case WM_LBUTTONDOWN:
-					ret = onButtonDown( pDesktop, XUI_LBUTTON, pt, (UINT)wParam, result );
+					ret = onButtonDown( pDesktop, XUI_LBUTTON, pt, wParam, result );
 					break;
 				case WM_RBUTTONDOWN:
-					ret = onButtonDown( pDesktop, XUI_RBUTTON, pt, (UINT)wParam, result );
+					ret = onButtonDown( pDesktop, XUI_RBUTTON, pt, wParam, result );
 					break;
 				case WM_MBUTTONDOWN:
-					ret = onButtonDown( pDesktop, XUI_MBUTTON, pt, (UINT)wParam, result );
+					ret = onButtonDown( pDesktop, XUI_MBUTTON, pt, wParam, result );
 					break;
 				case WM_LBUTTONUP:
-					ret = onButtonUp( pDesktop, XUI_LBUTTON, pt, (UINT)wParam, result );
+					ret = onButtonUp( pDesktop, XUI_LBUTTON, pt, wParam, result );
 					break;
 				case WM_RBUTTONUP:
-					ret = onButtonUp( pDesktop, XUI_RBUTTON, pt, (UINT)wParam, result );
+					ret = onButtonUp( pDesktop, XUI_RBUTTON, pt, wParam, result );
 					break;
 				case WM_MBUTTONUP:
-					ret = onButtonUp( pDesktop, XUI_MBUTTON, pt, (UINT)wParam, result );
+					ret = onButtonUp( pDesktop, XUI_MBUTTON, pt, wParam, result );
 					break;
 				}
 			}
@@ -445,7 +444,7 @@ namespace UILib
 		return ret;
 	}
 
-	bool CGuiSystem::onKeyDown( XUI_Wnd* pElement, _uint32 dwVirtualCode, UINT sysKeys, long_ptr *result )
+	bool CGuiSystem::onKeyDown( XUI_Wnd* pElement, _uint32 dwVirtualCode, _uint32 sysKeys, long_ptr *result )
 	{
 		if( m_capture_element == NULL ) return false;
 		if( !m_capture_element->IsEnable() ) return false;
@@ -457,7 +456,7 @@ namespace UILib
 		return false;
 	}
 
-	bool CGuiSystem::onKeyUp(XUI_Wnd* pElement, _uint32 dwVirtualCode, UINT sysKeys, long_ptr *result )
+	bool CGuiSystem::onKeyUp(XUI_Wnd* pElement, _uint32 dwVirtualCode, _uint32 sysKeys, long_ptr *result )
 	{
 		if( m_capture_element == NULL ) return false;
 		if( !m_capture_element->IsEnable() ) return false;
@@ -469,7 +468,7 @@ namespace UILib
 		return false;
 	}
 
-	bool CGuiSystem::onChar(XUI_Wnd* pElement, _uint32 dwChar, UINT sysKeys, long_ptr *result )
+	bool CGuiSystem::onChar(XUI_Wnd* pElement, _uint32 dwChar, _uint32 sysKeys, long_ptr *result )
 	{
 		if( m_capture_element == NULL ) return false;
 		if( !m_capture_element->IsEnable() ) return false;
@@ -482,7 +481,7 @@ namespace UILib
 	}
 
 	//处理键盘
-	bool CGuiSystem::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam, long_ptr *result )
+	bool CGuiSystem::HandleKeyboard( _uint32 uMsg, int_ptr wParam, long_ptr lParam, long_ptr *result )
 	{
 		XUI_Window* pDesktop = m_pDesktop;
 		if( !m_ModalList.empty() )
@@ -497,20 +496,20 @@ namespace UILib
 			switch(uMsg)
 			{
 			case WM_KEYDOWN:
-				ret = onKeyDown(pDesktop, (_uint32)wParam, (UINT)lParam, result );
+				ret = onKeyDown(pDesktop, wParam, lParam, result );
 				break;
 			case WM_KEYUP:
-				ret = onKeyUp(pDesktop, (_uint32)wParam, (UINT)lParam, result );
+				ret = onKeyUp(pDesktop, wParam, lParam, result );
 				break;
 			case WM_CHAR:
-				ret = onChar(pDesktop, (_uint32)wParam, (UINT)lParam, result );
+				ret = onChar(pDesktop, wParam, lParam, result );
 				break;
 			}
 		}
 		return ret;
 	}
 
-	bool CGuiSystem::onImeComp(XUI_Wnd* pElement, _uint32 wParam, _uint32 lParam, long_ptr *result )
+	bool CGuiSystem::onImeComp(XUI_Wnd* pElement, int_ptr wParam, long_ptr lParam, long_ptr *result )
 	{
 		//if (pElement->m_pChildFocusedOn)
 		//	return onImeComp( pElement->m_pChildFocusedOn, wParam, lParam, result );
@@ -519,7 +518,7 @@ namespace UILib
 		return ( m_capture_element != NULL )?m_capture_element->onImeComp( wParam, lParam ):false;
 	}
 
-	bool CGuiSystem::onImeEndComp(XUI_Wnd* pElement, _uint32 wParam, _uint32 lParam, long_ptr *result )
+	bool CGuiSystem::onImeEndComp(XUI_Wnd* pElement, int_ptr wParam, long_ptr lParam, long_ptr *result )
 	{
 		//if( pElement->m_pChildFocusedOn )
 		//	return onImeEndComp( pElement->m_pChildFocusedOn, wParam, lParam, result );
@@ -528,7 +527,7 @@ namespace UILib
 		return ( m_capture_element != NULL )?m_capture_element->onImeEndComp( wParam, lParam ):false;
 	}
 
-	bool CGuiSystem::onImeNotify(XUI_Wnd* pElement, _uint32 wParam, _uint32 lParam, long_ptr *result )
+	bool CGuiSystem::onImeNotify(XUI_Wnd* pElement, int_ptr wParam, long_ptr lParam, long_ptr *result )
 	{
 		//if (pElement->m_pChildFocusedOn)
 		//	return onImeNotify( pElement->m_pChildFocusedOn, wParam, lParam, result );

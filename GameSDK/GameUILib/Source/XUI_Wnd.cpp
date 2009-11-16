@@ -55,7 +55,7 @@ namespace UILib
 	//事件处理
 	//鼠标
 	//返回 true 则父控件将不继续处理该消息
-	bool XUI_Wnd::onMouseMove(const xgcPoint& pt, UINT sysKeys)
+	bool XUI_Wnd::onMouseMove(const xgcPoint& pt, _uint32 sysKeys)
 	{
 		return false;
 	}
@@ -70,9 +70,9 @@ namespace UILib
 		return false;
 	}
 
-	bool XUI_Wnd::onButtonDown(int button, const xgcPoint& pt, UINT sysKeys)
+	bool XUI_Wnd::onButtonDown(int button, const xgcPoint& pt, _uint32 sysKeys)
 	{
-		//UINT id=0;
+		//_uint32 id=0;
 		//switch (button)
 		//{
 		//case 0:
@@ -90,9 +90,9 @@ namespace UILib
 		return false;
 	}
 
-	bool XUI_Wnd::onButtonUp(int button, const xgcPoint& pt, UINT sysKeys)
+	bool XUI_Wnd::onButtonUp(int button, const xgcPoint& pt, _uint32 sysKeys)
 	{
-		//UINT id=0;
+		//_uint32 id=0;
 		//switch (button)
 		//{
 		//case 0:
@@ -111,17 +111,17 @@ namespace UILib
 	}
 
 	//键盘
-	bool XUI_Wnd::onKeyDown(_uint32 keycode, UINT sysKeys)
+	bool XUI_Wnd::onKeyDown(_uint32 keycode, _uint32 sysKeys)
 	{
 		return false;
 	}
 
-	bool XUI_Wnd::onKeyUp(_uint32 keycode, UINT sysKeys)
+	bool XUI_Wnd::onKeyUp(_uint32 keycode, _uint32 sysKeys)
 	{
 		return false;
 	}
 
-	bool XUI_Wnd::onChar(_uint32 c, UINT sysKeys)
+	bool XUI_Wnd::onChar(_uint32 c, _uint32 sysKeys)
 	{
 		return false;
 	}
@@ -188,7 +188,7 @@ namespace UILib
 
 	int XUI_Wnd::FindChild(XUI_Wnd* pElement) const
 	{
-		for( UINT i = 0; i < m_pChildren.size(); i++ )
+		for( _uint32 i = 0; i < m_pChildren.size(); i++ )
 			if( m_pChildren[i] == pElement )
 				return i;
 		return -1;
@@ -361,7 +361,7 @@ namespace UILib
 			int i=m_pParent->FindChild(this);
 			if (i>=0)
 			{
-				UINT j;
+				_uint32 j;
 				for (j=i; j<m_pParent->m_pChildren.size()-1; j++)
 					m_pParent->m_pChildren[j]=m_pParent->m_pChildren[j+1];
 				m_pParent->m_pChildren[j]=this;
@@ -434,7 +434,7 @@ namespace UILib
 			}
 
 			//绘制子控件
-			for (UINT i=0; i<m_pChildren.size(); i++)
+			for (_uint32 i=0; i<m_pChildren.size(); i++)
 			{
 				m_pChildren[i]->Render(clpSelf);
 			}
@@ -457,7 +457,7 @@ namespace UILib
 		}
 
 		//绘制子控件
-		for (UINT i=0; i<m_pChildren.size(); i++)
+		for (_uint32 i=0; i<m_pChildren.size(); i++)
 		{
 			m_pChildren[i]->Update( timer, delta );
 		}

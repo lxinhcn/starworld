@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\CommonLib;&quot;..\..\Depend\Loki-0.1.6\Include&quot;;&quot;..\..\Depend\Visual Leak Detector\include&quot;;..\..\LuaDebuger;&quot;..\lua-5.1.4\src&quot;;..\SLB\Include;..\GameCore\Include;./Include"
+				AdditionalIncludeDirectories="..\..\xgcBase\Common;&quot;..\..\Depend\Loki-0.1.6\Include&quot;;&quot;..\..\Depend\Visual Leak Detector\include&quot;;..\..\LuaDebuger;&quot;..\lua-5.1.4\src&quot;;..\SLB\Include;..\GameCore\Include;./Include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				GeneratePreprocessedFile="0"
 				MinimalRebuild="false"
@@ -66,8 +66,8 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\Lib\$(ConfigurationName)\$(ProjectName).lib"
-				AdditionalLibraryDirectories="&quot;..\..\Lib\$(ConfigurationName)\&quot;;&quot;..\lua-5.1.4\src&quot;"
+				OutputFile="$(SolutionDir)Lib\$(ConfigurationName)\$(ProjectName).lib"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)\&quot;;&quot;..\lua-5.1.4\src&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -110,7 +110,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\CommonLib;&quot;..\..\Depend\Loki-0.1.6\Include&quot;;..\..\LuaDebuger;&quot;..\lua-5.1.4\src&quot;;..\SLB\Include;..\GameCore\Include;./Include"
+				AdditionalIncludeDirectories="..\..\xgcBase\Common;&quot;..\..\Depend\Loki-0.1.6\Include&quot;;..\..\LuaDebuger;&quot;..\lua-5.1.4\src&quot;;..\SLB\Include;..\GameCore\Include;./Include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -129,8 +129,8 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="..\..\Lib\$(ConfigurationName)\$(ProjectName).lib"
-				AdditionalLibraryDirectories="&quot;..\..\Lib\$(ConfigurationName)\&quot;;&quot;..\lua-5.1.4\src&quot;"
+				OutputFile="$(SolutionDir)Lib\$(ConfigurationName)\$(ProjectName).lib"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)\&quot;;&quot;..\lua-5.1.4\src&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"

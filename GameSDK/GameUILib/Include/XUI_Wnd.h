@@ -42,7 +42,7 @@ namespace UILib
 		//参数说明：
 		//pt，鼠标的坐标，相对于控件
 		//sysKeys，各种重要按键的状态，参见MSDN	
-		virtual	bool onMouseMove(const xgcPoint& pt, UINT sysKeys);
+		virtual	bool onMouseMove(const xgcPoint& pt, _uint32 sysKeys);
 		virtual bool onMouseEnter();
 		virtual bool onMouseLeave();
 
@@ -51,19 +51,19 @@ namespace UILib
 		//button，按下的键，0-左键，1-右键，2-中键
 		//pt，鼠标的坐标
 		//sysKeys，各种重要按键的状态，参见MSDN
-		virtual	bool onButtonDown(int button, const xgcPoint& pt, UINT sysKeys);
-		virtual	bool onButtonUp(int button, const xgcPoint& pt, UINT sysKeys);
+		virtual	bool onButtonDown(int button, const xgcPoint& pt, _uint32 sysKeys);
+		virtual	bool onButtonUp(int button, const xgcPoint& pt, _uint32 sysKeys);
 
 		//键盘
 		//参数说明
 		//keycode，按下的键
 		//sysKeys，各种重要按键的状态，参见MSDN
-		virtual	bool onKeyDown(_uint32 keycode, UINT sysKeys);
-		virtual	bool onKeyUp(_uint32 keycode, UINT sysKeys);
+		virtual	bool onKeyDown(_uint32 keycode, _uint32 sysKeys);
+		virtual	bool onKeyUp(_uint32 keycode, _uint32 sysKeys);
 		//参数说明
 		//c，输入的字符
 		//sysKeys，各种重要按键的状态，参见MSDN
-		virtual bool onChar(_uint32 c, UINT sysKeys);
+		virtual bool onChar(_uint32 c, _uint32 sysKeys);
 
 		//输入法
 		//参见MSDN
