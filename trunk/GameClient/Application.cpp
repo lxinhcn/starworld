@@ -79,7 +79,6 @@ bool CApplication::FrameFunc()
 	return Application::Instance().UpdateLogic( dt );
 }
 
-
 bool CApplication::RenderFunc()
 {
 	// Render the scene

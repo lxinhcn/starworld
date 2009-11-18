@@ -262,16 +262,24 @@ CClientMouse::CClientMouse( _lpcstr pszCursorConfig )
 				while( stricmp( pszArrow[idx], pszValue ) ) ++idx;
 
 				if( idx >= _countof(m_pCursor) ) continue;
+
 				XUI_IAnimation *&pCursor = m_pCursor[idx];
-				pCursor = XUI_CreateAnimation( 
-					pElement->Attribute( "texture" ),
-					pElement->IntAttribute( "frames", 1 ),
-					pElement->FloatAttribute( "fps", 1.0f ),
-					pElement->FloatAttribute( "x" ),
-					pElement->FloatAttribute( "y" ),
-					pElement->FloatAttribute( "w" ),
-					pElement->FloatAttribute( "h" ) );
-				pCursor->SetCenter( pElement->FloatAttribute( "hotx" ), pElement->FloatAttribute( "hoty" ) );
+				if( pElement->Attribute("file") )
+				{
+					pCursor = CreateCursor(pElement->Attribute("file"));
+				}
+				else
+				{
+					pCursor = XUI_CreateAnimation( 
+						pElement->Attribute( "texture" ),
+						pElement->IntAttribute( "frames", 1 ),
+						pElement->FloatAttribute( "fps", 1.0f ),
+						pElement->FloatAttribute( "x" ),
+						pElement->FloatAttribute( "y" ),
+						pElement->FloatAttribute( "w" ),
+						pElement->FloatAttribute( "h" ) );
+					pCursor->SetCenter( pElement->FloatAttribute( "hotx" ), pElement->FloatAttribute( "hoty" ) );
+				}
 			}
 		}
 		free( path );
@@ -289,6 +297,102 @@ CClientMouse::~CClientMouse()
 	{
 		XUI_DestroyAnimation( m_pCursor[i] );
 	}
+}
+
+//--------------------------------------------------------//
+//	created:	18:11:2007   11:22
+//	filename: 	d:\Develop\StarGame\GameClient\Canvas.h
+//	author:		Albert
+//
+//	purpose:	通过光标文件创建鼠标指针
+//--------------------------------------------------------//
+XUI_IAnimation*	CClientMouse::CreateCursor( _lpcstr cursorfile )
+{
+#pragma pack( push )
+	#pragma pack( 2 )
+	struct CursorHeader
+	{
+		_uint16 reserved;
+		_uint16 type;
+		_uint16 image_count;
+	};
+
+	struct CursorDirentry
+	{
+		_byte width;	// Specifies image width in pixels. Can be 0, 255 or a number between 0 to 255. Should be 0 if image width is 256 pixels.
+		_byte height;	// Specifies image height in pixels. Can be 0, 255 or a number between 0 to 255. Should be 0 if image height is 256 pixels
+		_byte palette;	// Specifies number of colors in the color palette. Should be 0 if the image is truecolor
+		_byte reseverd;	// Reserved. Should be 0
+		_uint16	hotspot_x;
+		_uint16	hotspot_y;
+		_uint32 resource_size;
+		_uint32 image_offset;
+	};
+#pragma pack( pop )
+
+	FILE *fp;
+	XUI_IAnimation *pCursor = NULL;
+	_astring strPathname( GuiSystem::Instance().GetResourcePath() );
+	strPathname += cursorfile;
+
+	if( fopen_s( &fp, strPathname.c_str(), "rb" ) == 0 )
+	{
+		CursorHeader	file_header;
+		if( fread( (void*)&file_header, sizeof(file_header), 1, fp ) == 1 )
+		{
+			CursorDirentry	cursor_header;
+			if( fread( (void*)&cursor_header, sizeof(CursorDirentry), 1, fp ) == 1 )
+			{
+				fseek( fp, cursor_header.image_offset, SEEK_SET );
+				_lpstr bitmap = (_lpstr)malloc( cursor_header.resource_size );
+				fread( bitmap, cursor_header.resource_size, 1, fp );
+
+				LPBITMAPINFOHEADER binfo = (LPBITMAPINFOHEADER)bitmap;
+				binfo->biHeight /= 2;
+
+				_uint32 andMaskLen = cursor_header.resource_size 
+					- binfo->biSize	// 位图的头
+					- (binfo->biClrUsed?binfo->biClrUsed:binfo->biBitCount>8?0:(1<<binfo->biBitCount))*sizeof(RGBQUAD) // 调色板
+					- binfo->biHeight*((((binfo->biWidth*binfo->biPlanes*binfo->biBitCount)+31)>>5)<<2)
+					;
+
+				binfo->biSizeImage = binfo->biHeight*((((binfo->biWidth*binfo->biPlanes*binfo->biBitCount)+31)>>5)<<2);
+				HTEXTURE h = TextureManager::Instance().GetTexture( cursorfile, bitmap, binfo->biSize + binfo->biSizeImage );
+
+				_lpcstr data = bitmap + binfo->biSize + binfo->biSizeImage;
+				HGE *hge = hgeCreate(HGE_VERSION);
+				_uint32 *pixel = (_uint32*)hge->Texture_Lock( h, false );
+				for( int i = 0; i < 1024; ++i ) pixel[i] = 0xffffffff;
+				for( int y = 0; y < binfo->biHeight; ++y )
+				{
+					for( int x = 0; x < binfo->biWidth; ++x )
+					{
+						_lpcstr l = data + y*(((binfo->biWidth+31)>>5)<<2);
+						if(l[x>>3]&(1<<(x%8)))
+							*pixel++ &= 0x00ffffff;
+						else
+							*pixel++ |= 0xff000000;
+
+					}
+				}
+
+				hge->Texture_Unlock( h );
+				hge->Release();
+				pCursor = XUI_CreateAnimation( 
+					cursorfile,
+					1,
+					1.0f,
+					0,
+					0,
+					cursor_header.width,
+					cursor_header.height );
+				pCursor->SetCenter( cursor_header.hotspot_x, cursor_header.hotspot_y );
+				free( bitmap );
+			}
+		}
+		fclose( fp );
+	}
+	return pCursor;
 }
 
 void CClientMouse::UpdateMouse( float fDeltaTime )

@@ -67,7 +67,7 @@
 				LinkLibraryDependencies="false"
 				AdditionalDependencies="Common.lib"
 				ShowProgress="0"
-				OutputFile="$(OutDir)/ServerCore.dll"
+				OutputFile="$(OutDir)/$(ProjectName).dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
@@ -75,7 +75,7 @@
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(SolutionDir)..\Lib\$(ConfigurationName)/$(TargetName).lib"
+				ImportLibrary="$(SolutionDir)Lib\$(ConfigurationName)/$(TargetName).lib"
 				TargetMachine="1"
 				Profile="false"
 			/>
@@ -148,7 +148,7 @@
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
 				AdditionalDependencies="Common.lib loki.lib"
-				OutputFile="$(OutDir)/ServerCore.dll"
+				OutputFile="$(OutDir)/$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;&quot;$(SolutionDir)Depend\Loki-0.1.6\lib&quot;"
 				GenerateDebugInformation="true"
@@ -158,7 +158,7 @@
 				EnableCOMDATFolding="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(SolutionDir)..\Lib\$(ConfigurationName)/$(TargetName).lib"
+				ImportLibrary="$(SolutionDir)Lib\$(ConfigurationName)/$(TargetName).lib"
 				TargetMachine="1"
 			/>
 			<Tool
