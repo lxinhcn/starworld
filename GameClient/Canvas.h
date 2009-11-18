@@ -71,6 +71,16 @@ struct CClientMouse	:	public XUI_IMouse
 	virtual bool	IsMouseOver()const;
 
 	virtual void	UpdateMouse( float fDeltaTime );
+protected:
+	//--------------------------------------------------------//
+	//	created:	18:11:2007   11:22
+	//	filename: 	d:\Develop\StarGame\GameClient\Canvas.h
+	//	author:		Albert
+	//
+	//	purpose:	通过光标文件创建鼠标指针
+	//--------------------------------------------------------//
+	XUI_IAnimation*	CreateCursor( _lpcstr cursorfile );
+
 private:
 	_int32			m_nCount;
 	_int32			m_nCurIndex;

@@ -1,5 +1,6 @@
 <CURSOR>
-	<ARROW hotx = "5" hoty = "5" x = "0" y = "0" w = "40" h = "40" frames = "1" texture = "cursor\Arrow.png"/>
+	<!--ARROW hotx = "5" hoty = "5" x = "0" y = "0" w = "40" h = "40" frames = "1" texture = "cursor\Arrow.png"/-->
+	<ARROW file = "SkinPlant\Arrow.cur" />
 	<TEXT hotx = "20" hoty = "19" x = "0" y = "0" w = "40" h = "40" frames = "1" texture = "cursor\IBeam.png" />
 	<CROSS hotx = "20" hoty = "20" x = "0" y = "0" w = "40" h = "40" frames = "1" texture = "cursor\Cross.png"/>
 	<SIZENESW hotx = "20" hoty = "20" x = "0" y = "0" w = "40" h = "40" frames = "1" texture = "cursor\SizeNESW.png"/>

@@ -350,6 +350,7 @@ HTEXTURE CALL HGE_Impl::Target_GetTexture(HTARGET target)
 HTEXTURE CALL HGE_Impl::Texture_Create(int width, int height)
 {
 	LPDIRECT3DTEXTURE8 pTex;
+	CTextureList *texItem;
 
 	if( FAILED( D3DXCreateTexture( pD3DDevice, width, height,
 										1,					// Mip levels
@@ -361,6 +362,13 @@ HTEXTURE CALL HGE_Impl::Texture_Create(int width, int height)
 		_PostError("Can't create texture");
 		return NULL;
 	}
+
+	texItem=new CTextureList;
+	texItem->tex=(HTEXTURE)pTex;
+	texItem->width=width;
+	texItem->height=height;
+	texItem->next=textures;
+	textures=texItem;
 
 	return (HTEXTURE)pTex;
 }
