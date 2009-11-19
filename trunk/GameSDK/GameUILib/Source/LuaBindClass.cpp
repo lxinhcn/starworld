@@ -160,7 +160,8 @@ namespace UILib
 			.member( "transparent",	&XUI_Wnd::m_bTranslateParent )
 			.member( "updatefunc",	&XUI_Wnd::m_strUpdateFunc )
 			.member( "background",	&XUI_Wnd::m_pBackGround )
-			.member_readonly( "window",	&XUI_Wnd::m_WindowRect )
+			.member_readonly( "position",	&XUI_Wnd::m_WindowPosition )
+			.member_readonly( "size",	&XUI_Wnd::m_WindowSize )
 			;
 
 		Class< XUI_Window, Instance::NoCopy >( "ui:Window" )

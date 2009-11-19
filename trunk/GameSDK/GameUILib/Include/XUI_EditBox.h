@@ -130,8 +130,8 @@ namespace UILib
 		text			m_text;				// 行记录
 		_uint32			m_dwBorderColor, m_dwBackgroundColor;
 
-		bool	m_bControl, m_bShift;
-		xgcSize	m_WindowSize;				// 视窗大小
+		bool			m_bControl, m_bShift;
+		xgcSize			m_TextBufferSize;				// 字符缓冲大小
 
 		unsigned int	m_CaratTimerHandler;
 		bool			m_bShowCarat;

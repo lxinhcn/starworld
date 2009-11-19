@@ -29,9 +29,6 @@ namespace UILib
 		virtual void RenderSelf( const xgcPoint& adjust );
 		virtual void Update( float timer, float delta );
 
-		//检查
-		virtual void Validate();
-
 		// 保存,载入
 		virtual void OnSavePropertys( const char* name, TiXmlElement* pNode );
 		virtual void OnLoadPropertys( const char* name, TiXmlElement* pNode );
@@ -76,7 +73,7 @@ namespace UILib
 		//失去焦点
 		virtual void onLostFocus() {}
 
-		virtual unsigned int OnMoveWindow( xgcRect& rcWindow ){ return 0; }
+		virtual void OnMoveWindow( const xgcRect& rcWindow ){}
 	public:
 		virtual _lpctstr GetLable()const = 0;
 
@@ -96,8 +93,9 @@ namespace UILib
 		virtual void AdjustWindow( xgcRect& rc, bool bClientToScreen )const { if( m_pParent ) m_pParent->AdjustWindow( rc, bClientToScreen ); }
 
 		//获取空间的显示区域
-		const xgcRect& GetWindowRect()const { return m_WindowRect; }
-		const xgcPoint& GetTopLeft()const{ return m_WindowRect.TopLeft(); }
+		const xgcRect	GetWindowRect()const { return xgcRect( m_WindowPosition, m_WindowSize ); }
+		const xgcPoint& GetWindowPosition()const{ return m_WindowPosition; }
+		const xgcSize&	GetWindowSize()const{ return m_WindowSize; }
 
 		//--------------------------------------------------------------------------
 		//层次关系
@@ -110,6 +108,14 @@ namespace UILib
 		void SetParent( XUI_Wnd* pParent ){ m_pParent = pParent; }
 		XUI_Wnd* GetParent(){return m_pParent;}
 		XUI_Wnd* FindChildInPoint( const xgcPoint &pt, _uint32* deep = NULL );
+		//--------------------------------------------------------//
+		//	created:	19:11:2009   18:29
+		//	filename: 	d:\Develop\StarGame\GameSDK\GameUILib\Source\XUI_Wnd.cpp
+		//	author:		Albert.xu
+		//
+		//	purpose:	查找能包容整个矩形的最深Wnd
+		//--------------------------------------------------------//
+		XUI_Wnd* XUI_Wnd::FindRectIn( const xgcRect &rc );
 		XUI_Wnd* FindChildByName( const _string& sName )const;
 		XUI_Wnd* FindChildByID( int nID )const;
 
@@ -180,13 +186,11 @@ namespace UILib
 		bool			m_bTranslateParent;	// 是否将WM_COMMAND消息传给父控件
 
 		float			m_fZ;
-		xgcRect			m_WindowRect;		// 位置和大小，相对于父控件
+		xgcPoint		m_WindowPosition;		// 位置和大小，相对于父控件
+		xgcSize			m_WindowSize;
 
 		XUI_IFont*		m_pFont;
 		XUI_ISprite*	m_pBackGround;			// 背景图
-
-		//XUI_Wnd*		m_pChildMouseOver;	// 当前鼠标下的子控件
-		//XUI_Wnd*		m_pChildFocusedOn;	// 当前获得焦点的子控件
 	};
 
 	extern 	CGuiSystem* _afxCurrentGuiSystem;

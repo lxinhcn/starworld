@@ -13,12 +13,14 @@
         <transparent value="true" />
         <updatefunc value="DesktopUpdate" />
         <visible value="true" />
-        <window>
-            <bottom value="600" />
-            <left value="0" />
-            <right value="800" />
-            <top value="0" />
-        </window>
+        <position>
+            <x value="0" />
+            <y value="0" />
+		</position>
+		<size>
+            <cx value="800" />
+            <cy value="600" />
+        </size>
     </Attribute>
     <CONTROL Lable="EDIT">
         <Attribute>
@@ -33,12 +35,14 @@
             <transparent value="true" />
             <updatefunc value="" />
             <visible value="true" />
-            <window>
-                <bottom value="300" />
-                <left value="100" />
-                <right value="400" />
-                <top value="200" />
-            </window>
+            <position>
+                <x value="250" />
+				<y value="300" />
+			</position>
+			<size>
+                <cx value="150" />
+                <cy value="20" />
+            </size>
         </Attribute>
     </CONTROL>
     <CONTROL Lable="BUTTON">
@@ -55,12 +59,14 @@
             <transparent value="true" />
             <updatefunc value="" />
             <visible value="true" />
-            <window>
-                <bottom value="338" />
-                <left value="100" />
-                <right value="194" />
-                <top value="300" />
-            </window>
+            <position>
+                <x value="470" />
+				<y value="540" />
+			</position>
+			<size>
+                <cx value="94" />
+                <cy value="38" />
+            </size>
         </Attribute>
     </CONTROL>
     <CONTROL Lable="BUTTON">
@@ -77,12 +83,43 @@
             <transparent value="true" />
             <updatefunc value="" />
             <visible value="true" />
+            <position>
+                <x value="570" />
+				<y value="540" />
+			</position>
+			<size>
+                <cx value="94" />
+                <cy value="38" />
+            </size>
             <window>
-                <bottom value="338" />
-                <left value="300" />
-                <right value="394" />
-                <top value="300" />
+                <bottom value="582" />
+                <left value="573" />
+                <right value="667" />
+                <top value="544" />
             </window>
+        </Attribute>
+    </CONTROL>
+    <CONTROL Lable="EDIT">
+        <Attribute>
+            <backgroundcolor value="807411744" />
+            <bordercolor value="-8355712" />
+            <singleline value="true" />
+            <text value="" />
+            <warp value="true" />
+            <enable value="true" />
+            <id value="-842150451" />
+            <name value="" />
+            <transparent value="true" />
+            <updatefunc value="" />
+            <visible value="true" />
+            <position>
+                <x value="300" />
+				<y value="280" />
+			</position>
+			<size>
+                <cx value="150" />
+                <cy value="20" />
+            </size>
         </Attribute>
     </CONTROL>
 </WINDOW>
