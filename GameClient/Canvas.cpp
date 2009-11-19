@@ -362,19 +362,26 @@ XUI_IAnimation*	CClientMouse::CreateCursor( _lpcstr cursorfile )
 				_lpcstr data = bitmap + binfo->biSize + binfo->biSizeImage;
 				HGE *hge = hgeCreate(HGE_VERSION);
 				_uint32 *pixel = (_uint32*)hge->Texture_Lock( h, false );
-				for( int i = 0; i < 1024; ++i ) pixel[i] = 0xffffffff;
-				for( int y = 0; y < binfo->biHeight; ++y )
+				// 取巧的办法，正确途径还是应该使用And Mask
+				for( int i = 0; i < binfo->biWidth*binfo->biHeight; ++i )
 				{
-					for( int x = 0; x < binfo->biWidth; ++x )
+					if( !(pixel[i] & 0x00ffffff) )
 					{
-						_lpcstr l = data + y*(((binfo->biWidth+31)>>5)<<2);
-						if(l[x>>3]&(1<<(x%8)))
-							*pixel++ &= 0x00ffffff;
-						else
-							*pixel++ |= 0xff000000;
-
+						pixel[i] &= 0x00ffffff;
 					}
 				}
+
+				//for( int y = 0; y < binfo->biHeight; ++y )
+				//{
+				//	for( int x = 0; x < binfo->biWidth; ++x )
+				//	{
+				//		_lpcstr l = data + (binfo->biHeight-1-y)*(((binfo->biWidth+31)>>5)<<2);
+				//		if(l[x/8]&(1<<(x%8)))
+				//			*pixel++ &= 0x00ffffff;
+				//		else
+				//			*pixel++ |= 0xff000000;
+				//	}
+				//}
 
 				hge->Texture_Unlock( h );
 				hge->Release();
