@@ -215,21 +215,23 @@ namespace UILib
 			CaratPos.y = pFont->GetCharacterHeight()/2 + ( (CaratPos.y + XUI_IME::m_CandList.rcCandidate.Height() > rcWindow.Height())?rcWindow.Height()-XUI_IME::m_CandList.rcCandidate.Height()-1:CaratPos.y );
 			if( CaratPos.y < 0 ) CaratPos.y = 0;
 
-			XUI_SetClipping( CaratPos.x, CaratPos.y, XUI_IME::m_CandList.rcCandidate.Width(), pFont->GetCharacterHeight() + 2 );
+			xgcSize compstring_size = pFont->GetStringSize( XUI_IME::m_CompString );
+			XUI_SetClipping( CaratPos.x, CaratPos.y, compstring_size.cx ,compstring_size.cy );
 			XUI_DrawRect( 
-				xgcRect( CaratPos, xgcSize( XUI_IME::m_CandList.rcCandidate.Width(), pFont->GetCharacterHeight() + 2 ) ),
-				m_dwBorderColor, 
-				m_dwBackgroundColor );
+				xgcRect( CaratPos, compstring_size ),
+				XUI_ARGB(70,170,170,170), 
+				XUI_ARGB(70,190,190,190) );
 
 			XUI_IME::CCandList& Watch = XUI_IME::m_CandList;
 			wchar_t* compchar = XUI_IME::m_CompString;
+			xgcPoint imeCaratePos = CaratPos;
 			do
 			{
-				RenderCharacter( *compchar, pFont, CaratPos.x, CaratPos.y, true );
+				RenderCharacter( *compchar, pFont, imeCaratePos.x, imeCaratePos.y, true );
 				if( m_bShowCarat && XUI_IME::m_CandList.nCaretPos == compchar - XUI_IME::m_CompString )
 				{
-					long x = CaratPos.x - long( pFont->GetCharacterWidth( *compchar ) + pFont->GetCharacterWidth( _T('|') )*0.5f );
-					long y = CaratPos.y;
+					long x = imeCaratePos.x - long( pFont->GetCharacterWidth( *compchar ) + pFont->GetCharacterWidth( _T('|') )*0.5f );
+					long y = imeCaratePos.y;
 					// 是否绘制光标
 					RenderCharacter( _T('|'), pFont, x, y, true );
 				}
@@ -241,8 +243,8 @@ namespace UILib
 				XUI_SetClipping( CaratPos.x, CaratPos.y, XUI_IME::m_CandList.rcCandidate.Width(), XUI_IME::m_CandList.rcCandidate.Height() );
 				XUI_DrawRect( 
 					xgcRect( CaratPos, XUI_IME::m_CandList.rcCandidate.Size() ),
-					m_dwBorderColor, 
-					m_dwBackgroundColor );
+					XUI_ARGB(70,170,170,170),
+					XUI_ARGB(70,190,190,190) );
 
 				wchar_t show[256];
 				int idx = 0;
@@ -680,13 +682,19 @@ namespace UILib
 
 					int startOfPage = 0;
 
+					XUI_IFont *pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
 					XUI_IME::CCandList& Watch = XUI_IME::m_CandList;
-					XUI_IME::m_CandList.l.clear();
-					for( _uint32 i = lpCandList->dwPageStart; i < lpCandList->dwPageSize && i < MAX_CANDLIST; ++i )
+					Watch.l.clear();
+					Watch.rcCandidate.SetRectEmpty();
+					for( _uint32 i = lpCandList->dwSelection; i < __min( lpCandList->dwCount, lpCandList->dwSelection + lpCandList->dwPageSize ); ++i )
 					{
-						XUI_IME::m_CandList.l.push_back( (LPWSTR)((DWORD_PTR)lpCandList + lpCandList->dwOffset[i]) );
+						_lpcwstr text_ptr = (_lpwstr)((ulong_ptr)lpCandList + lpCandList->dwOffset[i]);
+						Watch.l.push_back( text_ptr );
+						xgcSize text_size = pFont->GetStringSize( text_ptr );
+						Watch.rcCandidate.bottom += text_size.cy + 1;
+						Watch.rcCandidate.right = __max( Watch.rcCandidate.right, text_size.cx + pFont->GetCharacterWidth(_T('0'))*4 );
 					}
-					XUI_IME::m_CandList.dwCount = __min( lpCandList->dwCount, MAX_CANDLIST );
+					Watch.dwCount = __min( lpCandList->dwCount, MAX_CANDLIST );
 
 					free( (HANDLE)lpCandList );
 					XUI_IME::_ImmReleaseContext(hWnd, himc);
