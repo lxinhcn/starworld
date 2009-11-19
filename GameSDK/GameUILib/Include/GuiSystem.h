@@ -28,16 +28,16 @@ namespace UILib
 		void Unitialize();
 
 		void SetEditMode( bool bMode );
-		bool IsEditMode()const{ return m_bEditMode; }
+		bool IsEditMode()const{ return m_is_edit_mode; }
 
 		// 设置图片路径
 		_lpcstr	GetResourcePath();
 
-		void SetDefaultFont( XUI_IFont *pFont ){ m_pDefaultFont	= pFont; }
-		void SetDefaultCursor( XUI_IMouse *pCursor ){ m_pCursor = pCursor; }
+		void SetDefaultFont( XUI_IFont *pFont ){ m_default_font_ptr	= pFont; }
+		void SetDefaultCursor( XUI_IMouse *pCursor ){ m_cursor_ptr = pCursor; }
 
-		XUI_IFont*	GetDefaultFont()const{ return m_pDefaultFont; }
-		XUI_IMouse*	GetMouseCursor()const{ return m_pCursor; }
+		XUI_IFont*	GetDefaultFont()const{ return m_default_font_ptr; }
+		XUI_IMouse*	GetMouseCursor()const{ return m_cursor_ptr; }
 
 	protected:
 
@@ -46,31 +46,33 @@ namespace UILib
 		bool m_bPointInRoot;
 
 		//对应的窗口
-		HWND	m_hWnd;
-		xgcSize	m_windowsize;
+		HWND		m_hWnd;
+		xgcSize		m_windowsize;
 		xgcPoint	m_mouse_old;
 
 	private:
 		//根
 		typedef std::map< int, XUI_Window* >	CDesktopMap;
 		typedef std::list< XUI_Window* >		CModalList;
+		typedef std::list< XUI_Wnd* >			CWndList;
 
 		XUI_Window		*m_pDesktop;
 		CDesktopMap		m_DesktopMap;
 		CModalList		m_ModalList;
 
-		XUI_IFont		*m_pDefaultFont;
-		XUI_IMouse		*m_pCursor;
+		XUI_IFont		*m_default_font_ptr;
+		XUI_IMouse		*m_cursor_ptr;
 
 		std::string		m_resource_path;
 		CTimerManager	m_timer;
 		float			m_nowtime;
 		float			m_timer_anchor;
-		bool			m_bEditMode;
-		int				m_nCurHandle;
-		xgcPoint			m_mousedown;
+		bool			m_is_edit_mode;
+		int				m_current_handle;
+		xgcPoint		m_mousedown;
 		XUI_Wnd*		m_capture_element;
 		XUI_Wnd*		m_mouseover_element;
+		CWndList		m_capture_list;
 	protected:
 		void SetFocus		( XUI_Wnd* pElement );
 
@@ -99,7 +101,7 @@ namespace UILib
 
 		//渲染
 		void Render();
-		void RenderEditFrame( const xgcRect &rc );
+		void RenderEditFrame();
 		_uint32 DetectHandler(  XUI_Wnd* pElement, const xgcPoint &pt );
 
 		

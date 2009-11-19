@@ -35,9 +35,9 @@ namespace UILib
 	void XUI_Button::RenderSelf( const xgcPoint& adjust )
 	{
 		//±³¾°
-		xgcPoint pt( m_WindowRect.TopLeft() + adjust );
-		int nWidth	= m_WindowRect.Width();
-		int nHeight	= m_WindowRect.Height();
+		xgcPoint pt( m_WindowPosition + adjust );
+		int nWidth	= m_WindowSize.cx;
+		int nHeight	= m_WindowSize.cy;
 
 		// °´Å¥±³¾°
 		if( m_pButtonSkin )

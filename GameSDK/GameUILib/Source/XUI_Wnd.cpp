@@ -19,7 +19,8 @@ namespace UILib
 	, m_bOwnerDraw( false )
 	, m_pFont( NULL )
 	, m_pBackGround( NULL )
-	, m_WindowRect( 0, 0, 100, 100 )
+	, m_WindowPosition( 0, 0 )
+	, m_WindowSize( 100, 100 )
 	{
 		m_bTranslateParent = true;
 		m_fZ=0.1f;
@@ -45,11 +46,6 @@ namespace UILib
 	void XUI_Wnd::Release()
 	{
 		delete this;
-	}
-
-	void XUI_Wnd::Validate()
-	{
-		m_WindowRect.NormalizeRect();
 	}
 
 	//事件处理
@@ -211,9 +207,9 @@ namespace UILib
 	{
 		if (pElement)
 		{
-			if (pElement->m_WindowRect.left != 0 || pElement->m_WindowRect.top != 0 )
+			if (pElement->m_WindowPosition.x != 0 || pElement->m_WindowPosition.y != 0 )
 			{
-				pElement->Offset(-pElement->m_WindowRect.left, -pElement->m_WindowRect.top );
+				pElement->Offset(-pElement->m_WindowPosition.x, -pElement->m_WindowPosition.y );
 			}
 			pElement->Offset(x, y);
 			AddChild(pElement);
@@ -253,14 +249,41 @@ namespace UILib
 	XUI_Wnd* XUI_Wnd::FindChildInPoint(const xgcPoint &pt, _uint32 *deep )
 	{
 		xgcPoint adjust( pt );
-		AdjustPoint( adjust, true);
-		for (int i=(int)m_pChildren.size()-1; i>=0; i--)
+		AdjustPoint( adjust, true );
+		for ( int i=(int)m_pChildren.size()-1; i>=0; i-- )
 		{
-			XUI_Wnd* pElement=m_pChildren[i];
+			XUI_Wnd* pElement = m_pChildren[i];
 			if( pElement->m_bVisible && pElement->IsPointIn(adjust) )
-				return ((deep&&*deep--)||!deep)?pElement->FindChildInPoint( adjust - m_WindowRect.TopLeft(), deep ):pElement;
+				return ((deep&&*deep--)||!deep)?pElement->FindChildInPoint( adjust - m_WindowPosition, deep ):pElement;
 		}
 		return this;
+	}
+
+	//--------------------------------------------------------//
+	//	created:	19:11:2009   18:29
+	//	filename: 	d:\Develop\StarGame\GameSDK\GameUILib\Source\XUI_Wnd.cpp
+	//	author:		Albert.xu
+	//
+	//	purpose:	查找能包容整个矩形的最深Wnd
+	//--------------------------------------------------------//
+	XUI_Wnd* XUI_Wnd::FindRectIn( const xgcRect &rc )
+	{
+		xgcRect rcAdjust(rc);
+		AdjustWindow( rcAdjust, true);
+
+		xgcRect rcWindow = GetWindowRect();
+		if( rcWindow.PtInRect( rc.TopLeft() ) && rcWindow.PtInRect( rc.BottomRight() ) )
+		{
+			for( int i=(int)m_pChildren.size()-1; i>=0; i-- )
+			{
+				XUI_Wnd* pElement = m_pChildren[i];
+				XUI_Wnd* pRet = pElement->FindRectIn( rcAdjust - m_WindowPosition );
+				if( pRet )
+					return pRet;
+			}
+			return this;
+		}
+		return NULL;
 	}
 
 	XUI_Wnd* XUI_Wnd::FindChildByName( const _string& sName) const
@@ -299,22 +322,22 @@ namespace UILib
 	// 移动对象
 	void XUI_Wnd::MoveWindow(int left, int top, int right, int bottom, bool notify )
 	{
-		xgcRect oldRect = m_WindowRect;
-		m_WindowRect.SetRect( left, top, right, bottom );
-		Validate();
+		m_WindowPosition = xgcPoint( left, top );
+		m_WindowSize = xgcSize( abs(right - left), abs(bottom - top) );
 		if( notify )
 		{
 			SendUIMessage( UIM_MOVE, 0, MAKELONG( left, top ) );
-			SendUIMessage( UIM_SIZE, 0, MAKELONG( m_WindowRect.Width(), m_WindowRect.Height() ) );
+			SendUIMessage( UIM_SIZE, 0, MAKELONG( m_WindowSize.cx, m_WindowSize.cy ) );
 			// 发送位置变更消息
-			OnMoveWindow( m_WindowRect );
+			OnMoveWindow( xgcRect( left, top, right, bottom ) );
 		}
 	}
 
 	void XUI_Wnd::Offset(int x, int y)
 	{
-		m_WindowRect.OffsetRect( x, y );
-		SendUIMessage( WM_MOVE, 0, MAKELONG( m_WindowRect.left, m_WindowRect.top ) );
+		m_WindowPosition.x += x;
+		m_WindowPosition.y += y;
+		SendUIMessage( WM_MOVE, 0, MAKELONG( m_WindowPosition.x, m_WindowPosition.y ) );
 	}
 
 	void XUI_Wnd::ShowWindow( bool bVisible /* = true  */ )
@@ -403,7 +426,11 @@ namespace UILib
 
 	BOOL XUI_Wnd::IsPointIn(const xgcPoint& pt)
 	{
-		return m_WindowRect.PtInRect( pt );
+		return 
+			pt.x >= m_WindowPosition.x && 
+			pt.x < m_WindowPosition.x + m_WindowSize.cx &&
+			pt.y >= m_WindowPosition.y && 
+			pt.y < m_WindowPosition.y + m_WindowSize.cy;
 	}
 
 	void XUI_Wnd::Render(const xgcRect& clipper)
@@ -411,7 +438,7 @@ namespace UILib
 		if (!m_bVisible)		return;
 
 		//计算可见区域
-		xgcRect clpSelf( m_WindowRect + clipper.TopLeft() );
+		xgcRect clpSelf( GetWindowRect() + clipper.TopLeft() );
 
 		if( clpSelf.IntersectRect( clpSelf, clipper ) )
 		{
@@ -421,7 +448,7 @@ namespace UILib
 				if( m_bOwnerDraw )
 				{
 					DRAWSTRUCT ds;
-					ds.rcClient		= m_WindowRect;
+					ds.rcClient		= GetWindowRect();
 					ds.rcClipper	= clpSelf;
 					ds.pCtrl		= this;
 					SendUIMessage( UI_OWNERDRAW, GetID(), (long_ptr)&ds );
@@ -467,7 +494,7 @@ namespace UILib
 	{
 		if( m_pBackGround )
 		{
-			XUI_DrawSprite( m_pBackGround, m_WindowRect.left - adjust.x, m_WindowRect.top - adjust.y, m_WindowRect.Width(), m_WindowRect.Height() );
+			XUI_DrawSprite( m_pBackGround, m_WindowPosition.x - adjust.x, m_WindowPosition.y - adjust.y, m_WindowSize.cx, m_WindowSize.cy );
 		}
 	}
 
@@ -583,7 +610,7 @@ namespace UILib
 	{
 		if( strcmp( "window", name ) == 0 )
 		{
-			OnMoveWindow( m_WindowRect );
+			OnMoveWindow( GetWindowRect() );
 		}
 	}
 };

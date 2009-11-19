@@ -16,18 +16,17 @@ namespace UILib
 	, m_CaratPos( 0 )
 	, m_FirstLineNumber( 0 )
 	, m_nCurLineNumber( 0 )
-	, m_bShowCarat( true )
+	, m_bShowCarat( false )
 	, m_dwBorderColor( XUI_ARGB(0xff,0x80,0x80,0x80) )
 	, m_dwBackgroundColor( XUI_ARGB(0x30,0x20,0x20,0x20) )
 	{
 		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
 		if( pFont )
 		{
-			m_WindowSize.cx		= m_WindowRect.Width()/pFont->GetCharacterWidth( _T(' ') );
-			m_WindowSize.cy		= m_WindowRect.Height()/pFont->GetCharacterHeight();
+			m_TextBufferSize.cx		= m_WindowSize.cx/pFont->GetCharacterWidth( _T(' ') );
+			m_TextBufferSize.cy		= m_WindowSize.cy/pFont->GetCharacterHeight();
 		}
 
-		m_CaratTimerHandler = GuiSystem::Instance().SetTimer( TimerFunction( this, &XUI_EditBox::CaratTimerUpdate ), 0, TIMER_SECOND(0.5f) );
 		m_text.push_back(_T(""));
 	}
 
@@ -99,10 +98,11 @@ namespace UILib
 	void XUI_EditBox::RenderSelf( const xgcPoint& adjust )
 	{
 		__super::RenderSelf( adjust );
-		xgcPoint pt = m_WindowRect.TopLeft() + adjust;
-		XUI_DrawRect( m_WindowRect + adjust, m_dwBorderColor, m_dwBackgroundColor );
+		// 绘制边框
+		xgcRect rcWindow = GetWindowRect() + adjust;
+		XUI_DrawRect( rcWindow, m_dwBorderColor, m_dwBackgroundColor );
 
-		xgcPoint CharPos = pt;
+		xgcPoint CharPos = rcWindow.TopLeft();
 		xgcPoint CaratPos;
 		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
 
@@ -111,7 +111,7 @@ namespace UILib
 			line& l = m_text[i];
 			end_type t = l.type;
 
-			if( CharPos.y > m_WindowRect.bottom - pFont->GetCharacterHeight() )
+			if( CharPos.y > rcWindow.bottom - pFont->GetCharacterHeight() )
 			{
 				// 超出高度则跳出
 				break;
@@ -121,7 +121,7 @@ namespace UILib
 			{
 				_tchar c = l[cursor];
 
-				if( pFont->GetCharacterWidth( c ) + CharPos.x > m_WindowRect.right )
+				if( pFont->GetCharacterWidth( c ) + CharPos.x > rcWindow.right )
 				{
 					if( l.type == type_n && m_bWarpText && !m_bSingleLine )
 					{
@@ -146,13 +146,13 @@ namespace UILib
 					else
 					{
 						// 不折行从下一行开始
-						CharPos.x = pt.x;
+						CharPos.x = rcWindow.left;
 						break;
 					}
 				}
 
 				// 判断是否被绘制。
-				BOOL bRender = m_WindowRect.PtInRect( CharPos + xgcPoint( pFont->GetCharacterWidth( c ), pFont->GetCharacterHeight() ) );
+				BOOL bRender = rcWindow.PtInRect( CharPos + xgcPoint( pFont->GetCharacterWidth( c ), pFont->GetCharacterHeight() ) );
 				if( _istprint( c ) )
 				{
 					// 是显示字符
@@ -170,7 +170,7 @@ namespace UILib
 						{
 							// 制表对齐
 							size_t NextTab = CharPos.x + (4 - cursor%4)*pFont->GetCharacterWidth( _T(' ') );
-							if( (long)NextTab > pt.x + m_WindowRect.Width() ) NextTab = pt.x + m_WindowRect.Width();
+							if( (long)NextTab > rcWindow.left + rcWindow.Width() ) NextTab = rcWindow.left + rcWindow.Width();
 							while( CharPos.x < (long)NextTab )
 							{
 								RenderCharacter( _T(' '), pFont, CharPos.x, CharPos.y, bRender );
@@ -201,7 +201,7 @@ namespace UILib
 			}
 
 			// 折行。
-			CharPos.x = pt.x;
+			CharPos.x = rcWindow.left;
 			CharPos.y += pFont->GetCharacterHeight();
 		}
 
@@ -744,8 +744,8 @@ namespace UILib
 		XUI_IFont* pFont = m_pFont?m_pFont:GuiSystem::Instance().GetDefaultFont();
 		if( pFont )
 		{
-			m_WindowSize.cx		= m_WindowRect.Width()/pFont->GetCharacterWidth( _T(' ') );
-			m_WindowSize.cy		= m_WindowRect.Height()/pFont->GetCharacterHeight();
+			m_TextBufferSize.cx		= m_WindowSize.cx/pFont->GetCharacterWidth( _T(' ') );
+			m_TextBufferSize.cy		= m_WindowSize.cy/pFont->GetCharacterHeight();
 		}
 		Analyse();
 		return 0;
@@ -777,9 +777,9 @@ namespace UILib
 
 		if( m_nCurLineNumber < m_FirstLineNumber )
 		{
-			m_FirstLineNumber = ( m_FirstLineNumber <= (size_t)m_WindowSize.cy?0:(m_FirstLineNumber - m_WindowSize.cy) );
+			m_FirstLineNumber = ( m_FirstLineNumber <= (size_t)m_TextBufferSize.cy?0:(m_FirstLineNumber - m_TextBufferSize.cy) );
 		}
-		else if( m_nCurLineNumber - m_FirstLineNumber >= (size_t)m_WindowSize.cy )
+		else if( m_nCurLineNumber - m_FirstLineNumber >= (size_t)m_TextBufferSize.cy )
 		{
 			m_FirstLineNumber = m_nCurLineNumber;
 		}
@@ -788,6 +788,7 @@ namespace UILib
 	//获得焦点
 	void XUI_EditBox::onGetFocus()
 	{
+		m_CaratTimerHandler = GuiSystem::Instance().SetTimer( TimerFunction( this, &XUI_EditBox::CaratTimerUpdate ), 0, TIMER_SECOND(0.5f) );
 		XUI_IME::_ImmAssociateContext( GuiSystem::Instance().GetHWND(), XUI_IME::m_hImcDef );
 		XUI_Wnd::onGetFocus();
 	}
@@ -795,8 +796,11 @@ namespace UILib
 	//失去焦点
 	void XUI_EditBox::onLostFocus()
 	{
+		GuiSystem::Instance().KillTimer( m_CaratTimerHandler );
+		m_CaratTimerHandler = INVALID_TIMER_HANDLE;
+		m_bShowCarat = false;
 		XUI_IME::_ImmAssociateContext( GuiSystem::Instance().GetHWND(), NULL );
-		XUI_Wnd::onGetFocus();
+		XUI_Wnd::onLostFocus();
 	}
 
 	//LRESULT XUI_EditBox::OnWndMsg( UINT nMsg, WPARAM wParam, LPARAM lParam )

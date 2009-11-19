@@ -11,12 +11,12 @@ namespace UILib
 	CGuiSystem::CGuiSystem()
 	: m_pDesktop(NULL)
 	, m_bPointInRoot(false)
-	, m_bEditMode( false )
+	, m_is_edit_mode( false )
 	, m_hWnd(NULL)
 	, m_bInitialized( FALSE )
 	, m_nowtime( 0.0f )
 	, m_timer_anchor( 0.0f )
-	, m_pDefaultFont( NULL )
+	, m_default_font_ptr( NULL )
 	, m_capture_element( NULL )
 	, m_mouseover_element( NULL )
 	{
@@ -65,15 +65,15 @@ namespace UILib
 
 	void CGuiSystem::Unitialize()
 	{
-		m_pDefaultFont = NULL;
-		m_pCursor = NULL;
+		m_default_font_ptr = NULL;
+		m_cursor_ptr = NULL;
 	}
 
 	void CGuiSystem::SetEditMode( bool bMode )
 	{ 
-		m_bEditMode = bMode; 
-		if( !m_bEditMode )
-			m_pCursor->SetMouse( XUI_MOUSE_APPSTARTING );
+		m_is_edit_mode = bMode; 
+		if( !m_is_edit_mode )
+			m_cursor_ptr->SetMouse( XUI_MOUSE_APPSTARTING );
 	}
 
 	void CGuiSystem::Render()
@@ -83,23 +83,19 @@ namespace UILib
 			m_pDesktop->Render( xgcRect( 0, 0, m_windowsize.cx, m_windowsize.cy ) );
 			XUI_SetClipping( 0, 0, m_windowsize.cx, m_windowsize.cy );
 
-			if( m_bEditMode && m_capture_element )
+			if( m_is_edit_mode && m_capture_element )
 			{
-				//XUI_Wnd* pWnd = GetRoot();
-				//while( pWnd->m_pChildFocusedOn ) pWnd = pWnd->m_pChildFocusedOn;
-				xgcRect rc = m_capture_element->GetWindowRect();
-				m_capture_element->ClientToScreen( rc );
-				RenderEditFrame( rc );
+				RenderEditFrame();
 			}
 
 			XUI_IME::RenderImeWindow();
-			if( m_pCursor->IsMouseOver() )
+			if( m_cursor_ptr->IsMouseOver() )
 			{
-				m_pCursor->RenderMouse();
-				if( m_bEditMode )
+				m_cursor_ptr->RenderMouse();
+				if( m_is_edit_mode )
 				{
 					float x, y;
-					m_pCursor->GetMousePos( &x, &y );
+					m_cursor_ptr->GetMousePos( &x, &y );
 					XUI_DrawLine( 0, (float)y, (float)m_windowsize.cx, (float)y, XUI_ARGB(0xff,0,0xff,0) );
 					XUI_DrawLine( (float)x, 0, (float)x, (float)m_windowsize.cy, XUI_ARGB(0xff,0,0xff,0) );
 				}
@@ -108,34 +104,53 @@ namespace UILib
 		}
 	}
 
-	void CGuiSystem::RenderEditFrame( const xgcRect& rc )
+	void CGuiSystem::RenderEditFrame()
 	{
-		XUI_DrawRect( rc, XUI_ARGB(0xff,0,0,0), XUI_ARGB(0x40,80,80,80) );
+		if( m_cursor_ptr->IsPressedLButton() )
+		{
+			float x, y;
+			m_cursor_ptr->GetMousePos( &x, &y );
+			XUI_DrawRect( xgcRect(m_mousedown, xgcPoint(x,y)), XUI_ARGB(0xff,0,0,0), XUI_ARGB(0x40,80,80,80) );
+		}
+		else
+		{
+			CWndList::iterator iter_element = m_capture_list.begin();
+			while( iter_element != m_capture_list.end() )
+			{
+				XUI_Wnd* element_ptr = *iter_element;
+				xgcRect rc = element_ptr->GetWindowRect();
+				element_ptr->ClientToScreen( rc );
 
-		xgcRect rch( -2, -2, 2, 2 );
-		rch.OffsetRect( rc.TopLeft() );
-		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+				XUI_DrawRect( rc, XUI_ARGB(0xff,0,0,0), XUI_ARGB(0x40,80,80,80) );
 
-		rch.OffsetRect( rc.Width()/2, 0 );
-		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+				xgcRect rch( -2, -2, 2, 2 );
+				rch.OffsetRect( rc.TopLeft() );
+				XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
 
-		rch.OffsetRect( rc.Width()/2, 0 );
-		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+				rch.OffsetRect( rc.Width()/2, 0 );
+				XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
 
-		rch.OffsetRect( 0, rc.Height()/2 );
-		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+				rch.OffsetRect( rc.Width()/2, 0 );
+				XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
 
-		rch.OffsetRect( 0, rc.Height()/2 );
-		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+				rch.OffsetRect( 0, rc.Height()/2 );
+				XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
 
-		rch.OffsetRect( -rc.Width()/2, 0 );
-		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
-		
-		rch.OffsetRect( -rc.Width()/2, 0 );
-		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+				rch.OffsetRect( 0, rc.Height()/2 );
+				XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
 
-		rch.OffsetRect( 0, -rc.Height()/2 );
-		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+				rch.OffsetRect( -rc.Width()/2, 0 );
+				XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+
+				rch.OffsetRect( -rc.Width()/2, 0 );
+				XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+
+				rch.OffsetRect( 0, -rc.Height()/2 );
+				XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+				++iter_element;
+			}
+
+		}
 	}
 
 	_uint32 CGuiSystem::DetectHandler( XUI_Wnd* pElement, const xgcPoint &pt )
@@ -191,9 +206,9 @@ namespace UILib
 			m_timer.active();
 		}
 
-		if( m_pCursor )
+		if( m_cursor_ptr )
 		{
-			m_pCursor->UpdateMouse( fDelta );
+			m_cursor_ptr->UpdateMouse( fDelta );
 		}
 
 		SLB::LuaCall< void(float, float) >( Lua::Instance().getState(), "UIUpdateEntry" )( m_nowtime, fDelta );
@@ -210,9 +225,9 @@ namespace UILib
 		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
 
-		XUI_Wnd *pEnterElement = pElement->FindChildInPoint(pt-pElement->GetTopLeft());
+		XUI_Wnd *pEnterElement = pElement->FindChildInPoint(pt-pElement->GetWindowPosition());
 
-		if( m_bEditMode )
+		if( m_is_edit_mode )
 		{
 			if( m_capture_element )
 			{
@@ -221,7 +236,7 @@ namespace UILib
 					const xgcRect& r = m_capture_element->GetWindowRect();
 					long dx = pt.x - pt_old.x;
 					long dy = pt.y - pt_old.y;
-					switch( m_nCurHandle )
+					switch( m_current_handle )
 					{
 					case -1:
 						m_capture_element->MoveWindow( r.left+dx, r.top+dy, r.right+dx, r.bottom+dy );
@@ -252,35 +267,35 @@ namespace UILib
 						break;
 					}
 				}
-				else if( ( m_nCurHandle = DetectHandler( m_capture_element, pt ) ) != -1 )
+				else if( ( m_current_handle = DetectHandler( m_capture_element, pt ) ) != -1 )
 				{
-					switch( m_nCurHandle )
+					switch( m_current_handle )
 					{
 					case 0:
 					case 4:
-						m_pCursor->SetMouse( XUI_MOUSE_SIZENWSE );
+						m_cursor_ptr->SetMouse( XUI_MOUSE_SIZENWSE );
 						break;
 					case 1:
 					case 5:
-						m_pCursor->SetMouse( XUI_MOUSE_SIZENS );
+						m_cursor_ptr->SetMouse( XUI_MOUSE_SIZENS );
 						break;
 					case 2:
 					case 6:
-						m_pCursor->SetMouse( XUI_MOUSE_SIZENESW );
+						m_cursor_ptr->SetMouse( XUI_MOUSE_SIZENESW );
 						break;
 					case 3:
 					case 7:
-						m_pCursor->SetMouse( XUI_MOUSE_SIZEWE );
+						m_cursor_ptr->SetMouse( XUI_MOUSE_SIZEWE );
 						break;
 					}
 				}
 				else if( pEnterElement == m_capture_element )
 				{
-					m_pCursor->SetMouse( XUI_MOUSE_SIZEALL );
+					m_cursor_ptr->SetMouse( XUI_MOUSE_SIZEALL );
 				}
 				else
 				{
-					m_pCursor->SetMouse( XUI_MOUSE_ARROW );
+					m_cursor_ptr->SetMouse( XUI_MOUSE_ARROW );
 				}
 			}
 		}
@@ -304,15 +319,17 @@ namespace UILib
 		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
 
-		if( m_bEditMode && m_capture_element )
+		m_mousedown = pt;
+		if( m_is_edit_mode && m_capture_element )
 		{
-			m_nCurHandle = DetectHandler( m_capture_element, pt );
-			if( m_nCurHandle == -1 )
+			m_capture_list.clear();
+			m_current_handle = DetectHandler( m_capture_element, pt );
+			if( m_current_handle == -1 )
 			{
-				m_capture_element = m_mouseover_element;
+				m_capture_element = NULL;
 			}
 		}
-		else if( !m_bEditMode && m_capture_element )
+		else if( !m_is_edit_mode && m_capture_element )
 		{
 			if( m_capture_element != m_mouseover_element) 
 			{
@@ -333,7 +350,20 @@ namespace UILib
 		if( pElement == NULL ) return false;
 		if( !pElement->IsEnable() )	return false;
 
-		if( !m_bEditMode && m_capture_element )
+		if( m_is_edit_mode )
+		{
+			xgcRect rcArea( m_mousedown, pt );
+			if( !rcArea.IsRectEmpty() )
+			{
+				XUI_Wnd* element_container = pElement->FindRectIn( rcArea - pElement->GetWindowPosition() );
+			}
+			else
+			{
+				m_capture_element = m_mouseover_element;
+				m_capture_list.push_back( m_capture_element );
+			}
+		}
+		else if( !m_is_edit_mode && m_capture_element )
 		{
 			m_capture_element->SetFocus( true );
 			if( m_capture_element->onButtonUp( nButton, pt, sysKeys ) == false )
@@ -551,7 +581,7 @@ namespace UILib
 			{
 				bool ret = m_pDesktop->CreateFromXMLNode( pNode->ToElement() );
 				float x, y;
-				m_pCursor->GetMousePos( &x, &y );
+				m_cursor_ptr->GetMousePos( &x, &y );
 				m_capture_element = m_pDesktop->FindChildInPoint( xgcPoint( (long)x, (long)y ) );
 				return ret;
 			}
