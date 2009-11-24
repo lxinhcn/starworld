@@ -21,7 +21,7 @@ bool CXQuestObjective::Increment()
 	++m_nCount;
 	if( m_nCount == m_nFinishCount )
 	{
-		CXQuest *pQuest = static_cast< CXQuest* >( CXObjectList::GetInstance().GetObj( GetParent() ) );
+		CXQuest *pQuest = static_cast< CXQuest* >( CXObjectPool::GetInstance().GetObj( GetParent() ) );
 		if( pQuest )
 		{
 			pQuest->ObjectiveNotify( m_nSerial );
@@ -33,7 +33,7 @@ bool CXQuestObjective::Increment()
 
 int CXQuestObjective::OnKill( _uint32 hSource, long_ptr lParam )
 {
-	CGameActor *pActor = static_cast< CGameActor* >( CXObjectList::GetInstance().GetObj( (_uint32)lParam, TypeGameActor ) );
+	CGameActor *pActor = static_cast< CGameActor* >( CXObjectPool::GetInstance().GetObj( (_uint32)lParam, TypeGameActor ) );
 	if( pActor )
 	{
 		_lpctstr name = pActor->GetStrAttrib( _T("name") );

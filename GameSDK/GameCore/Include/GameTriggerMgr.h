@@ -5,9 +5,10 @@
 #define CORE_API __declspec(dllimport)
 #endif
 
+#include <hash_map>
 #include "Loki/Allocator.h"
 #include "Loki/Function.h"
-#include <hash_map>
+#include "XObjectPool.h"
 
 namespace XGC
 {
@@ -197,10 +198,10 @@ namespace XGC
 
 		int operator()( _uint32 hSource, long_ptr lParam )
 		{
-			CXAction* pAction = static_cast< CXAction* >( CXObjectList::GetInstance().GetObj( m_hAction, TypeAction ) );
+			CXAction* pAction = static_cast< CXAction* >( CXObjectPool::GetInstance().GetObj( m_hAction, TypeAction ) );
 			if( pAction )
 			{
-				CXObject *pObj = CXObjectList::GetInstance().GetObj( hSource );
+				CXObject *pObj = CXObjectPool::GetInstance().GetObj( hSource );
 				pAction->SetOwnerParam( 0, (int)lParam );
 				pAction->ResetFlag();
 				return pAction->DoAction( pObj );
@@ -236,10 +237,10 @@ namespace XGC
 		{
 			if( XMath::Random(0, 1000) <= m_nRandom )
 			{
-				CXAction* pAction = static_cast< CXAction* >( CXObjectList::GetInstance().GetObj( m_hAction, TypeAction ) );
+				CXAction* pAction = static_cast< CXAction* >( CXObjectPool::GetInstance().GetObj( m_hAction, TypeAction ) );
 				if( pAction )
 				{
-					CXObject *pObj = CXObjectList::GetInstance().GetObj( hSource );
+					CXObject *pObj = CXObjectPool::GetInstance().GetObj( hSource );
 					pAction->SetOwnerParam( 0, (int)lParam );
 					pAction->ResetFlag();
 					return pAction->DoAction( pObj );

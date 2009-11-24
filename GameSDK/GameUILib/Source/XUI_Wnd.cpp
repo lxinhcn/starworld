@@ -266,7 +266,7 @@ namespace UILib
 	//
 	//	purpose:	查找能包容整个矩形的最深Wnd
 	//--------------------------------------------------------//
-	XUI_Wnd* XUI_Wnd::FindRectIn( const xgcRect &rc )
+	bool XUI_Wnd::FindRectIn( const xgcRect &rc, std::list< XUI_Wnd* >& l )
 	{
 		xgcRect rcAdjust(rc);
 		AdjustWindow( rcAdjust, true);
@@ -277,13 +277,14 @@ namespace UILib
 			for( int i=(int)m_pChildren.size()-1; i>=0; i-- )
 			{
 				XUI_Wnd* pElement = m_pChildren[i];
-				XUI_Wnd* pRet = pElement->FindRectIn( rcAdjust - m_WindowPosition );
-				if( pRet )
-					return pRet;
+				if( pElement->FindRectIn( rcAdjust - m_WindowPosition, l ) )
+					return true;
 			}
-			return this;
+			for( int i=(int)m_pChildren.size()-1; i>=0; i-- )
+				l.push_back( m_pChildren[i] );
+			return true;
 		}
-		return NULL;
+		return false;
 	}
 
 	XUI_Wnd* XUI_Wnd::FindChildByName( const _string& sName) const

@@ -115,7 +115,7 @@ namespace UILib
 		//
 		//	purpose:	查找能包容整个矩形的最深Wnd
 		//--------------------------------------------------------//
-		XUI_Wnd* XUI_Wnd::FindRectIn( const xgcRect &rc );
+		bool FindRectIn( const xgcRect &rc, std::list< XUI_Wnd* >& l );
 		XUI_Wnd* FindChildByName( const _string& sName )const;
 		XUI_Wnd* FindChildByID( int nID )const;
 

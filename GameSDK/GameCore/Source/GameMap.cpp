@@ -213,7 +213,7 @@ bool CGameMap::TestCollision( CMapBlock* pBlock, CGameObject *pObj )
 	//if( pBlock->m_bAllow == false ) 
 	//	return true;
 
-	//CXObjectList& ObjList = CXObjectList::GetInstance();
+	//CXObjectPool& ObjList = CXObjectPool::GetInstance();
 	//CDynamicObject* pDynamicObj = static_cast< CDynamicObject* >( ObjList.GetObj( nObjID, TypeDynamicObject ) );
 	//ASSERT_MSG( pDynamicObj, _T("碰撞检测传入无效的对象ID！") );
 
