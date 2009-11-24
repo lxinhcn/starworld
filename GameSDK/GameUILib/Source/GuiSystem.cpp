@@ -155,6 +155,9 @@ namespace UILib
 
 	_uint32 CGuiSystem::DetectHandler( XUI_Wnd* pElement, const xgcPoint &pt )
 	{
+		if( pElement == NULL ) 
+			return -1;
+
 		xgcRect rc = pElement->GetWindowRect();
 		xgcPoint ptt( pt );
 		pElement->ClientToScreen( rc );
@@ -229,74 +232,89 @@ namespace UILib
 
 		if( m_is_edit_mode )
 		{
-			if( m_capture_element )
+			XUI_Wnd* element = *std::find_if( m_capture_list.begin(), m_capture_list.end(), std::bind2nd( std::equal_to<XUI_Wnd*>(), m_mouseover_element ) );
+			if( element && ( sysKeys & MK_LBUTTON ) )
 			{
-				if( sysKeys & MK_LBUTTON )
+				// 当前悬停对象在捕获列表中 且 按下鼠标左键
+				long dx = pt.x - pt_old.x;
+				long dy = pt.y - pt_old.y;
+				struct move_windows
 				{
-					const xgcRect& r = m_capture_element->GetWindowRect();
-					long dx = pt.x - pt_old.x;
-					long dy = pt.y - pt_old.y;
-					switch( m_current_handle )
+					int dx, dy, h;
+					move_windows( int dx, int dy, int h )
+						: dx( dx )
+						, dy( dy )
+						, h( h )
 					{
-					case -1:
-						m_capture_element->MoveWindow( r.left+dx, r.top+dy, r.right+dx, r.bottom+dy );
-						break;
-					case 0:
-						m_capture_element->MoveWindow( r.left+dx, r.top+dy, r.right, r.bottom );
-						break;
-					case 1:
-						m_capture_element->MoveWindow( r.left, r.top+dy, r.right, r.bottom );
-						break;
-					case 2:
-						m_capture_element->MoveWindow( r.left, r.top+dy, r.right+dx, r.bottom );
-						break;
-					case 3:
-						m_capture_element->MoveWindow( r.left, r.top, r.right+dx, r.bottom );
-						break;
-					case 4:
-						m_capture_element->MoveWindow( r.left, r.top, r.right+dx, r.bottom+dy );
-						break;
-					case 5:
-						m_capture_element->MoveWindow( r.left, r.top, r.right, r.bottom+dy );
-						break;
-					case 6:
-						m_capture_element->MoveWindow( r.left+dx, r.top, r.right, r.bottom+dy );
-						break;
-					case 7:
-						m_capture_element->MoveWindow( r.left+dx, r.top, r.right, r.bottom );
-						break;
+
 					}
-				}
-				else if( ( m_current_handle = DetectHandler( m_capture_element, pt ) ) != -1 )
-				{
-					switch( m_current_handle )
+
+					void operator()( XUI_Wnd* element )
 					{
-					case 0:
-					case 4:
-						m_cursor_ptr->SetMouse( XUI_MOUSE_SIZENWSE );
-						break;
-					case 1:
-					case 5:
-						m_cursor_ptr->SetMouse( XUI_MOUSE_SIZENS );
-						break;
-					case 2:
-					case 6:
-						m_cursor_ptr->SetMouse( XUI_MOUSE_SIZENESW );
-						break;
-					case 3:
-					case 7:
-						m_cursor_ptr->SetMouse( XUI_MOUSE_SIZEWE );
-						break;
+						const xgcRect& r = element->GetWindowRect();
+						switch( h )
+						{
+						case -1:
+							element->MoveWindow( r.left+dx, r.top+dy, r.right+dx, r.bottom+dy );
+							break;
+						case 0:
+							element->MoveWindow( r.left+dx, r.top+dy, r.right, r.bottom );
+							break;
+						case 1:
+							element->MoveWindow( r.left, r.top+dy, r.right, r.bottom );
+							break;
+						case 2:
+							element->MoveWindow( r.left, r.top+dy, r.right+dx, r.bottom );
+							break;
+						case 3:
+							element->MoveWindow( r.left, r.top, r.right+dx, r.bottom );
+							break;
+						case 4:
+							element->MoveWindow( r.left, r.top, r.right+dx, r.bottom+dy );
+							break;
+						case 5:
+							element->MoveWindow( r.left, r.top, r.right, r.bottom+dy );
+							break;
+						case 6:
+							m_capture_element->MoveWindow( r.left+dx, r.top, r.right, r.bottom+dy );
+							break;
+						case 7:
+							m_capture_element->MoveWindow( r.left+dx, r.top, r.right, r.bottom );
+							break;
+						}
 					}
-				}
-				else if( pEnterElement == m_capture_element )
+				};
+				std::for_each( m_capture_list.begin(), m_capture_list.end(), move_windows( dx, dy ) );
+			}
+			else if( m_capture_list.size() == 1 && ( m_current_handle = DetectHandler( m_capture_element, pt ) ) != -1 )
+			{
+				switch( m_current_handle )
 				{
-					m_cursor_ptr->SetMouse( XUI_MOUSE_SIZEALL );
+				case 0:
+				case 4:
+					m_cursor_ptr->SetMouse( XUI_MOUSE_SIZENWSE );
+					break;
+				case 1:
+				case 5:
+					m_cursor_ptr->SetMouse( XUI_MOUSE_SIZENS );
+					break;
+				case 2:
+				case 6:
+					m_cursor_ptr->SetMouse( XUI_MOUSE_SIZENESW );
+					break;
+				case 3:
+				case 7:
+					m_cursor_ptr->SetMouse( XUI_MOUSE_SIZEWE );
+					break;
 				}
-				else
-				{
-					m_cursor_ptr->SetMouse( XUI_MOUSE_ARROW );
-				}
+			}
+			else if( pEnterElement == element )
+			{
+				m_cursor_ptr->SetMouse( XUI_MOUSE_SIZEALL );
+			}
+			else
+			{
+				m_cursor_ptr->SetMouse( XUI_MOUSE_ARROW );
 			}
 		}
 
@@ -316,22 +334,22 @@ namespace UILib
 
 	bool CGuiSystem::onButtonDown( XUI_Wnd* pElement, _uint32 nButton, const xgcPoint& pt, _uint32 sysKeys, long_ptr *result )
 	{
-		if( pElement == NULL ) return false;
-		if( !pElement->IsEnable() )	return false;
+		if( pElement == NULL )
+			return false;
+
+		if( !pElement->IsEnable() )	
+			return false;
 
 		m_mousedown = pt;
-		if( m_is_edit_mode && m_capture_element )
+		m_mousedown_element = m_mouseover_element;
+		if( m_is_edit_mode )
 		{
 			m_capture_list.clear();
-			m_current_handle = DetectHandler( m_capture_element, pt );
-			if( m_current_handle == -1 )
-			{
-				m_capture_element = NULL;
-			}
+			m_current_handle = DetectHandler( m_mouseover_element, pt );
 		}
-		else if( !m_is_edit_mode && m_capture_element )
+		else if( !m_is_edit_mode )
 		{
-			if( m_capture_element != m_mouseover_element) 
+			if( m_capture_element && m_capture_element != m_mouseover_element) 
 			{
 				m_capture_element->SetFocus(false);
 				m_capture_element = m_mouseover_element;
@@ -347,8 +365,11 @@ namespace UILib
 
 	bool CGuiSystem::onButtonUp( XUI_Wnd* pElement, _uint32 nButton, const xgcPoint& pt, _uint32 sysKeys, long_ptr *result )
 	{
-		if( pElement == NULL ) return false;
-		if( !pElement->IsEnable() )	return false;
+		if( pElement == NULL ) 
+			return false;
+
+		if( !pElement->IsEnable() )
+			return false;
 
 		if( m_is_edit_mode )
 		{

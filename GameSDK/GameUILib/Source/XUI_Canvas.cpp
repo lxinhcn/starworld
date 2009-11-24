@@ -126,34 +126,34 @@ namespace UILib
 	// Font Attribute
 	//////////////////////////////////////////////////////////////////////////
 	XUI_FontAttribute::XUI_FontAttribute()
-		: name( "" )
-		, size( 12 )
-		, bold( false )
-		, italic( false )
-		, antialias( false )
+		: m_name( "" )
+		, m_size( 12 )
+		, m_bold( false )
+		, m_italic( false )
+		, m_antialias( false )
 	{
 
 	}
 
 
-	XUI_FontAttribute::XUI_FontAttribute( const char* lpszFont, int nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias )
-		: name( lpszFont )
-		, size( nSize )
-		, color( dwColor )
-		, bold( bBold )
-		, italic( bItalic )
-		, antialias( bAntialias )
+	XUI_FontAttribute::XUI_FontAttribute( const char* lpszFont, _int32 nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias )
+		: m_name( lpszFont )
+		, m_size( nSize )
+		, m_color( dwColor )
+		, m_bold( bBold )
+		, m_italic( bItalic )
+		, m_antialias( bAntialias )
 	{
 
 	}
 
 	XUI_FontAttribute::XUI_FontAttribute( const XUI_FontAttribute& src )
-		: name( src.name )
-		, size( src.size )
-		, color( src.color )
-		, bold( src.bold )
-		, italic( src.italic )
-		, antialias( src.antialias )
+		: m_name( src.m_name )
+		, m_size( src.m_size )
+		, m_color( src.m_color )
+		, m_bold( src.m_bold )
+		, m_italic( src.m_italic )
+		, m_antialias( src.m_antialias )
 	{
 
 	}
@@ -161,21 +161,21 @@ namespace UILib
 	bool XUI_FontAttribute::operator==( const XUI_FontAttribute& rsh )const
 	{ 
 		return 
-			name == rsh.name &&
-			size == rsh.size && 
-			bold == rsh.bold && 
-			italic == rsh.italic && 
-			antialias == rsh.antialias; 
+			m_name == rsh.m_name &&
+			m_size == rsh.m_size && 
+			m_bold == rsh.m_bold && 
+			m_italic == rsh.m_italic && 
+			m_antialias == rsh.m_antialias; 
 	}
 
 	bool XUI_FontAttribute::operator<( const XUI_FontAttribute& rsh )const
 	{
 		return 
-			name < rsh.name?true:
-			size < rsh.size?true:
-			bold < rsh.bold?true:
-			italic < rsh.italic?true:
-			antialias < rsh.antialias;
+			m_name < rsh.m_name?true:
+			m_size < rsh.m_size?true:
+			m_bold < rsh.m_bold?true:
+			m_italic < rsh.m_italic?true:
+			m_antialias < rsh.m_antialias;
 	}
 
 	bool XUI_FontAttribute::save_file( TiXmlElement* pNode )
@@ -183,12 +183,12 @@ namespace UILib
 		pNode->SetAttribute( "class", "font" );
 		if( pNode )
 		{
-			pNode->SetAttribute( "name", name.c_str() );
-			pNode->IntAttribute( "size", size );
-			pNode->IntAttribute( "color", color );
-			pNode->BoolAttribute( "bold", bold );
-			pNode->BoolAttribute( "italic", italic );
-			pNode->BoolAttribute( "antialias", antialias );
+			pNode->SetAttribute( "name", m_name.c_str() );
+			pNode->IntAttribute( "size", m_size );
+			pNode->IntAttribute( "color", m_color );
+			pNode->BoolAttribute( "bold", m_bold );
+			pNode->BoolAttribute( "italic", m_italic );
+			pNode->BoolAttribute( "antialias", m_antialias );
 		}
 		return true;
 	}
@@ -198,13 +198,13 @@ namespace UILib
 		TiXmlElement* pElement = pNode->ToElement();
 		if( pElement )
 		{
-			name = pElement->Attribute( "name" );
-			pElement->Attribute( "size", &size );
+			m_name = pElement->Attribute( "name" );
+			pElement->Attribute( "size", &m_size );
 
-			color		= pElement->IntAttribute( "color" );
-			bold		= pElement->BoolAttribute( "bold" );
-			italic		= pElement->BoolAttribute( "italic" );
-			antialias	= pElement->BoolAttribute( "antialias" );
+			m_color		= pElement->IntAttribute( "color" );
+			m_bold		= pElement->BoolAttribute( "bold" );
+			m_italic	= pElement->BoolAttribute( "italic" );
+			m_antialias	= pElement->BoolAttribute( "antialias" );
 		}
 		return true;
 	}

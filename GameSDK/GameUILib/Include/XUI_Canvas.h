@@ -64,20 +64,20 @@ namespace UILib
 
 	struct XUI_FontAttribute
 	{
-		_astring		name;
-		int				size;
-		_uint32			color;
-		bool			bold, italic, antialias;
+		_astring		m_name;
+		int				m_size;
+		_uint32			m_color;
+		bool			m_bold, m_italic, m_antialias;
 
 		XUI_FontAttribute();
-		XUI_FontAttribute( const char* lpszFont, int nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias );
+		XUI_FontAttribute( const char* lpszFont, _int32 nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias );
 		XUI_FontAttribute( const XUI_FontAttribute& src );
 
 		bool operator==( const XUI_FontAttribute& rsh )const;
 		bool operator<( const XUI_FontAttribute& rsh )const;
 
-		const char* GetFontName()const{ return name.c_str(); }
-		int			GetSize()const{ return size; }
+		const char* name()const{ return m_name.c_str(); }
+		int			size()const{ return m_size; }
 
 		bool save_file( TiXmlElement* pNode );
 		bool load_file( TiXmlElement* pNode );
