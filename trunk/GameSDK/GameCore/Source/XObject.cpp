@@ -1,83 +1,10 @@
 #include "stdafx.h"
 #include "XObject.h"
+#include "XObjectPool.h"
 
 CORE_API _uint32 dwTlsIndex = TLS_OUT_OF_INDEXES;
 namespace XGC
 {
-	CXObjectList::CXObjectList( size_t nLen )
-		: m_nCount( 0 )
-		, m_nCurID( 0x81000000 )
-		, m_nRound( 0x01 )
-		, m_nLen( nLen )
-	{
-		m_pObjList = new CXObject*[nLen];
-		if( !m_pObjList )	throw( "cannot alloc enough memorys!" );
-
-		ZeroMemory( m_pObjList, sizeof( CXObject* )*nLen );
-	}
-
-	CXObjectList::~CXObjectList()
-	{
-		SAFE_DELETE_ARRAY( m_pObjList );
-	}
-
-	CXObjectList& CXObjectList::GetInstance()
-	{
-		static CXObjectList objlist( OBJ_MIN );
-		return objlist;
-	}
-
-	bool CXObjectList::IsValidID( object_handle& h )
-	{
-		if( h.position < 0 || h.position >= m_nLen ) 
-			return false;
-		CXObject* pObj = m_pObjList[h.position];
-		return ( pObj && ( *(size_t*)&h == pObj->GetObjID() ) );
-	}
-
-	CXObject* CXObjectList::GetObj( identifier nID, _uint32 type )
-	{
-		object_handle& h = (object_handle&)nID;
-		if( IsValidID( h ) && m_pObjList[h.position]->IsTypeOf( type ) )
-		{
-			return m_pObjList[h.position];
-		}
-
-		return NULL;
-	}
-
-	identifier CXObjectList::AddObj( CXObject* pObj )
-	{
-		if( m_nCount >= m_nLen )	return INVALID_OBJID;
-		object_handle& h = (object_handle&)m_nCurID;
-
-		// 这里通过未引用队列可以进一步优化以降低查找时间
-		#pragma message( "int CXObjectList::AddObj( CXObject* pObj ) 这里通过未引用队列可以进一步优化以降低查找时间" )
-		while( m_pObjList[h.position] != NULL )
-		{
-			h.position++;
-			if( h.position >= m_nLen )
-			{
-				h.position = 0;
-				++h.round;
-			}
-		}
-
-		m_pObjList[h.position] = pObj;
-		m_nCount++;
-		return m_nCurID;
-	}
-
-	void CXObjectList::DelObj( identifier nID )
-	{
-		object_handle& h = (object_handle&)nID;
-		ASSERT_MSG( m_pObjList[h.position] && m_pObjList[h.position]->GetObjID() == nID, _T("不等的ID，删除对象时出错。") );
-		if( m_pObjList[h.position]->GetObjID() != nID )	return;
-
-		m_pObjList[h.position] = NULL;
-		m_nCount--;
-	}
-
 	//////////////////////////////////////////////////////////////////////////
 	// CXObject
 	CXObject::CXObject()
@@ -88,7 +15,7 @@ namespace XGC
 	, m_nStatus( OBJST_NORMAL )
 	{
 		// 自动列表
-		m_nID = CXObjectList::GetInstance().AddObj( this );
+		m_nID = CXObjectPool::GetInstance().AddObj( this );
 	}
 
 	CXObject::CXObject( bool bIsParent, bool bIsTypeList )
@@ -98,18 +25,18 @@ namespace XGC
 	, m_bIsTypeList( bIsTypeList )
 	, m_nStatus( OBJST_NORMAL )
 	{
-		m_nID = CXObjectList::GetInstance().AddObj( this );
+		m_nID = CXObjectPool::GetInstance().AddObj( this );
 	}
 
 	CXObject::~CXObject()
 	{
-		CXObjectList::GetInstance().DelObj( m_nID );
+		CXObjectPool::GetInstance().DelObj( m_nID );
 		ThisTriggerMgr()->TriggerEvent( m_nID, trigger_event_destroy, true );
 	}
 
 	bool CXObject::AddChild( identifier nID, bool bChangeParent /*= true*/ )
 	{
-		CXObject* pObj = CXObjectList::GetInstance().GetObj( nID );
+		CXObject* pObj = CXObjectPool::GetInstance().GetObj( nID );
 		return AddChild( pObj, bChangeParent );
 	}
 
@@ -123,7 +50,7 @@ namespace XGC
 		{
 			if( m_bIsParent && bChangeParent )
 			{
-				CXObject* pParent = CXObjectList::GetInstance().GetObj( pObj->GetParent() );
+				CXObject* pParent = CXObjectPool::GetInstance().GetObj( pObj->GetParent() );
 				if( pParent )
 				{
 					pParent->RemoveChild( pObj );
@@ -149,7 +76,7 @@ namespace XGC
 	// 删除子对象ID
 	void CXObject::RemoveChild( identifier nID, bool bRelease )
 	{
-		CXObject* pObj = CXObjectList::GetInstance().GetObj( nID );
+		CXObject* pObj = CXObjectPool::GetInstance().GetObj( nID );
 		return RemoveChild( pObj, bRelease );
 	}
 
@@ -181,7 +108,7 @@ namespace XGC
 
 	bool CXObject::Destroy()
 	{
-		CXObject* pParent = CXObjectList::GetInstance().GetObj( GetParent() );
+		CXObject* pParent = CXObjectPool::GetInstance().GetObj( GetParent() );
 		m_nStatus |= OBJST_DESTROY;
 		if( pParent )
 		{
@@ -195,7 +122,7 @@ namespace XGC
 
 	void CXObject::DestroyAllChild()
 	{
-		CXObjectList& objlist = CXObjectList::GetInstance();
+		CXObjectPool& objlist = CXObjectPool::GetInstance();
 		while( !m_ChildList.empty() )
 		{
 			int nID = *m_ChildList.begin();
@@ -214,7 +141,7 @@ namespace XGC
 	//---------------------------------------------------//
 	void CXObject::DestroyAllChild( int nType )
 	{
-		CXObjectList& objlist = CXObjectList::GetInstance();
+		CXObjectPool& objlist = CXObjectPool::GetInstance();
 		CTypeList::iterator iter = m_TypeList.find( nType );
 		if( iter == m_TypeList.end() )
 			return;

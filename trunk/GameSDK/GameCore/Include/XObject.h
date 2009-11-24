@@ -18,6 +18,8 @@
 /************************************************************************/
 /* 列表系统，属性系统，以及对象基础类的实现                             */
 /************************************************************************/
+typedef _uint32 identifier;
+typedef _uint32	guid;
 
 #define INVALID_OBJID -1
 #define INVALID_ATTRIBID -1
@@ -42,51 +44,6 @@
 
 namespace XGC
 {
-	class CXObject;
-
-	//----------------------------------------------------------------------//
-
-	typedef _uint32 identifier;
-	/************************************************************************/
-	/* CXObjectList 类，实现了一个静态的指针列表，用来通过ID的方式转化对象指针。
-	/************************************************************************/
-	class CORE_API CXObjectList
-	{
-	friend class CXObject;
-	protected:
-		CXObjectList( size_t nLen );
-		~CXObjectList();
-
-		identifier	AddObj( CXObject* pObj );
-		void		DelObj( identifier nID );
-
-		struct object_handle
-		{
-			unsigned int	position:24;	// 位置位域
-			unsigned int	round:7;		// 轮询位域
-			unsigned int	flag:1;			// 对象位置标志, 1 为服务器使用, 0 为客户端使用.服务器上的对象,最高位永不会使用0;
-		};
-
-		CXObject**	m_pObjList;
-		size_t		m_nLen;
-		size_t		m_nCurID;
-		size_t		m_nRound;
-		size_t		m_nCount;
-	public:
-		static CXObjectList& GetInstance();
-		inline bool IsValidID( object_handle& h );
-
-		inline CXObject* GetObj( identifier nID )
-		{ 
-			object_handle& h = (object_handle&)nID; 
-			return IsValidID( h )?m_pObjList[h.position]:NULL; 
-		}
-
-		inline CXObject* GetObj( identifier nID, _uint32 type );
-
-		inline CXObject* operator []( identifier nID ){ object_handle h = *(object_handle*)&nID; return m_pObjList[h.position]; }
-	};
-
 	/************************************************************************/
 	/* CXObjectT 模版实现了属性系统，该模版在每个类层次上实现一个属性列表，但在存取
 	/* 时需要明确存取的属性是位于哪个类层次上的，这通过一个类的类值来指定（暂无其他方法）。

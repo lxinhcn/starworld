@@ -196,7 +196,7 @@ namespace XGC
 	bool CXStatus::OnTimer( unsigned int handle, unsigned short &repeat, unsigned int &timer )
 	{
 		// CLogger::GetInstance(_T("Log"))->WriteLog( _T("½ÇÉ«[%08x]×´Ì¬¼ÆÊý Count = %d"), GetParent(), repeat );
-		CXObject *pObj = CXObjectList::GetInstance().GetObj( GetParent() );
+		CXObject *pObj = CXObjectPool::GetInstance().GetObj( GetParent() );
 		if( pObj )
 		{
 			m_bEffected = 0;

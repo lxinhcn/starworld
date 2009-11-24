@@ -15,5 +15,5 @@ CGameSkill::~CGameSkill(void)
 
 CGameActor* CGameSkill::GetOwner()const
 {
-	return static_cast< CGameActor* >( CXObjectList::GetInstance().GetObj( m_hOwner, TypeGameActor ) );
+	return static_cast< CGameActor* >( CXObjectPool::GetInstance().GetObj( m_hOwner, TypeGameActor ) );
 }

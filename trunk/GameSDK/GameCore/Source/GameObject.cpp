@@ -46,7 +46,7 @@ void CDynamicObject::BeginPathPoint()
 			// 下此更新坐标和剩余距离的差值则为当前的位置
 			m_vNextPosition -= Vec;
 
-			CGameMap* pScene = static_cast< CGameMap* >( CXObjectList::GetInstance().GetObj( GetParent(), TypeGameMap ) );
+			CGameMap* pScene = static_cast< CGameMap* >( CXObjectPool::GetInstance().GetObj( GetParent(), TypeGameMap ) );
 			if( pScene )
 			{
 				if( pScene->DynamicMoveTo( this, m_vNextPosition, false ) )
@@ -117,7 +117,7 @@ bool CDynamicObject::UpdateTimer( unsigned int handle, unsigned short& repeat, u
 	timer = TIMER_SECONDS(1.0f);
 
 	// 先移动到当前所在的位置.
-	CGameMap* pScene = static_cast< CGameMap* >( CXObjectList::GetInstance().GetObj( GetParent(), TypeGameMap ) );
+	CGameMap* pScene = static_cast< CGameMap* >( CXObjectPool::GetInstance().GetObj( GetParent(), TypeGameMap ) );
 	if( pScene )
 	{
 		if( pScene->DynamicMoveTo( this, m_vNextPosition, false ) )

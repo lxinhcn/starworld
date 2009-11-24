@@ -7,8 +7,8 @@ using namespace XGC;
 struct core_thread
 {
 	CGameTriggerMgr	*trigger_mgr;
-	CTimerManager		*timer;
-	_uint16				error_t;
+	CTimerManager	*timer;
+	_uint16			error_t;
 };
 
 CORE_API extern _uint32 dwTlsIndex;

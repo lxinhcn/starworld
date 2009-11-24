@@ -258,6 +258,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\XObjectPool.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\XQuest.cpp"
 				>
 			</File>
@@ -325,6 +329,10 @@
 			</File>
 			<File
 				RelativePath=".\Include\XObject.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\XObjectPool.h"
 				>
 			</File>
 			<File

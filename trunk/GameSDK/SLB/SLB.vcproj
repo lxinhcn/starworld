@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="SLB"
+	Name="slb"
 	ProjectGUID="{A27E7B13-1C7A-4172-9932-B0A4D15F398D}"
 	RootNamespace="SLB"
 	TargetFrameworkVersion="131072"
@@ -17,7 +17,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)Lib\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)..\Lib\$(ConfigurationName)"
 			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
 			>
@@ -79,7 +79,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)Lib\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)..\Lib\$(ConfigurationName)"
 			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
 			>

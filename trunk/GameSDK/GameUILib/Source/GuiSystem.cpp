@@ -355,7 +355,7 @@ namespace UILib
 			xgcRect rcArea( m_mousedown, pt );
 			if( !rcArea.IsRectEmpty() )
 			{
-				XUI_Wnd* element_container = pElement->FindRectIn( rcArea - pElement->GetWindowPosition() );
+				pElement->FindRectIn( rcArea - pElement->GetWindowPosition(), m_capture_list );
 			}
 			else
 			{
