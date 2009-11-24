@@ -70,8 +70,7 @@ namespace UILib
 		bool			m_is_edit_mode;
 		int				m_current_handle;
 		xgcPoint		m_mousedown;
-		XUI_Wnd*		m_capture_element;
-		XUI_Wnd*		m_mouseover_element;
+		XUI_Wnd			*m_capture_element, *m_mouseover_element, *m_mousedown_element;
 		CWndList		m_capture_list;
 	protected:
 		void SetFocus		( XUI_Wnd* pElement );
