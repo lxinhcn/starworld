@@ -150,7 +150,7 @@ namespace UILib
 						Attribute = pXMLChildElement->FirstChild( "Attribute" );
 						pElement->load_file( Attribute->ToElement() );
 
-						pElement->SendUIMessage( UI_CREATE, 0, 0 );
+						pElement->SendUIMessage( UIM_CREATE, 0, 0 );
 
 						if( pElement->IsKindOf( TypeWindow ) )
 						{

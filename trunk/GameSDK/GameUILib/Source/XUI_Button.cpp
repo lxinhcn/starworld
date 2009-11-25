@@ -73,8 +73,6 @@ namespace UILib
 	{
 		if ( button == 0 )
 		{
-			// doAction();
-			//xgcPoint pt2 = ClientToScreen( pt );
 			SetState( MouseOver );
 			SendUIMessage( WM_COMMAND, MAKELONG( GetID(), EV_BNCLICKED ), 0 );
 		}
@@ -114,4 +112,13 @@ namespace UILib
 		else
 			SetState( Normal );
 	}
+
+	void XUI_Button::OnLoadPropertys( const char* name, TiXmlElement* pNode )
+	{
+		if( strcmp( "skin", name ) == 0 )
+		{
+			SetState( m_enState );
+		}
+	}
+
 }

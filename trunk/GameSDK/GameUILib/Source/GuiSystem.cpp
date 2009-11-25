@@ -19,6 +19,7 @@ namespace UILib
 	, m_default_font_ptr( NULL )
 	, m_capture_element( NULL )
 	, m_mouseover_element( NULL )
+	, m_mousedown_element( NULL )
 	{
 		m_pDesktop = new XUI_Window();
 		m_pDesktop->SetID( DEFAULT_DESKTOP );
@@ -80,77 +81,30 @@ namespace UILib
 	{
 		if ( m_pDesktop )
 		{
-			m_pDesktop->Render( xgcRect( 0, 0, m_windowsize.cx, m_windowsize.cy ) );
 			XUI_SetClipping( 0, 0, m_windowsize.cx, m_windowsize.cy );
+			m_pDesktop->Render( xgcRect( 0, 0, m_windowsize.cx, m_windowsize.cy ) );
+		}
 
-			if( m_is_edit_mode && m_capture_element )
+		if( m_cursor_ptr->IsMouseOver() )
+		{
+			XUI_SetClipping( 0, 0, m_windowsize.cx, m_windowsize.cy );
+			if( m_is_edit_mode )
 			{
-				RenderEditFrame();
-			}
-
-			XUI_IME::RenderImeWindow();
-			if( m_cursor_ptr->IsMouseOver() )
-			{
-				m_cursor_ptr->RenderMouse();
-				if( m_is_edit_mode )
+				float x, y;
+				m_cursor_ptr->GetMousePos( &x, &y );
+				if( m_cursor_ptr->GetKeyState( XUIK_LBUTTON ) && m_mousedown_element && !m_mousedown_element->GetFlags( XUI_Wnd::FLAGS_EDIT ) )
 				{
 					float x, y;
 					m_cursor_ptr->GetMousePos( &x, &y );
-					XUI_DrawLine( 0, (float)y, (float)m_windowsize.cx, (float)y, XUI_ARGB(0xff,0,0xff,0) );
-					XUI_DrawLine( (float)x, 0, (float)x, (float)m_windowsize.cy, XUI_ARGB(0xff,0,0xff,0) );
+					XUI_DrawRect( xgcRect(m_mousedown, xgcPoint(x,y)), XUI_ARGB(0xff,0,0xff,0), XUI_ARGB(0x55,0,0xff,0) );
 				}
+				XUI_DrawLine( 0, (float)y, (float)m_windowsize.cx, (float)y, XUI_ARGB(0xff,0,0xff,0) );
+				XUI_DrawLine( (float)x, 0, (float)x, (float)m_windowsize.cy, XUI_ARGB(0xff,0,0xff,0) );
 			}
-
+			XUI_IME::RenderImeWindow();
+			m_cursor_ptr->RenderMouse();
 		}
-	}
 
-	void CGuiSystem::RenderEditFrame()
-	{
-		if( m_cursor_ptr->IsPressedLButton() )
-		{
-			float x, y;
-			m_cursor_ptr->GetMousePos( &x, &y );
-			XUI_DrawRect( xgcRect(m_mousedown, xgcPoint(x,y)), XUI_ARGB(0xff,0,0,0), XUI_ARGB(0x40,80,80,80) );
-		}
-		else
-		{
-			CWndList::iterator iter_element = m_capture_list.begin();
-			while( iter_element != m_capture_list.end() )
-			{
-				XUI_Wnd* element_ptr = *iter_element;
-				xgcRect rc = element_ptr->GetWindowRect();
-				element_ptr->ClientToScreen( rc );
-
-				XUI_DrawRect( rc, XUI_ARGB(0xff,0,0,0), XUI_ARGB(0x40,80,80,80) );
-
-				xgcRect rch( -2, -2, 2, 2 );
-				rch.OffsetRect( rc.TopLeft() );
-				XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
-
-				rch.OffsetRect( rc.Width()/2, 0 );
-				XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
-
-				rch.OffsetRect( rc.Width()/2, 0 );
-				XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
-
-				rch.OffsetRect( 0, rc.Height()/2 );
-				XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
-
-				rch.OffsetRect( 0, rc.Height()/2 );
-				XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
-
-				rch.OffsetRect( -rc.Width()/2, 0 );
-				XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
-
-				rch.OffsetRect( -rc.Width()/2, 0 );
-				XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
-
-				rch.OffsetRect( 0, -rc.Height()/2 );
-				XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
-				++iter_element;
-			}
-
-		}
 	}
 
 	_uint32 CGuiSystem::DetectHandler( XUI_Wnd* pElement, const xgcPoint &pt )
@@ -232,10 +186,9 @@ namespace UILib
 
 		if( m_is_edit_mode )
 		{
-			XUI_Wnd* element = *std::find_if( m_capture_list.begin(), m_capture_list.end(), std::bind2nd( std::equal_to<XUI_Wnd*>(), m_mouseover_element ) );
-			if( element && ( sysKeys & MK_LBUTTON ) )
+			if( m_mousedown_element && m_mousedown_element->GetFlags(XUI_Wnd::FLAGS_EDIT) && ( sysKeys & MK_LBUTTON ) )
 			{
-				// 当前悬停对象在捕获列表中 且 按下鼠标左键
+				// 当前悬停对象在捕获列表中 且 按下鼠标右键
 				long dx = pt.x - pt_old.x;
 				long dy = pt.y - pt_old.y;
 				struct move_windows
@@ -276,17 +229,17 @@ namespace UILib
 							element->MoveWindow( r.left, r.top, r.right, r.bottom+dy );
 							break;
 						case 6:
-							m_capture_element->MoveWindow( r.left+dx, r.top, r.right, r.bottom+dy );
+							element->MoveWindow( r.left+dx, r.top, r.right, r.bottom+dy );
 							break;
 						case 7:
-							m_capture_element->MoveWindow( r.left+dx, r.top, r.right, r.bottom );
+							element->MoveWindow( r.left+dx, r.top, r.right, r.bottom );
 							break;
 						}
 					}
 				};
-				std::for_each( m_capture_list.begin(), m_capture_list.end(), move_windows( dx, dy ) );
+				std::for_each( m_capture_list.begin(), m_capture_list.end(), move_windows( dx, dy, m_current_handle ) );
 			}
-			else if( m_capture_list.size() == 1 && ( m_current_handle = DetectHandler( m_capture_element, pt ) ) != -1 )
+			else if( ( m_current_handle = DetectHandler( m_capture_element, pt ) ) != -1 )
 			{
 				switch( m_current_handle )
 				{
@@ -308,7 +261,7 @@ namespace UILib
 					break;
 				}
 			}
-			else if( pEnterElement == element )
+			else if( pEnterElement->GetFlags(XUI_Wnd::FLAGS_EDIT) )
 			{
 				m_cursor_ptr->SetMouse( XUI_MOUSE_SIZEALL );
 			}
@@ -320,7 +273,8 @@ namespace UILib
 
 		if( pEnterElement && pEnterElement != m_mouseover_element )
 		{
-			if( m_mouseover_element ) m_mouseover_element->onMouseLeave();
+			if( m_mouseover_element ) 
+				m_mouseover_element->onMouseLeave();
 			pEnterElement->onMouseEnter();
 			m_mouseover_element = pEnterElement;
 		}
@@ -342,24 +296,29 @@ namespace UILib
 
 		m_mousedown = pt;
 		m_mousedown_element = m_mouseover_element;
-		if( m_is_edit_mode )
+		if( m_is_edit_mode && !m_mousedown_element->GetFlags( XUI_Wnd::FLAGS_EDIT ) )
 		{
+			std::for_each( m_capture_list.begin(), m_capture_list.end(), 
+				std::bind2nd( 
+				std::mem_fun1< void, XUI_Wnd, _uint16 >( &XUI_Wnd::ClrFlags ), XUI_Wnd::FLAGS_EDIT ) );
+
 			m_capture_list.clear();
-			m_current_handle = DetectHandler( m_mouseover_element, pt );
+			m_current_handle = DetectHandler( m_capture_element, pt );
 		}
 		else if( !m_is_edit_mode )
 		{
 			if( m_capture_element && m_capture_element != m_mouseover_element) 
 			{
 				m_capture_element->SetFocus(false);
-				m_capture_element = m_mouseover_element;
+				m_mousedown_element->SetFocus( true );
 			}
 
-			if( m_capture_element->onButtonDown( nButton, pt, sysKeys ) == false )
+			if( m_mousedown_element->onButtonDown( nButton, pt, sysKeys ) == false )
 			{
-				*result = m_capture_element->SendUIMessage( UIM_BUTTONDOWN_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );
+				*result = m_mousedown_element->SendUIMessage( UIM_BUTTONDOWN_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );
 			}
 		}
+		m_capture_element = m_mousedown_element;
 		return false;
 	}
 
@@ -374,24 +333,27 @@ namespace UILib
 		if( m_is_edit_mode )
 		{
 			xgcRect rcArea( m_mousedown, pt );
-			if( !rcArea.IsRectEmpty() )
+			if( rcArea.IsRectEmpty() )
 			{
-				pElement->FindRectIn( rcArea - pElement->GetWindowPosition(), m_capture_list );
+				XUI_Wnd* find_element = pElement->FindChildInPoint( pt - pElement->GetWindowPosition() );
+				if( find_element && !find_element->GetFlags( XUI_Wnd::FLAGS_EDIT ) )
+				{
+					find_element->SetFlags( XUI_Wnd::FLAGS_EDIT );
+					m_capture_list.push_back( find_element );
+				}
 			}
 			else
 			{
-				m_capture_element = m_mouseover_element;
-				m_capture_list.push_back( m_capture_element );
+				pElement->FindRectIn( rcArea - pElement->GetWindowPosition(), m_capture_list );
+				std::for_each( m_capture_list.begin(), m_capture_list.end(), 
+					std::bind2nd( std::mem_fun1< void, XUI_Wnd, _uint16 >( &XUI_Wnd::SetFlags ), XUI_Wnd::FLAGS_EDIT ) );
 			}
 		}
-		else if( !m_is_edit_mode && m_capture_element )
+		else if( m_capture_element->onButtonUp( nButton, pt, sysKeys ) == false )
 		{
-			m_capture_element->SetFocus( true );
-			if( m_capture_element->onButtonUp( nButton, pt, sysKeys ) == false )
-			{
-				*result = m_capture_element->SendUIMessage( UIM_BUTTONUP_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );
-			}
+			*result = m_capture_element->SendUIMessage( UIM_BUTTONUP_BEGIN + nButton, MAKELONG(pt.x, pt.y), sysKeys );
 		}
+
 		return false;
 	}
 
@@ -460,36 +422,31 @@ namespace UILib
 		{
 			//获取鼠标的坐标
 			xgcPoint pt( LOWORD(lParam), HIWORD(lParam) );
-			if (pDesktop->IsPointIn(pt))
-			{
-				//pt.x+=pDesktop->m_WindowRect.left;
-				//pt.y+=pDesktop->m_WindowRect.top;
 
-				//分发消息
-				switch (uMsg)
-				{
-				case WM_MOUSEMOVE:
-					ret = onMouseMove( pDesktop, pt, wParam, result );
-					break;
-				case WM_LBUTTONDOWN:
-					ret = onButtonDown( pDesktop, XUI_LBUTTON, pt, wParam, result );
-					break;
-				case WM_RBUTTONDOWN:
-					ret = onButtonDown( pDesktop, XUI_RBUTTON, pt, wParam, result );
-					break;
-				case WM_MBUTTONDOWN:
-					ret = onButtonDown( pDesktop, XUI_MBUTTON, pt, wParam, result );
-					break;
-				case WM_LBUTTONUP:
-					ret = onButtonUp( pDesktop, XUI_LBUTTON, pt, wParam, result );
-					break;
-				case WM_RBUTTONUP:
-					ret = onButtonUp( pDesktop, XUI_RBUTTON, pt, wParam, result );
-					break;
-				case WM_MBUTTONUP:
-					ret = onButtonUp( pDesktop, XUI_MBUTTON, pt, wParam, result );
-					break;
-				}
+			//分发消息
+			switch (uMsg)
+			{
+			case WM_MOUSEMOVE:
+				ret = onMouseMove( pDesktop, pt, wParam, result );
+				break;
+			case WM_LBUTTONDOWN:
+				ret = onButtonDown( pDesktop, XUI_LBUTTON, pt, wParam, result );
+				break;
+			case WM_RBUTTONDOWN:
+				ret = onButtonDown( pDesktop, XUI_RBUTTON, pt, wParam, result );
+				break;
+			case WM_MBUTTONDOWN:
+				ret = onButtonDown( pDesktop, XUI_MBUTTON, pt, wParam, result );
+				break;
+			case WM_LBUTTONUP:
+				ret = onButtonUp( pDesktop, XUI_LBUTTON, pt, wParam, result );
+				break;
+			case WM_RBUTTONUP:
+				ret = onButtonUp( pDesktop, XUI_RBUTTON, pt, wParam, result );
+				break;
+			case WM_MBUTTONUP:
+				ret = onButtonUp( pDesktop, XUI_MBUTTON, pt, wParam, result );
+				break;
 			}
 		}
 		return ret;
@@ -649,9 +606,9 @@ namespace UILib
 		CDesktopMap::const_iterator citer = m_DesktopMap.find( nDesktopID );
 		if( citer != m_DesktopMap.end() )
 		{
-			m_pDesktop->SendUIMessage( UI_SWITCHLEAVE, 0, 0 );
+			m_pDesktop->SendUIMessage( UIM_SWITCHLEAVE, 0, 0 );
 			m_pDesktop = citer->second;
-			m_pDesktop->SendUIMessage( UI_SWITCHENTER, 0, 0 );
+			m_pDesktop->SendUIMessage( UIM_SWITCHENTER, 0, 0 );
 		}
 	}
 

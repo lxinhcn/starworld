@@ -15,6 +15,11 @@ namespace UILib
 	friend class CGuiSystem;
 	friend class CUIFactory;
 	friend class LuaBindClass;
+	public:
+		enum GUI_ELEMENT_FLAG
+		{
+			FLAGS_EDIT = 0,
+		};
 
 	protected:
 		XUI_Wnd(void);
@@ -24,6 +29,8 @@ namespace UILib
 	protected:
 		//绘制
 		void Render(const xgcRect& clipper);
+		void RenderEdit( const xgcPoint &adjust );
+
 
 		//重绘，通过实现这个方法来表现空间的外观
 		virtual void RenderSelf( const xgcPoint& adjust );
@@ -107,7 +114,7 @@ namespace UILib
 		void DestroyAllChild();
 		void SetParent( XUI_Wnd* pParent ){ m_pParent = pParent; }
 		XUI_Wnd* GetParent(){return m_pParent;}
-		XUI_Wnd* FindChildInPoint( const xgcPoint &pt, _uint32* deep = NULL );
+		XUI_Wnd* FindChildInPoint( const xgcPoint &pt );
 		//--------------------------------------------------------//
 		//	created:	19:11:2009   18:29
 		//	filename: 	d:\Develop\StarGame\GameSDK\GameUILib\Source\XUI_Wnd.cpp
@@ -138,7 +145,7 @@ namespace UILib
 		void BringToEnd();
 
 		//检测某一点是否在控件的显示区域内
-		virtual BOOL IsPointIn(const xgcPoint& pt);
+		virtual bool IsPointIn(const xgcPoint& pt);
 
 		//--------------------------------------------------------------------------
 		// 设置控件属性
@@ -157,6 +164,17 @@ namespace UILib
 
 		//设置焦点
 		void	SetFocus(bool bFocused);
+
+		//--------------------------------------------------------//
+		//	created:	25:11:2009   10:48
+		//	filename: 	d:\Developed\StarGame\GameSDK\GameUILib\Include\XUI_Wnd.h
+		//	author:		Albert.xu
+		//
+		//	purpose:	标志操作
+		//--------------------------------------------------------//
+		void SetFlags( _uint16 nFlag );	// 设置标志
+		void ClrFlags( _uint16 nFlag );	// 清除标志
+		bool GetFlags( _uint16 nFlag )const; // 获取标志
 
 		//---------------------------------------------------------------------//
 		// describe	: 保存、载入
@@ -191,6 +209,7 @@ namespace UILib
 
 		XUI_IFont*		m_pFont;
 		XUI_ISprite*	m_pBackGround;			// 背景图
+		_byte			m_Flags[1];				// 标志
 	};
 
 	extern 	CGuiSystem* _afxCurrentGuiSystem;
