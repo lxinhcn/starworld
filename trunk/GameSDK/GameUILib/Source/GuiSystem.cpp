@@ -296,16 +296,19 @@ namespace UILib
 
 		m_mousedown = pt;
 		m_mousedown_element = m_mouseover_element;
-		if( m_is_edit_mode && !m_mousedown_element->GetFlags( XUI_Wnd::FLAGS_EDIT ) )
+		if( m_is_edit_mode )
 		{
-			std::for_each( m_capture_list.begin(), m_capture_list.end(), 
-				std::bind2nd( 
-				std::mem_fun1< void, XUI_Wnd, _uint16 >( &XUI_Wnd::ClrFlags ), XUI_Wnd::FLAGS_EDIT ) );
+			if( !m_mousedown_element->GetFlags( XUI_Wnd::FLAGS_EDIT ) && !(sysKeys & MK_CONTROL) )
+			{
+				std::for_each( m_capture_list.begin(), m_capture_list.end(), 
+					std::bind2nd( 
+					std::mem_fun1< void, XUI_Wnd, _uint16 >( &XUI_Wnd::ClrFlags ), XUI_Wnd::FLAGS_EDIT ) );
 
-			m_capture_list.clear();
+				m_capture_list.clear();
+			}
 			m_current_handle = DetectHandler( m_capture_element, pt );
 		}
-		else if( !m_is_edit_mode )
+		else
 		{
 			if( m_capture_element && m_capture_element != m_mouseover_element) 
 			{
@@ -338,13 +341,28 @@ namespace UILib
 				XUI_Wnd* find_element = pElement->FindChildInPoint( pt - pElement->GetWindowPosition() );
 				if( find_element && !find_element->GetFlags( XUI_Wnd::FLAGS_EDIT ) )
 				{
-					find_element->SetFlags( XUI_Wnd::FLAGS_EDIT );
-					m_capture_list.push_back( find_element );
+					if( std::find_if( m_capture_list.begin(), m_capture_list.end(), 
+						std::bind2nd( std::equal_to< XUI_Wnd* >(), find_element ) ) == m_capture_list.end() )
+					{
+						find_element->SetFlags( XUI_Wnd::FLAGS_EDIT );
+						m_capture_list.push_back( find_element );
+					}
 				}
 			}
 			else
 			{
-				pElement->FindRectIn( rcArea - pElement->GetWindowPosition(), m_capture_list );
+				CWndList capture_list;
+				pElement->FindRectIn( rcArea - pElement->GetWindowPosition(), capture_list );
+
+				CWndList::iterator result = capture_list.begin();
+				do
+				{
+					result = std::find_first_of( result, capture_list.end(), m_capture_list.begin(), m_capture_list.end() );
+					if( result != capture_list.end() )
+						result = capture_list.erase( result );
+				}while( result != capture_list.end() );
+				m_capture_list.insert( m_capture_list.end(), capture_list.begin(), capture_list.end() );
+
 				std::for_each( m_capture_list.begin(), m_capture_list.end(), 
 					std::bind2nd( std::mem_fun1< void, XUI_Wnd, _uint16 >( &XUI_Wnd::SetFlags ), XUI_Wnd::FLAGS_EDIT ) );
 			}
