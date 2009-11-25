@@ -45,6 +45,7 @@ namespace UILib
 
 	protected:
 		void OnEnable( BOOL bEnable );
+		virtual void OnLoadPropertys( const char* name, TiXmlElement* pNode );
 
 	public:
 		void SetText( _lpctstr sText);

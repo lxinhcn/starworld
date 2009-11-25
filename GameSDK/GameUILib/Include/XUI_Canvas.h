@@ -154,6 +154,7 @@ namespace UILib
 		virtual _int32	GetMouseWheel() = 0;
 		virtual void	RenderMouse() = 0;
 		virtual void	SetMouse( _uint16 id ) = 0;
+		virtual bool	GetKeyState( int key )const = 0;
 		virtual bool	IsPressedLButton()const = 0;
 		virtual bool	IsReleaseLButton()const = 0;
 		virtual bool	IsPressedRButton()const = 0;

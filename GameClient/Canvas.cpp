@@ -445,6 +445,11 @@ void	CClientMouse::SetMouse( _uint16 id )
 	}
 }
 
+bool	CClientMouse::GetKeyState( int key )const
+{
+	return Application::Instance()->Input_GetKeyState( key );
+}
+
 bool	CClientMouse::IsPressedLButton()const
 {
 	return Application::Instance()->Input_KeyDown(HGEK_LBUTTON);
@@ -673,7 +678,7 @@ static XUI_IFont* _CreateFont( _lpcstr lpszFontName, int nSize, _uint32 dwColor,
 
 static XUI_IFont* _CreateFontEx( const XUI_FontAttribute& FontAttribute )
 {
-	return _CreateFont( FontAttribute.name.c_str(), FontAttribute.size, FontAttribute.color, FontAttribute.bold, FontAttribute.italic, FontAttribute.antialias );
+	return _CreateFont( FontAttribute.m_name.c_str(), FontAttribute.m_size, FontAttribute.m_color, FontAttribute.m_bold, FontAttribute.m_italic, FontAttribute.m_antialias );
 }
 
 static void _DestroyFont( XUI_IFont* pFont )

@@ -6,6 +6,7 @@
 #include "SLB\SLB.hpp"
 using namespace SLB;
 
+#define HANDLE_EDGE	2
 namespace UILib
 {
 	/*******************************************************
@@ -22,6 +23,7 @@ namespace UILib
 	, m_WindowPosition( 0, 0 )
 	, m_WindowSize( 100, 100 )
 	{
+		memset( m_Flags, 0, sizeof(m_Flags ) );
 		m_bTranslateParent = true;
 		m_fZ=0.1f;
 	}
@@ -68,41 +70,11 @@ namespace UILib
 
 	bool XUI_Wnd::onButtonDown(int button, const xgcPoint& pt, _uint32 sysKeys)
 	{
-		//_uint32 id=0;
-		//switch (button)
-		//{
-		//case 0:
-		//	id=EV_MOUSELBTDOWN;
-		//	SendUIMessage( EV_MOUSELBTDOWN, sysKeys, MAKELONG( pt.x, pt.y ) );
-		//	break;
-		//case 1:
-		//	id=EV_MOUSERBTDOWN;
-		//	SendUIMessage( EV_MOUSERBTDOWN, sysKeys, MAKELONG( pt.x, pt.y ) );
-		//	break;
-		//case 2:
-		//	id=EV_MOUSEMBTDOWN;
-		//	break;
-		//}
 		return false;
 	}
 
 	bool XUI_Wnd::onButtonUp(int button, const xgcPoint& pt, _uint32 sysKeys)
 	{
-		//_uint32 id=0;
-		//switch (button)
-		//{
-		//case 0:
-		//	id=EV_MOUSELBTUP;
-		//	SendUIMessage( EV_MOUSELBTUP, sysKeys, MAKELONG( pt.x, pt.y ) );
-		//	break;
-		//case 1:
-		//	id=EV_MOUSERBTUP;
-		//	SendUIMessage( EV_MOUSERBTUP, sysKeys, MAKELONG( pt.x, pt.y ) );
-		//	break;
-		//case 2:
-		//	id=EV_MOUSEMBTUP;
-		//	break;
-		//}
 		return false;
 	}
 
@@ -143,42 +115,34 @@ namespace UILib
 	//将一个坐标从控件坐标转换成屏幕坐标
 	void XUI_Wnd::ClientToScreen( xgcPoint& pt )const
 	{
-		AdjustPoint(pt, true);
-		if (m_pParent)
+		for( XUI_Wnd* pParent = m_pParent; pParent; pParent = pParent->GetParent() )
 		{
-			pt += m_pParent->GetWindowRect().TopLeft();
-			return m_pParent->ClientToScreen( pt );
+			pt += pParent->GetWindowPosition();
 		}
 	}
 
 	void XUI_Wnd::ClientToScreen( xgcRect& rc )const
 	{
-		AdjustWindow( rc, true);
-		if( m_pParent )
+		for( XUI_Wnd* pParent = m_pParent; pParent; pParent = pParent->GetParent() )
 		{
-			rc += m_pParent->GetWindowRect().TopLeft();
-			return m_pParent->ClientToScreen( rc );
+			rc += pParent->GetWindowPosition();
 		}
 	}
 
 	//将一个坐标从屏幕坐标转换成控件坐标
 	void XUI_Wnd::ScreenToClient( xgcPoint& pt )const
 	{
-		AdjustPoint( pt, false );
-		if( m_pParent )
+		for( XUI_Wnd* pParent = m_pParent; pParent; pParent = pParent->GetParent() )
 		{
-			m_pParent->ScreenToClient( pt );
-			pt -= m_pParent->GetWindowRect().TopLeft();
+			pt -= pParent->GetWindowPosition();
 		}
 	}
 
 	void XUI_Wnd::ScreenToClient( xgcRect& rc )const
 	{
-		AdjustWindow( rc, false );
-		if( m_pParent )
+		for( XUI_Wnd* pParent = m_pParent; pParent; pParent = pParent->GetParent() )
 		{
-			m_pParent->ScreenToClient( rc );
-			rc -= m_pParent->GetWindowRect().TopLeft();
+			rc -= pParent->GetWindowPosition();
 		}
 	}
 
@@ -246,16 +210,20 @@ namespace UILib
 	}
 
 	//寻找在某个坐标上的控件
-	XUI_Wnd* XUI_Wnd::FindChildInPoint(const xgcPoint &pt, _uint32 *deep )
+	XUI_Wnd* XUI_Wnd::FindChildInPoint(const xgcPoint &pt )
 	{
+		if( !IsVisible() )
+			return NULL;
+
 		xgcPoint adjust( pt );
 		AdjustPoint( adjust, true );
-		for ( int i=(int)m_pChildren.size()-1; i>=0; i-- )
+		for( size_t i = 0; i < m_pChildren.size(); ++i )
 		{
 			XUI_Wnd* pElement = m_pChildren[i];
-			if( pElement->m_bVisible && pElement->IsPointIn(adjust) )
-				return ((deep&&*deep--)||!deep)?pElement->FindChildInPoint( adjust - m_WindowPosition, deep ):pElement;
+			if( pElement->IsPointIn(adjust) )
+				return pElement->FindChildInPoint( adjust - m_WindowPosition );
 		}
+
 		return this;
 	}
 
@@ -274,14 +242,19 @@ namespace UILib
 		xgcRect rcWindow = GetWindowRect();
 		if( rcWindow.PtInRect( rc.TopLeft() ) && rcWindow.PtInRect( rc.BottomRight() ) )
 		{
-			for( int i=(int)m_pChildren.size()-1; i>=0; i-- )
+			for( size_t i = 0; i < m_pChildren.size(); ++i )
 			{
 				XUI_Wnd* pElement = m_pChildren[i];
-				if( pElement->FindRectIn( rcAdjust - m_WindowPosition, l ) )
+				xgcRect rcChildren = pElement->GetWindowRect();
+				if( rc.PtInRect( rcChildren.TopLeft() ) && rc.PtInRect( rcChildren.BottomRight() ) )
+				{
+					l.push_back( pElement );
+				}
+				else if( pElement->FindRectIn( rcAdjust - m_WindowPosition, l ) )
+				{
 					return true;
+				}
 			}
-			for( int i=(int)m_pChildren.size()-1; i>=0; i-- )
-				l.push_back( m_pChildren[i] );
 			return true;
 		}
 		return false;
@@ -425,7 +398,31 @@ namespace UILib
 		m_bFocused=bFocused;
 	}
 
-	BOOL XUI_Wnd::IsPointIn(const xgcPoint& pt)
+	void XUI_Wnd::SetFlags( _uint16 nFlag )
+	{
+		if( nFlag >= sizeof(m_Flags)*8 )
+			return;
+
+		m_Flags[nFlag/8] |= (1<<(nFlag%8));
+	}
+
+	void XUI_Wnd::ClrFlags( _uint16 nFlag )
+	{
+		if( nFlag >= sizeof(m_Flags)*8 )
+			return;
+
+		m_Flags[nFlag/8] &= ~(1<<(nFlag%8));
+	}
+
+	bool XUI_Wnd::GetFlags( _uint16 nFlag )const
+	{
+		if( nFlag >= sizeof(m_Flags)*8 )
+			return false;
+
+		return (m_Flags[nFlag/8] & (1<<(nFlag%8))) != 0;
+	}
+
+	bool XUI_Wnd::IsPointIn(const xgcPoint& pt)
 	{
 		return 
 			pt.x >= m_WindowPosition.x && 
@@ -436,36 +433,35 @@ namespace UILib
 
 	void XUI_Wnd::Render(const xgcRect& clipper)
 	{
-		if (!m_bVisible)		return;
+		if (!m_bVisible)
+			return;
 
-		//计算可见区域
-		xgcRect clpSelf( GetWindowRect() + clipper.TopLeft() );
-
-		if( clpSelf.IntersectRect( clpSelf, clipper ) )
+		xgcRect rcWindow = GetWindowRect();
+		ClientToScreen( rcWindow );
+		XUI_SetClipping( rcWindow.left, rcWindow.top, rcWindow.Width(), rcWindow.Height() );
+		//绘制自己
+		if( m_bOwnerDraw )
 		{
-			//绘制自己
-			if( m_bVisible )
+			DRAWSTRUCT ds;
+			ds.rcClient		= GetWindowRect();
+			ds.rcClipper	= clipper;
+			ds.pCtrl		= this;
+			SendUIMessage( UIM_OWNERDRAW, GetID(), (long_ptr)&ds );
+		}
+		else
+		{
+			RenderSelf( clipper.TopLeft() );
+			if( GetFlags(FLAGS_EDIT) )
 			{
-				if( m_bOwnerDraw )
-				{
-					DRAWSTRUCT ds;
-					ds.rcClient		= GetWindowRect();
-					ds.rcClipper	= clpSelf;
-					ds.pCtrl		= this;
-					SendUIMessage( UI_OWNERDRAW, GetID(), (long_ptr)&ds );
-				}
-				else
-				{
-					XUI_SetClipping( clpSelf.left, clpSelf.top, clpSelf.Width(), clpSelf.Height() );
-					RenderSelf( clipper.TopLeft() );
-				}
+				XUI_SetClipping( rcWindow.left-HANDLE_EDGE, rcWindow.top-HANDLE_EDGE, rcWindow.Width()+HANDLE_EDGE*2, rcWindow.Height()+HANDLE_EDGE*2 );
+				RenderEdit( clipper.TopLeft() );
 			}
+		}
 
-			//绘制子控件
-			for (_uint32 i=0; i<m_pChildren.size(); i++)
-			{
-				m_pChildren[i]->Render(clpSelf);
-			}
+		//绘制子控件
+		for (_uint32 i=0; i<m_pChildren.size(); i++)
+		{
+			m_pChildren[i]->Render(rcWindow);
 		}
 	}
 
@@ -499,16 +495,40 @@ namespace UILib
 		}
 	}
 
+	void XUI_Wnd::RenderEdit( const xgcPoint &adjust )
+	{
+		xgcRect rc = GetWindowRect() + adjust;
+
+		XUI_DrawRect( rc, XUI_ARGB(0xff,0,0,0), XUI_ARGB(0x40,80,80,80) );
+
+		xgcRect rch( -HANDLE_EDGE, -HANDLE_EDGE, HANDLE_EDGE, HANDLE_EDGE );
+		rch.OffsetRect( rc.TopLeft() );
+		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+
+		rch.OffsetRect( rc.Width()/2, 0 );
+		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+
+		rch.OffsetRect( rc.Width()/2, 0 );
+		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+
+		rch.OffsetRect( 0, rc.Height()/2 );
+		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+
+		rch.OffsetRect( 0, rc.Height()/2 );
+		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+
+		rch.OffsetRect( -rc.Width()/2, 0 );
+		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+
+		rch.OffsetRect( -rc.Width()/2, 0 );
+		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+
+		rch.OffsetRect( 0, -rc.Height()/2 );
+		XUI_DrawRect( rch, 0, XUI_ARGB(0x60,0xff,0xff,0xff) );
+	}
+
 	long_ptr XUI_Wnd::SendUIMessage( _uint32 nMsg, uint_ptr wParam, long_ptr lParam )
 	{
-		//if( m_pChildFocusedOn )
-		//{
-		//	return m_pChildFocusedOn->SendUIMessage( nMsg, wParam, lParam );
-		//}
-		//else 
-		//{
-		//	return OnWndMsg( nMsg, wParam, lParam );
-		//}
 		return OnWndMsg( nMsg, wParam, lParam );
 	}
 

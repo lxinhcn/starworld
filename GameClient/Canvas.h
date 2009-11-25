@@ -62,6 +62,7 @@ struct CClientMouse	:	public XUI_IMouse
 	virtual _int32	GetMouseWheel();
 	virtual void	RenderMouse();
 	virtual void	SetMouse( _uint16 id );
+	virtual bool	GetKeyState( int key )const;
 	virtual bool	IsPressedLButton()const;
 	virtual bool	IsReleaseLButton()const;
 	virtual bool	IsPressedRButton()const;
