@@ -7,12 +7,6 @@
 #define NC_COMMAND			0
 #define NC_CREATE			100
 
-#define UI_TIMER			200
-#define UI_SWITCHENTER		201
-#define UI_SWITCHLEAVE		202
-#define UI_CREATE			203
-#define UI_OWNERDRAW		204
-
 // ЪѓБъ
 #define EV_MOUSEBASE		1000
 #define EV_MOUSEMOVE		EV_MOUSEBASE+1
