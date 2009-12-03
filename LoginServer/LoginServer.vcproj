@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(SolutionDir)xgcBase\Database"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)xgcBase\Database&quot;;&quot;$(SolutionDir)xgcBase\Netbase&quot;;&quot;$(SolutionDir)xgcBase\Common&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Database.lib"
+				AdditionalDependencies="Database.lib NetBase.lib Common.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(SolutionDir)Lib\$(ConfigurationName)"
 				GenerateDebugInformation="true"
@@ -117,7 +117,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="$(SolutionDir)xgcBase\Database"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)xgcBase\Database&quot;;&quot;$(SolutionDir)xgcBase\Netbase&quot;;&quot;$(SolutionDir)xgcBase\Common&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Database.lib"
+				AdditionalDependencies="Database.lib NetBase.lib Common.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(SolutionDir)Lib\$(ConfigurationName)"
 				GenerateDebugInformation="true"
@@ -177,6 +177,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\DispatchDatabase.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\LoginServer.cpp"
 				>
 			</File>
@@ -206,6 +210,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\DispatchDatabase.h"
+				>
+			</File>
 			<File
 				RelativePath=".\stdafx.h"
 				>
