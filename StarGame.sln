@@ -52,6 +52,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoginServer", "LoginServer\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetBase", "xgcBase\NetBase\NetBase.vcproj", "{F2303FEE-E0F3-4856-A054-8329189231AC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MessageManager", "MessageManager\MessageManager.vcproj", "{EF8DD9D1-83CB-44CC-B964-5861F0E489A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -106,6 +108,10 @@ Global
 		{F2303FEE-E0F3-4856-A054-8329189231AC}.Debug|Win32.Build.0 = Debug|Win32
 		{F2303FEE-E0F3-4856-A054-8329189231AC}.Release|Win32.ActiveCfg = Release|Win32
 		{F2303FEE-E0F3-4856-A054-8329189231AC}.Release|Win32.Build.0 = Release|Win32
+		{EF8DD9D1-83CB-44CC-B964-5861F0E489A2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EF8DD9D1-83CB-44CC-B964-5861F0E489A2}.Debug|Win32.Build.0 = Debug|Win32
+		{EF8DD9D1-83CB-44CC-B964-5861F0E489A2}.Release|Win32.ActiveCfg = Release|Win32
+		{EF8DD9D1-83CB-44CC-B964-5861F0E489A2}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -97,7 +97,14 @@ long_ptr g_server_h;
 VOID Start()
 {
 	InitNetwork();
+	//--------------------------------------------------------//
+	//	初始化数据库
+	//--------------------------------------------------------//
+	db::initial( db::mssql );
+
+	// 初始化网络
 	g_server_h = StartServer( "0.0.0.0", 19944, &g_msg_queue_ptr, -1 );
+
 }
 
 BOOL WINAPI Stop( DWORD dwCtrlType )
@@ -110,6 +117,8 @@ BOOL WINAPI Stop( DWORD dwCtrlType )
 	CloseServer( g_server_h );
 	g_msg_queue_ptr->Release();
 	FiniNetwork();
+
+	db::final();
 	SetEvent( g_hExit );
 	return TRUE;
 }
