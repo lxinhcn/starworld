@@ -1,20 +1,20 @@
 #include "StdAfx.h"
-#include "DispatchDatabase.h"
+#include "DatabaseService.h"
 
 #define REGISTER_USER 0
 
-BEGIN_DISPATCHER_TABLE( CDispatcherDatabase, database )
+BEGIN_DISPATCHER_TABLE( CDatabaseService, database )
 	DECLARE_DISPATCH( REGISTER_USER, registerUser )
-END_DISPATCHER_TABLE( CDispatcherDatabase, database )
-CDispatcherDatabase::CDispatcherDatabase(void)
+END_DISPATCHER_TABLE( CDatabaseService, database )
+CDatabaseService::CDatabaseService(void)
 {
 }
 
-CDispatcherDatabase::~CDispatcherDatabase(void)
+CDatabaseService::~CDatabaseService(void)
 {
 }
 
-size_t CDispatcherDatabase::Process( dbMsgHeader &header )
+size_t CDatabaseService::Process( dbMsgHeader &header )
 {
 	func pFunc = DISPATCHER_GET( database, header.mid );
 	if( pFunc )
@@ -30,7 +30,7 @@ size_t CDispatcherDatabase::Process( dbMsgHeader &header )
 //
 //	purpose:	×¢²áÒ»¸öÕËºÅ
 //--------------------------------------------------------//
-size_t CDispatcherDatabase::registerUser( dbMsgHeader &header )
+size_t CDatabaseService::registerUser( dbMsgHeader &header )
 {
 	return -1;
 }

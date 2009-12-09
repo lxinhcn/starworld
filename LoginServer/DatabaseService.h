@@ -1,20 +1,14 @@
 #pragma once
-struct dbMsgHeader
-{
-	size_t	size;	// 消息长度
-	size_t	uid;	// 用户id
-	size_t	mid;	// 消息号
-};
 
-class CDispatcherDatabase;
-typedef message_dispatcher< CDispatcherDatabase, size_t (CDispatcherDatabase::*)( dbMsgHeader &header ), short > DispatcherBase;
+class CDatabaseService;
+typedef message_dispatcher< CDatabaseService, size_t (CDatabaseService::*)( dbMsgHeader &header ), short > DispatcherBase;
 
-class CDispatcherDatabase	:	public DispatcherBase
+class CDatabaseService	:	public DispatcherBase
 {
 	IMPLEMENT_DISPATCHER_TABLE( database );
 public:
-	CDispatcherDatabase(void);
-	~CDispatcherDatabase(void);
+	CDatabaseService(void);
+	~CDatabaseService(void);
 
 	size_t Process( dbMsgHeader &header );
 protected:
