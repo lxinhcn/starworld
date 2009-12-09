@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)xgcBase\Database&quot;;&quot;$(SolutionDir)xgcBase\Netbase&quot;;&quot;$(SolutionDir)xgcBase\Common&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)xgcBase\Database&quot;;&quot;$(SolutionDir)xgcBase\Netbase&quot;;&quot;$(SolutionDir)xgcBase\Common&quot;;&quot;$(SolutionDir)Depend\Loki-0.1.6\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,9 +61,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Database.lib NetBase.lib Common.lib"
+				AdditionalDependencies="Database.lib NetBase.lib Common.lib Loki_D.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(SolutionDir)Lib\$(ConfigurationName)"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;&quot;$(SolutionDir)Depend\Loki-0.1.6\Lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -117,7 +117,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)xgcBase\Database&quot;;&quot;$(SolutionDir)xgcBase\Netbase&quot;;&quot;$(SolutionDir)xgcBase\Common&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)xgcBase\Database&quot;;&quot;$(SolutionDir)xgcBase\Netbase&quot;;&quot;$(SolutionDir)xgcBase\Common&quot;;&quot;$(SolutionDir)Depend\Loki-0.1.6\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -136,9 +136,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Database.lib NetBase.lib Common.lib"
+				AdditionalDependencies="Database.lib NetBase.lib Common.lib Loki.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(SolutionDir)Lib\$(ConfigurationName)"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;&quot;$(SolutionDir)Depend\Loki-0.1.6\Lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -185,6 +185,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\NetworkService.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -212,6 +216,10 @@
 			>
 			<File
 				RelativePath=".\DispatchDatabase.h"
+				>
+			</File>
+			<File
+				RelativePath=".\NetworkService.h"
 				>
 			</File>
 			<File

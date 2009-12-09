@@ -3,17 +3,9 @@
 
 #define REGISTER_USER 0
 
-struct CDispatcherDatabase::message_table
-{
-	message_table()
-	{
-		CDispatcherDatabase::Impl.regist( REGISTER_USER, &CDispatcherDatabase::registerUser );
-	}
-};
-
-DispatcherBase::functionImpl DispatcherBase::Impl;
-CDispatcherDatabase::message_table CDispatcherDatabase::message_initialize;
-
+BEGIN_DISPATCHER_TABLE( CDispatcherDatabase, database )
+	DECLARE_DISPATCH( REGISTER_USER, registerUser )
+END_DISPATCHER_TABLE( CDispatcherDatabase, database )
 CDispatcherDatabase::CDispatcherDatabase(void)
 {
 }
@@ -22,11 +14,11 @@ CDispatcherDatabase::~CDispatcherDatabase(void)
 {
 }
 
-size_t CDispatcherDatabase::ProcessDBRequest( dbMsgHeader &header )
+size_t CDispatcherDatabase::Process( dbMsgHeader &header )
 {
-	functionImpl::proc func = Impl.get( header.mid );
-	if( func )
-		return (this->*func)( header );
+	func pFunc = DISPATCHER_GET( database, header.mid );
+	if( pFunc )
+		return (this->*pFunc)( header );
 
 	return -1;
 }

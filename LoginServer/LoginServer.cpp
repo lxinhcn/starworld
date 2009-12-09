@@ -6,9 +6,73 @@
 #include <stdlib.h>
 #include <process.h>
 #include "Database.h"
+#include "NetworkService.h"
+
 using namespace XGC;
-#include <streambuf>
-unsigned int __stdcall DatabaseThread( void* param );
+
+class CLoginServer
+{
+	friend struct Loki::CreateStatic< CLoginServer >;
+private:
+	CLoginServer();
+	~CLoginServer();
+
+public:
+	//--------------------------------------------------------//
+	//	created:	3:12:2009   13:36
+	//	filename: 	LoginServer
+	//	author:		Albert.xu
+	//
+	//	purpose:	开始应用程序
+	//--------------------------------------------------------//
+	int Start();
+
+	//--------------------------------------------------------//
+	//	created:	8:12:2009   14:59
+	//	filename: 	LoginServer
+	//	author:		Albert.xu
+	//
+	//	purpose:	停止服务器
+	//--------------------------------------------------------//
+	void Stop();
+
+protected:
+	//--------------------------------------------------------//
+	//	created:	8:12:2009   15:16
+	//	filename: 	LoginServer
+	//	author:		Albert.xu
+	//
+	//	purpose:	设置日志窗口
+	//--------------------------------------------------------//
+	HANDLE SetupLoggerWindow( int x, int y );
+
+	//--------------------------------------------------------//
+	//	created:	8:12:2009   15:20
+	//	filename: 	LoginServer
+	//	author:		Albert.xu
+	//
+	//	purpose:	开始服务
+	//--------------------------------------------------------//
+	int Run( HANDLE hCommand );
+
+private:
+	HANDLE m_hExit;
+	bool m_bWork;
+};
+typedef Loki::SingletonHolder< CLoginServer, Loki::CreateStatic > LoginServer;
+
+CLoginServer::CLoginServer()
+: m_hExit( CreateEvent( NULL, TRUE, FALSE, NULL ) )
+, m_bWork( true )
+{
+
+}
+
+CLoginServer::~CLoginServer()
+{
+	CloseHandle( m_hExit );
+}
+
 //--------------------------------------------------------//
 //	created:	3:12:2009   13:36
 //	filename: 	LoginServer
@@ -16,27 +80,39 @@ unsigned int __stdcall DatabaseThread( void* param );
 //
 //	purpose:	开始应用程序
 //--------------------------------------------------------//
-VOID Start();
+int CLoginServer::Start()
+{
+	InitNetwork();
+	//--------------------------------------------------------//
+	//	初始化数据库
+	//--------------------------------------------------------//
+	db::initial( db::mssql );
+
+	return Run( SetupLoggerWindow( 120, 40 ) );
+}
+
+void CLoginServer::Stop()
+{
+	CLoggerAdapter *pAdapter = CLogger::GetInstance( LOG )->RemoveAdapter( _T("ConsoleLog") );
+	delete pAdapter;
+
+	FiniNetwork();
+
+	db::final();
+	SetEvent( m_hExit );
+}
 
 //--------------------------------------------------------//
-//	created:	3:12:2009   13:35
+//	created:	8:12:2009   15:16
 //	filename: 	LoginServer
 //	author:		Albert.xu
 //
-//	purpose:	退出应用程序
+//	purpose:	重设窗口
 //--------------------------------------------------------//
-BOOL WINAPI Stop( DWORD dwCtrlType );
-
-HANDLE g_hExit = INVALID_HANDLE_VALUE;
-BOOL g_bWork = TRUE;
-
-int _tmain(int argc, _TCHAR* argv[])
+HANDLE CLoginServer::SetupLoggerWindow( int x, int y )
 {
-	setlocale( LC_ALL, "chs" );
-	SetConsoleCtrlHandler( Stop, TRUE );
-
-	COORD c = { 120, 160 };
-	SMALL_RECT rc = { 0, 0, 119, 39 };
+	COORD c = { x, y*4 };
+	SMALL_RECT rc = { 0, 0, x-1, y-1 };
 
 	SetConsoleScreenBufferSize( GetStdHandle( STD_OUTPUT_HANDLE ), c );
 	SetConsoleWindowInfo( GetStdHandle( STD_OUTPUT_HANDLE ), TRUE, & rc );
@@ -51,12 +127,16 @@ int _tmain(int argc, _TCHAR* argv[])
 	CConsoleAdapter *pAdapter = new CConsoleAdapter( hCommand, _T("ConsoleLog") );
 	CLogger::GetInstance( LOG )->AddAdapter( pAdapter, true );
 
-	g_hExit = CreateEvent( NULL, TRUE, FALSE, NULL );
-	
-	Start();
+	return hCommand;
+}
+
+int CLoginServer::Run( HANDLE hCommand )
+{
 	_tchar szCommand[1024];
 	DWORD dwRead = 0;
-	while( g_bWork )
+	CNetworkService network( 19944 );
+
+	while( m_bWork )
 	{
 		if( _kbhit() )
 		{
@@ -64,7 +144,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			switch( ch )
 			{
 			case 0x1b:
-				Stop(0);
+				Stop();
 				break;
 			case 0x0d:
 				SetConsoleActiveScreenBuffer( GetStdHandle(STD_OUTPUT_HANDLE) );
@@ -82,47 +162,41 @@ int _tmain(int argc, _TCHAR* argv[])
 			Sleep(1);
 		}
 	}
-	WaitForSingleObject( g_hExit, INFINITE );
+	WaitForSingleObject( m_hExit, INFINITE );
+	return 0;
 }
 
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
 //--------------------------------------------------------//
-//	created:	3:12:2009   13:36
+//	created:	3:12:2009   13:35
 //	filename: 	LoginServer
 //	author:		Albert.xu
 //
-//	purpose:	开始应用程序
+//	purpose:	退出应用程序
 //--------------------------------------------------------//
-IMessageQueue *g_msg_queue_ptr = NULL;
-long_ptr g_server_h;
-VOID Start()
-{
-	InitNetwork();
-	//--------------------------------------------------------//
-	//	初始化数据库
-	//--------------------------------------------------------//
-	db::initial( db::mssql );
-
-	// 初始化网络
-	g_server_h = StartServer( "0.0.0.0", 19944, &g_msg_queue_ptr, -1 );
-
-}
-
 BOOL WINAPI Stop( DWORD dwCtrlType )
 {
-	g_bWork = FALSE;
-
-	CLoggerAdapter *pAdapter = CLogger::GetInstance( LOG )->RemoveAdapter( _T("ConsoleLog") );
-	delete pAdapter;
-
-	CloseServer( g_server_h );
-	g_msg_queue_ptr->Release();
-	FiniNetwork();
-
-	db::final();
-	SetEvent( g_hExit );
+	LoginServer::Instance().Stop();
 	return TRUE;
 }
 
+//--------------------------------------------------------//
+//	created:	8:12:2009   15:24
+//	filename: 	LoginServer
+//	author:		Albert.xu
+//
+//	purpose:	程序入口
+//--------------------------------------------------------//
+int _tmain(int argc, _TCHAR* argv[])
+{
+	setlocale( LC_ALL, "chs" );
+	SetConsoleCtrlHandler( Stop, TRUE );
+
+	CreateNetwork( _T("ace") );
+	return LoginServer::Instance().Start();
+	DestroyNetwork();
+}
 
 void testdb()
 {

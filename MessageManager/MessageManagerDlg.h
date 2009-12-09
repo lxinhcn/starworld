@@ -10,14 +10,44 @@
 // CMessageManagerDlg 对话框
 struct Property
 {
-	enum type { I8, I16, I32, I64, U8, U16, U32, U64, FLT, LFLT, ASTR, USTR, SUB_DEF, CONTAINER };
+	enum type { I8, I16, I32, I64, U8, U16, U32, U64, FLT, LFLT, ASTR, USTR, TSTR, BUF, SUB_DEF, ARRAY, CONTAINER, MESSAGE, NAMESPACE };
+	static LPCTSTR TypeName[];
 	type	m_type;				// 属性类型
 	CString m_name;				// 属性名
 };
 
+struct PropertyNamespace	:	public Property
+{
+	PropertyNamespace()
+	{
+		m_type = Property::NAMESPACE;
+	}
+};
+
 struct PropertyContainer	:	public Property
 {
-	CString m_object_name;	// 容纳对象名
+	PropertyContainer()
+		: m_object_name()
+		, m_array_count(0)
+		, m_container_type(Property::U8)
+	{
+		m_type = ( Property::CONTAINER );
+	}
+
+	CString m_object_name;		// 容纳对象名
+	size_t	m_array_count;		// 数组大小
+	type	m_container_type;	// 包容类型
+};
+
+struct PropertyMessage	:	public Property
+{
+	PropertyMessage()
+	{
+		m_type = Property::MESSAGE;
+	}
+
+	unsigned char msgtype;		// 消息类型
+	unsigned char msgcode;		// 消息代码
 };
 
 class CMessageManagerDlg : public CDialog
@@ -48,6 +78,12 @@ public:
 	CImageList		m_ImageList;
 	CTreeCtrl		m_MessageTreeCtrl;
 	CPropertyList	m_PropertyListCtrl;
+	CEdit			m_CommandEditCtrl;
+
+	CMFCPropertyGridCtrl	m_PropertyGridCtrl;
+	void ExecuteCommand( CString strCmd );
+	void AdjustLayout();
+
 	afx_msg void OnTreeAppend();
 	afx_msg void OnTreeDelete();
 	afx_msg void OnNMRClickMessageTree(NMHDR *pNMHDR, LRESULT *pResult);
@@ -55,4 +91,9 @@ public:
 	afx_msg void OnTvnBeginlabeleditMessageTree(NMHDR *pNMHDR, LRESULT *pResult);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnAppendProperty( UINT nID );
+	afx_msg void OnTvnGetdispinfoMessageTree(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnTvnDeleteitemMessageTree(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnTvnSelchangedMessageTree(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };

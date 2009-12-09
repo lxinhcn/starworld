@@ -2,10 +2,10 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="MessageManager"
-	ProjectGUID="{EF8DD9D1-83CB-44CC-B964-5861F0E489A2}"
-	RootNamespace="MessageManager"
-	Keyword="MFCProj"
+	Name="MessageCreator"
+	ProjectGUID="{9C388BF4-F5C5-4A26-9BAB-650EDC454E87}"
+	RootNamespace="MessageCreator"
+	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
@@ -21,7 +21,6 @@
 			OutputDirectory="$(SolutionDir)Tools\$(ConfigurationName)"
 			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
-			UseOfMFC="2"
 			CharacterSet="1"
 			>
 			<Tool
@@ -38,14 +37,12 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="false"
-				ValidateParameters="true"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG"
+				AdditionalIncludeDirectories="..\Depend\hge181\include;&quot;..\Depend\Loki-0.1.6\Include&quot;;..\GameSDK\GameCore\Include;..\GameSDK\GameWorld\Include;..\GameSDK\SLB\Include;..\GameSDK\GameUILib\;..\xgcBase\Common;&quot;..\Depend\Visual Leak Detector\include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -58,9 +55,6 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="2052"
-				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -68,8 +62,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;..\Depend\DX81SDK\Lib;&quot;..\Depend\hge181\Lib\$(ConfigurationName)&quot;;&quot;..\Depend\loki-0.1.6\Lib&quot;;&quot;..\GameSDK\lua-5.1.4\src&quot;"
 				GenerateDebugInformation="true"
-				SubSystem="2"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -99,7 +94,6 @@
 			OutputDirectory="$(SolutionDir)Tools\$(ConfigurationName)"
 			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
-			UseOfMFC="2"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
@@ -117,16 +111,13 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				ValidateParameters="true"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG"
-				MinimalRebuild="false"
+				AdditionalIncludeDirectories="..\Depend\hge181\include;&quot;..\Depend\Loki-0.1.6\Include&quot;;..\GameSDK\GameCore\Include;..\GameSDK\GameWorld\Include;..\GameSDK\SLB\Include;..\GameSDK\GameUILib\;..\xgcBase\Common;&quot;..\Depend\Visual Leak Detector\include&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
@@ -138,9 +129,6 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="2052"
-				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -148,8 +136,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;..\Depend\DX81SDK\Lib;&quot;..\Depend\hge181\Lib\$(ConfigurationName)&quot;;&quot;..\Depend\loki-0.1.6\Lib&quot;;&quot;..\GameSDK\lua-5.1.4\src&quot;"
 				GenerateDebugInformation="true"
-				SubSystem="2"
+				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				TargetMachine="1"
@@ -186,23 +175,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\ChkComboBox.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\FoldersDialog.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MessageManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MessageManagerDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PropertyList.cpp"
+				RelativePath=".\MessageCreator.cpp"
 				>
 			</File>
 			<File
@@ -232,34 +205,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\ChkComboBox.h"
-				>
-			</File>
-			<File
-				RelativePath=".\FoldersDialog.h"
-				>
-			</File>
-			<File
-				RelativePath=".\MemDC.h"
-				>
-			</File>
-			<File
-				RelativePath=".\MessageManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\MessageManagerDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PropertyList.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Resource.h"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.h"
 				>
 			</File>
@@ -273,30 +218,6 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
-			<File
-				RelativePath=".\res\bitmap1.bmp"
-				>
-			</File>
-			<File
-				RelativePath=".\checkboxes.bmp"
-				>
-			</File>
-			<File
-				RelativePath=".\res\MessageManager.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\MessageManager.rc"
-				>
-			</File>
-			<File
-				RelativePath=".\res\MessageManager.rc2"
-				>
-			</File>
-			<File
-				RelativePath=".\res\treeimage.bmp"
-				>
-			</File>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
@@ -304,9 +225,5 @@
 		</File>
 	</Files>
 	<Globals>
-		<Global
-			Name="RESOURCE_FILE"
-			Value="MessageManager.rc"
-		/>
 	</Globals>
 </VisualStudioProject>

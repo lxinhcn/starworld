@@ -370,8 +370,8 @@ void CPropertyList::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 		
 		//write the property name
 		dc.DrawText(pItem->m_catalog,
-			CRect(rectPart1.left+3,rectPart1.top+3,rectPart1.right-3,rectPart1.bottom+3),
-			DT_LEFT | DT_SINGLELINE);
+			CRect(rectPart1.left+3,rectPart1.top+1,rectPart1.right-3,rectPart1.bottom-1),
+			DT_LEFT | DT_SINGLELINE | DT_VCENTER );
 	}
 	else
 	{
@@ -380,8 +380,8 @@ void CPropertyList::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 	
 		//write the property name
 		dc.DrawText(pItem->m_propName,
-			CRect(rectPart1.left+3,rectPart1.top+3,rectPart1.right-3,rectPart1.bottom+3),
-			DT_LEFT | DT_SINGLELINE);
+			CRect(rectPart1.left+3,rectPart1.top+1,rectPart1.right-3,rectPart1.bottom-1),
+			DT_LEFT | DT_SINGLELINE | DT_VCENTER );
 
 		dc.DrawEdge(rectPart1,EDGE_SUNKEN,BF_BOTTOMRIGHT);
 	}
@@ -436,8 +436,8 @@ void CPropertyList::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 	else if(PIT_CHECK != pItem->m_nItemType)
 	{
 		dc.DrawText(pItem->m_curValue,
-			CRect(rectPart3.left+3, rectPart3.top+3, rectPart3.right+3, rectPart3.bottom+3),
-			DT_LEFT | DT_SINGLELINE);
+			CRect(rectPart3.left+3, rectPart3.top+1, rectPart3.right+3, rectPart3.bottom-3),
+			DT_LEFT | DT_SINGLELINE | DT_VCENTER);
 	}
 	//
 	//the end of drawing this item
