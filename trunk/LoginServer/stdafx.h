@@ -17,5 +17,6 @@
 #include "Netbase.h"
 #include "Database.h"
 
+#include "dbMessage.h"
 // TODO: 在此处引用程序需要的其他头文件
 #define LOG _T("LoginServerLog")
