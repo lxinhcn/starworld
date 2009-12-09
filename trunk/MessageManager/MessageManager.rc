@@ -89,13 +89,14 @@ BEGIN
 END
 
 IDD_MESSAGEMANAGER_DIALOG DIALOGEX 0, 0, 320, 200
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "MessageManager"
-FONT 9, "MS Shell Dlg", 0, 0, 0x1
+FONT 10, "ËÎÌå", 400, 0, 0x86
 BEGIN
     CONTROL         "",IDC_MESSAGE_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | TVS_EDITLABELS | TVS_INFOTIP | WS_BORDER | WS_HSCROLL | WS_TABSTOP,7,7,122,186
-    LISTBOX         IDC_PROPERTY_LIST,133,7,180,118,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_PROPERTY_LIST,133,7,180,118,LBS_SORT | LBS_OWNERDRAWFIXED | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT_COMMAND,133,129,180,14,ES_AUTOHSCROLL
 END
 
 
@@ -189,11 +190,15 @@ BEGIN
             MENUITEM "_uint64",                     ID_UINT64
             MENUITEM "float",                       ID_FLOAT
             MENUITEM "double",                      ID_DOUBLE
-            MENUITEM "string",                      ID_STRING
+            MENUITEM "astring",                     ID_ASTRING
             MENUITEM "wstring",                     ID_WSTRING
+            MENUITEM "tstring",                     ID_TSTRING
             MENUITEM "buffer",                      ID_BUFFER
-            MENUITEM "<struct>",                    ID_STRUCT
+            MENUITEM "{struct}",                    ID_STRUCT
+            MENUITEM "[array]",                     ID_ARRAY
+            MENUITEM "<container>",                 ID_CONTAINER
         END
+        MENUITEM "ÃüÃû¿Õ¼ä\t(&N)",                  ID_NAMESPACE
     END
 END
 

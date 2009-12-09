@@ -6,25 +6,17 @@ struct dbMsgHeader
 	size_t	mid;	// 消息号
 };
 
-template< class handler >
-struct message_dispatcher_db
-{
-	virtual size_t ProcessDBRequest( dbMsgHeader &header ) = 0;
-	typedef size_t ( handler::* proc )( dbMsgHeader &header );
-};
-
 class CDispatcherDatabase;
-typedef message_dispatcher< CDispatcherDatabase, short, message_dispatcher_db< CDispatcherDatabase > > DispatcherBase;
+typedef message_dispatcher< CDispatcherDatabase, size_t (CDispatcherDatabase::*)( dbMsgHeader &header ), short > DispatcherBase;
 
 class CDispatcherDatabase	:	public DispatcherBase
 {
+	IMPLEMENT_DISPATCHER_TABLE( database );
 public:
 	CDispatcherDatabase(void);
 	~CDispatcherDatabase(void);
 
-protected:
-	virtual size_t ProcessDBRequest( dbMsgHeader &header );
-
+	size_t Process( dbMsgHeader &header );
 protected:
 	//--------------------------------------------------------//
 	//	created:	3:12:2009   13:11
@@ -34,8 +26,4 @@ protected:
 	//	purpose:	注册一个账号
 	//--------------------------------------------------------//
 	size_t registerUser( dbMsgHeader &header );
-
-private:
-	struct message_table;
-	static message_table	message_initialize;
 };
