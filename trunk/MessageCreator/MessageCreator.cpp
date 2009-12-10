@@ -2,11 +2,14 @@
 //
 
 #include "stdafx.h"
-
+#include <fstream>
 void Analyse( _lpctstr filename );
-
+using namespace std;
 int _tmain(int argc, _TCHAR* argv[])
 {
+	fstream file;
+	file.open( "1.txt" );
+	file.seekp( 1024, iostream::end );
 	for( int i = 1; i < argc; ++i )
 	{
 		Analyse( argv[argc] );
