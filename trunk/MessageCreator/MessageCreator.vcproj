@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\Depend\hge181\include;&quot;..\Depend\Loki-0.1.6\Include&quot;;..\GameSDK\GameCore\Include;..\GameSDK\GameWorld\Include;..\GameSDK\SLB\Include;..\GameSDK\GameUILib\;..\xgcBase\Common;&quot;..\Depend\Visual Leak Detector\include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -118,7 +118,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="..\Depend\hge181\include;&quot;..\Depend\Loki-0.1.6\Include&quot;;..\GameSDK\GameCore\Include;..\GameSDK\GameWorld\Include;..\GameSDK\SLB\Include;..\GameSDK\GameUILib\;..\xgcBase\Common;&quot;..\Depend\Visual Leak Detector\include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
@@ -181,6 +181,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\AnalyseFile.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MessageCreator.cpp"
 				>
 			</File>
@@ -212,6 +216,10 @@
 			>
 			<File
 				RelativePath=".\Analyse.h"
+				>
+			</File>
+			<File
+				RelativePath=".\AnalyseFile.h"
 				>
 			</File>
 			<File
