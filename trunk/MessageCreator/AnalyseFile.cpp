@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "AnalyseFile.h"
 
 struct command
@@ -28,42 +28,106 @@ static command typelist[] =
 
 static command commands[] = 
 {
-	//{ "#define", makedefine },
+	{ "#define",	makedefine },
+	{ "struct",		makenode },
 	//{ "typedef", maketype },
 	{ "message", makemessage },
 	//{ "enum", makeenum },
 };
 
-int analysefile( root *proot, _lpctstr filename )
+void destroyall( root *proot )
 {
+	list< node * >::iterator inode = proot->snode.begin();
+	while( inode != proot->snode.end() )
+	{
+		destroynode( *inode );
+		++inode;
+	}
+	proot->snode.clear();
+
+	list< message * >::iterator imessage = proot->mnode.begin();
+	while( imessage != proot->mnode.end() )
+	{
+		destroymessage( *imessage );
+		++imessage;
+	}
+	proot->mnode.clear();
+}
+
+void destroymessage( message *pmessage )
+{
+	destroynode( &pmessage->sub );
+}
+
+void destroynode( node *pnode )
+{
+	list< param * >::iterator iparam = pnode->params.begin();
+	while( iparam != pnode->params.end() )
+	{
+		destroyparam( *iparam );
+		++iparam;
+	}
+	pnode->params.clear();
+
+	list< node * >::iterator inode = pnode->sub.begin();
+	while( inode != pnode->sub.end() )
+	{
+		destroynode( *inode );
+		++inode;
+	}
+	pnode->sub.clear();
+	delete pnode;
+}
+
+void destroyparam( param *pparam )
+{
+	delete pparam;
+}
+
+int analysefile( root *proot, _lpcstr filename )
+{
+	int ret = 0;
 	FILE *fp;
-	_tfopen_s( &fp, filename, _T("r") );
+	fopen_s( &fp, filename, "r" );
 	if( fp )
 	{
 		struct _stat teststat;
-		_tstat( filename, &teststat );
+		_tstat( XA2T(filename), &teststat );
 		size_t size = proot->size = teststat.st_size;
 		char *buf = proot->buf = (char*)malloc( size );
 
 		if( fread( buf, size, 1, fp ) != 1 && !feof(fp) )
 			return -1;
 
+		string fname = filename;
+		proot->filename = fname.substr( 0, fname.rfind( '.' ) );
+		proot->files.push_back( proot->filename );
 		while( size )
 		{
 			int idx = findkeywork( &buf, &size, commands, _countof(commands) );
 			if( idx != -1 )
 			{
 				size_t read = commands[idx].pcommand( proot, buf, size, NULL );
-				size -= read;
-				buf += read;
+				if( read == -1 )
+				{
+					++ret;
+					++buf;
+					--size;
+				}
+				else
+				{
+					size -= read;
+					buf += read;
+				}
 			}
 			else
 			{
 				break;
 			}
 		}
+		proot->filename.clear();
 	}
-	return 0;
+	return ret;
 }
 
 //--------------------------------------------------------//
@@ -102,7 +166,7 @@ char* matchclose( char *buf, size_t size, char lch = '{', char rch = '}' )
 	{
 		if( (*cur == lch?++n:*cur == rch?--n:n) == 0 )
 		{
-			return ++cur;
+			return strntok( NULL, buf+size, " }\r\n\t", &cur )?cur:NULL;
 		}
 		++cur;
 	}
@@ -136,6 +200,73 @@ int findkeywork( char **buf, size_t *size, command commands[], int count )
 }
 
 //--------------------------------------------------------//
+//	created:	14:12:2009   18:14
+//	filename: 	AnalyseFile
+//	author:		Albert.xu
+//
+//	purpose:	构造消息定义
+//--------------------------------------------------------//
+size_t makedefine( root *proot, char *buf, size_t size, void* pdata )
+{
+	char *begin = buf;
+	char *end = buf;
+	do
+	{
+		end = strchr( begin, '\n' );
+		if( strntok( begin, end, "\\", &begin ) && begin != end )
+		{
+			strntok( begin, end, " \t", &begin );
+		}
+		else
+		{
+			break;
+		}
+	}while( begin && ++begin == ++end );
+
+	proot->defines.push_back( "#define" + string( buf, end ) );
+	return end - buf;
+}
+
+//--------------------------------------------------------//
+//	created:	14:12:2009   18:14
+//	filename: 	AnalyseFile
+//	author:		Albert.xu
+//
+//	purpose:	构造结构定义
+//--------------------------------------------------------//
+size_t makenode( root *proot, char *buf, size_t size, void* pdata )
+{
+	char *next = NULL;
+	char *name = strntok( buf, buf+size, " {\t\r\n", &next );
+	char *namend = next;
+	char *begin = strntok( NULL, buf+size, " \t\r\n", &next );
+
+	if( *begin == '{' )
+	{
+		node *pnode = new node;
+		pnode->name.append( name, namend );
+		proot->pnode.push( pnode );
+		size_t read = maketree( proot, next, size - ( next - buf ), NULL );
+		if( read == -1 )
+		{
+			destroynode( pnode );
+			printf( "cannot found match '}' at %d", countline( proot->buf, buf ) );
+			return -1;
+		}
+		else
+		{
+			proot->snode.push_back( pnode );
+			return next - buf + read;
+		}
+	}
+	else
+	{
+		printf( "struct format error at %d, use :\nstruct STRUCTNAME\n{\n\tSOMEBODY;\n};\n", countline( proot->buf, buf ) );
+		return -1;
+	}
+}
+
+//--------------------------------------------------------//
 //	created:	15:12:2009   17:39
 //	filename: 	AnalyseFile
 //	author:		Albert.xu
@@ -157,7 +288,6 @@ int iskeywork( root *proot, char *buf, size_t size, command commands[], int coun
 		}
 	}
 
-
 	return -1;
 }
 
@@ -171,7 +301,7 @@ int iskeywork( root *proot, char *buf, size_t size, command commands[], int coun
 size_t makeparam( root *proot, char *buf, size_t size, void* pdata )
 {
 	char seps[] = " <>\t\r\n";
-
+	char *next = NULL;
 	int ret = iskeywork( proot, buf, size, typelist, _countof(typelist) );
 	if( ret != -1 )
 	{
@@ -179,10 +309,12 @@ size_t makeparam( root *proot, char *buf, size_t size, void* pdata )
 		{
 			node *pnode = proot->pnode.top();
 			param *param_ = new param;
-			param_->tline.append( buf, size );
+			param_->tline.append( strntok( buf, buf+size, seps, &next ), buf+size );
+			param_->_immediately = false;
 			param_->_array = false;
-			param_->_container = false;
+			param_->_basic = false;
 			param_->_point = false;
+			param_->_container = false;
 
 			pnode->params.push_back( param_ );
 			pdata = (void*)param_;
@@ -225,6 +357,7 @@ size_t makemodifier( root *proot, char *buf, size_t size, void* pdata )
 size_t makebasic( root *proot, char *buf, size_t size, void* pdata )
 {
 	param *param_ = (param*)pdata;
+	param_->_basic = true;
 	vector< string > part;
 	int n = 0, nary = 0;
 
@@ -257,7 +390,7 @@ size_t makebasic( root *proot, char *buf, size_t size, void* pdata )
 		}
 	}
 
-	if( part.size() < 2 )
+	if( part.size() != (param_->_array?3:2) )
 		return -1;
 
 	param_->tname += part[0];
@@ -356,8 +489,7 @@ size_t maketree( root *proot, char *buf, size_t size, void* pdata )
 			read = makeparam( proot, bseg, cur - bseg, NULL );
 			if( read == -1 )
 			{
-				printf( "format error at line %d\n", countline( proot->buf, bseg ) );
-				cur = match;
+				printf( "param format error at line %d\n", countline( proot->buf, bseg ) );
 			}
 			bseg = cur;
 			break;
@@ -365,45 +497,80 @@ size_t maketree( root *proot, char *buf, size_t size, void* pdata )
 			if( *cur == '/' )
 			{
 				strntok( cur, match, "\n\r", &bseg );
+				param *mtype  = new param;
+				mtype->_array = false;
+				mtype->_basic = false;
+				mtype->_container = false;
+				mtype->_point = false;
+				mtype->_immediately = false;
+				mtype->tline.append( cur-1, bseg );
+				node *pnode = proot->pnode.top();
+				pnode->params.push_back( mtype );
+
 				cur = bseg;
 			}
 			break;
 		case '{':
 			{
-				node *sub = new node;
-				node *pnode = proot->pnode.top();
-				pnode->sub.push_back( sub );
 				char *next = NULL, seps[] = " ;{()\n\r\t";
 				char *token = strntok( bseg, cur, seps, &next );
 				char *part[2][2];
 
-				for( int i = 0; i < _countof(part); ++i )
+				int i = 0;
+				for( ; i < _countof(part); ++i )
 				{
 					part[i][0] = token;
 					part[i][1] = next;
 					token = strntok( NULL, cur, seps, &next );
 				}
-				sub->name.append( part[1][0], part[1][1] );
 
-				proot->pnode.push( sub );
-				cur += maketree( proot, cur, size - ( cur - buf ), NULL );
-				bseg = cur;
+				if( i == _countof( part ) )
+				{
+					node *sub = new node;
+					node *pnode = proot->pnode.top();
+					sub->spacename = pnode->spacename + pnode->name + "::";
+					sub->name.append( part[1][0], part[1][1] );
+
+					proot->pnode.push( sub );
+					size_t read = maketree( proot, cur, size - ( cur - buf ), NULL );
+					if( read == -1 )
+					{
+						destroynode( sub );
+						printf( "cannot found match '}' at %d", countline( proot->buf, cur ) );
+						bseg = cur = match;
+					}
+					else
+					{
+						pnode->sub.push_back( sub );
+						cur += read;
+						bseg = cur;
+					}
+				}
+				else
+				{
+					printf( "struct format error at %d, use :\nstruct STRUCTNAME\n{\n\tSOMEBODY;\n};\n", countline( proot->buf, bseg ) );
+					proot->pnode.pop();
+					return match - buf;
+				}
 			}
 			break;
 		case '}':
+			proot->pnode.pop();
+			return match - buf;
 			break;
 		}
 	}while( cur < match );
 
 	proot->pnode.pop();
-	return size;
+	return -1;
 }
 
 size_t makemessage( root *proot, char *buf, size_t size, void* pdata )
 {
 	message *msg = new message;
 
-	char seps[] = " ()\n\r\t";
+	msg->filename = proot->filename;
+	char seps[] = " ,()\n\r\t";
 	char *part[3][2];
 	char *next = NULL, *end = strchr( buf, '{' );
 	size_t total = 0;
@@ -411,7 +578,7 @@ size_t makemessage( root *proot, char *buf, size_t size, void* pdata )
 	{
 		int i = 0;
 		char *token = strntok( buf, end, seps, &next );
-		for( int i = 0; token && i < _countof(part)/2; token = strntok( NULL, end, seps, &next ), ++i )
+		for( ; token && i < _countof(part); token = strntok( NULL, end, seps, &next ), ++i )
 		{
 			part[i][0] = token;
 			part[i][1] = next;
@@ -422,19 +589,276 @@ size_t makemessage( root *proot, char *buf, size_t size, void* pdata )
 			msg->sub.name.append( part[0][0], part[0][1] );
 			msg->stype.append( part[1][0], part[1][1] );
 			msg->scode.append( part[2][0], part[2][1] );
-			if( proot->mcode.find( msg->stype ) == proot->mcode.end() )
-				proot->mcode[msg->stype] = 0;
+
+			// 添加两个立即数到参数中
+			param *mtype  = new param;
+			mtype->_array = false;
+			mtype->_basic = true;
+			mtype->_container = false;
+			mtype->_point = false;
+			mtype->_immediately = true;
+			mtype->tline = "_byte mtype;";
+			mtype->tname = "_byte";
+			mtype->pname = "mtype";
+			mtype->pvalue = msg->stype;
+			msg->sub.params.push_back( mtype );
+
+			param *mcode  = new param;
+			mcode->_array = false;
+			mcode->_basic = true;
+			mcode->_container = false;
+			mcode->_point = false;
+			mcode->_immediately = true;
+			mcode->tline = "_byte mcode;";
+			mcode->tname = "_byte";
+			mcode->pname = "mcode";
+			mcode->pvalue = msg->scode;
+			msg->sub.params.push_back( mcode );
+
+			proot->mcode[msg->stype].push_back( msg->scode );
 		}
 		else
 		{
-			printf( "syntax error at %d", countline( proot->buf, part[i][0] ) );
+			printf( "message format error at %d, use : \nmessage MESSAGENAME( TYPE, CODE )\n{ \nSOMEBODY;\n };\n", countline( proot->buf, part[i][0] ) );
 			return false;
 		}
 		proot->pnode.push( &msg->sub );
 		size_t read = maketree( proot, end+1, size - ( end + 1 - buf ), NULL );
-		total += end - buf;
+		if( read == -1 )
+		{
+			printf( "cannot found match '}' at %d", countline( proot->buf, buf ) );
+			return -1;
+		}
+		total += end - buf + 1;
 		total += read;
 	}
 	proot->mnode.push_back( msg );
 	return total;
+}
+
+//--------------------------------------------------------//
+//	created:	17:12:2009   14:28
+//	filename: 	AnalyseFile
+//	author:		Albert.xu
+//
+//	purpose:	写一个消息
+//--------------------------------------------------------//
+void writemessage( root *proot, message *pmessage )
+{
+	if( proot->filename != pmessage->filename )
+	{
+		proot->filename = proot->outdir + "\\" + pmessage->filename;
+		string hfile = proot->filename+".h";
+		string cfile = proot->filename+".cpp";
+		proot->hfile.open( hfile.c_str(), ios_base::out|ios_base::trunc );
+		if( !proot->hfile.is_open() )
+		{
+			printf("open %s failed.", hfile.c_str() );
+			return;
+		}
+		else
+		{
+			proot->hfile << "#include \"messagedef.h\"" << endl;
+			proot->hfile << "#include \"structsdef.h\"" << endl;
+		}
+		proot->cfile.open( cfile.c_str(), ios_base::out|ios_base::trunc );
+		if( !proot->cfile.is_open() )
+		{
+			printf("open %s failed.", cfile.c_str() );
+			return;
+		}
+		else
+		{
+			proot->cfile << "#include \"" << hfile << "\"" << endl;
+			proot->hfile
+				<< "#ifdef _USRDLL" << endl
+				<< "\t#ifdef MESSAGE_API" << endl
+				<< "\t\t#define MESSAGE_EXPORT __declspec(dllexport)" << endl
+				<< "\t#else" << endl
+				<< "\t\t#define MESSAGE_EXPORT __declspec(dllimport)" << endl 
+				<< "\t#endif" << endl
+				<< "#else" << endl
+				<< "\t#define MESSAGE_EXPORT" << endl
+				<< "#endif" << endl
+				<< endl;
+		}
+	}
+	writenode_def( proot, &pmessage->sub, "" );
+	writenode_imp( proot, &pmessage->sub, "" );
+}
+
+//--------------------------------------------------------//
+//	created:	17:12:2009   14:29
+//	filename: 	AnalyseFile
+//	author:		Albert.xu
+//
+//	purpose:	写一个结构
+//--------------------------------------------------------//
+void writenode_def( root *proot, node *pnode, string pix )
+{
+	fstream &hstream = proot->hfile;
+	hstream << pix << "struct " << "MESSAGE_EXPORT " << pnode->name << endl
+		<< pix << "{" << endl;
+
+	list< node* >::iterator inode = pnode->sub.begin();
+	while( inode != pnode->sub.end() )
+	{
+		writenode_def( proot, *inode, pix+"\t" );
+		++inode;
+	}
+
+	strstream opi_stream, opo_stream;
+	opi_stream << endl 
+		<< "MESSAGE_EXPORT bufstream& operator << ( bufstream& stream, const " << pnode->spacename + pnode->name << "& c )" << endl
+		<< "{" << endl;
+
+	opo_stream << endl
+		<< "MESSAGE_EXPORT bufstream& operator >> ( bufstream& stream, " << pnode->spacename + pnode->name << "& c )" << endl
+		<< "{" << endl;
+
+	list< param* >::iterator iparam = pnode->params.begin();
+	while( iparam != pnode->params.end() )
+	{
+		param* pparam = *iparam;
+		hstream << pix << "\t" << pparam->tline << endl;
+		if( pparam->_immediately )
+		{
+			opi_stream << "\tstream << " << pparam->tname << "(" << pparam->pvalue << ");" << endl;
+			opo_stream << "\tstream >> c." << pparam->pname << ";" << endl;
+		}
+		else if( pparam->_array && pparam->_basic)
+		{
+			opi_stream << "\tstream << bufstream( (char*)c." << pparam->pname << ", sizeof(c." << pparam->pname << "), bufstream::out );" << endl;
+			opo_stream << "\tstream >> bufstream( (char*)c." << pparam->pname << ", sizeof(c." << pparam->pname << "), bufstream::in, sizeof(c." << pparam->pname << ") );" << endl;
+		}
+		else if( pparam->_array )
+		{
+			opi_stream << "\tfor( int i = 0; i < _countof(c." << pparam->pname << "); ++i )" << endl
+				<< "\t\tstream << c." << pparam->pname << "[i];" << endl;
+
+			opo_stream << "\tfor( int i = 0; i < _countof(c." << pparam->pname << "); ++i )" << endl
+				<< "\t\tstream >> c." << pparam->pname << "[i];" << endl;
+		}
+		else if( pparam->_basic || pparam->_container )
+		{
+			opi_stream << "\tstream << c." << pparam->pname << ";" << endl;
+			opo_stream << "\tstream >> c." << pparam->pname << ";" << endl;
+		}
+		++iparam;
+	}
+	opi_stream << "\treturn stream;" << endl << "}" << endl;
+	opo_stream << "\treturn stream;" << endl << "}" << endl;
+	proot->cfile << opi_stream.rdbuf();
+	proot->cfile << opo_stream.rdbuf();
+
+	hstream << pix << "};" << endl;
+}
+
+void writenode_imp( root *proot, node *pnode, string pix )
+{
+	list< node* >::iterator inode = pnode->sub.begin();
+	while( inode != pnode->sub.end() )
+	{
+		writenode_imp( proot, *inode, "" );
+		++inode;
+	}
+
+	fstream &hstream = proot->hfile;
+	hstream << endl;
+	hstream << "MESSAGE_EXPORT bufstream& operator << ( bufstream& stream, const " << pnode->spacename + pnode->name << "& c );" << endl;
+	hstream	<< "MESSAGE_EXPORT bufstream& operator >> ( bufstream& stream, " << pnode->spacename + pnode->name << "& c );" << endl;
+}
+
+void writeheader( root *proot )
+{
+	string hfile = proot->outdir + "\\messagedef.h";
+	fstream stream;
+	stream.open( hfile.c_str(), ios_base::out|ios_base::trunc );
+	if( !stream.is_open() )
+	{
+		printf("open messagedef.h failed. filepath = %s", hfile.c_str() );
+		return;
+	}
+	else
+	{
+		stream << "#ifndef _MESSAGEDEF_H" << endl;
+		stream << "#define _MESSAGEDEF_H" << endl;
+		stream << "#include \"commonlib.h\"" << endl;
+		stream << "using namespace std;" << endl;
+
+		list< string >::iterator iter = proot->defines.begin();
+		while( iter != proot->defines.end() )
+		{
+			stream << *iter << endl;
+			++iter;
+		}
+
+		map< string, list< string > >::iterator itypemap = proot->mcode.begin();
+		while( itypemap != proot->mcode.end() )
+		{
+			stream << endl << "enum EN_" << itypemap->first << endl << "{" << endl;
+			list< string >::iterator icode = itypemap->second.begin();
+			while( icode != itypemap->second.end() )
+			{
+				stream << "\t" << *icode << "," << endl;
+				++icode;
+			}
+			stream << "};" << endl;
+			++itypemap;
+		}
+		stream << "#endif //_MESSAGEDEF_H" << endl;
+		stream.close();
+	}
+}
+
+//--------------------------------------------------------//
+//	created:	17:12:2009   14:27
+//	filename: 	AnalyseFile
+//	author:		Albert.xu
+//
+//	purpose:	将生成的消息树转换成C++文件。
+//--------------------------------------------------------//
+void writefile( root *proot )
+{
+	string hfile = proot->outdir + "\\structsdef.h";
+	string cfile = proot->outdir + "\\structsdef.cpp";
+	proot->hfile.open( hfile.c_str(), ios_base::out|ios_base::trunc );
+	proot->cfile.open( cfile.c_str(), ios_base::out|ios_base::trunc );
+
+	proot->hfile << "#include \"messagedef.h\"" << endl;
+	proot->cfile << "#include \"structsdef.h\"" << endl;
+	proot->cfile << "#include \"userdefine.h\"" << endl;
+	proot->hfile
+		<< "#ifdef _USRDLL" << endl
+		<< "\t#ifdef MESSAGE_API" << endl
+		<< "\t\t#define MESSAGE_EXPORT __declspec(dllexport)" << endl
+		<< "\t#else" << endl
+		<< "\t\t#define MESSAGE_EXPORT __declspec(dllimport)" << endl 
+		<< "\t#endif" << endl
+		<< "#else" << endl
+		<< "\t#define MESSAGE_EXPORT" << endl
+		<< "#endif" << endl
+		<< endl;
+
+	list< node * >::iterator inode = proot->snode.begin();
+	while( inode != proot->snode.end() )
+	{
+		writenode_def( proot, *inode, "" );
+		writenode_imp( proot, *inode, "" );
+		++inode;
+	}
+	proot->hfile.close();
+	proot->cfile.close();
+
+	list< message * >::iterator imessage = proot->mnode.begin();
+	while( imessage != proot->mnode.end() )
+	{
+		writemessage( proot, *imessage );
+		++imessage;
+	}
+
+	proot->hfile.close();
+	proot->cfile.close();
+
+	writeheader( proot );
 }
