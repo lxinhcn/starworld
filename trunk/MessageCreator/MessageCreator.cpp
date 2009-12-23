@@ -8,16 +8,21 @@
 
 using namespace std;
 const char *usage = 
+"-----------------------------------------------------------------------------------------\n"
 "MessageCreator v1.1 write by albert.xu\n"
-"usage format: MessageCreator filename1[ filename2[ filename3...]] [[-d|-r] [-mt|-md] [-dll|-lib] [-h]]\n"
+"@Copy right 2009\n"
+"-----------------------------------------------------------------------------------------\n"
+"usage format: MessageCreator filename1[ filename2[ filename3 [...] ] ] [options]\n"
+" option = [[-d|-r] [-mt|-md] [-dll|-lib] [-config:configname][-h]]\n"
 "\t-d\t\tdebug version.\n"
 "\t-r\t\trelease version.\n"
 "\t-mt\t\tmutithread stand library.\n"
 "\t-md\t\tmutithread dll library.\n"
 "\t-dll\t\tcreate dll library.\n"
 "\t-lib\t\tcreate static library\n"
-"\t-h\t\tdisplay usage.\n";
-
+"\t-config\t\tconfig compiler params\n"
+"\t-h\t\tdisplay usage.\n"
+"-----------------------------------------------------------------------------------------\n";
 void compiler( root *proot );
 void link( root *proot );
 int main(int argc, char* argv[])
@@ -27,20 +32,6 @@ int main(int argc, char* argv[])
 
 	char szValue[1024];
 	char szFullpath[1024];
-	DWORD nRead = GetPrivateProfileStringA( "Config", "BinDir", ".\\lib", szValue, _countof(szValue), ".\\config.ini" );
-	_fullpath( szFullpath, szValue, sizeof(szFullpath) );
-	CreateDirectoryA( szFullpath, NULL );
-	r.bindir = szFullpath;
-
-	nRead = GetPrivateProfileStringA( "Config", "OutDir", ".\\include", szValue, _countof(szValue), ".\\config.ini" );
-	_fullpath( szFullpath, szValue, sizeof(szFullpath) );
-	CreateDirectoryA( szFullpath, NULL );
-	r.outdir = szFullpath;
-
-	nRead = GetPrivateProfileStringA( "Config", "LibDir", ".\\lib", szValue, _countof(szValue), ".\\config.ini" );
-	_fullpath( szFullpath, szValue, sizeof(szFullpath) );
-	CreateDirectoryA( szFullpath, NULL );
-	r.libdir = szFullpath;
 
 	r.opt.version = "/D\"NDEBUG\" /O2";
 	r.opt._debug = false;
@@ -51,15 +42,19 @@ int main(int argc, char* argv[])
 
 	for( int i = 1; i < argc; ++i )
 	{
-		if( argv[i][0] != '-' )
+		if( argv[i][0] != '-' && argv[i][0] != '/' )
 		{
 			ierror += analysefile( &r, argv[i] );
 		}
 		else
 		{
-			if( _stricmp( argv[i], "-help" ) == 0 )
+			argv[i][0] = '-';
+			if( _stricmp( argv[i], "--help" ) == 0 ||
+				_stricmp( argv[i], "-h" ) == 0 || 
+				_stricmp( argv[i], "-?" ) == 0 )
 			{
 				puts( usage );
+				return 0;
 			}
 			else if( _stricmp( argv[i], "-d" ) == 0 )
 			{
@@ -91,6 +86,59 @@ int main(int argc, char* argv[])
 				r.opt.linktar = "/D_LIB";
 				r.opt._library = true;
 			}
+			else if( _strnicmp( argv[i], "-config:", 8 ) == 0 )
+			{
+				char* begin = strchr( argv[i], ':' );
+				++begin;
+				if( begin )
+				{
+					char ini[1024];
+					_fullpath( ini, begin, sizeof(szFullpath) );
+					
+					DWORD nRead = GetPrivateProfileStringA( "Config", "BinDir", ".\\lib", szValue, _countof(szValue), ini );
+					_fullpath( szFullpath, szValue, sizeof(szFullpath) );
+					CreateDirectoryA( szFullpath, NULL );
+					r.config.bindir = szFullpath;
+
+					nRead = GetPrivateProfileStringA( "Config", "OutDir", ".\\include", szValue, _countof(szValue), ini );
+					_fullpath( szFullpath, szValue, sizeof(szFullpath) );
+					CreateDirectoryA( szFullpath, NULL );
+					r.config.outdir = szFullpath;
+
+					nRead = GetPrivateProfileStringA( "Config", "LibDir", ".\\lib", szValue, _countof(szValue), ini );
+					_fullpath( szFullpath, szValue, sizeof(szFullpath) );
+					CreateDirectoryA( szFullpath, NULL );
+					r.config.libdir = szFullpath;
+
+					GetPrivateProfileStringA( "Config", "OutName", "Message", szValue, _countof(szValue), ini );
+					r.config.outname = szValue;
+
+					GetPrivateProfileStringA( "Config", "LibName", "Message", szValue, _countof(szValue), ini );
+					r.config.libname = szValue;
+
+					GetPrivateProfileStringA( "Config", "LibraryPath", ".\\", szValue, _countof(szValue), ini );
+					char *token = NULL, *end = szValue+nRead, *next = NULL;
+					token = strtok_s( szValue, ";", &next );
+					while( token )
+					{
+						r.config.lib << "/LIBPATH:\"" << token << "\" ";
+						token = strtok_s( NULL, ";", &next );
+					}
+
+					GetPrivateProfileStringA( "Config", "LinkLib", "", szValue, _countof(szValue), ini );
+					r.config.lib << "/MACHINE:X86 " << szValue << " ";
+
+					nRead = GetPrivateProfileStringA( "Config", "IncludePath", ".\\", szValue, _countof(szValue), ini );
+					end = szValue+nRead;
+					next = NULL;
+					token = strtok_s( szValue, ";", &next );
+					while( token )
+					{
+						r.config.inc << "/I\"" << token << "\" ";
+						token = strtok_s( NULL, ";", &next );
+					}
+				}
+			}
 		}
 	}
 
@@ -105,6 +153,7 @@ int main(int argc, char* argv[])
 
 	remove( "compiler.rsp" );
 	remove( "link.rsp" );
+
 	//remove( "structsdef.cpp");
 	//remove( "structsdef.obj");
 	//for( list< string >::iterator i = r.files.begin(); i != r.files.end(); ++i )
@@ -131,34 +180,19 @@ void compiler( root *proot )
 	f.open( "compiler.rsp", ios_base::out|ios_base::trunc );
 	if( f.is_open() )
 	{
-		string strfiles( proot->outdir );
+		string strfiles( proot->config.outdir );
 		strfiles += "\\structsdef.cpp\n";
 		for( list< string >::iterator i = proot->files.begin(); i != proot->files.end(); ++i )
 		{
-			strfiles += proot->outdir + "\\";
+			strfiles += proot->config.outdir + "\\";
 			strfiles += *i;
 			strfiles += ".cpp\n";
 		}
 
-		//wchar_t szDirectory[1024];
-		//GetCurrentDirectoryW( sizeof(szDirectory), szDirectory );
-
-		f << "/I\"" << proot->outdir << "\" ";
-		// /I\"..\\..\\xgcBase\\Common\" /I\"..\\..\\Depend\\Loki-0.1.6\\include\" /W3 "
-		char szValue[1024];
-		DWORD nRead = GetPrivateProfileStringA( "Config", "IncludePath", "..\\..\\xgcBase\\Common;..\\..\\Depend\\Loki-0.1.6\\include", szValue, _countof(szValue), ".\\config.ini" );
-		char *token = NULL, *end = szValue+nRead, *next = NULL;
-		token = strtok_s( szValue, ";", &next );
-		while( token )
-		{
-			f << "/I\"" << token << "\" ";
-			token = strtok_s( NULL, ";", &next );
-		}
-
-		f
+		f << "/I\"" << proot->config.outdir << "\" "
+			<< proot->config.inc.rdbuf() << " "
 			<< proot->opt.version << " "
-			<< proot->opt.runtime
-			<< (proot->opt._debug?"d ":" ")
+			<< proot->opt.runtime << (proot->opt._debug?"d ":" ")
 			<< proot->opt.linktar << " "
 			<< " /EHsc /GR "
 			<< "/Fp\".\\temp\\message.pch\" "
@@ -168,7 +202,6 @@ void compiler( root *proot )
 
 		f.close();
 
-		//printf( "Current directory is %S\n", szDirectory );
 		_tchar szCommandline[] = _T("cl.exe @compiler.rsp /nologo");
 		BOOL ret = CreateProcess( 
 			NULL,
@@ -213,12 +246,9 @@ void link( root *proot )
 
 		if( proot->opt._library )
 		{
-			char szValue[1024];
-			GetPrivateProfileStringA( "Config", "OutName", "Message", szValue, _countof(szValue), ".\\config.ini" );
-			f << "/OUT:" << proot->libdir << "\\" << szValue << ".lib ";
-			GetPrivateProfileStringA( "Config", "LibraryPath", ".\\", szValue, _countof(szValue), ".\\config.ini" );
-			f << "/LIBPATH:" << szValue << " ";
-			f << strfiles;
+			f << "/OUT:" << proot->config.libdir << "\\" << proot->config.libname << " "
+				<< proot->config.lib.rdbuf() << " " << endl
+				<< strfiles;
 			f.close();
 
 			_tchar szCommandline[] = _T("lib.exe @link.rsp /nologo");
@@ -237,19 +267,11 @@ void link( root *proot )
 		}
 		else
 		{
-			char szValue[1024];
-			char szFullpath[1024];
-			GetPrivateProfileStringA( "Config", "OutName", "Message", szValue, _countof(szValue), ".\\config.ini" );
-			f << "/OUT:" << proot->bindir << "\\" << szValue << ".dll /DLL ";
-			f << "/IMPLIB:" << proot->libdir << "\\" << szValue << ".lib ";
-			f << (proot->opt._debug?"/DEBUG ":" ") << "/PDB:" << proot->bindir << "\\" << szValue << ".pdb ";
-			//f << "/MANIFEST /MANIFESTFILE:\"" << szValue << ".dll.intermediate.manifest\" /MANIFESTUAC:\"level='asInvoker' uiAccess='false'\" ";
-			GetPrivateProfileStringA( "Config", "LibraryPath", ".\\", szValue, _countof(szValue), ".\\config.ini" );
-			_fullpath( szFullpath, szValue, sizeof(szFullpath) );
-			f << "/LIBPATH:\"" << szFullpath << "\" ";
-			GetPrivateProfileStringA( "Config", "LinkLib", "Common.lib", szValue, _countof(szValue), ".\\config.ini" );
-			f << "/MACHINE:X86 " << szValue << endl;
-			f << strfiles;
+			f << "/OUT:" << proot->config.bindir << "\\" << proot->config.outname << " /DLL "
+				<< "/IMPLIB:" << proot->config.libdir << "\\" << proot->config.libname << ".lib "
+				<< (proot->opt._debug?"/DEBUG ":" ") << "/PDB:" << proot->config.bindir << "\\" << proot->config.outname << ".pdb "
+				<< proot->config.lib.rdbuf() << " "
+				<< strfiles;
 			f.close();
 
 			_tchar szCommandline[] = _T("link.exe @link.rsp /nologo");
