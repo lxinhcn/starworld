@@ -39,9 +39,7 @@ struct root
 	size_t	size;
 	char	*buf;
 	string	filename;
-	string	bindir;		// 库文件输出目录
-	string	outdir;		// 包含文件输出目录
-	string	libdir;		// 库文件输出路径
+
 	fstream	hfile;		// .h 文件
 	fstream	cfile;		// .cpp 文件
 	map< string, list< string > >	mcode;		// 消息结构
@@ -50,6 +48,18 @@ struct root
 	list< message* >	mnode;		// 消息定义
 	list< string >		defines;	// 预定义宏
 	list< string >		files;
+
+	struct
+	{
+		string	bindir;		// 库文件输出目录
+		string	outdir;		// 包含文件输出目录
+		string	libdir;		// 库文件输出路径
+		string	outname;	// 输出文件名
+		string	libname;	// 导入库文件名
+		strstream	lib;	// 库文件连接参数
+		strstream	inc;	// 包含文件编译参数
+	}config;
+
 	struct
 	{
 		bool	_debug;
@@ -142,6 +152,15 @@ size_t makenode( root *proot, char *buf, size_t size, void* pdata );
 //	purpose:	构造参数
 //--------------------------------------------------------//
 size_t makeparam( root *proot, char *buf, size_t size, void* pdata );
+
+//--------------------------------------------------------//
+//	created:	14:12:2009   18:14
+//	filename: 	AnalyseFile
+//	author:		Albert.xu
+//
+//	purpose:	构造未知类型参数
+//--------------------------------------------------------//
+size_t makeunknowe( root *proot, char *buf, size_t size, void* pdata );
 
 //--------------------------------------------------------//
 //	created:	14:12:2009   18:14
