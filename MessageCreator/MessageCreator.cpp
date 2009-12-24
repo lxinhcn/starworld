@@ -25,6 +25,7 @@ const char *usage =
 "-----------------------------------------------------------------------------------------\n";
 void compiler( root *proot );
 void link( root *proot );
+
 int main(int argc, char* argv[])
 {
 	root r;
