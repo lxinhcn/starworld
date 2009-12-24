@@ -21,6 +21,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameClient", "GameClient\Ga
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameCore", "GameSDK\GameCore\GameCore.vcproj", "{2DB0D95C-7472-4494-BB66-E3F2624EEE87}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6A7B47C4-7997-47CC-A6D7-FEE15279F2F9} = {6A7B47C4-7997-47CC-A6D7-FEE15279F2F9}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUI", "GameSDK\GameUILib\GUI.vcproj", "{0CAAD250-94F2-4158-A8A5-506B578D6E08}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -33,6 +36,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hge", "Depend\hge181\src\core\hge.vcproj", "{FB1A9503-D67D-4311-AB3B-113DAD7D6F9F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaDebuger", "LuaDebuger\LuaDebuger.vcproj", "{A6A3A671-E708-4D13-9D42-2EF9BF13A4AF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6A7B47C4-7997-47CC-A6D7-FEE15279F2F9} = {6A7B47C4-7997-47CC-A6D7-FEE15279F2F9}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaDebugConsole", "LuaDebugConsole\LuaDebugConsole.vcproj", "{58D8BDF1-87D1-4325-8A31-DCA78518A7E7}"
 	ProjectSection(ProjectDependencies) = postProject
