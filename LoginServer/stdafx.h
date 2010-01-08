@@ -16,7 +16,10 @@
 #include "Commonlib.h"
 #include "Netbase.h"
 #include "Database.h"
+#include "TransDefine.h"
 
-#include "dbMessage.h"
+#include "C2S_LogonServer.h"
+#include "S2C_LogonServer.h"
 // TODO: 在此处引用程序需要的其他头文件
 #define LOG _T("LoginServerLog")
+using namespace XGC;

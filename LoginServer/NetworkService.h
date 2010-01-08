@@ -1,10 +1,12 @@
 #pragma once
-#define LOGON_MESSAGE_TYPE 0x10
+#include "DatabaseService.h"
+
 typedef struct
 {
 	_uint32 id;
 	_uint32 order;
 }userdata, *userdata_ptr;
+
 class CNetworkService : public message_dispatcher< CNetworkService >
 {
 	IMPLEMENT_DISPATCHER_TABLE( message_type )
@@ -15,6 +17,7 @@ private:
 	_uint16			m_nPort;
 	bool			m_bWork;
 
+	CDatabaseService database[4];
 public:
 	CNetworkService( _uint16 nPort );
 	~CNetworkService(void);
@@ -22,7 +25,8 @@ public:
 	void Process( const char* data, size_t size );
 
 protected:
-	static unsigned int __stdcall Svc( LPVOID pParam );
+	static unsigned int __stdcall Svc( _lpvoid pParam );
+
 	void OnSystemMessage( const char* data, size_t size );
 	void OnServerMessage( const char* data, size_t size );
 

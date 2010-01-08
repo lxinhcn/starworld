@@ -194,7 +194,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	SetConsoleCtrlHandler( Stop, TRUE );
 
 	CreateNetwork( _T("ace") );
-	return LoginServer::Instance().Start();
+	LoginServer::Instance().Start();
 	DestroyNetwork();
 }
 
