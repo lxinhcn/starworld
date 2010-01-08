@@ -61,6 +61,14 @@ void destroymessage( message *pmessage )
 
 void destroynode( node *pnode )
 {
+	list< enumerate * >::iterator ienum = pnode->enums.begin();
+	while( ienum != pnode->enums.end() )
+	{
+		destroyenum( *ienum );
+		++ienum;
+	}
+	pnode->enums.clear();
+
 	list< param * >::iterator iparam = pnode->params.begin();
 	while( iparam != pnode->params.end() )
 	{
@@ -82,6 +90,19 @@ void destroynode( node *pnode )
 void destroyparam( param *pparam )
 {
 	delete pparam;
+}
+
+//--------------------------------------------------------//
+//	created:	18:12:2009   16:37
+//	filename: 	AnalyseFile
+//	author:		Albert.xu
+//
+//	purpose:	销毁枚举对象
+//--------------------------------------------------------//
+void destroyenum( enumerate *penum )
+{
+	penum->items.clear();
+	delete penum;
 }
 
 int analysefile( root *proot, _lpcstr filename )
@@ -522,6 +543,33 @@ size_t makecontainer( root *proot, char *buf, size_t size, void* pdata )
 }
 
 //--------------------------------------------------------//
+//	created:	14:12:2009   18:14
+//	filename: 	AnalyseFile
+//	author:		Albert.xu
+//
+//	purpose:	构造枚举值
+//--------------------------------------------------------//
+size_t makeenum( root *proot, char *buf, size_t size, void* pdata )
+{
+	char *match = matchclose( buf, size );
+	if( !match ) return -1;
+
+	enumerate *penum = new enumerate;
+	penum->name = (char*)pdata;
+	char *next = NULL;
+	char *token = strntok( buf, match, " ,{}", &next );
+	while( token )
+	{
+		penum->items.push_back( string( token, next ) );
+		token = strntok( NULL, match, " ,{};\t\r\n", &next );
+	}
+	node* pnode = proot->pnode.top();
+	pnode->enums.push_back( penum );
+
+	return match - buf;
+}
+
+//--------------------------------------------------------//
 //	created:	14:12:2009   14:51
 //	filename: 	AnalyseFile
 //	author:		Albert.xu
@@ -571,18 +619,33 @@ size_t maketree( root *proot, char *buf, size_t size, void* pdata )
 			{
 				char *next = NULL, seps[] = " ;()\n\r\t";
 				char *token = strntok( bseg, cur, seps, &next );
-				char *part[2][2];
-
+				char *part[256][2];
 				int i = 0;
-				for( ; i < _countof(part); ++i )
+
+				memset( part, 0, sizeof(part) );
+				for( ; token && i < _countof(part); ++i )
 				{
 					part[i][0] = token;
 					part[i][1] = next;
 					token = strntok( NULL, cur, seps, &next );
 				}
 
-				if( i == _countof( part ) )
+				if( i == 0 )
 				{
+					printf( "cannot found keyword at %d", countline( proot->buf, cur ) );
+					bseg = cur = match;
+					break;
+				}
+
+				string key( part[0][0], part[0][1] );
+				if( key == "struct" )
+				{
+					if( i != 2 )
+					{
+						printf( "struct format error at %d", countline( proot->buf, cur ) );
+						bseg = cur = match;
+						break;
+					}
 					node *sub = new node;
 					node *pnode = proot->pnode.top();
 					// 命名空间
@@ -603,6 +666,16 @@ size_t maketree( root *proot, char *buf, size_t size, void* pdata )
 						cur += read;
 						bseg = cur;
 					}
+				}
+				else if( key == "enum" )
+				{
+					string name( part[1][0], part[1][1] );
+					read = makeenum( proot, cur, size - ( cur - buf ), (void*)name.c_str() );
+					if( read == -1 )
+					{
+						printf( "param format error at line %d\n", countline( proot->buf, bseg ) );
+					}
+					cur = bseg = cur + read;
 				}
 				else
 				{
@@ -763,6 +836,28 @@ void writenode_def( root *proot, node *pnode, string pix )
 	hstream << pix << "struct " << "MESSAGE_EXPORT " << pnode->name << endl
 		<< pix << "{" << endl;
 
+	list< enumerate* >::iterator ienum = pnode->enums.begin();
+	while( ienum != pnode->enums.end() )
+	{
+		enumerate *penum = *ienum;
+		bool singleline = penum->items.size() < 6;
+		hstream << pix << "\t" << "enum " << penum->name;
+		if( !singleline ) hstream << endl << pix << "\t" ;
+		hstream << "{ ";
+		if( !singleline ) hstream << endl << pix << "\t" ;
+
+		list< string >::iterator iitem = penum->items.begin();
+		while( iitem != penum->items.end() )
+		{
+			hstream << *iitem << ", ";
+			if( !singleline ) hstream << endl << pix << "\t";
+			++iitem;
+		}
+
+		hstream << "};" << endl;
+		++ienum;
+	}
+
 	list< node* >::iterator inode = pnode->sub.begin();
 	while( inode != pnode->sub.end() )
 	{
@@ -890,6 +985,9 @@ void writefile( root *proot )
 	proot->cfile.open( cfile.c_str(), ios_base::out|ios_base::trunc );
 
 	proot->hfile << "#include \"messagedef.h\"" << endl;
+	proot->hfile << "#ifndef _STRUCTSDEF_H_" << endl;
+	proot->hfile << "#define _STRUCTSDEF_H_" << endl;
+
 	proot->cfile << "#include \"structsdef.h\"" << endl;
 	proot->cfile << "#include \"userdefine.h\"" << endl;
 	proot->hfile
@@ -911,6 +1009,7 @@ void writefile( root *proot )
 		writenode_imp( proot, *inode, "" );
 		++inode;
 	}
+	proot->hfile << "#endif //_STRUCTSDEF_H_" << endl;
 	proot->hfile.close();
 	proot->cfile.close();
 

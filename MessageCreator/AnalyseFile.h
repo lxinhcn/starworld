@@ -18,12 +18,21 @@ struct param
 	bool	_container;		// 是否容器
 };
 
+struct enumerate
+{
+	string name;
+	list< string >	items;
+};
+
 struct node
 {
-	string			name;
-	string			spacename;
-	list< param* >	params;
+	string	name;
+	string	spacename;
+
 	list< node* >	sub;
+	list< param* >	params;
+
+	list< enumerate* >	enums;
 };
 
 struct message
@@ -109,6 +118,15 @@ void destroynode( node *pnode );
 void destroyparam( param *pparam );
 
 //--------------------------------------------------------//
+//	created:	18:12:2009   16:37
+//	filename: 	AnalyseFile
+//	author:		Albert.xu
+//
+//	purpose:	销毁枚举对象
+//--------------------------------------------------------//
+void destroyenum( enumerate *penum );
+
+//--------------------------------------------------------//
 //	created:	14:12:2009   14:51
 //	filename: 	AnalyseFile
 //	author:		Albert.xu
@@ -143,6 +161,15 @@ size_t makedefine( root *proot, char *buf, size_t size, void* pdata );
 //	purpose:	构造结构定义
 //--------------------------------------------------------//
 size_t makenode( root *proot, char *buf, size_t size, void* pdata );
+
+//--------------------------------------------------------//
+//	created:	14:12:2009   18:14
+//	filename: 	AnalyseFile
+//	author:		Albert.xu
+//
+//	purpose:	构造枚举值
+//--------------------------------------------------------//
+size_t makeenum( root *proot, char *buf, size_t size, void* pdata );
 
 //--------------------------------------------------------//
 //	created:	14:12:2009   18:14
