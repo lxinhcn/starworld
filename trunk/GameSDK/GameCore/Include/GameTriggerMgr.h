@@ -127,7 +127,7 @@ namespace XGC
 			TriggerFunc _Func;
 		};
 
-		void RegisterTrigger_i( _uint32 hSource, _uint16 nEvent, TriggerCall* pCall );
+		void RegisteTrigger_i( _uint32 hSource, _uint16 nEvent, TriggerCall* pCall );
 
 		void DismissTrigger_i( _uint32 hSource, _uint16 nEvent, TriggerCall *pCall );
 
@@ -137,9 +137,9 @@ namespace XGC
 		// Description:	×¢²á´¥·¢Æ÷
 		//---------------------------------------------------//
 		template< class TriggerFunc >
-		void RegisterTrigger( _uint32 hSource, _uint16 nEvent, TriggerFunc &call )
+		void RegisteTrigger( _uint32 hSource, _uint16 nEvent, TriggerFunc &call )
 		{
-			RegisterTrigger_i( hSource, nEvent, new FunctionHandler< TriggerFunc >( call ) );
+			RegisteTrigger_i( hSource, nEvent, new FunctionHandler< TriggerFunc >( call ) );
 		}
 
 		template< class Func, class Member >
@@ -173,7 +173,7 @@ namespace XGC
 		void TriggerEvent( _uint32 nSourceID, _uint16 nEventID, long_ptr lParam = 0 );
 
 	private:
-		typedef std::list< TriggerCall*, ALLOCATOR< TriggerCall* > >		TriggerList;
+		typedef std::list< TriggerCall*, ALLOCATOR< TriggerCall* > >	TriggerList;
 		typedef std::vector< TriggerList, ALLOCATOR< TriggerList > >	EventVec;
 		typedef stdext::hash_map< _uint32, EventVec >	SourceHash;
 

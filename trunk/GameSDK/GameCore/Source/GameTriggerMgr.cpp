@@ -9,7 +9,7 @@ CGameTriggerMgr::~CGameTriggerMgr(void)
 {
 }
 
-void CGameTriggerMgr::RegisterTrigger_i( _uint32 hSource, _uint16 nEvent, TriggerCall* pCall )
+void CGameTriggerMgr::RegisteTrigger_i( _uint32 hSource, _uint16 nEvent, TriggerCall* pCall )
 {
 	SourceHash::iterator i = m_SourceHash.find( hSource );
 	if( i == m_SourceHash.end() )

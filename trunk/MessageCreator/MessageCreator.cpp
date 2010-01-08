@@ -41,11 +41,12 @@ int main(int argc, char* argv[])
 	r.opt.linktar = "/D_LIB";
 	r.opt._library = true;
 
+	list< string > filelist;
 	for( int i = 1; i < argc; ++i )
 	{
 		if( argv[i][0] != '-' && argv[i][0] != '/' )
 		{
-			ierror += analysefile( &r, argv[i] );
+			filelist.push_back( argv[i] );
 		}
 		else
 		{
@@ -141,6 +142,11 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
+	}
+
+	for( list<string>::iterator i = filelist.begin(); i != filelist.end(); ++i )
+	{
+		ierror += analysefile( &r, i->c_str() );
 	}
 
 	if( ierror == 0 )

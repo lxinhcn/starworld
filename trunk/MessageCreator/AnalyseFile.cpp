@@ -627,7 +627,7 @@ size_t makemessage( root *proot, char *buf, size_t size, void* pdata )
 {
 	message *msg = new message;
 
-	msg->filename = proot->filename;
+	msg->filename = proot->config.outdir + "\\" + proot->filename;
 	char seps[] = " ,()\n\r\t";
 	char *part[3][2];
 	char *next = NULL, *end = strchr( buf, '{' );
@@ -710,7 +710,7 @@ void writemessage( root *proot, message *pmessage )
 		proot->cfile.close();
 		proot->cfile.clear();
 
-		proot->filename = proot->config.outdir + "\\" + pmessage->filename;
+		proot->filename = pmessage->filename;
 		string hfile = proot->filename+".h";
 		string cfile = proot->filename+".cpp";
 		proot->hfile.open( hfile.c_str(), ios_base::out|ios_base::trunc );
@@ -830,6 +830,7 @@ void writenode_imp( root *proot, node *pnode, string pix )
 	hstream << endl;
 	hstream << "MESSAGE_EXPORT bufstream& operator << ( bufstream& stream, const " << pnode->spacename + pnode->name << "& c );" << endl;
 	hstream	<< "MESSAGE_EXPORT bufstream& operator >> ( bufstream& stream, " << pnode->spacename + pnode->name << "& c );" << endl;
+	hstream << endl << "/////////////////////////////////////////////////////////////////////////////////" << endl;
 }
 
 void writeheader( root *proot )

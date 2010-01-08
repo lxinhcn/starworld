@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)xgcBase\Database&quot;;&quot;$(SolutionDir)xgcBase\Netbase&quot;;&quot;$(SolutionDir)xgcBase\Common&quot;;&quot;$(SolutionDir)Depend\Loki-0.1.6\include&quot;;&quot;$(SolutionDir)Tools\$(ConfigurationName)\Include&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)xgcBase\Database&quot;;&quot;$(SolutionDir)xgcBase\Netbase&quot;;&quot;$(SolutionDir)xgcBase\Common&quot;;&quot;$(SolutionDir)Depend\Loki-0.1.6\include&quot;;&quot;$(SolutionDir)Tools\$(ConfigurationName)\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="LogonMessage.lib"
+				AdditionalDependencies="Common.lib LogonMessage.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;&quot;$(SolutionDir)Depend\Loki-0.1.6\Lib&quot;;&quot;$(SolutionDir)Tools\$(ConfigurationName)\Lib&quot;"
 				GenerateDebugInformation="true"
@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="LogonMessage.lib"
+				AdditionalDependencies="Common.lib LogonMessage.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;&quot;$(SolutionDir)Depend\Loki-0.1.6\Lib&quot;;&quot;$(SolutionDir)Tools\$(ConfigurationName)\Lib&quot;"
 				GenerateDebugInformation="true"
@@ -177,7 +177,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\DispatchService.cpp"
+				RelativePath=".\DatabaseService.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\LogicService.cpp"
 				>
 			</File>
 			<File
@@ -208,6 +212,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\TransQueue.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Í·ÎÄ¼þ"
@@ -219,7 +227,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\dbMessage.h"
+				RelativePath=".\LogicService.h"
 				>
 			</File>
 			<File
@@ -232,6 +240,14 @@
 			</File>
 			<File
 				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TransDefine.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TransQueue.h"
 				>
 			</File>
 		</Filter>
