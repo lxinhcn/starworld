@@ -1,0 +1,18 @@
+#define MMO_LOGON_SERVER_MESSAGE_TYPE	0xe0
+
+message MMO_LogonReplay( MMO_LOGON_SERVER_MESSAGE_TYPE, S2C_LOGON_REPLAY )
+{
+	char token[256];
+	unsigned int	address;
+	unsigned short	port;
+};
+
+message MMO_LogonFailed( MMO_LOGON_SERVER_MESSAGE_TYPE, S2C_LOGON_FAILED )
+{
+	int failed_reason;
+};
+
+message MMO_RegistReplay( MMO_LOGON_SERVER_MESSAGE_TYPE, S2C_REGIST_REPLAY )
+{
+	int failed_reason;
+};
