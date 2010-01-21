@@ -392,8 +392,8 @@ size_t makeunknowe( root *proot, char *buf, size_t size, void* pdata )
 	{
 		if( *next == '[' )
 		{
-			token = matchclose( next, size - ( buf - next ), '[', ']' );
-			if( !next )
+			char *c = matchclose( next, size - ( buf - next ), '[', ']' );
+			if( !c )
 				return -1;
 			pparam->_array = true;
 		}
@@ -557,7 +557,7 @@ size_t makeenum( root *proot, char *buf, size_t size, void* pdata )
 	enumerate *penum = new enumerate;
 	penum->name = (char*)pdata;
 	char *next = NULL;
-	char *token = strntok( buf, match, " ,{}", &next );
+	char *token = strntok( buf, match, " ,{};\t\r\n", &next );
 	while( token )
 	{
 		penum->items.push_back( string( token, next ) );
