@@ -12,16 +12,21 @@ const char *usage =
 "MessageCreator v1.1 write by albert.xu\n"
 "@Copy right 2009\n"
 "-----------------------------------------------------------------------------------------\n"
-"usage format: MessageCreator filename1[ filename2[ filename3 [...] ] ] [options]\n"
-" option = [[-d|-r] [-mt|-md] [-dll|-lib] [-config:configname][-h]]\n"
-"\t-d\t\tdebug version.\n"
-"\t-r\t\trelease version.\n"
-"\t-mt\t\tmutithread stand library.\n"
-"\t-md\t\tmutithread dll library.\n"
-"\t-dll\t\tcreate dll library.\n"
-"\t-lib\t\tcreate static library\n"
-"\t-config\t\tconfig compiler params\n"
-"\t-h\t\tdisplay usage.\n"
+"usage format: MessageCreator <options> <filename1>[,<filename2>, ...]\n"
+"\n"
+" Options:\n"
+"	-d			debug version.\n"
+"	-r			release version.\n"
+"	-mt			mutithread stand library.\n"
+"	-md			mutithread dll library.\n"
+"	-dll		create dll library.\n"
+"	-lib		create static library.\n"
+"	-prefix		set prefix for auto create files.\n"
+"	-incdir		directory of auto make code files.\n"
+"	-libdir		directory of implib file.\n"
+"	-out		out file name.\n"
+"	-unicode	using unicode character set.\n"
+"	-h		display usage.\n"
 "-----------------------------------------------------------------------------------------\n";
 void compiler( root *proot );
 void link( root *proot );
@@ -31,10 +36,7 @@ int main(int argc, char* argv[])
 	root r;
 	int ierror = 0;
 
-	char szValue[1024];
-	char szFullpath[1024];
-
-	r.opt.version = "/D\"NDEBUG\" /O2";
+	r.opt.version = "/D \"WIN32\" /D \"NDEBUG\" /O2 /Oi";
 	r.opt._debug = false;
 	r.opt.runtime = "/MD";
 	r.opt._runtime = false;
@@ -60,12 +62,12 @@ int main(int argc, char* argv[])
 			}
 			else if( _stricmp( argv[i], "-d" ) == 0 )
 			{
-				r.opt.version = "/D\"_DEBUG\" /Od /ZI";
+				r.opt.version = "/D \"WIN32\" /D \"_DEBUG\" /Od";
 				r.opt._debug = true;
 			}
 			else if( _stricmp( argv[i], "-r" ) == 0 )
 			{
-				r.opt.version = "/D\"NDEBUG\" /O2";
+				r.opt.version = "/D \"WIN32\" /D \"NDEBUG\" /O2 /Oi";
 				r.opt._debug = false;
 			}
 			else if( _stricmp( argv[i], "-mt" ) == 0 )
@@ -88,58 +90,46 @@ int main(int argc, char* argv[])
 				r.opt.linktar = "/D_LIB";
 				r.opt._library = true;
 			}
-			else if( _strnicmp( argv[i], "-config:", 8 ) == 0 )
+			else if( _stricmp( argv[i], "-unicode" ) == 0 )
 			{
-				char* begin = strchr( argv[i], ':' );
-				++begin;
-				if( begin )
-				{
-					char ini[1024];
-					_fullpath( ini, begin, sizeof(szFullpath) );
-					
-					DWORD nRead = GetPrivateProfileStringA( "Config", "BinDir", ".\\lib", szValue, _countof(szValue), ini );
-					_fullpath( szFullpath, szValue, sizeof(szFullpath) );
-					CreateDirectoryA( szFullpath, NULL );
-					r.config.bindir = szFullpath;
-
-					nRead = GetPrivateProfileStringA( "Config", "OutDir", ".\\include", szValue, _countof(szValue), ini );
-					_fullpath( szFullpath, szValue, sizeof(szFullpath) );
-					CreateDirectoryA( szFullpath, NULL );
-					r.config.outdir = szFullpath;
-
-					nRead = GetPrivateProfileStringA( "Config", "LibDir", ".\\lib", szValue, _countof(szValue), ini );
-					_fullpath( szFullpath, szValue, sizeof(szFullpath) );
-					CreateDirectoryA( szFullpath, NULL );
-					r.config.libdir = szFullpath;
-
-					GetPrivateProfileStringA( "Config", "OutName", "Message", szValue, _countof(szValue), ini );
-					r.config.outname = szValue;
-
-					GetPrivateProfileStringA( "Config", "LibName", "Message", szValue, _countof(szValue), ini );
-					r.config.libname = szValue;
-
-					GetPrivateProfileStringA( "Config", "LibraryPath", ".\\", szValue, _countof(szValue), ini );
-					char *token = NULL, *end = szValue+nRead, *next = NULL;
-					token = strtok_s( szValue, ";", &next );
-					while( token )
-					{
-						r.config.lib << "/LIBPATH:\"" << token << "\" ";
-						token = strtok_s( NULL, ";", &next );
-					}
-
-					GetPrivateProfileStringA( "Config", "LinkLib", "", szValue, _countof(szValue), ini );
-					r.config.lib << "/MACHINE:X86 " << szValue << " ";
-
-					nRead = GetPrivateProfileStringA( "Config", "IncludePath", ".\\", szValue, _countof(szValue), ini );
-					end = szValue+nRead;
-					next = NULL;
-					token = strtok_s( szValue, ";", &next );
-					while( token )
-					{
-						r.config.inc << "/I\"" << token << "\" ";
-						token = strtok_s( NULL, ";", &next );
-					}
-				}
+				r.opt.unicode = "/D \"_UNICODE\" /D \"UNICODE\" ";
+			}
+			else if( _strnicmp( argv[i], "-wait", 4 ) == 0 )
+			{
+				puts("wait for attach" );
+				_getch();
+			}
+			else if( _strnicmp( argv[i], "-prefix", 7 ) == 0 && argv[i][7] == ':' )
+			{
+				r.config.prefix = argv[i]+8;
+			}
+			else if( _strnicmp( argv[i], "-incdir", 7 ) == 0 && argv[i][7] == ':' )
+			{
+				r.config.incdir = argv[i]+8;
+			}
+			else if( _strnicmp( argv[i], "-libdir", 7 ) == 0 && argv[i][7] == ':' )
+			{
+				r.config.libdir = argv[i]+8;
+			}
+			else if( _strnicmp( argv[i], "-out", 4 ) == 0 && argv[i][4] == ':' )
+			{
+				r.config.outname = argv[i]+5;
+			}
+			else if( _strnicmp( argv[i], "-implib", 7 ) == 0 && argv[i][7] == ':' )
+			{
+				r.config.libname = argv[i]+8;
+			}
+			else if( _strnicmp( argv[i], "-I", 2 ) == 0 )
+			{
+				r.config.inc += string( "/I\"" ) + string(argv[i]+2) + string("\" ");
+			}
+			else if( _strnicmp( argv[i], "-lib", 4 ) == 0 )
+			{
+				r.config.lib = string( "/MACHINE:X86 " ) + string( argv[i]+4 );
+			}
+			else if( _strnicmp( argv[i], "-libpath", 8 ) == 0 )
+			{
+				r.config.libpath = string( "/LIBPATH:" ) + string( argv[i]+8 );
 			}
 		}
 	}
@@ -152,30 +142,24 @@ int main(int argc, char* argv[])
 	if( ierror == 0 )
 	{
 		writefile( &r );
+		compiler( &r );
+		link( &r );
+		destroyall( &r );
+
+		 remove( "compiler.rsp" );
+		 remove( "link.rsp" );
+	}
+	else
+	{
+		puts( "error found program abort!" );
 	}
 
-	compiler( &r );
-	link( &r );
-	destroyall( &r );
-
-	remove( "compiler.rsp" );
-	remove( "link.rsp" );
-
-	//remove( "structsdef.cpp");
-	//remove( "structsdef.obj");
-	//for( list< string >::iterator i = r.files.begin(); i != r.files.end(); ++i )
-	//{
-	//	string filename(*i);
-	//	remove( (filename + ".cpp").c_str() );
-	//	remove( (filename + ".obj").c_str() );
-	//}
-
-	//_getch();
 	return 0;
 }
 
 void compiler( root *proot )
 {
+	puts( "compiler code..." );
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
 	ZeroMemory( &si, sizeof(si) );
@@ -183,28 +167,29 @@ void compiler( root *proot )
 	ZeroMemory( &pi, sizeof(pi) );
 
 	CreateDirectoryA( ".\\temp", NULL );
+
 	fstream f;
 	f.open( "compiler.rsp", ios_base::out|ios_base::trunc );
 	if( f.is_open() )
 	{
-		string strfiles( proot->config.outdir );
-		strfiles += "\\structsdef.cpp\n";
+		string strfiles;
 		for( list< string >::iterator i = proot->files.begin(); i != proot->files.end(); ++i )
 		{
-			strfiles += proot->config.outdir + "\\";
+			strfiles += proot->config.incdir + "\\";
 			strfiles += *i;
 			strfiles += ".cpp\n";
 		}
 
-		f << "/I\"" << proot->config.outdir << "\" "
-			<< proot->config.inc.rdbuf() << " "
+		f << "/I\"" << proot->config.incdir << "\" "
+			<< proot->config.inc << " "
 			<< proot->opt.version << " "
+			<< proot->opt.unicode << " "
 			<< proot->opt.runtime << (proot->opt._debug?"d ":" ")
 			<< proot->opt.linktar << " "
-			<< " /EHsc /GR "
+			<< " /EHsc /Gy "
 			<< "/Fp\".\\temp\\message.pch\" "
 			<< "/Fo\".\\temp\\\\\" "
-			<< "/Fd\"" << ".\\temp\\vc90.pdb\" /c /ZI /TP "
+			<< "/Fd\"" << ".\\temp\\vc90.pdb\" /Zi /TP /c "
 			<< strfiles;
 
 		f.close();
@@ -233,6 +218,7 @@ void compiler( root *proot )
 
 void link( root *proot )
 {
+	puts( "link..." );
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
 	ZeroMemory( &si, sizeof(si) );
@@ -243,7 +229,9 @@ void link( root *proot )
 	f.open( "link.rsp", ios_base::out|ios_base::trunc );
 	if( f.is_open() )
 	{
-		string strfiles( ".\\temp\\structsdef.obj \n" );
+		string strfiles;
+		//string strfiles( ".\\temp\\" );
+		//strfiles += proot->config.prefix + "structsdef.obj \n";
 		for( list< string >::iterator i = proot->files.begin(); i != proot->files.end(); ++i )
 		{
 			strfiles += ".\\temp\\";
@@ -254,8 +242,9 @@ void link( root *proot )
 		if( proot->opt._library )
 		{
 			f << "/OUT:" << proot->config.libdir << "\\" << proot->config.libname << " "
-				<< proot->config.lib.rdbuf() << " " << endl
+				<< proot->config.lib << " "
 				<< strfiles;
+			f.flush();
 			f.close();
 
 			_tchar szCommandline[] = _T("lib.exe @link.rsp /nologo");
@@ -274,10 +263,10 @@ void link( root *proot )
 		}
 		else
 		{
-			f << "/OUT:" << proot->config.bindir << "\\" << proot->config.outname << " /DLL "
-				<< "/IMPLIB:" << proot->config.libdir << "\\" << proot->config.libname << ".lib "
-				<< (proot->opt._debug?"/DEBUG ":" ") << "/PDB:" << proot->config.bindir << "\\" << proot->config.outname << ".pdb "
-				<< proot->config.lib.rdbuf() << " "
+			f << "/OUT:" << proot->config.outname << " /DLL "
+				<< "/IMPLIB:" << proot->config.libdir << "\\" << proot->config.libname
+				<< (proot->opt._debug?"/DEBUG ":" ") << "/PDB:" << proot->config.outname << ".pdb "
+				<< proot->config.lib << " "
 				<< strfiles;
 			f.close();
 

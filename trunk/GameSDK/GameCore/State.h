@@ -60,17 +60,18 @@ template< class E, int C = 8 >
 class CStateTemplate
 {
 public:
-	typedef CState< E >			_ESTATE;	// 状态
-	typedef CStateTemplate< E >	_THIS;
+	typedef E _entity;
 
-	typedef std::stack< _uint8 >			_STATESTACK; // 状态队列
-	typedef Loki::Function< _uint8 ( E* ) >	_GUARDFUNC;// 守护条件
-	typedef std::list< _GUARDFUNC >			_GUARDLIST; // 守护条件列表。
+	typedef CState< _entity >				_state;	// 状态
+	typedef CStateTemplate< _entity, C >	_this;
+
+	typedef Loki::Function< _uint8 ( _entity* ) >	_guardfun;// 守护条件
+	typedef std::list< _guardfun >	_guardlist; // 守护条件列表。
 
 public:
-	CStateTemplate( E *pOwner )
+	CStateTemplate( _entity *pOwner )
 		: m_pOwner( pOwner )
-		, m_nCurIndex( 0 )
+		, m_pCurStage( NULL )
 	{
 		memset( m_StatePool, 0, sizeof(m_StatePool) );
 	}
@@ -87,12 +88,12 @@ public:
 	//
 	//	purpose:	设置状态映射表
 	//--------------------------------------------------------//
-	bool MapState( _uint8 nIndex, _ESTATE *pState )
+	bool MapState( _uint8 nIndex, _state *pState )
 	{
 		if( nIndex >= _countof(m_StatePool) ) 
 			return false;
 
-		m_StatePool[nIndex].state = pState;
+		m_StatePool[nIndex] = pState;
 	}
 
 	//--------------------------------------------------------//
@@ -102,16 +103,12 @@ public:
 	//
 	//	purpose:	注册状态迁移路径的守护条件
 	//--------------------------------------------------------//
-	bool RegistStateGuard( _uint8 nIndex, _GUARDFUNC& Func )
+	bool RegistStateGuard( _uint8 nIndex, _guardfun& Func )
 	{
-		if( nIndex >= _countof(m_StatePool) ) 
+		if( nIndex >= _countof( m_StatePool ) )
 			return false;
 
-		_STATE& State = m_StatePool[nIndex];
-		if( !State.state )
-			return false;
-
-		State.guards.push_back( Func );
+		m_Guards[nIndex].push_back( Func );
 	}
 
 	//--------------------------------------------------------//
@@ -123,12 +120,15 @@ public:
 	//--------------------------------------------------------//
 	void Update()
 	{
-		_STATE& State = m_StatePool[m_nCurIndex];
-		if( State.state )
+		if( !m_pCurStage )
+			return;
+
+		_state* pState = m_StatePool[m_pCurStage->index];
+		if( pState )
 		{
-			State.state->OnUpdate( m_pOwner );
-			_GUARDLIST::iterator i = State.guards.begin();
-			while( i != State.guards.end() )
+			pState->OnUpdate( m_pOwner );
+			_guardlist::iterator i = m_Guards[m_pCurStage->index].begin();
+			while( i != m_Guards[m_pCurStage->index].end() )
 			{
 				_uint8 nNewState = (*i)( m_pOwner );
 				if( nNewState != -1 )
@@ -153,18 +153,21 @@ public:
 		if( nIndex >= _countof(m_StatePool) )
 			return false;
 
-		_STATE& _OldState = m_StatePool[m_nCurIndex];
-		_STATE& _NewState = m_StatePool[nIndex];
-		if( _NewState.state == NULL )
+		if( m_pCurStage == NULL )
+			m_pCurStage = new stage;
+		_state *pOldState = m_StatePool[m_pCurStage->index];
+		_state *pNewState = m_StatePool[nIndex];
+		if( pNewState == NULL )
 			return false;
 
-		if( _NewState.state->OnEnter( m_pOwner ) == false )
+		if( pNewState->OnEnter( m_pOwner ) == false )
 			return false;
 
-		if( _OldState.state )
-			_OldState.state->OnLeave( m_pOwner );
+		if( pOldState )
+			pOldState->OnLeave( m_pOwner );
 
-		m_nCurIndex = nIndex;
+		m_pCurStage->index = nIndex;
+		m_pCurStage->interrupt = false;
 		return true;
 	}
 
@@ -178,24 +181,25 @@ public:
 	//--------------------------------------------------------//
 	bool Interrupt( _uint8 nIndex )
 	{
-		m_ss.push( nIndex );
 
 		if( nIndex >= _countof(m_StatePool) )
 			return false;
 
-		_STATE& _OldState = m_StatePool[m_nCurIndex];
-		_STATE& _NewState = m_StatePool[nIndex];
+		_state *pOldState  = m_StatePool[m_pCurStage->index];
+		_state *pNewState = m_StatePool[nIndex];
 
-		if( _NewState.state == NULL )
+		if( pNewState == NULL )
 			return false;
 
-		if( _NewState.state->OnEnter( m_pOwner ) == false )
+		if( pNewState->OnInterrupt( m_pOwner ) == false )
 			return false;
 
-		if( _OldState.state )
-			_OldState.state->OnInterrupt( m_pOwner );
+		pstage s = new stage;
+		s->index = m_pCurStage->index;
+		s->interrupt = m_pCurStage->interrupt;
+		s->next = m_CurStage->next;
 
-		m_nCurIndex = nIndex;
+		m_pCurStage
 		return true;
 	}
 
@@ -208,40 +212,39 @@ public:
 	//--------------------------------------------------------//
 	bool Iret()
 	{
+		if( m_ss.empty() )
+			return false;
+
 		_uint8 nIndex = m_ss.top();
 		m_ss.pop();
 
 		if( nIndex >= _countof(m_StatePool) )
 			return false;
 
-		_STATE& _OldState = m_StatePool[m_nCurIndex];
-		_STATE& _NewState = m_StatePool[nIndex];
+		_state *pOldState  = m_StatePool[nIndex];
+		_state *pCurState  = m_StatePool[m_pCurStage->index];
 
-		if( _NewState.state == NULL )
-			return false;
+		// 通知当前状态从中断过程中返回
+		if( pCurState )
+			pCurState->OnIret( m_pOwner );
 
-		if( _NewState.state->OnIret( m_pOwner ) == false )
-			return false;
-
-		if( _OldState.state )
-			_OldState.state->OnLeave( m_pOwner );
-
-		m_nCurIndex = nIndex;
+		m_pCurStage->index = nIndex;
 
 		return true;
 	}
 
 private:
-	typedef struct _STATE_
+	typedef struct _stage
 	{
-		_ESTATE*	state;
-		_GUARDLIST	guards;
-	}_STATE, *_PSTATE;
+		_uint8	interrupt;
+		_uint8	index;
 
-	E*		m_pOwner;
-	_STATE	m_StatePool[C];
-	_GUARDLIST	m_gl;
-	_STATESTACK	m_ss;
+		struct _stage *next;
+	}stage, *pstage;
 
-	_uint8	m_nCurIndex;
+	_entity		*m_pOwner;
+	_state		*m_StatePool[C];
+	_guardlist	m_Guards[C];
+
+	pstage		m_pCurStage;
 };
