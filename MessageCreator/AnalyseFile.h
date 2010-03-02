@@ -58,18 +58,19 @@ struct root
 	list< string >		defines;	// 预定义宏
 	list< string >		files;
 
-	struct
+	struct _config
 	{
-		string	bindir;		// 库文件输出目录
-		string	outdir;		// 包含文件输出目录
+		string	incdir;		// 包含文件输出目录
 		string	libdir;		// 库文件输出路径
 		string	outname;	// 输出文件名
+		string	prefix;		// 预定义文件名前缀
 		string	libname;	// 导入库文件名
-		strstream	lib;	// 库文件连接参数
-		strstream	inc;	// 包含文件编译参数
+		string	libpath;// 库文件目录
+		string	lib;	// 库文件连接参数
+		string	inc;	// 包含文件编译参数
 	}config;
 
-	struct
+	struct _opt
 	{
 		bool	_debug;
 		bool	_runtime;
@@ -77,6 +78,7 @@ struct root
 		string	version;		// 版本
 		string	runtime;		// 运行库
 		string	linktar;		// 连接目标 dll or lib
+		string	unicode;
 	}opt;
 };
 struct command;
@@ -142,7 +144,7 @@ int analysefile( root *proot, _lpcstr filename );
 //
 //	purpose:	查找列表中的第一个字符串
 //--------------------------------------------------------//
-int findkeywork( char **buf, size_t *size, command commands[], int count );
+int findkeywork( char **buf, char *end, command commands[], int count );
 
 //--------------------------------------------------------//
 //	created:	14:12:2009   18:14

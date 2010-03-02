@@ -11,6 +11,7 @@ static command typelist[] =
 {
 	{ "unsigned",	makemodifier },
 	{ "const",		makemodifier },
+	{ "bool",		makebasic },
 	{ "char",		makebasic },
 	{ "wchar_t",	makebasic },
 	{ "short",		makebasic },
@@ -109,14 +110,16 @@ int analysefile( root *proot, _lpcstr filename )
 {
 	int ret = 0;
 	FILE *fp;
-	fopen_s( &fp, filename, "r" );
+	fopen_s( &fp, filename, "rb" );
 	if( fp )
 	{
 		printf( "analyse file %s...\n", filename );
-		struct _stat teststat;
-		_tstat( XA2T(filename), &teststat );
-		size_t size = proot->size = teststat.st_size;
+		fseek( fp, 0, SEEK_END );
+		size_t size = proot->size = ftell(fp);
+
+		fseek( fp, 0, SEEK_SET );
 		char *buf = proot->buf = (char*)malloc( size );
+		char *bend = buf + size;
 
 		if( fread( buf, size, 1, fp ) != 1 && !feof(fp) )
 		{
@@ -125,25 +128,21 @@ int analysefile( root *proot, _lpcstr filename )
 		}
 
 		string fname = filename;
-		proot->filename = fname.substr( 0, fname.rfind( '.' ) );
+		proot->filename = fname.substr( fname.rfind( '\\' )+1, fname.rfind( '.' ) - fname.rfind( '\\' ) - 1 );
 		proot->files.push_back( proot->filename );
-		while( size )
+		for( ;; )
 		{
-			int idx = findkeywork( &buf, &size, commands, _countof(commands) );
+			int idx = findkeywork( &buf, bend, commands, _countof(commands) );
 			if( idx != -1 )
 			{
-				size_t read = commands[idx].pcommand( proot, buf, size, NULL );
+				size_t read = commands[idx].pcommand( proot, buf, bend - buf, NULL );
 				if( read == -1 )
 				{
 					++ret;
 					++buf;
 					--size;
 				}
-				else
-				{
-					size -= read;
-					buf += read;
-				}
+				buf += read;
 			}
 			else
 			{
@@ -210,9 +209,9 @@ char* matchclose( char *buf, size_t size, char lch = '{', char rch = '}' )
 //
 //	purpose:	查找列表中的第一个字符串
 //--------------------------------------------------------//
-int findkeywork( char **buf, size_t *size, command commands[], int count )
+int findkeywork( char **buf, char *end, command commands[], int count )
 {
-	while( *size )
+	while( *buf < end )
 	{
 		for( int i = 0; i < count; ++i )
 		{
@@ -224,7 +223,6 @@ int findkeywork( char **buf, size_t *size, command commands[], int count )
 			}
 		}
 		++*buf;
-		--*size;
 	}
 	return -1;
 }
@@ -242,7 +240,7 @@ size_t makedefine( root *proot, char *buf, size_t size, void* pdata )
 	char *end = buf;
 	do
 	{
-		end = strchr( begin, '\n' );
+		strntok( begin, buf + size, "\r\n", &end );
 		if( strntok( begin, end, "\\", &begin ) && begin != end )
 		{
 			strntok( begin, end, " \t", &begin );
@@ -352,7 +350,6 @@ size_t makeparam( root *proot, char *buf, size_t size, void* pdata )
 	int ret = iskeywork( proot, buf, size, typelist, _countof(typelist) );
 	if( ret != -1 )
 	{
-
 		return typelist[ret].pcommand( proot, buf, size, pdata );
 	}
 	else
@@ -387,6 +384,8 @@ size_t makeunknowe( root *proot, char *buf, size_t size, void* pdata )
 	}
 
 	pparam->tname.append( token, next );
+	printf( "make unknowe type %s at line %d \n", pparam->tname.c_str(), countline( proot->buf, buf ) );
+
 	token = strntok( NULL, buf+size, " ;[]\t\r\n", &next );
 	if( token )
 	{
@@ -419,9 +418,12 @@ size_t makemodifier( root *proot, char *buf, size_t size, void* pdata )
 		param_->tname.append( token, next+1 );
 	}
 
-	size_t read = next - token;
-	read += makeparam( proot, next, size - read, pdata );
-	return read;
+	size_t ret = makeparam( proot, next, buf + size - next, pdata );
+	if( ret == -1 )
+	{
+		printf( "make param error at line %d", countline( proot->buf, buf ) );
+	}
+	return size;
 }
 
 //--------------------------------------------------------//
@@ -560,7 +562,17 @@ size_t makeenum( root *proot, char *buf, size_t size, void* pdata )
 	char *token = strntok( buf, match, " ,{};\t\r\n", &next );
 	while( token )
 	{
-		penum->items.push_back( string( token, next ) );
+		if( *token == '/' && *(token+1) == '/' )
+		{
+			next = strchr( token, '\n' );
+			if( next > match )
+				break;
+		}
+		else
+		{
+			penum->items.push_back( string( token, next ) );
+		}
+		
 		token = strntok( NULL, match, " ,{};\t\r\n", &next );
 	}
 	node* pnode = proot->pnode.top();
@@ -617,7 +629,7 @@ size_t maketree( root *proot, char *buf, size_t size, void* pdata )
 			break;
 		case '{':
 			{
-				char *next = NULL, seps[] = " ;()\n\r\t";
+				char *next = NULL, seps[] = " {};()\n\r\t";
 				char *token = strntok( bseg, cur, seps, &next );
 				char *part[256][2];
 				int i = 0;
@@ -700,7 +712,7 @@ size_t makemessage( root *proot, char *buf, size_t size, void* pdata )
 {
 	message *msg = new message;
 
-	msg->filename = proot->config.outdir + "\\" + proot->filename;
+	msg->filename = proot->filename;
 	char seps[] = " ,()\n\r\t";
 	char *part[3][2];
 	char *next = NULL, *end = strchr( buf, '{' );
@@ -746,21 +758,33 @@ size_t makemessage( root *proot, char *buf, size_t size, void* pdata )
 			mcode->pvalue = msg->scode;
 			msg->sub.params.push_back( mcode );
 
+			param *vcode  = new param;
+			vcode->_array = false;
+			vcode->_basic = true;
+			vcode->_container = false;
+			vcode->_point = false;
+			vcode->_immediately = true;
+			vcode->tline = "_uint16 vcode;";
+			vcode->tname = "_uint16";
+			vcode->pname = "vcode";
+			vcode->pvalue = "0";
+			msg->sub.params.push_back( vcode );
+
 			proot->mcode[msg->stype].push_back( msg->scode );
 		}
 		else
 		{
-			printf( "message format error at %d, use : \nmessage MESSAGENAME( TYPE, CODE )\n{ \nSOMEBODY;\n };\n", countline( proot->buf, part[i][0] ) );
+			printf( "message format error at %d, use : \nmessage MESSAGENAME( TYPE, CODE )\n{ \nSOMEBODY;\n };\n", countline( proot->buf, buf ) );
 			return false;
 		}
 		proot->pnode.push( &msg->sub );
+		printf( "\tmake message %s\n", msg->sub.name.c_str() );
 		size_t read = maketree( proot, end, size - ( end - buf ), NULL );
 		if( read == -1 )
 		{
-			printf( "cannot found match '}' at %d", countline( proot->buf, buf ) );
+			printf( "cannot found match '}' at %d\n", countline( proot->buf, buf ) );
 			return -1;
 		}
-		printf( "\tmake message %s\n", msg->sub.name.c_str() );
 		total += end - buf + read;
 	}
 	proot->mnode.push_back( msg );
@@ -784,8 +808,8 @@ void writemessage( root *proot, message *pmessage )
 		proot->cfile.clear();
 
 		proot->filename = pmessage->filename;
-		string hfile = proot->filename+".h";
-		string cfile = proot->filename+".cpp";
+		string hfile = proot->config.incdir + "\\" + proot->filename+".h";
+		string cfile = proot->config.incdir + "\\" + proot->filename+".cpp";
 		proot->hfile.open( hfile.c_str(), ios_base::out|ios_base::trunc );
 		if( !proot->hfile.is_open() )
 		{
@@ -794,8 +818,11 @@ void writemessage( root *proot, message *pmessage )
 		}
 		else
 		{
-			proot->hfile << "#include \"messagedef.h\"" << endl;
-			proot->hfile << "#include \"structsdef.h\"" << endl;
+			proot->hfile << "#include \"" << proot->config.prefix << "messagedef.h\"" << endl;
+			if( proot->snode.size() )
+			{
+				proot->hfile << "#include \"" << proot->config.prefix << "structsdef.h\"" << endl;
+			}
 		}
 		proot->cfile.open( cfile.c_str(), ios_base::out|ios_base::trunc );
 		if( !proot->cfile.is_open() )
@@ -805,7 +832,7 @@ void writemessage( root *proot, message *pmessage )
 		}
 		else
 		{
-			proot->cfile << "#include \"" << hfile << "\"" << endl;
+			proot->cfile << "#include \"" << proot->filename << ".h\"" << endl;
 			proot->hfile
 				<< "#ifdef _USRDLL" << endl
 				<< "\t#ifdef MESSAGE_API" << endl
@@ -844,13 +871,13 @@ void writenode_def( root *proot, node *pnode, string pix )
 		hstream << pix << "\t" << "enum " << penum->name;
 		if( !singleline ) hstream << endl << pix << "\t" ;
 		hstream << "{ ";
-		if( !singleline ) hstream << endl << pix << "\t" ;
+		if( !singleline ) hstream << endl << pix << "\t\t" ;
 
 		list< string >::iterator iitem = penum->items.begin();
 		while( iitem != penum->items.end() )
 		{
 			hstream << *iitem << ", ";
-			if( !singleline ) hstream << endl << pix << "\t";
+			if( !singleline ) hstream << endl << pix << "\t\t";
 			++iitem;
 		}
 
@@ -878,16 +905,20 @@ void writenode_def( root *proot, node *pnode, string pix )
 	while( iparam != pnode->params.end() )
 	{
 		param* pparam = *iparam;
-		hstream << pix << "\t" << pparam->tline << endl;
+
+		// write param define.
+		if( !pparam->_immediately )
+			hstream << pix << "\t" << pparam->tline << endl;
+
 		if( pparam->_immediately )
 		{
 			opi_stream << "\tstream << " << pparam->tname << "(" << pparam->pvalue << ");" << endl;
-			opo_stream << "\tstream >> c." << pparam->pname << ";" << endl;
+			//opo_stream << "\tstream >> c." << pparam->pname << ";" << endl;
 		}
 		else if( pparam->_array && pparam->_basic)
 		{
-			opi_stream << "\tstream << bufstream( (char*)c." << pparam->pname << ", sizeof(c." << pparam->pname << "), bufstream::out );" << endl;
-			opo_stream << "\tstream >> bufstream( (char*)c." << pparam->pname << ", sizeof(c." << pparam->pname << "), bufstream::in, sizeof(c." << pparam->pname << ") );" << endl;
+			opi_stream << "\tstream << bufstream( (const char*)c." << pparam->pname << ", sizeof(c." << pparam->pname << "), bufstream::out );" << endl;
+			opo_stream << "\tstream >> bufstream( (const char*)c." << pparam->pname << ", sizeof(c." << pparam->pname << "), bufstream::in, sizeof(c." << pparam->pname << ") );" << endl;
 		}
 		else if( pparam->_array )
 		{
@@ -930,7 +961,7 @@ void writenode_imp( root *proot, node *pnode, string pix )
 
 void writeheader( root *proot )
 {
-	string hfile = proot->config.outdir + "\\messagedef.h";
+	string hfile = proot->config.incdir + "\\" + proot->config.prefix + "messagedef.h";
 	fstream stream;
 	stream.open( hfile.c_str(), ios_base::out|ios_base::trunc );
 	if( !stream.is_open() )
@@ -940,9 +971,10 @@ void writeheader( root *proot )
 	}
 	else
 	{
-		stream << "#ifndef _MESSAGEDEF_H" << endl;
-		stream << "#define _MESSAGEDEF_H" << endl;
+		stream << "#ifndef " << proot->config.prefix << "_MESSAGEDEF_H" << endl;
+		stream << "#define " << proot->config.prefix << "_MESSAGEDEF_H" << endl;
 		stream << "#include \"commonlib.h\"" << endl;
+		stream << "#include \"userdefine.h\"" << endl;
 		stream << "using namespace std;" << endl;
 
 		list< string >::iterator iter = proot->defines.begin();
@@ -962,6 +994,7 @@ void writeheader( root *proot )
 				stream << "\t" << *icode << "," << endl;
 				++icode;
 			}
+			stream << "\t" << itypemap->first << "_COUNT" << endl;
 			stream << "};" << endl;
 			++itypemap;
 		}
@@ -979,39 +1012,43 @@ void writeheader( root *proot )
 //--------------------------------------------------------//
 void writefile( root *proot )
 {
-	string hfile = proot->config.outdir + "\\structsdef.h";
-	string cfile = proot->config.outdir + "\\structsdef.cpp";
-	proot->hfile.open( hfile.c_str(), ios_base::out|ios_base::trunc );
-	proot->cfile.open( cfile.c_str(), ios_base::out|ios_base::trunc );
-
-	proot->hfile << "#include \"messagedef.h\"" << endl;
-	proot->hfile << "#ifndef _STRUCTSDEF_H_" << endl;
-	proot->hfile << "#define _STRUCTSDEF_H_" << endl;
-
-	proot->cfile << "#include \"structsdef.h\"" << endl;
-	proot->cfile << "#include \"userdefine.h\"" << endl;
-	proot->hfile
-		<< "#ifdef _USRDLL" << endl
-		<< "\t#ifdef MESSAGE_API" << endl
-		<< "\t\t#define MESSAGE_EXPORT __declspec(dllexport)" << endl
-		<< "\t#else" << endl
-		<< "\t\t#define MESSAGE_EXPORT __declspec(dllimport)" << endl 
-		<< "\t#endif" << endl
-		<< "#else" << endl
-		<< "\t#define MESSAGE_EXPORT" << endl
-		<< "#endif" << endl
-		<< endl;
-
-	list< node * >::iterator inode = proot->snode.begin();
-	while( inode != proot->snode.end() )
+	if( proot->snode.size() )
 	{
-		writenode_def( proot, *inode, "" );
-		writenode_imp( proot, *inode, "" );
-		++inode;
+		string hfile = proot->config.incdir + "\\" + proot->config.prefix + "structsdef.h";
+		string cfile = proot->config.incdir + "\\" + proot->config.prefix + "structsdef.cpp";
+		proot->hfile.open( hfile.c_str(), ios_base::out|ios_base::trunc );
+		proot->cfile.open( cfile.c_str(), ios_base::out|ios_base::trunc );
+
+		proot->hfile << "#include \"" << proot->config.prefix << "messagedef.h\"" << endl;
+		proot->hfile << "#ifndef " << proot->config.prefix << "_STRUCTSDEF_H_" << endl;
+		proot->hfile << "#define " << proot->config.prefix << "_STRUCTSDEF_H_" << endl;
+
+		proot->cfile << "#include \"" << proot->config.prefix << "structsdef.h\"" << endl;
+		proot->hfile
+			<< "#ifdef _USRDLL" << endl
+			<< "\t#ifdef MESSAGE_API" << endl
+			<< "\t\t#define MESSAGE_EXPORT __declspec(dllexport)" << endl
+			<< "\t#else" << endl
+			<< "\t\t#define MESSAGE_EXPORT __declspec(dllimport)" << endl 
+			<< "\t#endif" << endl
+			<< "#else" << endl
+			<< "\t#define MESSAGE_EXPORT" << endl
+			<< "#endif" << endl
+			<< endl;
+
+		list< node * >::iterator inode = proot->snode.begin();
+		while( inode != proot->snode.end() )
+		{
+			writenode_def( proot, *inode, "" );
+			writenode_imp( proot, *inode, "" );
+			++inode;
+		}
+		proot->hfile << "#endif //_STRUCTSDEF_H_" << endl;
+		proot->hfile.close();
+		proot->cfile.close();
+
+		proot->files.push_back( proot->config.prefix + "structsdef" );
 	}
-	proot->hfile << "#endif //_STRUCTSDEF_H_" << endl;
-	proot->hfile.close();
-	proot->cfile.close();
 
 	list< message * >::iterator imessage = proot->mnode.begin();
 	while( imessage != proot->mnode.end() )
