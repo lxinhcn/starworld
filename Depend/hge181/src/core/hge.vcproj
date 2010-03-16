@@ -79,7 +79,7 @@
 				OutputFile="$(OutDir)\hge.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\..\DX81SDK\Lib"
+				AdditionalLibraryDirectories="$(SolutionDir)Depend\DX81SDK\Lib"
 				IgnoreDefaultLibraryNames="libci.lib"
 				ModuleDefinitionFile=".\hge.def"
 				GenerateDebugInformation="true"
