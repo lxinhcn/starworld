@@ -4,7 +4,7 @@
 
 BEGIN_DISPATCHER_TABLE( CNetworkService, message_type )
 	DECLARE_DISPATCH( SYSTEM_MESSAGE_TYPE, OnSystemMessage )
-	DECLARE_DISPATCH( MMO_LOGON_CLIENT_MESSAGE_TYPE, OnServerMessage )
+	//DECLARE_DISPATCH( MMO_LOGON_CLIENT_MESSAGE_TYPE, OnServerMessage )
 END_DISPATCHER_TABLE( CNetworkService, message_type )
 
 BEGIN_DISPATCHER_TABLE( CNetworkService, system_code )
@@ -13,8 +13,8 @@ BEGIN_DISPATCHER_TABLE( CNetworkService, system_code )
 END_DISPATCHER_TABLE( CNetworkService, system_code )
 	
 BEGIN_DISPATCHER_TABLE( CNetworkService, server_code )
-	DECLARE_DISPATCH( C2S_REGIST_REQUEST, OnRegistRequest )
-	DECLARE_DISPATCH( C2S_LOGON_REQUEST, OnLogonRequest )
+	//DECLARE_DISPATCH( C2S_REGIST_REQUEST, OnRegistRequest )
+	//DECLARE_DISPATCH( C2S_LOGON_REQUEST, OnLogonRequest )
 END_DISPATCHER_TABLE( CNetworkService, server_code )
 
 CNetworkService::CNetworkService( _uint16 nPort )
@@ -141,9 +141,9 @@ void CNetworkService::OnNetworkClose( const char* data, size_t size )
 //////////////////////////////////////////////////////////////////////////
 void CNetworkService::OnRegistRequest( const char *data, size_t size )
 {
-	MMO_RegistRequest msg;
-	bufstream bsf( data, size, 0 );
-	bsf >> msg;
+	//MMO_RegistRequest msg;
+	//bufstream bsf( data, size, 0 );
+	//bsf >> msg;
 }
 
 void CNetworkService::OnLogonRequest( const char *data, size_t size )

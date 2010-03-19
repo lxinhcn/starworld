@@ -84,14 +84,14 @@ size_t CDatabaseService::userRegist( db::connection conn, transaction &header )
 
 		int ret = db::get_param_integer( cmd, "@Return" );
 
-		MMO_RegistReplay nmsg;
-		nmsg.failed_reason = ret;
+		//MMO_RegistReplay nmsg;
+		//nmsg.failed_reason = ret;
 
-		char buf[1024];
-		bufstream sbuf( buf, sizeof(buf) );
-		sbuf << nmsg;
+		//char buf[1024];
+		//bufstream sbuf( buf, sizeof(buf) );
+		//sbuf << nmsg;
 
-		SendPacket( header.uid, sbuf.base(), sbuf.wd() );
+		//SendPacket( header.uid, sbuf.base(), sbuf.wd() );
 
 		db::destroy_command( cmd );
 		return 1;
