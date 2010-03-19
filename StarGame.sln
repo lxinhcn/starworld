@@ -58,6 +58,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoginServer", "LoginServer\
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetBase", "xgcBase\NetBase\NetBase.vcproj", "{F2303FEE-E0F3-4856-A054-8329189231AC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6A7B47C4-7997-47CC-A6D7-FEE15279F2F9} = {6A7B47C4-7997-47CC-A6D7-FEE15279F2F9}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MessageCreator", "MessageCreator\MessageCreator.vcproj", "{9C388BF4-F5C5-4A26-9BAB-650EDC454E87}"
 EndProject
