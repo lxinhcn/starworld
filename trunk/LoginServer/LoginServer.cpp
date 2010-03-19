@@ -5,8 +5,8 @@
 #include <conio.h>
 #include <stdlib.h>
 #include <process.h>
-#include "Database.h"
 #include "NetworkService.h"
+#include "loki/Singleton.h"
 
 using namespace XGC;
 
