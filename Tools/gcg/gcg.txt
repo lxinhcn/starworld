@@ -1,0 +1,493 @@
+#define NCS2GS_MSG_TYPE		0x21
+#define NGS2CS_MSG_TYPE		0x21
+
+//////////////////////////////////////////////////////////////////////////
+//  center server 中转消息
+//////////////////////////////////////////////////////////////////////////
+message NCS2GS_RelayMessage( NCS2GS_MSG_TYPE, NCS2GS_SERVER_RELAY_MSG )
+{
+	_uint16 destServerID;
+	_uint16 sourceServerID;
+	_uint32 senderID;
+	_uint16 serverMsgID;
+};
+
+//////////////////////////////////////////////////////////////////////////
+// 服务器关闭通知
+//////////////////////////////////////////////////////////////////////////
+message NCS2GS_ServerClosedNotify( NCS2GS_MSG_TYPE, NCS2GS_SERVER_CLOSED_NOTIFY )
+{
+	//	服务器ID
+	_uint16 nServerID;
+	// 服务器区ID
+	_uint16 nRegionID;
+};
+
+//////////////////////////////////////////////////////////////////////////
+// 回复 game server 信息
+//////////////////////////////////////////////////////////////////////////
+message NCS2GS_GameServerIDReplay( NCS2GS_MSG_TYPE, NCS2GS_RPN_SERVERINFO )
+{
+	//	服务器ID
+	_uint16 gsID;						
+	//	服务器组编号	
+	_uint16 groupID;						
+	//	服务器地址	16
+	string	strGSIP;				
+	//	服务器端口	
+	_uint16 gsPort;						
+	//	服务器最大在线人数 
+	_uint16 gsMaxPlayerNum;		
+};
+
+//////////////////////////////////////////////////////////////////////////
+//  验证信息 (角色验证信息)
+//////////////////////////////////////////////////////////////////////////
+message NCS2GS_UpdateUserVerifiedInfo( NCS2GS_MSG_TYPE, NCS2GS_USER_VERIFIED_INFO )
+{
+	// 由cs分配的登录ID 
+	_uint32 login_id;
+	// 帐号的永久编号
+	_uint32 char_id;
+	// 新分配的lobby_id
+	_uint32 lobby_id;
+	// 新分配的KEY
+	string  strKey;
+	// 帐号
+	string strUserName;
+	//	登陆服务器ID
+	_uint32 loginserverID;
+	//  在登陆服务器上的网络ID
+	_uint32 networkID_at_loginserver;
+};
+
+//////////////////////////////////////////////////////////////////////////
+//  更新所有的game server信息 
+//////////////////////////////////////////////////////////////////////////
+message NCS2GS_UpdateGameServerInfo( NCS2GS_MSG_TYPE, NCS2GS_UPDATE_ALL_GS_INFO )
+{
+	struct server_info
+	{
+		// 服务器 ID 
+		_uint16 nServerID;
+		// GameServer所属的组
+		_uint16	nRegionIndex;						
+		// 远程 GameServer 服务器iP地址				
+		_uint32 nServerOuterAddr;					
+		// 远程 GameServer 服务器端口		
+		_uint16	nServerOuterPort;					
+		// 此服务器在线人数			
+		_uint16 nServerPlayerCount;							
+		// 此服务器Max在线人数
+		_uint16 nServerMaxPlayerCount;
+		// 此服务器房间数			
+		_uint16 nServerRoomCount;											
+		// lobby信息 
+		struct lobby_info
+		{
+		// 远程GameServer 上的lobby ID
+			_uint32		nLobbyID;											
+			// 远程 lobby 名称 
+			_string	strLobbyName;									
+			// PVE或PVP
+			_byte		nLobbyType;										
+			// 远程 lobby的在线人数
+			_uint16	nPlayerCount;									
+			// 远程 lobby的房间数
+			_uint16	nRoomCount;										
+			// 远程  最大人数 
+			_uint16	nMaxPlayerCount;								
+		};		
+		vector< lobby_info > lobbys;
+	};
+	USHORT		server_count;
+	vector< server_info > servers;
+};
+
+//////////////////////////////////////////////////////////////////////////
+// center server 通知转发消息错误
+//////////////////////////////////////////////////////////////////////////
+message NCS2GS_ServerRelayError( NCS2GS_MSG_TYPE, NCS2GS_SERVER_RELAY_ERROR )
+{
+	//	目标服务器ID
+	_uint16 nDestServerID;
+	//	源服务器ID
+	_uint16 nSourceServerID;
+	//	发送者网络ID
+	_uint32 nSenderID;
+	//	发送的消息ID
+	_uint16 nServerMsgID;
+	//	错误码
+	_uint32 nReason;    
+	enum 
+	{
+		//	1 serverID错误;
+		SERVER_MSG_ID_ERROR,
+		//	2 消息不可到达;
+		MESSAGE_NO_REACH,
+		//	3找不到jump信息
+		NO_JUMP_INFO,
+	};
+};
+
+//////////////////////////////////////////////////////////////////////////
+// center server要求gamesever踢人
+//////////////////////////////////////////////////////////////////////////
+message NCS2GS_RequestKickUser( NCS2GS_MSG_TYPE, NCS2GS_REQUEST_KICK_USER )
+{
+	//	角色tempid
+	_uint32 tempID;
+	//	角色帐号的永久编号
+	_uint32 charID;
+	// 	loginserver ID
+	_uint32 nLoginServerID;
+	//	在loginserver上的网络ID 
+	_uint32 networkID_at_loginserver;
+};
+
+//////////////////////////////////////////////////////////////////////////
+// center server通知game server允许跳服
+//////////////////////////////////////////////////////////////////////////
+message NCS2GS_AllowJumpServer( NCS2GS_MSG_TYPE, NCS2GS_ALLOW_JUMP_SERVER )
+{
+	// 	登录id
+	_uint32 loginID;
+	//	目标大厅ID	
+	_uint32 destLobbyID;
+	//	源服务器 
+	_uint16 sourceServerID;
+	// 发送者网络ID
+	_uint32 senderID;
+	// 新分配的KEY
+	//char key[MAX_KEY_MAP_LENGTH];
+	string  strKey;
+};
+
+//////////////////////////////////////////////////////////////////////////
+// center server通知game server跳服失败
+//////////////////////////////////////////////////////////////////////////
+message NCS2GS_JumpServerFail( NCS2GS_MSG_TYPE, NCS2GS_JUMP_SERVER_FAIL )
+{
+	//	目标大厅ID	
+	_uint32 destLobbyID;
+	//	源服务器 
+	_uint16 sourceServerID;
+	// 发送者网络ID
+	_uint32 senderID;
+	// 原因
+	_byte reason;
+};
+
+//////////////////////////////////////////////////////////////////////////
+// center server通知game server新的key
+//////////////////////////////////////////////////////////////////////////
+message NCS2GS_NotifyNewKey( NCS2GS_MSG_TYPE, NCS2GS_NOTIFY_NEW_KEY )
+{
+	// 	有CS分配的登录id
+	_uint32 loginID;
+	// 请求者ID
+	_uint32 requestCharID;
+	//目的大厅ID
+	_uint32 destLobbyID;									
+	//	源服务器ID
+	_uint16 sourceServerID;									
+	//	客户端网络ID
+	_uint32 senderID;						
+	//	新的key
+	//char key[MAX_KEY_MAP_LENGTH];	
+	string  strKey;				
+};
+
+//////////////////////////////////////////////////////////////////////////
+// center server 发送心跳包
+//////////////////////////////////////////////////////////////////////////
+message NCS2GS_CheckLive( NCS2GS_MSG_TYPE, NCS2GS_CHECK_LIVE )
+{
+};
+
+//////////////////////////////////////////////////////////////////////////
+//	请求档案结果
+//////////////////////////////////////////////////////////////////////////
+message NCS2GS_RequestArchiveResult( NCS2GS_MSG_TYPE, NCS2GS_REQUEST_ARCHIVE_RESULT )
+{
+	// 角色帐号编号
+	_uint32 charID;
+	// 	角色tempid
+	_uint32 tempID;
+	// 请求逻辑
+	_byte logicType;
+	// 请求类型
+	bool readyType;
+	//	请求结果
+	_byte result;
+};
+
+
+//////////////////////////////////////////////////////////////////////////
+//	game server请求转发消息  
+//////////////////////////////////////////////////////////////////////////
+message NGS2CS_RequestServerRelay( NGS2CS_MSG_TYPE, NGS2CS_SERVER_RELAY_MSG )
+{
+	_uint32 destServerID;
+	_uint32 sourceServerID;
+	_uint32 senderID;
+	_uint16 serverMsgID;
+};
+
+//////////////////////////////////////////////////////////////////////////
+// 请求game server的服务器信息
+//////////////////////////////////////////////////////////////////////////
+message NGS2CS_RequestGameServerInfo( NGS2CS_MSG_TYPE, NGS2CS_REQUEST_SERVER_INFO )
+{
+	// 服务器 ID 
+	_uint16 nServerID;
+	
+	// lobby个数 
+	USHORT		lobby_count;													
+	
+	// lobby信息 
+	struct lobby_info
+	{
+		// 远程GameServer 上的lobby ID
+		_uint32		nLobbyID;											
+		// 远程 lobby 名称 
+		_string	strLobbyName;									
+		// PVE或PVP
+		_byte		nLobbyType;	
+		// 最大房间数
+		_uint16 	nMaxRoomCount;
+		// 最大人数 
+		_uint16	nMaxPlayerCount;								
+	};		
+	vector< lobby_info > lobbys;
+};
+
+//////////////////////////////////////////////////////////////////////////
+// 请求game server的服务器信息
+//////////////////////////////////////////////////////////////////////////
+message NGS2CS_UpdateUserVerifiedInfoSuccess( NGS2CS_MSG_TYPE, NGS2CS_UPDATE_VERIFIED_SUCCESS )
+{
+	// 登录ID
+	_uint32 login_id;
+	// 玩家永久编号
+	_uint32 char_id;
+	// 登陆服务器ID 
+	_uint32		loginserverID;
+	// 在登陆服务器上的网络ID 
+	_uint32		networkID_at_loginserver;
+	// key 
+	//char        key[MAX_KEY_MAP_LENGTH];
+	string		strKey;
+};
+
+
+//////////////////////////////////////////////////////////////////////////
+// 请求game server的服务器信息
+//////////////////////////////////////////////////////////////////////////
+message NGS2CS_UpdateUserVerifiedInfoFailure( NGS2CS_MSG_TYPE, NGS2CS_UPDATE_VERIFIED_FAILURE )
+{
+	// 玩家永久编号
+	_uint32 charID;
+	// 登陆服务器ID 
+	_uint32		loginserverID;
+	// 在登陆服务器上的网络ID 
+	_uint32		networkID_at_loginserver;
+	// 结果
+	_byte reason;
+};
+
+//////////////////////////////////////////////////////////////////////////
+//	定时更新center server上的game server信息			
+//////////////////////////////////////////////////////////////////////////
+message NGS2CS_UpdateServerInfo( NGS2CS_MSG_TYPE, NGS2CS_UPDATE_SERVER_INFO )
+{
+	// 此服务器在线人数			
+	_uint16 nServerPlayerCount;
+	// 此服务器的房间数
+	_uint16 nServerRoomCount;							
+	// lobby信息 
+	struct lobby_info
+	{
+		// GameServer 上的lobby ID
+		_uint32		nLobbyID;																										
+		//  lobby的在线人数
+		_uint16	nPlayerCount;									
+		// lobby的房间数
+		_uint16	nRoomCount;																	
+	};		
+	vector< lobby_info > lobbys;
+};
+
+//////////////////////////////////////////////////////////////////////////
+//	game server踢人结果	
+//////////////////////////////////////////////////////////////////////////
+message NGS2CS_KickUserResult( NGS2CS_MSG_TYPE, NGS2CS_KICK_USER_RESULT )
+{
+	// 角色帐号永久编号
+	_uint32 charID;
+	// 登陆的gameserver id
+	_uint32 loginServerID;
+	// 此完家在loginserver上的网络ID
+	_uint32 networkID_at_loginserver ;
+	// 踢人结果
+	_byte result;
+};
+
+
+//////////////////////////////////////////////////////////////////////////
+//	game server通知center server用户登入  
+//////////////////////////////////////////////////////////////////////////
+message NGS2CS_UserLogon( NGS2CS_MSG_TYPE, NGS2CS_USER_LOGON )
+{
+	_uint32 charID;
+	_uint32 tempID;
+};
+
+//////////////////////////////////////////////////////////////////////////
+//	game server通知center server 用户登出  
+//////////////////////////////////////////////////////////////////////////
+message NGS2CS_UserLogout( NGS2CS_MSG_TYPE, NGS2CS_USER_LOGOUT )
+{
+	_uint32 charID;
+};
+
+
+//////////////////////////////////////////////////////////////////////////
+//	gs2cs 请求跳转
+//////////////////////////////////////////////////////////////////////////
+message NGS2CS_RequestJumpServer( NGS2CS_MSG_TYPE, NGS2CS_REQUEST_JUMP_SERVER )
+{
+	// 请求者sender
+	_uint32 	requestor_id;
+	// 目标服务器　大厅 id信息　(跳转传送)
+	_uint32	dest_lobby_id;	
+	// 用户 ID(跳转传送)
+	_uint32	user_id;					
+	// 当前所选的角色ID (跳转传送)
+	_uint32	role_id;
+	// 角色选择的游戏区ＩＤ
+	_uint16  region_id;
+	// Host建网指数　(跳转传送)	
+	_uint32	host_point;				
+};
+
+//////////////////////////////////////////////////////////////////////////
+//	cs2gs 请求跳转
+//////////////////////////////////////////////////////////////////////////
+message NCS2GS_RequestJumpServer( NCS2GS_MSG_TYPE, NCS2GS_REQUEST_JUMP_SERVER )
+{
+	// 登录ID
+	_uint32 login_id;
+	// 请求者 sender
+	_uint32 requestor_id;
+	// 请求者服务器ID　
+	_uint16 requestor_server_id;
+	// 目标服务器、大厅 id信息　(跳转传送)
+	_uint32	dest_lobby_id;	
+	// 用户 ID(跳转传送)
+	_uint32	user_id;					
+	// 当前所选的角色ID (跳转传送)
+	_uint32	role_id;	
+	// 角色选择的游戏区ID
+	_uint16  region_id;	
+	// Host建网指数　(跳转传送)	
+	_uint32	host_point;	
+};
+
+//////////////////////////////////////////////////////////////////////////
+//	game server通知center server允许跳服
+//////////////////////////////////////////////////////////////////////////
+message NGS2CS_AllowJumpServer( NGS2CS_MSG_TYPE, NGS2CS_ALLOW_JUMP_SERVER )
+{
+	// 登录ID
+	_uint32 loginID;
+	//	请求者 
+	_uint32   requestCharID;
+	//	目的大厅ID
+	_uint32 destLobbyID;	 
+	//	源服务器ID
+	_uint16 sourceServerID; 
+	//	客户端网络ID
+	_uint32 senderID;			
+};
+
+//////////////////////////////////////////////////////////////////////////
+//	game server通知新的key的结果
+//////////////////////////////////////////////////////////////////////////
+message NGS2CS_NotifyNewKeyResult( NGS2CS_MSG_TYPE, NGS2CS_NEW_KEY_RESULT )
+{
+	// 登录id
+	_uint32 loginID;
+	//	请求者 
+	_uint32   requestCharID;
+	//	目的大厅ID
+	_uint32 destLobbyID;				
+	//	源服务器ID	
+	_uint16 sourceServerID;	
+	//	客户端网络ID
+	_uint32 senderID;		
+	//	新的key
+	//char key[MAX_KEY_MAP_LENGTH];	
+	string  strKey;
+	//	结果	0失败; 1成功
+	_byte result;											
+	enum 
+	{
+		RETURN_FAILED,	
+		RETURN_SUCCESS,	
+	};
+};
+
+
+//////////////////////////////////////////////////////////////////////////
+//	game server回复心跳包
+//////////////////////////////////////////////////////////////////////////
+message NGS2CS_GameServerRelayLive( NGS2CS_MSG_TYPE, NGS2CS_PRN_LIVE )
+{
+};
+
+//////////////////////////////////////////////////////////////////////////
+//	封帐号或解除封锁
+//////////////////////////////////////////////////////////////////////////
+message NGS2CS_RequestLockAccount( NGS2CS_MSG_TYPE, NGS2CS_LOCK_ACCOUNT )
+{
+	// 角色帐号的永久编号 
+	_uint32 charID;
+	// 	操作码 
+	_byte opCode;
+	//	禁言时间
+	_uint32 forbidTime;
+};
+
+//////////////////////////////////////////////////////////////////////////
+//	向CS请求档案
+//////////////////////////////////////////////////////////////////////////
+message NGS2CS_RequestArchive( NGS2CS_MSG_TYPE, NGS2CS_REQUEST_ARCHIVE )
+{
+	// 角色帐号编号
+	_uint32 charID;
+	// 角色tempid
+	_uint32 tempID;
+	// 请求类型
+	bool readType;
+	// 请求逻辑
+	_byte logicType;
+};
+
+//////////////////////////////////////////////////////////////////////////
+//	用户登陆超时
+//////////////////////////////////////////////////////////////////////////
+message NGS2CS_UserLogonTimeout( NGS2CS_MSG_TYPE, NGS2CS_USER_LOGON_TIMEOUT )
+{
+	// 玩家永久编号
+	_uint32 charID;
+};
+
+//////////////////////////////////////////////////////////////////////////
+//	用户登出结束
+//////////////////////////////////////////////////////////////////////////
+message NGS2CS_UserLogoutEnd( NGS2CS_MSG_TYPE, NGS2CS_USER_LOGOUT_END )
+{
+	// 玩家永久编号
+	_uint32 charID;
+};
