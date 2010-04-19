@@ -187,7 +187,7 @@ namespace XGC
 	{
 		// 插入状态作用定时器
 		m_hTimerHandler = ThisTimer()->insert_event( 
-			TimerFunction( this, &CXStatus::OnTimer ), 
+			TimerFunction( bind( &CXStatus::OnTimer, this, _1, _2, _3 ) ), 
 			nCount, 
 			TIMER_SECONDS( fInterval ),
 			TIMER_SECONDS( fDelay ) );

@@ -78,7 +78,7 @@ void CDynamicObject::FinishPathPoint( float fDelayTime )
 {
 	// timer 参数为 -1 则表示立即被执行
 	SetUpdate(
-		TimerFunction( this, &CDynamicObject::UpdateTimer ),
+		TimerFunction( bind( &CDynamicObject::UpdateTimer, this, _1, _2, _3 ) ),
 		1, 
 		TIMER_SECONDS( 1.0f ), 
 		TIMER_SECONDS( fDelayTime ) );
@@ -101,7 +101,7 @@ void CDynamicObject::MoveTo( XVector3 vPosition, float fSpeed, float fDelayTime 
 	m_PointList.push_back( p );
 
 	SetUpdate(
-		TimerFunction( this, &CDynamicObject::UpdateTimer ),
+		TimerFunction( bind( &CDynamicObject::UpdateTimer, this, _1, _2, _3 ) ),
 		1, 
 		TIMER_SECONDS( 1.0f ), 
 		TIMER_SECONDS( fDelayTime ) );
