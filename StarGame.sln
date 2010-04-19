@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{4FD68E7D-6D5A-40DE-98F6-2483772A3860}"
 	ProjectSection(SolutionItems) = preProject
 		exe\Resource\Scripts\initialize.lua = exe\Resource\Scripts\initialize.lua
@@ -12,59 +12,36 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ui script", "ui script", "{
 		exe\Resource\Scripts\ui\utility.lua = exe\Resource\Scripts\ui\utility.lua
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameClient", "GameClient\GameClient.vcproj", "{C9AE6665-7E52-4E5D-862D-6E37BA55FEA9}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A27E7B13-1C7A-4172-9932-B0A4D15F398D} = {A27E7B13-1C7A-4172-9932-B0A4D15F398D}
-		{0CAAD250-94F2-4158-A8A5-506B578D6E08} = {0CAAD250-94F2-4158-A8A5-506B578D6E08}
-		{2DB0D95C-7472-4494-BB66-E3F2624EEE87} = {2DB0D95C-7472-4494-BB66-E3F2624EEE87}
-		{6A7B47C4-7997-47CC-A6D7-FEE15279F2F9} = {6A7B47C4-7997-47CC-A6D7-FEE15279F2F9}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameClient", "GameClient\GameClient.vcxproj", "{C9AE6665-7E52-4E5D-862D-6E37BA55FEA9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameCore", "GameSDK\GameCore\GameCore.vcproj", "{2DB0D95C-7472-4494-BB66-E3F2624EEE87}"
-	ProjectSection(ProjectDependencies) = postProject
-		{6A7B47C4-7997-47CC-A6D7-FEE15279F2F9} = {6A7B47C4-7997-47CC-A6D7-FEE15279F2F9}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameCore", "GameSDK\GameCore\GameCore.vcxproj", "{2DB0D95C-7472-4494-BB66-E3F2624EEE87}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUI", "GameSDK\GameUILib\GUI.vcproj", "{0CAAD250-94F2-4158-A8A5-506B578D6E08}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A27E7B13-1C7A-4172-9932-B0A4D15F398D} = {A27E7B13-1C7A-4172-9932-B0A4D15F398D}
-		{A6A3A671-E708-4D13-9D42-2EF9BF13A4AF} = {A6A3A671-E708-4D13-9D42-2EF9BF13A4AF}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUI", "GameSDK\GameUILib\GUI.vcxproj", "{0CAAD250-94F2-4158-A8A5-506B578D6E08}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "slb", "GameSDK\SLB\SLB.vcproj", "{A27E7B13-1C7A-4172-9932-B0A4D15F398D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SLB", "GameSDK\SLB\SLB.vcxproj", "{A27E7B13-1C7A-4172-9932-B0A4D15F398D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hge", "Depend\hge181\src\core\hge.vcproj", "{FB1A9503-D67D-4311-AB3B-113DAD7D6F9F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hge", "Depend\hge181\src\core\hge.vcxproj", "{FB1A9503-D67D-4311-AB3B-113DAD7D6F9F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaDebuger", "LuaDebuger\LuaDebuger.vcproj", "{A6A3A671-E708-4D13-9D42-2EF9BF13A4AF}"
-	ProjectSection(ProjectDependencies) = postProject
-		{6A7B47C4-7997-47CC-A6D7-FEE15279F2F9} = {6A7B47C4-7997-47CC-A6D7-FEE15279F2F9}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaDebuger", "LuaDebuger\LuaDebuger.vcxproj", "{A6A3A671-E708-4D13-9D42-2EF9BF13A4AF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaDebugConsole", "LuaDebugConsole\LuaDebugConsole.vcproj", "{58D8BDF1-87D1-4325-8A31-DCA78518A7E7}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A6A3A671-E708-4D13-9D42-2EF9BF13A4AF} = {A6A3A671-E708-4D13-9D42-2EF9BF13A4AF}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaDebugConsole", "LuaDebugConsole\LuaDebugConsole.vcxproj", "{58D8BDF1-87D1-4325-8A31-DCA78518A7E7}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vld", "Depend\Visual Leak Detector\src\vld.vcproj", "{0D30FFCB-45DA-4D2B-8E3C-81BC145BF2DE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vld", "Depend\Visual Leak Detector\src\vld.vcxproj", "{0D30FFCB-45DA-4D2B-8E3C-81BC145BF2DE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "xgcBase\Common\Common.vcproj", "{6A7B47C4-7997-47CC-A6D7-FEE15279F2F9}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "xgcBase\Common\Common.vcxproj", "{6A7B47C4-7997-47CC-A6D7-FEE15279F2F9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Database", "xgcBase\Database\Database.vcproj", "{9CCB6689-4F67-4B78-B5FD-F1C3AD60182F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Database", "xgcBase\Database\Database.vcxproj", "{9CCB6689-4F67-4B78-B5FD-F1C3AD60182F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoginServer", "LoginServer\LoginServer.vcproj", "{57E909C8-020C-4F3D-A2A3-A682389E6DD8}"
-	ProjectSection(ProjectDependencies) = postProject
-		{9CCB6689-4F67-4B78-B5FD-F1C3AD60182F} = {9CCB6689-4F67-4B78-B5FD-F1C3AD60182F}
-		{F2303FEE-E0F3-4856-A054-8329189231AC} = {F2303FEE-E0F3-4856-A054-8329189231AC}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoginServer", "LoginServer\LoginServer.vcxproj", "{57E909C8-020C-4F3D-A2A3-A682389E6DD8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetBase", "xgcBase\NetBase\NetBase.vcproj", "{F2303FEE-E0F3-4856-A054-8329189231AC}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetBase", "xgcBase\NetBase\NetBase.vcxproj", "{F2303FEE-E0F3-4856-A054-8329189231AC}"
 	ProjectSection(ProjectDependencies) = postProject
 		{6A7B47C4-7997-47CC-A6D7-FEE15279F2F9} = {6A7B47C4-7997-47CC-A6D7-FEE15279F2F9}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MessageCreator", "MessageCreator\MessageCreator.vcproj", "{9C388BF4-F5C5-4A26-9BAB-650EDC454E87}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MessageCreator", "MessageCreator\MessageCreator.vcxproj", "{9C388BF4-F5C5-4A26-9BAB-650EDC454E87}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MessageManager", "MessageManager\MessageManager.vcproj", "{EF8DD9D1-83CB-44CC-B964-5861F0E489A2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MessageManager", "MessageManager\MessageManager.vcxproj", "{EF8DD9D1-83CB-44CC-B964-5861F0E489A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
