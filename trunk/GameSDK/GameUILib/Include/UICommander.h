@@ -1,12 +1,12 @@
 #pragma once
-#include <loki/Singleton.h>
+#include "singleton.h"
 
 namespace UILib
 {
 	class XUI_Wnd;
 	class CUICommander
 	{
-	friend struct Loki::CreateStatic< CUICommander >;
+	friend struct CreateStatic< CUICommander >;
 	private:
 		CUICommander();
 		~CUICommander();
@@ -60,5 +60,5 @@ namespace UILib
 	};
 
 	inline unsigned int GetLongevity( CUICommander* ){ return 22; }
-	typedef Loki::SingletonHolder< CUICommander, Loki::CreateStatic, Loki::SingletonWithLongevity >	UICommander;
+	typedef SingletonHolder< CUICommander, CreateStatic, SingletonWithLongevity >	UICommander;
 }

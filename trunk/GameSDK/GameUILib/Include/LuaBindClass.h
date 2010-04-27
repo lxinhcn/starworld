@@ -1,7 +1,7 @@
 #pragma once
 #ifndef _LUABINDCLASS_H
 #define _LUABINDCLASS_H
-#include <loki\Singleton.h>
+#include "singleton.h"
 #include "SLB\LuaObject.h"
 #include "GuiSystem.h"
 
@@ -13,7 +13,7 @@ namespace UILib
 	class XUI_Wnd;
 	class LuaBindClass	:	public SLB::Script
 	{
-		friend struct Loki::CreateStatic< LuaBindClass >;
+		friend struct CreateStatic< LuaBindClass >;
 		friend class CGuiSystem;
 	public:
 		operator lua_State*(){ return getState(); }
@@ -28,12 +28,12 @@ namespace UILib
 		LuaDebuger	*m_pLuaDebuger; 
 	};
 	inline unsigned int GetLongevity( LuaBindClass* ){ return 21; }
-	typedef Loki::SingletonHolder< LuaBindClass, Loki::CreateStatic, Loki::SingletonWithLongevity >	Lua;
+	typedef SingletonHolder< LuaBindClass, CreateStatic, SingletonWithLongevity >	Lua;
 
 	template< class T >
 	void show_members( const T* item, int indent )
 	{
-		ClassInfo* c = Manager::getInstance().getClass( typeid( *item ) );
+		SLB::ClassInfo* c = SLB::Manager::getInstance().getClass( typeid( *item ) );
 		if( c )
 		{
 			std::list< const char* > l;
@@ -65,10 +65,10 @@ namespace UILib
 	template< class T >
 	bool save_file( const T* pElement, TiXmlElement* pNode )
 	{
-		ClassInfo* c = Manager::getInstance().getClass( typeid( *pElement ) );
+		SLB::ClassInfo* c = SLB::Manager::getInstance().getClass( typeid( *pElement ) );
 		if( c )
 		{
-			LuaCall< void( const T*, const char*, TiXmlElement* ) > op( Lua::Instance(), "save" );
+			SLB::LuaCall< void( const T*, const char*, TiXmlElement* ) > op( Lua::Instance(), "save" );
 			std::list< const char* > l;
 			c->getMembers( l );
 			std::list< const char* >::iterator i = l.begin();
@@ -92,10 +92,10 @@ namespace UILib
 	template< class T >
 	bool load_file( const T* pElement, TiXmlElement* pNode )
 	{
-		ClassInfo* c = Manager::getInstance().getClass( typeid( *pElement ) );
+		SLB::ClassInfo* c = SLB::Manager::getInstance().getClass( typeid( *pElement ) );
 		if( c )
 		{
-			LuaCall< void( const T*, const char*, TiXmlElement* ) > op( Lua::Instance(), "load" );
+			SLB::LuaCall< void( const T*, const char*, TiXmlElement* ) > op( Lua::Instance(), "load" );
 			std::list< const char* > l;
 			c->getMembers( l );
 			std::list< const char* >::iterator i = l.begin();

@@ -13,8 +13,6 @@
 #include "LuaDebuger.h"
 //////////////////////////////////////////////////////////////////////////
 #include "SLB\SLB.hpp"
-using namespace SLB;
-
 using namespace XGC;
 namespace UILib
 {
@@ -40,7 +38,7 @@ namespace UILib
 
 	void LuaBindClass::Initialize()
 	{
-		Class< TiXmlElement >( "xml::Element" )
+		SLB::Class< TiXmlElement >( "xml::Element" )
 			.constructor< const char* >()
 			.set< TiXmlElement, void, const char*, const char* >( "SetAttribute",	&TiXmlElement::SetAttribute )
 			.set< TiXmlElement, const char*, const char* >( "Attribute", &TiXmlElement::Attribute )
@@ -48,7 +46,7 @@ namespace UILib
 			.static_inherits< TiXmlNode >()
 			;
 
-		Class< xgcRect >( "ui::Rect" )
+		SLB::Class< xgcRect >( "ui::Rect" )
 			.constructor< long, long, long, long >()
 			.member( "left",	&xgcRect::left )
 			.member( "top",		&xgcRect::top	)
@@ -59,7 +57,7 @@ namespace UILib
 			.set( "load",		&load_file< xgcRect > )
 			;
 
-		Class< xgcPoint >( "ui::Point" )
+		SLB::Class< xgcPoint >( "ui::Point" )
 			.constructor< long, long >()
 			.member( "x", &xgcPoint::x )
 			.member( "y", &xgcPoint::y )
@@ -68,7 +66,7 @@ namespace UILib
 			.set( "load",		&load_file< xgcPoint > )
 			;
 
-		Class< xgcSize >( "ui::Size" )
+		SLB::Class< xgcSize >( "ui::Size" )
 			.constructor< long, long >()
 			.member( "cx", &xgcSize::cx )
 			.member( "cy", &xgcSize::cy )
@@ -77,7 +75,7 @@ namespace UILib
 			.set( "load",		&load_file< xgcSize > )
 			;
 
-		Class< XUI_SpriteAttribute >( "ui::XUI_SpriteAttribute" )
+		SLB::Class< XUI_SpriteAttribute >( "ui::XUI_SpriteAttribute" )
 			.constructor< _lpcstr, float, float, float, float >()
 			.member_readonly( "f",	&XUI_SpriteAttribute::path )
 			.member_readonly( "x",	&XUI_SpriteAttribute::x )
@@ -89,7 +87,7 @@ namespace UILib
 			.set( "load",	&XUI_SpriteAttribute::load_file )
 			;
 
-		Class< XUI_ISprite, Instance::NoCopy >( "ui::XUI_ISprite" )
+		SLB::Class< XUI_ISprite, SLB::Instance::NoCopy >( "ui::XUI_ISprite" )
 			.static_inherits< XUI_SpriteAttribute >()
 			.set( "Render", &XUI_ISprite::Render )
 			.set( "RenderStretch", &XUI_ISprite::RenderStretch )
@@ -106,7 +104,7 @@ namespace UILib
 			.member( "diffuse", &XUI_ISprite::SetDiffuse,	&XUI_ISprite::GetDiffuse )
 			;
 
-		Class< XUI_FontAttribute >( "ui::XUI_FontAttribute" )
+		SLB::Class< XUI_FontAttribute >( "ui::XUI_FontAttribute" )
 			.constructor< const char*, int, _uint32, bool, bool, bool >()
 			.member_readonly( "name", &XUI_FontAttribute::m_name )
 			.member_readonly( "size", &XUI_FontAttribute::m_size )
@@ -119,11 +117,11 @@ namespace UILib
 			.set( "load",	&XUI_FontAttribute::load_file )
 			;
 
-		Class< XUI_IFont, Instance::NoCopy >( "ui::XUI_IFont" )
+		SLB::Class< XUI_IFont, SLB::Instance::NoCopy >( "ui::XUI_IFont" )
 			.set( "SetColor", &XUI_IFont::SetColor )
 			;
 
-		Class< CGuiSystem, Instance::NoCopyNoDestroy >( "ui::GuiSystem" )
+		SLB::Class< CGuiSystem, SLB::Instance::NoCopyNoDestroy >( "ui::GuiSystem" )
 			.set( "GetRoot",		&CGuiSystem::GetRoot )
 			.set( "GetDesktop",		&CGuiSystem::GetDesktop )
 			.set( "Load",			&CGuiSystem::LoadFromFile )
@@ -131,11 +129,11 @@ namespace UILib
 			.set( "GetResPath",		&CGuiSystem::GetResourcePath )
 			;
 
-		Class< XUI_Wnd, Instance::NoCopyNoDestroy >( "ui::Base" )
+		SLB::Class< XUI_Wnd, SLB::Instance::NoCopyNoDestroy >( "ui::Base" )
 			.member( "id",			&XUI_Base::SetID,		&XUI_Base::GetID )
 			;
 
-		Class< XUI_Wnd, Instance::NoCopyNoDestroy >( "ui::Wnd" )
+		SLB::Class< XUI_Wnd, SLB::Instance::NoCopyNoDestroy >( "ui::Wnd" )
 			.static_inherits< XUI_Base >()
 			.set( "MoveWindow",		&XUI_Wnd::MoveWindow )
 			.set( "OffsetWindow",	&XUI_Wnd::Offset )
@@ -164,7 +162,7 @@ namespace UILib
 			.member_readonly( "size",	&XUI_Wnd::m_WindowSize )
 			;
 
-		Class< XUI_Window, Instance::NoCopy >( "ui:Window" )
+		SLB::Class< XUI_Window, SLB::Instance::NoCopy >( "ui:Window" )
 			.static_inherits< XUI_Wnd >()
 			.set( "Width",	&XUI_Window::GetWidth )
 			.set( "Height", &XUI_Window::GetHeight )
@@ -172,7 +170,7 @@ namespace UILib
 			.member( "y",	&XUI_Window::m_nOffsetY )
 			;
 
-		Class< XUI_Button, Instance::NoCopy >( "ui::Button" )
+		SLB::Class< XUI_Button, SLB::Instance::NoCopy >( "ui::Button" )
 			.static_inherits< XUI_Wnd >()
 			.constructor()
 			.set( "SetState",	&XUI_Button::SetState )
@@ -184,7 +182,7 @@ namespace UILib
 			.enumValue( "Disable",		XUI_Button::Disable )
 			;
 
-		Class< XUI_EditBox, Instance::NoCopy >( "ui::EditCtrl" )
+		SLB::Class< XUI_EditBox, SLB::Instance::NoCopy >( "ui::EditCtrl" )
 			.static_inherits< XUI_Wnd >()
 			.constructor()
 			.member( "text",			&XUI_EditBox::SetText, &XUI_EditBox::GetText )
@@ -196,24 +194,24 @@ namespace UILib
 
 		try
 		{
-			Manager::getInstance().set( "CreateSprite",		FuncCall::create( XUI_CreateSprite ) );
-			Manager::getInstance().set( "CreateSpriteEx",	FuncCall::create( XUI_CreateSpriteEx ) );
-			Manager::getInstance().set( "DestroySprite",	FuncCall::create( XUI_DestroySprite ) );
+			SLB::Manager::getInstance().set( "CreateSprite",	SLB::FuncCall::create( XUI_CreateSprite ) );
+			SLB::Manager::getInstance().set( "CreateSpriteEx",	SLB::FuncCall::create( XUI_CreateSpriteEx ) );
+			SLB::Manager::getInstance().set( "DestroySprite",	SLB::FuncCall::create( XUI_DestroySprite ) );
 
-			Manager::getInstance().set( "CreateFont",		FuncCall::create( XUI_CreateFont ) );
-			Manager::getInstance().set( "CreateFontEx",		FuncCall::create( XUI_CreateFontEx ) );
-			Manager::getInstance().set( "DestroyFont",		FuncCall::create( XUI_DestroyFont ) );
+			SLB::Manager::getInstance().set( "CreateFont",		SLB::FuncCall::create( XUI_CreateFont ) );
+			SLB::Manager::getInstance().set( "CreateFontEx",	SLB::FuncCall::create( XUI_CreateFontEx ) );
+			SLB::Manager::getInstance().set( "DestroyFont",		SLB::FuncCall::create( XUI_DestroyFont ) );
 
-			Manager::getInstance().set( "DrawText",			FuncCall::create( XUI_DrawTextA ) );
-			Manager::getInstance().set( "DrawCharacter",	FuncCall::create( XUI_DrawCharacterA ) );
-			Manager::getInstance().set( "DrawSprite",		FuncCall::create( XUI_DrawSprite ) );
-			Manager::getInstance().set( "DrawRect",			FuncCall::create( XUI_DrawRect ) );
+			SLB::Manager::getInstance().set( "DrawText",		SLB::FuncCall::create( XUI_DrawTextA ) );
+			SLB::Manager::getInstance().set( "DrawCharacter",	SLB::FuncCall::create( XUI_DrawCharacterA ) );
+			SLB::Manager::getInstance().set( "DrawSprite",		SLB::FuncCall::create( XUI_DrawSprite ) );
+			SLB::Manager::getInstance().set( "DrawRect",		SLB::FuncCall::create( XUI_DrawRect ) );
 
 			//////////////////////////////////////////////////////////////////////////
 			// luaÏà¹Øº¯Êý
-			Manager::getInstance().set( "SetTimer",			FuncCall::create( LuaSetTimer ) );
-			Manager::getInstance().set( "KillTimer",		FuncCall::create( LuaKillTimer ) );
-			Manager::getInstance().set( "CreateUI",			FuncCall::create( CreateUI ) );
+			SLB::Manager::getInstance().set( "SetTimer",		SLB::FuncCall::create( LuaSetTimer ) );
+			SLB::Manager::getInstance().set( "KillTimer",		SLB::FuncCall::create( LuaKillTimer ) );
+			SLB::Manager::getInstance().set( "CreateUI",		SLB::FuncCall::create( CreateUI ) );
 
 			_tchar path[_MAX_PATH+_MAX_FNAME];
 			_tfullpath( path, _T("..\\Resource\\Scripts\\"), _countof( path ) );

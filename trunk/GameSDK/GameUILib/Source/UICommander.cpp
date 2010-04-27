@@ -6,7 +6,6 @@
 #include "GuiSystem.h"
 
 #include "LuaBindClass.h"
-using namespace SLB;
 namespace UILib
 {
 
