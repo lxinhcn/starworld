@@ -4,7 +4,7 @@
 #pragma once
 #include "XUI_Wnd.h"
 #include "timer_manager.h"
-#include <loki/Singleton.h>
+#include "singleton.h"
 
 //界面系统，主要负责消息的转发
 #define DEFAULT_DESKTOP			0x10000
@@ -16,7 +16,7 @@ namespace UILib
 	class XUI_Window;
 	class CGuiSystem
 	{
-	friend struct Loki::CreateUsingNew< CGuiSystem >;
+	friend struct CreateUsingNew< CGuiSystem >;
 	friend class LuaBindClass;
 	private:
 		CGuiSystem();
@@ -128,7 +128,7 @@ namespace UILib
 
 	extern bool SetupDebuger();
 	inline unsigned int GetLongevity( CGuiSystem* ){ return 20; }
-	typedef Loki::SingletonHolder< CGuiSystem, Loki::CreateUsingNew, Loki::SingletonWithLongevity > GuiSystem;
+	typedef SingletonHolder< CGuiSystem, CreateUsingNew, SingletonWithLongevity > GuiSystem;
 }
 
 #endif

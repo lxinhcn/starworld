@@ -4,7 +4,6 @@
 #include "GuiSystem.h"
 #include "LuaBindClass.h"
 #include "SLB\SLB.hpp"
-using namespace SLB;
 
 #define HANDLE_EDGE	2
 namespace UILib
@@ -469,7 +468,7 @@ namespace UILib
 	{
 		try
 		{
-			LuaCall< void( XUI_Wnd*, float, float ) > LuaUpdate( Lua::Instance(), m_strUpdateFunc.c_str() );
+			SLB::LuaCall< void( XUI_Wnd*, float, float ) > LuaUpdate( Lua::Instance(), m_strUpdateFunc.c_str() );
 			if( LuaUpdate.valid() )
 			{
 				LuaUpdate( this, timer, delta );
@@ -534,10 +533,10 @@ namespace UILib
 
 	bool XUI_Wnd::save_file( TiXmlElement* pNode )
 	{
-		ClassInfo* c = Manager::getInstance().getClass( typeid( *this ) );
+		SLB::ClassInfo* c = SLB::Manager::getInstance().getClass( typeid( *this ) );
 		if( c )
 		{
-			LuaCall< void( XUI_Wnd*, const char*, TiXmlElement* ) > op( Lua::Instance(), "save" );
+			SLB::LuaCall< void( XUI_Wnd*, const char*, TiXmlElement* ) > op( Lua::Instance(), "save" );
 			std::list< const char* > l;
 			c->getMembers( l );
 			std::list< const char* >::iterator i = l.begin();
@@ -561,10 +560,10 @@ namespace UILib
 
 	bool XUI_Wnd::load_file( TiXmlElement* pNode )
 	{
-		ClassInfo* c = Manager::getInstance().getClass( typeid( *this ) );
+		SLB::ClassInfo* c = SLB::Manager::getInstance().getClass( typeid( *this ) );
 		if( c )
 		{
-			LuaCall< void( XUI_Wnd*, const char*, TiXmlElement* ) > op( Lua::Instance(), "load" );
+			SLB::LuaCall< void( XUI_Wnd*, const char*, TiXmlElement* ) > op( Lua::Instance(), "load" );
 			std::list< const char* > l;
 			c->getMembers( l );
 			std::list< const char* >::iterator i = l.begin();
@@ -592,10 +591,10 @@ namespace UILib
 
 	void XUI_Wnd::show_members( int indent )
 	{
-		ClassInfo* c = Manager::getInstance().getClass( typeid( *this ) );
+		SLB::ClassInfo* c = SLB::Manager::getInstance().getClass( typeid( *this ) );
 		if( c )
 		{
-			LuaCall< const char*( const XUI_Wnd*, const char*, int ) > op( Lua::Instance(), "class_attrib" );
+			SLB::LuaCall< const char*( const XUI_Wnd*, const char*, int ) > op( Lua::Instance(), "class_attrib" );
 			std::list< const char* > l;
 			c->getMembers( l );
 			std::list< const char* >::iterator i = l.begin();
