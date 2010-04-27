@@ -62,7 +62,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>hge.lib;lua51.lib;GameCore.lib;GUI.lib;Common.lib;Slb.lib;loki_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>hge.lib;lua51.lib;GameCore.lib;GUI.lib;Common.lib;LuaDebuger.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>LinkVerboseLib</ShowProgress>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib\$(Configuration);..\Depend\DX81SDK\Lib;..\Depend\hge181\Lib\$(Configuration);..\Depend\loki-0.1.6\Lib;..\GameSDK\lua-5.1.4\src;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LibC.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -85,7 +85,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>hge.lib;lua51.lib;GameCore.lib;GUI.lib;Common.lib;Slb.lib;loki.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>hge.lib;lua51.lib;GameCore.lib;GUI.lib;Common.lib;LuaDebuger.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>LinkVerboseLib</ShowProgress>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib\$(Configuration);..\Depend\DX81SDK\Lib;..\Depend\hge181\Lib\$(Configuration);..\Depend\loki-0.1.6\Lib;..\GameSDK\lua-5.1.4\src;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
