@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  Visual Leak Detector - NT API Definitions
-//  Copyright (c) 2006-2009 Dan Moulding
+//  Copyright (c) 2006-2010 Dan Moulding
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -44,7 +44,7 @@ typedef struct unicodestring_s {
 
 // Function pointer types for explicit dynamic linking with functions that can't
 // be load-time linked (no import library is available for these).
-typedef NTSTATUS (__stdcall *LdrLoadDll_t) (LPWSTR, PDWORD, unicodestring_t *, PHANDLE);
+typedef NTSTATUS (__stdcall *LdrLoadDll_t) (LPWSTR, ULONG, unicodestring_t *, PHANDLE);
 typedef LPVOID (__stdcall *RtlAllocateHeap_t) (HANDLE, DWORD, SIZE_T);
 typedef BOOL (__stdcall *RtlFreeHeap_t) (HANDLE, DWORD, LPVOID);
 typedef LPVOID (__stdcall *RtlReAllocateHeap_t) (HANDLE, DWORD, LPVOID, SIZE_T);

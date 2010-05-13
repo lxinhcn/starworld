@@ -6,13 +6,13 @@
 #include <stdlib.h>
 #include <process.h>
 #include "NetworkService.h"
-#include "loki/Singleton.h"
+#include "singleton.h"
 
 using namespace XGC;
 
 class CLoginServer
 {
-	friend struct Loki::CreateStatic< CLoginServer >;
+	friend struct CreateStatic< CLoginServer >;
 private:
 	CLoginServer();
 	~CLoginServer();
@@ -59,7 +59,7 @@ private:
 	HANDLE m_hExit;
 	bool m_bWork;
 };
-typedef Loki::SingletonHolder< CLoginServer, Loki::CreateStatic > LoginServer;
+typedef SingletonHolder< CLoginServer, CreateStatic > LoginServer;
 
 CLoginServer::CLoginServer()
 : m_hExit( CreateEvent( NULL, TRUE, FALSE, NULL ) )
@@ -193,7 +193,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	setlocale( LC_ALL, "chs" );
 	SetConsoleCtrlHandler( Stop, TRUE );
 
-	CreateNetwork( _T("ace") );
+	CreateNetwork( _T("asio") );
 	LoginServer::Instance().Start();
 	DestroyNetwork();
 }

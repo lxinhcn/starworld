@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  Visual Leak Detector - CallStack Class Implementations
-//  Copyright (c) 2005-2009 Dan Moulding
+//  Copyright (c) 2005-2010 Dan Moulding
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -21,13 +21,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <cassert>
-#include <windows.h>
-#ifndef __out_xcount
-#define __out_xcount(x) // Workaround for the specstrings.h bug in the Platform SDK.
-#endif
-#define DBGHELP_TRANSLATE_TCHAR
-#include <dbghelp.h>    // Provides symbol handling services.
+#include "stdafx.h"
 #define VLDBUILD
 #include "callstack.h"  // This class' header.
 #include "utility.h"    // Provides various utility functions.
@@ -274,7 +268,7 @@ VOID CallStack::dump (BOOL showinternalframes) const
 //
 //    None.
 //
-VOID CallStack::push_back (const SIZE_T programcounter)
+VOID CallStack::push_back (const UINT_PTR programcounter)
 {
     CallStack::chunk_t *chunk;
 
@@ -319,19 +313,15 @@ VOID CallStack::push_back (const SIZE_T programcounter)
 //
 //    None.
 //
-VOID FastCallStack::getstacktrace (UINT32 maxdepth, SIZE_T *framepointer)
+VOID FastCallStack::getstacktrace (UINT32 maxdepth, context_t& context)
 {
-    UINT32  count = 0;
+	UINT32  count = 0;
+	UINT_PTR* framepointer = context.fp;
 
-    if (framepointer == NULL) {
-        // Begin the stack trace with the current frame. Obtain the current
-        // frame pointer.
-        FRAMEPOINTER(framepointer);
-    }
-
+#if defined(_M_IX86)
     while (count < maxdepth) {
-        if ((SIZE_T*)*framepointer < framepointer) {
-            if ((SIZE_T*)*framepointer == NULL) {
+        if (*framepointer < (UINT)framepointer) {
+            if (*framepointer == NULL) {
                 // Looks like we reached the end of the stack.
                 break;
             }
@@ -342,7 +332,7 @@ VOID FastCallStack::getstacktrace (UINT32 maxdepth, SIZE_T *framepointer)
                 break;
             }
         }
-        if ((SIZE_T)*framepointer & (sizeof(SIZE_T*) - 1)) {
+        if (*framepointer & (sizeof(UINT_PTR*) - 1)) {
             // Invalid frame pointer. Frame pointer addresses should always
             // be aligned to the size of a pointer. This probably means that
             // we've encountered a frame that was created by a module built with
@@ -350,7 +340,7 @@ VOID FastCallStack::getstacktrace (UINT32 maxdepth, SIZE_T *framepointer)
             m_status |= CALLSTACK_STATUS_INCOMPLETE;
             break;
         }
-        if (IsBadReadPtr((SIZE_T*)*framepointer, sizeof(SIZE_T*))) {
+        if (IsBadReadPtr((UINT*)*framepointer, sizeof(UINT_PTR*))) {
             // Bogus frame pointer. Again, this probably means that we've
             // encountered a frame built with FPO optimization.
             m_status |= CALLSTACK_STATUS_INCOMPLETE;
@@ -358,8 +348,39 @@ VOID FastCallStack::getstacktrace (UINT32 maxdepth, SIZE_T *framepointer)
         }
         count++;
         push_back(*(framepointer + 1));
-        framepointer = (SIZE_T*)*framepointer;
-    }
+        framepointer = (UINT_PTR*)*framepointer;
+	}
+#elif defined(_M_X64)
+	UINT32 maxframes = min(62, maxdepth + 10);
+	static USHORT (WINAPI *s_pfnCaptureStackBackTrace)(ULONG FramesToSkip, ULONG FramesToCapture, PVOID* BackTrace, PULONG BackTraceHash) = 0;  
+	if (s_pfnCaptureStackBackTrace == 0)  
+	{  
+		const HMODULE hNtDll = GetModuleHandle(L"ntdll.dll");  
+		reinterpret_cast<void*&>(s_pfnCaptureStackBackTrace)
+			= ::GetProcAddress(hNtDll, "RtlCaptureStackBackTrace");
+		if (s_pfnCaptureStackBackTrace == 0)  
+			return;
+	}
+	UINT_PTR* myFrames = new UINT_PTR[maxframes];
+	ZeroMemory(myFrames, sizeof(UINT_PTR) * maxframes);
+	s_pfnCaptureStackBackTrace(0, maxframes, (PVOID*)myFrames, NULL);
+	UINT32  startIndex = 0;
+	while (count < maxframes) {
+		if (myFrames[count] == 0)
+			break;
+		if (myFrames[count] == *(framepointer + 1))
+			startIndex = count;
+		count++;
+	}
+	count = startIndex;
+	while (count < maxframes) {
+		if (myFrames[count] == 0)
+			break;
+		push_back(myFrames[count]);
+		count++;
+	}
+	delete [] myFrames;
+#endif
 }
 
 // getstacktrace - Traces the stack as far back as possible, or until 'maxdepth'
@@ -381,30 +402,30 @@ VOID FastCallStack::getstacktrace (UINT32 maxdepth, SIZE_T *framepointer)
 //
 //    None.
 //
-VOID SafeCallStack::getstacktrace (UINT32 maxdepth, SIZE_T *framepointer)
+VOID SafeCallStack::getstacktrace (UINT32 maxdepth, context_t& context)
 {
     DWORD        architecture;
-    CONTEXT      context;
+    CONTEXT      currentcontext;
     UINT32       count = 0;
     STACKFRAME64 frame;
-    SIZE_T       programcounter;
-    SIZE_T       stackpointer;
 
-    if (framepointer == NULL) {
-        // Begin the stack trace with the current frame. Obtain the current
-        // frame pointer.
-        FRAMEPOINTER(framepointer);
-    }
+    UINT_PTR* framepointer = context.fp;
+
+    architecture   = X86X64ARCHITECTURE;
+    memset(&currentcontext, 0, sizeof(currentcontext));
 
     // Get the required values for initialization of the STACKFRAME64 structure
     // to be passed to StackWalk64(). Required fields are AddrPC and AddrFrame.
-#if defined(_M_IX86) || defined(_M_X64)
-    architecture   = X86X64ARCHITECTURE;
-    programcounter = *(framepointer + 1);
-    stackpointer   = *framepointer;  // An approximation.
-    context.BPREG  = *framepointer;
-    context.IPREG  = programcounter;
-    context.SPREG  = stackpointer;
+#if defined(_M_IX86)
+    UINT_PTR programcounter = *(framepointer + 1);
+    UINT_PTR stackpointer   = (*framepointer) - maxdepth * 10 * sizeof(void*);  // An approximation.
+    currentcontext.SPREG  = stackpointer;
+    currentcontext.BPREG  = (DWORD64)framepointer;
+    currentcontext.IPREG  = programcounter;
+#elif defined(_M_X64)
+    currentcontext.SPREG  = context.Rsp;
+    currentcontext.BPREG  = (DWORD64)framepointer;
+    currentcontext.IPREG  = context.Rip;
 #else
 // If you want to retarget Visual Leak Detector to another processor
 // architecture then you'll need to provide architecture-specific code to
@@ -414,18 +435,19 @@ VOID SafeCallStack::getstacktrace (UINT32 maxdepth, SIZE_T *framepointer)
 
     // Initialize the STACKFRAME64 structure.
     memset(&frame, 0x0, sizeof(frame));
-    frame.AddrFrame.Offset = *framepointer;
-    frame.AddrFrame.Mode   = AddrModeFlat;
-    frame.AddrPC.Offset    = programcounter;
-    frame.AddrPC.Mode      = AddrModeFlat;
-    frame.AddrStack.Offset = stackpointer;
-    frame.AddrStack.Mode   = AddrModeFlat;
+    frame.AddrPC.Offset       = currentcontext.IPREG;
+    frame.AddrPC.Mode         = AddrModeFlat;
+    frame.AddrStack.Offset    = currentcontext.SPREG;
+    frame.AddrStack.Mode      = AddrModeFlat;
+    frame.AddrFrame.Offset    = currentcontext.BPREG;
+    frame.AddrFrame.Mode      = AddrModeFlat;
+    frame.Virtual             = TRUE;
 
     // Walk the stack.
     EnterCriticalSection(&stackwalklock);
     while (count < maxdepth) {
         count++;
-        if (!StackWalk64(architecture, currentprocess, currentthread, &frame, &context, NULL,
+        if (!StackWalk64(architecture, currentprocess, currentthread, &frame, &currentcontext, NULL,
                          SymFunctionTableAccess64, SymGetModuleBase64, NULL)) {
             // Couldn't trace back through any more frames.
             break;
@@ -436,7 +458,7 @@ VOID SafeCallStack::getstacktrace (UINT32 maxdepth, SIZE_T *framepointer)
         }
 
         // Push this frame's program counter onto the CallStack.
-        push_back((SIZE_T)frame.AddrPC.Offset);
+        push_back((UINT_PTR)frame.AddrPC.Offset);
     }
     LeaveCriticalSection(&stackwalklock);
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="vld"
 	ProjectGUID="{0D30FFCB-45DA-4D2B-8E3C-81BC145BF2DE}"
 	RootNamespace="vld"
@@ -11,15 +11,19 @@
 		<Platform
 			Name="Win32"
 		/>
+		<Platform
+			Name="x64"
+		/>
 	</Platforms>
 	<ToolFiles>
 	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)Exe\$(ConfigurationName)"
-			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -39,11 +43,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(SolutionDir)Depend\dbghelp\inc"
-				PreprocessorDefinitions="WIN32, UNICODE, _UNICODE"
+				AdditionalIncludeDirectories=""
+				PreprocessorDefinitions="WIN32;_WIN32_WINNT=0x0502"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				EnableFunctionLevelLinking="true"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="2"
 				WarningLevel="4"
 				DebugInformationFormat="4"
 			/>
@@ -58,12 +62,86 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalLibraryDirectories="$(SolutionDir)Depend\dbghelp\lib\i386"
+				OutputFile="$(OutDir)\$(ProjectName)_x86.dll"
 				GenerateDebugInformation="true"
 				BaseAddress="0x03200000"
 				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
-				ImportLibrary="$(SolutionDir)Lib\$(ConfigurationName)\$(ProjectName).lib"
+				ImportLibrary="$(TargetDir)$(ProjectName).lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+				AssemblyIdentity=""
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|x64"
+			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories=""
+				PreprocessorDefinitions="WIN64;_WIN32_WINNT=0x0502"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="2"
+				WarningLevel="4"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				OutputFile="$(OutDir)\$(ProjectName)_x64.dll"
+				GenerateDebugInformation="true"
+				BaseAddress="0x03200000"
+				RandomizedBaseAddress="1"
+				ImportLibrary="$(TargetDir)$(ProjectName).lib"
+				TargetMachine="17"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -90,9 +168,10 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
+			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -115,12 +194,14 @@
 				Optimization="3"
 				FavorSizeOrSpeed="1"
 				EnableFiberSafeOptimizations="true"
-				AdditionalIncludeDirectories="$(SolutionDir)Depend\dbghelp\inc"
-				PreprocessorDefinitions="UNICODE, _UNICODE"
+				AdditionalIncludeDirectories=""
+				PreprocessorDefinitions="WIN32;_WIN32_WINNT=0x0502"
 				StringPooling="true"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				BufferSecurityCheck="false"
+				EnableFunctionLevelLinking="true"
 				FloatingPointModel="2"
+				UsePrecompiledHeader="2"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -134,14 +215,95 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalLibraryDirectories="$(SolutionDir)Depend\dbghelp\lib\i386"
+				OutputFile="$(OutDir)\$(ProjectName)_x86.dll"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				BaseAddress="0x03200000"
 				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
-				ImportLibrary="$(SolutionDir)Lib\$(ConfigurationName)\$(ProjectName).lib"
+				ImportLibrary="$(TargetDir)$(ProjectName).lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+				AssemblyIdentity=""
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|x64"
+			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="1"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="3"
+				FavorSizeOrSpeed="1"
+				EnableFiberSafeOptimizations="true"
+				AdditionalIncludeDirectories=""
+				PreprocessorDefinitions="WIN64;_WIN32_WINNT=0x0502"
+				StringPooling="true"
+				RuntimeLibrary="0"
+				BufferSecurityCheck="false"
+				EnableFunctionLevelLinking="true"
+				FloatingPointModel="2"
+				UsePrecompiledHeader="2"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				OutputFile="$(OutDir)\$(ProjectName)_x64.dll"
+				GenerateDebugInformation="true"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				BaseAddress="0x03200000"
+				RandomizedBaseAddress="1"
+				ImportLibrary="$(TargetDir)$(ProjectName).lib"
+				TargetMachine="17"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -180,12 +342,44 @@
 				>
 			</File>
 			<File
-				RelativePath=".\crtmfcpatch.cpp"
+				RelativePath=".\ntapi.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ntapi.cpp"
+				RelativePath=".\stdafx.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\utility.cpp"
@@ -231,6 +425,10 @@
 			</File>
 			<File
 				RelativePath=".\set.h"
+				>
+			</File>
+			<File
+				RelativePath=".\stdafx.h"
 				>
 			</File>
 			<File

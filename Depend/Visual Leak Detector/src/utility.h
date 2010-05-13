@@ -31,6 +31,7 @@ Applications should never include this header."
 
 #include <cstdio>
 #include <windows.h>
+#include <intrin.h>
 
 #ifdef _WIN64
 #define ADDRESSFORMAT   L"0x%.16X" // Format string for 64-bit addresses
@@ -57,8 +58,26 @@ Applications should never include this header."
 #define SPREG Rsp
 #endif // _M_IX86
 
-#if defined(_M_IX86) || defined (_M_X64)
-#define FRAMEPOINTER(fp) __asm mov fp, BPREG // Copies the current frame pointer to the supplied variable.
+typedef struct context_s
+{
+    UINT_PTR* fp;
+#if defined(_M_X64)
+    DWORD64 Rsp;
+    DWORD64 Rip;
+#endif // _M_IX86
+} context_t;
+
+#if defined(_M_IX86)
+// Copies the current frame pointer to the supplied variable.
+#define CAPTURE_CONTEXT(context)     context.fp = ((UINT_PTR*)_AddressOfReturnAddress()) - 1
+#define GET_RETURN_ADDRESS(context)  *(context.fp + 1)
+#elif defined(_M_X64)
+// Capture current context
+#define CAPTURE_CONTEXT(context)     CONTEXT _ctx;                          \
+    RtlCaptureContext(&_ctx);                                               \
+    context.Rsp = _ctx.Rsp; context.Rip = _ctx.Rip; \
+    context.fp = ((UINT_PTR*)_AddressOfReturnAddress()) - 1
+#define GET_RETURN_ADDRESS(context)  *(context.fp + 1)
 #else
 // If you want to retarget Visual Leak Detector to another processor
 // architecture then you'll need to provide an architecture-specific macro to
@@ -82,11 +101,16 @@ enum encoding_e {
 // through to replacement functions provided by VLD.
 typedef struct patchentry_s
 {
-    LPCSTR  exportmodulename; // The name of the module exporting the patched API.
     LPCSTR  importname;       // The name (or ordinal) of the imported API being patched.
-    SIZE_T  modulebase;       // The base address of the exporting module (filled in at runtime when the modules are loaded).
     LPCVOID replacement;      // Pointer to the function to which the imported API should be patched through to.
 } patchentry_t;
+
+typedef struct moduleentry_s
+{
+	LPCSTR          exportmodulename; // The name of the module exporting the patched API.
+	UINT_PTR        modulebase;       // The base address of the exporting module (filled in at runtime when the modules are loaded).
+	patchentry_t*   patchtable;
+} moduleentry_t;
 
 // Utility functions. See function definitions for details.
 VOID dumpmemorya (LPCVOID address, SIZE_T length);
@@ -94,15 +118,17 @@ VOID dumpmemoryw (LPCVOID address, SIZE_T length);
 BOOL findimport (HMODULE importmodule, HMODULE exportmodule, LPCSTR exportmodulename, LPCSTR importname);
 BOOL findpatch (HMODULE importmodule, LPCSTR exportmodulename, LPCVOID replacement);
 VOID insertreportdelay ();
-BOOL moduleispatched (HMODULE importmodule, patchentry_t patchtable [], UINT tablesize);
-BOOL patchimport (HMODULE importmodule, HMODULE exportmodule, LPCSTR exportmodulename, LPCSTR importname,
-                  LPCVOID replacement);
-BOOL patchmodule (HMODULE importmodule, patchentry_t patchtable [], UINT tablesize);
+BOOL moduleispatched (HMODULE importmodule, moduleentry_t patchtable [], UINT tablesize);
+BOOL patchimport (HMODULE importmodule, moduleentry_t *module);
+BOOL patchmodule (HMODULE importmodule, moduleentry_t patchtable [], UINT tablesize);
 VOID report (LPCWSTR format, ...);
-VOID restoreimport (HMODULE importmodule, HMODULE exportmodule, LPCSTR exportmodulename, LPCSTR importname,
-                    LPCVOID replacement);
-VOID restoremodule (HMODULE importmodule, patchentry_t patchtable [], UINT tablesize);
+VOID restoreimport (HMODULE importmodule, moduleentry_t* module);
+VOID restoremodule (HMODULE importmodule, moduleentry_t patchtable [], UINT tablesize);
 VOID setreportencoding (encoding_e encoding);
 VOID setreportfile (FILE *file, BOOL copydebugger);
 VOID strapp (LPWSTR *dest, LPCWSTR source);
 BOOL strtobool (LPCWSTR s);
+#if _WIN32_WINNT < 0x0600 // Windows XP or earlier, no GetProcessIdOfThread()
+DWORD _GetProcessIdOfThread (HANDLE thread);
+#define GetProcessIdOfThread _GetProcessIdOfThread
+#endif
