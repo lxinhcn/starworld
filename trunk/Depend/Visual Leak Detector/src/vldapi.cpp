@@ -21,6 +21,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
+
 #define VLDBUILD     // Declares that we are building Visual Leak Detector.
 #include "vldint.h"  // Provides access to the Visual Leak Detector internals.
 #include "vldheap.h" // Provides internal new and delete operators.
@@ -46,7 +48,8 @@ extern "C" __declspec(dllexport) void VLDDisable ()
     // because if neither flag is set, it means that we are in the default or
     // "starting" state, which could be either enabled or disabled depending on
     // the configuration.
-    tls = vld.gettls();
+	tls = vld.gettls();
+	tls->oldflags = tls->flags;
     tls->flags &= ~VLD_TLS_ENABLED;
     tls->flags |= VLD_TLS_DISABLED;
 }
@@ -61,8 +64,24 @@ extern "C" __declspec(dllexport) void VLDEnable ()
     }
 
     // Enable memory leak detection for the current thread.
-    tls = vld.gettls();
+	tls = vld.gettls();
+	tls->oldflags = tls->flags;
     tls->flags &= ~VLD_TLS_DISABLED;
     tls->flags |= VLD_TLS_ENABLED;
     vld.m_status &= ~VLD_STATUS_NEVER_ENABLED;
+}
+
+extern "C" __declspec(dllexport) void VLDRestore ()
+{
+    tls_t *tls;
+
+    if (vld.m_options & VLD_OPT_VLDOFF) {
+        // VLD has been turned off.
+        return;
+    }
+
+    // Restore state memory leak detection for the current thread.
+    tls = vld.gettls();
+	tls->flags &= ~(VLD_TLS_DISABLED | VLD_TLS_ENABLED);
+	tls->flags |= tls->oldflags & (VLD_TLS_DISABLED | VLD_TLS_ENABLED);
 }

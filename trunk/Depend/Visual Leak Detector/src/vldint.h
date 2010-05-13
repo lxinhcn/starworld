@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  Visual Leak Detector - VisualLeakDetector Class Definition
-//  Copyright (c) 2005-2009 Dan Moulding
+//  Copyright (c) 2005-2010 Dan Moulding
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -41,11 +41,17 @@ Applications should never include this header."
 #define SELFTESTTEXTA       "Memory Leak Self-Test"
 #define SELFTESTTEXTW       L"Memory Leak Self-Test"
 #define VLDREGKEYPRODUCT    L"Software\\Visual Leak Detector"
-#define VLDVERSION          L"1.9h"
+#define VLDVERSION          L"2.0"
+#ifndef WIN64
+#define VLDDLL				"vld_x86.dll"
+#else
+#define VLDDLL				"vld_x64.dll"
+#endif
 
 // The Visual Leak Detector APIs.
 extern "C" __declspec(dllexport) void VLDDisable ();
 extern "C" __declspec(dllexport) void VLDEnable ();
+extern "C" __declspec(dllexport) void VLDRestore ();
 
 // Function pointer types for explicit dynamic linking with functions listed in
 // the import patch table.
@@ -54,12 +60,12 @@ typedef void* (__cdecl *_malloc_dbg_t) (size_t, int, const char *, int);
 typedef void* (__cdecl *_realloc_dbg_t) (void *, size_t, int, const char *, int);
 typedef void* (__cdecl *calloc_t) (size_t, size_t);
 typedef HRESULT (__stdcall *CoGetMalloc_t) (DWORD, LPMALLOC *);
-typedef LPVOID (__stdcall *CoTaskMemAlloc_t) (ULONG);
-typedef LPVOID (__stdcall *CoTaskMemRealloc_t) (LPVOID, ULONG);
+typedef LPVOID (__stdcall *CoTaskMemAlloc_t) (SIZE_T);
+typedef LPVOID (__stdcall *CoTaskMemRealloc_t) (LPVOID, SIZE_T);
 typedef void* (__cdecl *malloc_t) (size_t);
-typedef void* (__cdecl *new_t) (unsigned int);
-typedef void* (__cdecl *new_dbg_crt_t) (unsigned int, int, const char *, int);
-typedef void* (__cdecl *new_dbg_mfc_t) (unsigned int, const char *, int);
+typedef void* (__cdecl *new_t) (size_t);
+typedef void* (__cdecl *new_dbg_crt_t) (size_t, int, const char *, int);
+typedef void* (__cdecl *new_dbg_mfc_t) (size_t, const char *, int);
 typedef void* (__cdecl *realloc_t) (void *, size_t);
 
 // Data is collected for every block allocated from any heap in the process.
@@ -101,8 +107,8 @@ typedef struct moduleinfo_s {
         }
     }
 
-    SIZE_T addrhigh;                 // Highest address within the module's virtual address space (i.e. base + size).
     SIZE_T addrlow;                  // Lowest address within the module's virtual address space (i.e. base address).
+    SIZE_T addrhigh;                 // Highest address within the module's virtual address space (i.e. base + size).
     UINT32 flags;                    // Module flags:
 #define VLD_MODULE_EXCLUDED      0x1 //   If set, this module is excluded from leak detection.
 #define VLD_MODULE_SYMBOLSLOADED 0x2 //   If set, this module's debug symbols have been loaded.
@@ -118,17 +124,21 @@ typedef Set<moduleinfo_t> ModuleSet;
 // detection status (enabled or disabled) and the address that initiated the
 // current allocation is stored here.
 typedef struct tls_s {
-    SIZE_T addrfp;           // Frame pointer at the first call that entered VLD's code for the current allocation.
+	context_t context;       // Address of return address at the first call that entered VLD's code for the current allocation.
     UINT32 flags;            // Thread-local status flags:
 #define VLD_TLS_CRTALLOC 0x1 //   If set, the current allocation is a CRT allocation.
 #define VLD_TLS_DISABLED 0x2 //   If set, memory leak detection is disabled for the current thread.
 #define VLD_TLS_ENABLED  0x4 //   If set, memory leak detection is enabled for the current thread.
+    UINT32 oldflags;         // Thread-local status old flags
     DWORD  threadid;         // Thread ID of the thread that owns this TLS structure.
+    CallStack **ppcallstack; // Memory block callstack pointer.
 } tls_t;
 
 // The TlsSet allows VLD to keep track of all thread local storage structures
 // allocated in the process.
 typedef Set<tls_t*> TlsSet;
+
+class CallStack;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -147,7 +157,7 @@ typedef Set<tls_t*> TlsSet;
 //   the same context during process termination.
 //
 //   When the VisualLeakDetector object is destroyed, it consults its internal
-//   datastructures, looking for any memory that has not been freed. A memory
+//   data structures, looking for any memory that has not been freed. A memory
 //   leak report is then generated, indicating any memory leaks that may have
 //   been identified.
 //
@@ -171,29 +181,30 @@ public:
 // IAT replacement functions.
 ////////////////////////////////////////////////////////////////////////////////
     // Standard CRT and MFC common handlers
-    void* _calloc (calloc_t pcalloc, SIZE_T fp, size_t num, size_t size);
-    void* _malloc (malloc_t pmalloc, SIZE_T fp, size_t size);
-    void* _new (new_t pnew, SIZE_T fp, unsigned int size); 
-    void* _realloc (realloc_t prealloc, SIZE_T fp, void *mem, size_t size);
+    void* _calloc (calloc_t pcalloc, context_t& context, size_t num, size_t size);
+    void* _malloc (malloc_t pmalloc, context_t& context, size_t size);
+    void* _new (new_t pnew, context_t& context, size_t size); 
+    void* _realloc (realloc_t prealloc, context_t& context, void *mem, size_t size);
 
     // Debug CRT and MFC common handlers
-    void* __calloc_dbg (_calloc_dbg_t p_calloc_dbg, SIZE_T fp, size_t num, size_t size, int type, char const *file, int line);
-    void* __malloc_dbg (_malloc_dbg_t p_malloc_dbg, SIZE_T fp, size_t size, int type, char const *file, int line);
-    void* new_dbg_crt (new_dbg_crt_t pnew_dbg_crt, SIZE_T fp, unsigned int size, int type, char const *file, int line);
-    void* new_dbg_mfc (new_dbg_mfc_t pnew_dbg_mfc, SIZE_T fp, unsigned int size, char const *file, int line);
-    void* __realloc_dbg (_realloc_dbg_t p_realloc_dbg, SIZE_T fp, void *mem, size_t size, int type, char const *file, int line);
+    void* __calloc_dbg (_calloc_dbg_t p_calloc_dbg, context_t& context, size_t num, size_t size, int type, char const *file, int line);
+    void* __malloc_dbg (_malloc_dbg_t p_malloc_dbg, context_t& context, size_t size, int type, char const *file, int line);
+    void* __new_dbg_crt (new_dbg_crt_t pnew_dbg_crt, context_t& context, size_t size, int type, char const *file, int line);
+    void* __new_dbg_mfc (new_dbg_crt_t pnew_dbg, context_t& context, size_t size, int type, char const *file, int line);
+    void* __new_dbg_mfc (new_dbg_mfc_t pnew_dbg_mfc, context_t& context, size_t size, char const *file, int line);
+    void* __realloc_dbg (_realloc_dbg_t p_realloc_dbg, context_t& context, void *mem, size_t size, int type, char const *file, int line);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Public IMalloc methods - for support of COM-based memory leak detection.
 ////////////////////////////////////////////////////////////////////////////////
     ULONG   __stdcall AddRef ();
-    LPVOID  __stdcall Alloc (ULONG size);
+    LPVOID  __stdcall Alloc (SIZE_T size);
     INT     __stdcall DidAlloc (LPVOID mem);
     VOID    __stdcall Free (LPVOID mem);
-    ULONG   __stdcall GetSize (LPVOID mem);
+    SIZE_T  __stdcall GetSize (LPVOID mem);
     VOID    __stdcall HeapMinimize ();
     HRESULT __stdcall QueryInterface (REFIID iid, LPVOID *object);
-    LPVOID  __stdcall Realloc (LPVOID mem, ULONG size);
+    LPVOID  __stdcall Realloc (LPVOID mem, SIZE_T size);
     ULONG   __stdcall Release ();
 
 private:
@@ -206,17 +217,21 @@ private:
     BOOL   enabled ();
     SIZE_T eraseduplicates (const BlockMap::Iterator &element);
     tls_t* gettls ();
-    VOID   mapblock (HANDLE heap, LPCVOID mem, SIZE_T size, SIZE_T framepointer, BOOL crtalloc);
+    VOID   mapblock (HANDLE heap, LPCVOID mem, SIZE_T size, BOOL crtalloc, CallStack **&ppcallstack);
     VOID   mapheap (HANDLE heap);
-    VOID   remapblock (HANDLE heap, LPCVOID mem, LPCVOID newmem, SIZE_T size, SIZE_T framepointer, BOOL crtalloc);
+    VOID   remapblock (HANDLE heap, LPCVOID mem, LPCVOID newmem, SIZE_T size, BOOL crtalloc, CallStack **&ppcallstack);
     VOID   reportconfig ();
     VOID   reportleaks (HANDLE heap);
     VOID   unmapblock (HANDLE heap, LPCVOID mem);
-    VOID   unmapheap (HANDLE heap);
+	VOID   unmapheap (HANDLE heap);
 
     // Static functions (callbacks)
     static BOOL __stdcall addloadedmodule (PCWSTR modulepath, DWORD64 modulebase, ULONG modulesize, PVOID context);
     static BOOL __stdcall detachfrommodule (PCWSTR modulepath, DWORD64 modulebase, ULONG modulesize, PVOID context);
+
+	// Utils
+	static BOOL IsModuleExcluded (UINT_PTR returnaddress);
+	static void getcallstack( CallStack **&ppcallstack, context_t &context );
 
 ////////////////////////////////////////////////////////////////////////////////
 // IAT replacement functions - see each function definition for details.
@@ -229,17 +244,17 @@ private:
     static FARPROC  __stdcall _GetProcAddress (HMODULE module, LPCSTR procname);
     static HANDLE   __stdcall _HeapCreate (DWORD options, SIZE_T initsize, SIZE_T maxsize);
     static BOOL     __stdcall _HeapDestroy (HANDLE heap);
-    static NTSTATUS __stdcall _LdrLoadDll (LPWSTR searchpath, PDWORD flags, unicodestring_t *modulename,
+    static NTSTATUS __stdcall _LdrLoadDll (LPWSTR searchpath, ULONG flags, unicodestring_t *modulename,
                                            PHANDLE modulehandle);
     static LPVOID   __stdcall _RtlAllocateHeap (HANDLE heap, DWORD flags, SIZE_T size);
-    static BOOL     __stdcall _RtlFreeHeap (HANDLE heap, DWORD flags, LPVOID mem);
+
+	static BOOL     __stdcall _RtlFreeHeap (HANDLE heap, DWORD flags, LPVOID mem);
     static LPVOID   __stdcall _RtlReAllocateHeap (HANDLE heap, DWORD flags, LPVOID mem, SIZE_T size);
 
-    // COM IAT replacement functions
+	// COM IAT replacement functions
     static HRESULT __stdcall _CoGetMalloc (DWORD context, LPMALLOC *imalloc);
-    static LPVOID  __stdcall _CoTaskMemAlloc (ULONG size);
-    static LPVOID  __stdcall _CoTaskMemRealloc (LPVOID mem, ULONG size);
-
+    static LPVOID  __stdcall _CoTaskMemAlloc (SIZE_T size);
+    static LPVOID  __stdcall _CoTaskMemRealloc (LPVOID mem, SIZE_T size);
 ////////////////////////////////////////////////////////////////////////////////
 // Private data
 ////////////////////////////////////////////////////////////////////////////////
@@ -265,7 +280,10 @@ private:
 #define VLD_OPT_TRACE_INTERNAL_FRAMES   0x100 //   If set, include useless frames (e.g. internal to VLD) in call stacks.
 #define VLD_OPT_UNICODE_REPORT          0x200 //   If set, the leak report will be encoded UTF-16 instead of ASCII.
 #define VLD_OPT_VLDOFF                  0x400 //   If set, VLD will be completely deactivated. It will not attach to any modules.
-    static patchentry_t  m_patchtable [];     // Table of imports patched for attaching VLD to other modules.
+    static patchentry_t  m_kernel32Patch [];
+    static patchentry_t  m_ntdllPatch [];
+    static patchentry_t  m_ole32Patch [];
+    static moduleentry_t m_patchtable [];     // Table of imports patched for attaching VLD to other modules.
     FILE                *m_reportfile;        // File where the memory leak report may be sent to.
     WCHAR                m_reportfilepath [MAX_PATH]; // Full path and name of file to send memory leak report to.
     const char          *m_selftestfile;      // Filename where the memory leak self-test block is leaked.
@@ -283,9 +301,10 @@ private:
     // The Visual Leak Detector APIs are our friends.
     friend __declspec(dllexport) void VLDDisable ();
     friend __declspec(dllexport) void VLDEnable ();
+    friend __declspec(dllexport) void VLDRestore ();
 };
 
 // Configuration option default values
-#define VLD_DEFAULT_MAX_DATA_DUMP    0xffffffff
-#define VLD_DEFAULT_MAX_TRACE_FRAMES 0xffffffff
+#define VLD_DEFAULT_MAX_DATA_DUMP    256
+#define VLD_DEFAULT_MAX_TRACE_FRAMES 64
 #define VLD_DEFAULT_REPORT_FILE_NAME L".\\memory_leak_report.txt"

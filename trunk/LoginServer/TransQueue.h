@@ -11,7 +11,7 @@ public:
 	transaction get();
 
 private:
-	CCritical	m_critical;
+	section		m_section;
 	semaphore	m_full;
 	semaphore	m_empty;
 

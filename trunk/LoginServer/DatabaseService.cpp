@@ -18,7 +18,7 @@ CDatabaseService::~CDatabaseService(void)
 bool CDatabaseService::start( _lpcstr connstring )
 {
 	m_connstring = connstring;
-	m_thread_h = _beginthreadex( NULL, 0, CDatabaseService::svc, NULL, 0, NULL );
+	m_thread_h = _beginthreadex( NULL, 0, CDatabaseService::svc, (void*)this, 0, NULL );
 	if( m_thread_h == -1 )
 		return false;
 	return true;

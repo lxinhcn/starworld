@@ -127,7 +127,7 @@ namespace UILib
 					{
 						// 字符显示超出宽度，则折行显示
 						// 将没有画的作为独立的串添加到下一行
-						line ll( l.substr( cursor, -1 ), l.type );
+						line ll( l.subline( cursor, -1 ), l.type );
 						l.erase( cursor, -1 );
 						l.type = type_r;
 						l.cursor_position = l.size();
@@ -472,10 +472,10 @@ namespace UILib
 
 		line& l = m_text[m_nCurLineNumber];
 
-		line ll = l.substr( m_CaratPos, l.size() - m_CaratPos );
+		line ll = l.subline( m_CaratPos, l.size() - m_CaratPos );
 		ll.type = (m_CaratPos==l.size()?type_n:l.type);
 
-		l.erase( l.begin() + m_CaratPos, l.end() );
+		l.erase( m_CaratPos, -1 );
 		l.type = type_n;
 
 		m_text.insert( m_text.begin() + m_nCurLineNumber + 1, ll );
