@@ -5,7 +5,7 @@ using namespace UILib;
 
 class CTextureManager
 {
-friend struct Loki::CreateStatic< CTextureManager >;
+friend struct CreateStatic< CTextureManager >;
 private:
 	CTextureManager();
 	~CTextureManager();
@@ -33,11 +33,11 @@ private:
 	typedef stdext::hash_map< std::string, HTEXTURE >	CTextureMap;
 	CTextureMap		m_TextureMap;	// Œ∆¿Ì”≥…‰
 };
-typedef Loki::SingletonHolder< CTextureManager, Loki::CreateStatic >	TextureManager;
+typedef SingletonHolder< CTextureManager, CreateStatic >	TextureManager;
 
 class CFontManager
 {
-friend struct Loki::CreateStatic< CFontManager >;
+friend struct CreateStatic< CFontManager >;
 private:
 	CFontManager();
 	~CFontManager();
@@ -49,7 +49,7 @@ private:
 	typedef std::map< UILib::XUI_FontAttribute, GfxFont* >	CFontMap;
 	CFontMap	m_FontMap;
 };
-typedef Loki::SingletonHolder< CFontManager, Loki::CreateStatic >	FontManager;
+typedef SingletonHolder< CFontManager, CreateStatic >	FontManager;
 
 struct CClientMouse	:	public XUI_IMouse
 {

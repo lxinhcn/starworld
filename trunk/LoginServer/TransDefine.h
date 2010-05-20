@@ -4,8 +4,8 @@
 #define TRANS_BUF_SIZE	4096;
 struct transaction
 {
-	size_t	size;	// 消息长度
-	size_t	uid;	// 用户id
+	_uint32	size;	// 消息长度
+	_uint32	uid;	// 用户id
 	_byte	mid;	// 消息号
 	_byte	pid;	// 流水线号
 

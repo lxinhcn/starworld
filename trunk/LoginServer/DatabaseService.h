@@ -5,7 +5,7 @@ class CDatabaseService;
 typedef message_dispatcher
 < 
 	CDatabaseService, 
-	size_t (CDatabaseService::*)( db::connection conn, transaction &header ), 
+	size_t (CDatabaseService::*)( db::connection conn, transaction *header ), 
 	short 
 > 
 DbDispatcherBase;
@@ -46,7 +46,7 @@ protected:
 	//
 	//	purpose:	处理数据库事务
 	//--------------------------------------------------------//
-	size_t process( db::connection conn, transaction &header );
+	size_t process( db::connection conn, transaction *header );
 
 	//--------------------------------------------------------//
 	//	created:	3:12:2009   13:11
@@ -55,7 +55,7 @@ protected:
 	//
 	//	purpose:	注册一个账号
 	//--------------------------------------------------------//
-	size_t userRegist( db::connection conn, transaction &header );
+	size_t userRegist( db::connection conn, transaction *header );
 
 	//--------------------------------------------------------//
 	//	created:	3:12:2009   13:11
@@ -64,5 +64,5 @@ protected:
 	//
 	//	purpose:	用户登陆
 	//--------------------------------------------------------//
-	size_t userLogon( db::connection conn, transaction &header );
+	size_t userLogon( db::connection conn, transaction *header );
 };

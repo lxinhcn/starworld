@@ -8,6 +8,7 @@
 CApplication::CApplication(void)
 : m_pDefWindowProc( NULL )
 , m_pRegisterClass( NULL )
+, m_pMessageQueue( NULL )
 {
 	init_canvas();
 }
@@ -98,6 +99,9 @@ bool CApplication::Initialize()
 	setlocale( LC_ALL, "chs" );
 
 	m_hge = hgeCreate(HGE_VERSION);
+	CreateNetwork(_T("asio"));
+	if( InitNetwork() == false )
+		return false;
 
 	m_hge->System_SetState(HGE_LOGFILE, "StarGame.log");
 	m_hge->System_SetState(HGE_FRAMEFUNC, FrameFunc);
@@ -143,6 +147,8 @@ bool CApplication::Initialize()
 	UICommander::Instance().ProcessCommand( _T("load main.xml") );
 
 	restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "RegisterClassA",	m_pRegisterClass );
+
+	ConnectServer( "127.0.0.1", 19944, &m_pMessageQueue, 0 );
 	return true;
 }
 
@@ -164,6 +170,9 @@ void CApplication::UnInitialize()
 	TextureManager::Instance().Clear();
 	// m_hge->System_Shutdown();
 	m_hge->Release();
+	m_pMessageQueue->Release();
+	FiniNetwork();
+	DestroyNetwork();
 }
 
 bool CApplication::UpdateLogic( float fDelta )

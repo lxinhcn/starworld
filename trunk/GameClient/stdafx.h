@@ -49,6 +49,5 @@
 // ¸¨Öú¿â
 #include "CommonLib.h"
 #include "UILib.h"
+#include "Netbase.h"
 using namespace UILib;
-
-#include <loki/Singleton.h>
