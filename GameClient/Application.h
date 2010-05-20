@@ -5,7 +5,7 @@ class CClientMap;
 
 class CApplication
 {
-	friend struct Loki::CreateStatic< CApplication >;
+	friend struct CreateStatic< CApplication >;
 private:
 	CApplication(void);
 	virtual ~CApplication(void);
@@ -18,6 +18,7 @@ public:
 	HGE* operator->(){ return m_hge; }
 	HGE* getEngine(){ return m_hge; }
 
+	IMessageQueue* GetMessageQueue(){ return m_pMessageQueue; }
 protected:
 	bool UpdateLogic( float fDelta );
 	void Render();
@@ -51,9 +52,9 @@ private:
 
 	HGE			*m_hge;
 	CClientMap	*m_pMap;
-
+	IMessageQueue *m_pMessageQueue;
 	struct		mouse_cursor;
 	static		mouse_cursor m_cursor_table;
 };
 
-typedef Loki::SingletonHolder< CApplication, Loki::CreateStatic > Application;
+typedef SingletonHolder< CApplication, CreateStatic > Application;

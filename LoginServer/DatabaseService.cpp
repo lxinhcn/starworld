@@ -7,7 +7,6 @@ BEGIN_DISPATCHER_TABLE( CDatabaseService, database )
 	DECLARE_DISPATCH( db_user_logon,	userLogon )
 END_DISPATCHER_TABLE( CDatabaseService, database )
 CDatabaseService::CDatabaseService(void)
-: m_transqueue( 1024 )
 {
 }
 
@@ -30,9 +29,9 @@ void CDatabaseService::stop()
 	WaitForSingleObject( (HANDLE)m_work_b, INFINITE );
 }
 
-size_t CDatabaseService::process( db::connection conn, transaction &header )
+size_t CDatabaseService::process( db::connection conn, transaction *header )
 {
-	func pFunc = DISPATCHER_GET( database, header.mid );
+	func pFunc = DISPATCHER_GET( database, header->mid );
 	if( pFunc )
 		return (this->*pFunc)( conn, header );
 
@@ -51,9 +50,12 @@ unsigned int __stdcall CDatabaseService::svc( _lpvoid pParam )
 
 	while( pService->m_work_b )
 	{
-		transaction t = pService->m_transqueue.get();
+		transaction* t = pService->m_transqueue.get();
 		// 处理数据
-		pService->process( conn, t );
+		if( t )
+			pService->process( conn, t );
+		else
+			Sleep(1);
 	}
 
 	return 0;
@@ -66,9 +68,9 @@ unsigned int __stdcall CDatabaseService::svc( _lpvoid pParam )
 //
 //	purpose:	注册一个账号
 //--------------------------------------------------------//
-size_t CDatabaseService::userRegist( db::connection conn, transaction &header )
+size_t CDatabaseService::userRegist( db::connection conn, transaction *header )
 {
-	dbRegistUser* msg = (dbRegistUser*)header.msg;
+	dbRegistUser* msg = (dbRegistUser*)header->msg;
 
 	db::command cmd = db::create_command( db::dbCmdStoredProc, "RegistUser" );
 	if( cmd )
@@ -106,9 +108,9 @@ size_t CDatabaseService::userRegist( db::connection conn, transaction &header )
 //
 //	purpose:	用户登陆
 //--------------------------------------------------------//
-size_t CDatabaseService::userLogon( db::connection conn, transaction &header )
+size_t CDatabaseService::userLogon( db::connection conn, transaction *header )
 {
-	dbUserLogon* msg = (dbUserLogon*)header.msg;
+	dbUserLogon* msg = (dbUserLogon*)header->msg;
 
 	db::command cmd = db::create_command( db::dbCmdStoredProc, "UserLogon" );
 	if( cmd )
