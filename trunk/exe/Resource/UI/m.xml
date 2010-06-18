@@ -1,0 +1,119 @@
+<WINDOW>
+    <Attribute>
+        <x value="0" />
+        <y value="0" />
+        <background class="sprite">
+            <path direction="media\bg2.png" />
+            <position x="0.000000" y="0.000000" />
+            <size w="800.000000" h="600.000000" />
+        </background>
+        <enable value="true" />
+        <id value="10001" />
+        <name value="root" />
+        <position>
+            <x value="0" />
+            <y value="0" />
+        </position>
+        <size>
+            <cx value="800" />
+            <cy value="600" />
+        </size>
+        <transparent value="true" />
+        <updatefunc value="DesktopUpdate" />
+        <visible value="true" />
+    </Attribute>
+    <CONTROL Lable="EDIT">
+        <Attribute>
+            <backgroundcolor value="807411744" />
+            <bordercolor value="-8355712" />
+            <singleline value="true" />
+            <text value="" />
+            <warp value="true" />
+            <enable value="true" />
+            <id value="1000" />
+            <name value="" />
+            <position>
+                <x value="370" />
+                <y value="261" />
+            </position>
+            <size>
+                <cx value="100" />
+                <cy value="100" />
+            </size>
+            <transparent value="true" />
+            <updatefunc value="" />
+            <visible value="true" />
+        </Attribute>
+    </CONTROL>
+    <CONTROL Lable="BUTTON">
+        <Attribute>
+            <caption value="" />
+            <skin class="sprite">
+                <path direction="media\enter.png" />
+                <position x="0.000000" y="0.000000" />
+                <size w="376.000000" h="38.000000" />
+            </skin>
+            <enable value="true" />
+            <id value="-842150451" />
+            <name value="" />
+            <position>
+                <x value="528" />
+                <y value="454" />
+            </position>
+            <size>
+                <cx value="100" />
+                <cy value="100" />
+            </size>
+            <transparent value="true" />
+            <updatefunc value="" />
+            <visible value="true" />
+        </Attribute>
+    </CONTROL>
+    <CONTROL Lable="BUTTON">
+        <Attribute>
+            <caption value="" />
+            <skin class="sprite">
+                <path direction="media\exit.png" />
+                <position x="0.000000" y="0.000000" />
+                <size w="376.000000" h="38.000000" />
+            </skin>
+            <enable value="true" />
+            <id value="-842150451" />
+            <name value="" />
+            <position>
+                <x value="312" />
+                <y value="446" />
+            </position>
+            <size>
+                <cx value="100" />
+                <cy value="100" />
+            </size>
+            <transparent value="true" />
+            <updatefunc value="" />
+            <visible value="true" />
+        </Attribute>
+    </CONTROL>
+    <CONTROL Lable="EDIT">
+        <Attribute>
+            <backgroundcolor value="807411744" />
+            <bordercolor value="-8355712" />
+            <singleline value="true" />
+            <text value="" />
+            <warp value="true" />
+            <enable value="true" />
+            <id value="-842150451" />
+            <name value="" />
+            <position>
+                <x value="251" />
+                <y value="118" />
+            </position>
+            <size>
+                <cx value="100" />
+                <cy value="100" />
+            </size>
+            <transparent value="true" />
+            <updatefunc value="" />
+            <visible value="true" />
+        </Attribute>
+    </CONTROL>
+</WINDOW>
