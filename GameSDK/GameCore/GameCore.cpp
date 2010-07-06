@@ -8,12 +8,12 @@ CORE_API CGameTriggerMgr*	ThisTriggerMgr()
 {
 	core_thread* l = reinterpret_cast< core_thread* >( TlsGetValue( dwTlsIndex ) );
 	ASSERT_POINTER( l );
-	return l->trigger_mgr;
+	return l->_trigger_mgr;
 }
 
-CORE_API CTimerManager* ThisTimer()
+CORE_API timer* ThisTimer()
 {
 	core_thread* l = reinterpret_cast< core_thread* >( TlsGetValue( dwTlsIndex ) );
 	ASSERT_POINTER( l );
-	return l->timer;
+	return l->_timer;
 }

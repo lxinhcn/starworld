@@ -183,7 +183,7 @@ namespace XGC
 		CXVariant NowValue;	// 当前值,经过换算的值
 	};
 
-	typedef Loki::Function< void ( _uint32 /*nType*/, _uint32 /*nIndex*/, const CXVariant& /*Value*/ ) > ListenFunction;
+	typedef std::function< void ( _uint32 /*nType*/, _uint32 /*nIndex*/, const CXVariant& /*Value*/ ) > ListenFunction;
 
 	static ListenFunction EmptyListener;
 	class CORE_API CAttribute

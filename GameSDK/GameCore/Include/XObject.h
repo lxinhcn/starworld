@@ -10,9 +10,6 @@
 
 #include <map>
 #include <set>
-#include <loki/Function.h>
-#include <loki/Factory.h>
-#include <loki/TypeTraits.h>
 
 #include "XAttribute.h"
 /************************************************************************/
@@ -44,6 +41,7 @@ typedef _uint32	guid;
 
 namespace XGC
 {
+	using namespace common;
 	/************************************************************************/
 	/* CXObjectT 模版实现了属性系统，该模版在每个类层次上实现一个属性列表，但在存取
 	/* 时需要明确存取的属性是位于哪个类层次上的，这通过一个类的类值来指定（暂无其他方法）。
@@ -53,7 +51,6 @@ namespace XGC
 	{
 	public:
 		typedef XObjTypeT BaseClass;
-		typedef typename Loki::Int2Type< ClassType >	ClassIdentify;
 	protected:
 	#define XOBJECT_REPEAT(N) \
 		template< CLIB_ENUM_D(N, class T) > \
@@ -170,7 +167,6 @@ namespace XGC
 	{
 	public:
 		typedef XObjOnlyTypeT BaseClass;
-		typedef typename Loki::Int2Type< ClassType >	ClassIdentify;
 	protected:
 	#define XOBJECT_REPEAT(N) \
 	template< CLIB_ENUM_D(N, class T) > \

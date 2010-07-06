@@ -75,7 +75,7 @@ struct LuaDebuger::Impl
 
 	luastack	lstack;			// lua 栈
 	std::string	strFilename;	// 当前文件
-	CCritical	breakmap_lock;
+	section	breakmap_lock;
 };
 
 struct LuaDebuger::ThreadParam
@@ -171,7 +171,7 @@ void LuaDebuger::bp( const char* name, int line )
 {
 	if( name != NULL && line >= 0 )
 	{
-		CCriticalLock _l( m_pImpl->breakmap_lock);
+		autolock _l( m_pImpl->breakmap_lock);
 		Impl::break_map::iterator iter = m_pImpl->breakpoints.find( name );
 		if( iter != m_pImpl->breakpoints.end() )
 		{
@@ -200,7 +200,7 @@ void LuaDebuger::run( int mode )
 
 bool LuaDebuger::judgeBreak( const char* name, int line )
 {
-	CCriticalLock _l( m_pImpl->breakmap_lock);
+	autolock _l( m_pImpl->breakmap_lock);
 	char szFull[_MAX_DIR + _MAX_FNAME + _MAX_EXT];
 	if( _fullpath( szFull, name, _countof(szFull) ) == 0 )
 	{
@@ -377,7 +377,7 @@ void LuaDebuger::makestack( lua_State *L, lua_Debug *ar )
 	{
 		m_pImpl->begin = sf->currentline;
 		m_pImpl->strFilename = sf->filename;
-		CCriticalLock _l( m_pImpl->breakmap_lock );
+		autolock _l( m_pImpl->breakmap_lock );
 
 		Impl::break_map::const_iterator c = m_pImpl->breakpoints.find( sf->filename );
 		if( c != m_pImpl->breakpoints.end() )
@@ -555,7 +555,7 @@ void LuaDebuger::cmd_checkpoint( const char* lpszParam )
 	PraseString( lpszParam, params );
 	if( params.size() == 2 )
 	{
-		CCriticalLock _l( m_pImpl->breakmap_lock);
+		autolock _l( m_pImpl->breakmap_lock);
 		std::transform( params[0].begin(), params[0].end(), params[0].begin(), tolower );
 		Impl::break_map::const_iterator c = m_pImpl->breakpoints.find( params[0].c_str() );
 		if( c != m_pImpl->breakpoints.end() )
@@ -585,7 +585,7 @@ void LuaDebuger::cmd_clearpoint( const char* lpszParam )
 {
 	if( _stricmp( lpszParam, ("all") ) == 0 )
 	{
-		CCriticalLock _l( m_pImpl->breakmap_lock);
+		autolock _l( m_pImpl->breakmap_lock);
 		Impl::break_map::iterator iter = m_pImpl->breakpoints.find( m_pImpl->strFilename );
 		if( iter != m_pImpl->breakpoints.end() )
 		{
@@ -597,7 +597,7 @@ void LuaDebuger::cmd_clearpoint( const char* lpszParam )
 		int		line;
 		sscanf( lpszParam, "%d", &line );
 
-		CCriticalLock _l( m_pImpl->breakmap_lock);
+		autolock _l( m_pImpl->breakmap_lock);
 		Impl::break_map::iterator iter = m_pImpl->breakpoints.find( m_pImpl->strFilename );
 		if( iter != m_pImpl->breakpoints.end() )
 		{
@@ -675,7 +675,7 @@ void LuaDebuger::cmd_open( const char* lpszParam )
 {
 	if( strlen( lpszParam ) == 0 )
 	{
-		CCriticalLock _l( m_pImpl->breakmap_lock );
+		autolock _l( m_pImpl->breakmap_lock );
 		Impl::break_map::const_iterator c = m_pImpl->breakpoints.begin();
 		int i = 1;
 		while( c != m_pImpl->breakpoints.end() )
@@ -692,7 +692,7 @@ void LuaDebuger::cmd_open( const char* lpszParam )
 		if( _fullpath( szFull, lpszParam, _countof(szFull) ) )
 		{
 			_strlwr( szFull );
-			CCriticalLock _l( m_pImpl->breakmap_lock );
+			autolock _l( m_pImpl->breakmap_lock );
 			Impl::break_map::const_iterator c = m_pImpl->breakpoints.find( szFull );
 			if( c == m_pImpl->breakpoints.end() )
 			{
@@ -727,7 +727,7 @@ void LuaDebuger::cmd_open( const char* lpszParam )
 		while( isdigit( *p ) ) ++p;
 		if( *p == 0 && p != lpszParam )
 		{
-			CCriticalLock _l( m_pImpl->breakmap_lock );
+			autolock _l( m_pImpl->breakmap_lock );
 			Impl::break_map::const_iterator c = m_pImpl->breakpoints.begin();
 			int i = 1;
 			int line = atoi( lpszParam );
@@ -784,7 +784,7 @@ void LuaDebuger::cmd_dir( const char* lpszParam )
 
 void LuaDebuger::cmd_list( const char* lpszParam )
 {
-	CCriticalLock _l( m_pImpl->breakmap_lock );
+	autolock _l( m_pImpl->breakmap_lock );
 	Impl::break_map::const_iterator c = m_pImpl->breakpoints.find( m_pImpl->strFilename );
 	if( c != m_pImpl->breakpoints.end() )
 	{

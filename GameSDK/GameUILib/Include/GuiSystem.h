@@ -64,7 +64,7 @@ namespace UILib
 		XUI_IMouse		*m_cursor_ptr;
 
 		std::string		m_resource_path;
-		CTimerManager	m_timer;
+		timer	m_timer;
 		float			m_nowtime;
 		float			m_timer_anchor;
 		bool			m_is_edit_mode;
@@ -122,7 +122,7 @@ namespace UILib
 		bool LoadFromFile( _lpcstr pszFilename );
 		bool SaveToFile( _lpcstr pszFilename );
 
-		unsigned int SetTimer( TimerFunction function, unsigned short repeat, unsigned short timer );
+		unsigned int SetTimer( _tfunction function, unsigned short repeat, unsigned short timer );
 		void KillTimer( unsigned int handle );
 	};
 

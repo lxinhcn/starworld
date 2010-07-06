@@ -668,7 +668,7 @@ namespace UILib
 		m_ModalList.pop_front();
 	}
 
-	unsigned int CGuiSystem::SetTimer( TimerFunction function, unsigned short repeat, unsigned short timer )
+	unsigned int CGuiSystem::SetTimer( _tfunction function, unsigned short repeat, unsigned short timer )
 	{
 		return m_timer.insert_event( function, repeat, timer );
 	}

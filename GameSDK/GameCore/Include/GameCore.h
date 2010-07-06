@@ -4,16 +4,17 @@
 #include "GameTriggerMgr.h"
 #include "timer_manager.h"
 using namespace XGC;
+using namespace XGC::common;
 struct core_thread
 {
-	CGameTriggerMgr	*trigger_mgr;
-	CTimerManager	*timer;
+	CGameTriggerMgr	*_trigger_mgr;
+	timer			*_timer;
 	_uint16			error_t;
 };
 
 CORE_API extern _uint32 dwTlsIndex;
 
 CORE_API CGameTriggerMgr*	ThisTriggerMgr();
-CORE_API CTimerManager*		ThisTimer();
+CORE_API timer*		ThisTimer();
 
 #endif //_SERVERCORE_H_
