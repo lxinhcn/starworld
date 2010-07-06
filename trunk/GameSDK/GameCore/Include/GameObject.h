@@ -6,7 +6,6 @@
 #endif	//CORE_EXPORTS
 
 #include <queue>
-#include "Loki/Function.h"
 
 class CMapBlock;
 class CGameMap;
@@ -146,7 +145,7 @@ public:
 	// [9/16/2009 Albert]
 	// Description:	设置更新函数
 	//---------------------------------------------------//
-	__inline bool SetUpdate( TimerFunction &Fn, unsigned short repeat = 1, unsigned int timer = TIMER_SECONDS(1), unsigned int delay = 0 );
+	__inline bool SetUpdate( _tfunction &Fn, unsigned short repeat = 1, unsigned int timer = TIMER_SECONDS(1), unsigned int delay = 0 );
 
 	//---------------------------------------------------//
 	// [9/16/2009 Albert]

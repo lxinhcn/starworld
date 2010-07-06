@@ -5,10 +5,13 @@
 #include <conio.h>
 #include <stdlib.h>
 #include <process.h>
+#include <time.h>
+
 #include "NetworkService.h"
 #include "singleton.h"
+#include "allocator.h"
 
-using namespace XGC;
+using namespace XGC::common;
 
 class CLoginServer
 {
@@ -181,6 +184,7 @@ BOOL WINAPI Stop( DWORD dwCtrlType )
 	return TRUE;
 }
 
+void dotest();
 //--------------------------------------------------------//
 //	created:	8:12:2009   15:24
 //	filename: 	LoginServer
@@ -193,9 +197,76 @@ int _tmain(int argc, _TCHAR* argv[])
 	setlocale( LC_ALL, "chs" );
 	SetConsoleCtrlHandler( Stop, TRUE );
 
+	// dotest();
+
 	CreateNetwork( _T("asio") );
 	LoginServer::Instance().Start();
 	DestroyNetwork();
+}
+
+void test_allocator()
+{
+	std::vector< int, XGC::common::allocator<int> >	_array_xgc;
+	std::vector< int > _array_std;
+	srand((unsigned int)time(NULL));
+	for( int n = 0; n < 10; ++n )
+	{
+		clock_t t1 = clock();
+		for( int i = 0; i < 1000000; ++i )
+		{
+			_array_xgc.push_back( rand() );
+		}
+		// _array_xgc.clear();
+		clock_t t2 = clock();
+
+		for( int i = 0; i < 1000000; ++i )
+		{
+			_array_std.push_back( rand() );
+		}
+		// _array_std.clear();
+		clock_t t3 = clock();
+
+		printf( "%d, %d\n", t2 - t1, t3 - t2 );
+	}
+
+	std::vector< char* >	vec_point1, vec_point2;
+	for( int n = 0; n < 10; ++n )
+	{
+		clock_t t1 = clock();
+		for( int i = 0; i < 1000*1000; ++i )
+		{
+			vec_point1.push_back( (char*)AllocatorSingleton<>::Instance().Allocate( rand()%255, false ) );
+			if( i % (1000*100) == 0 )
+			{
+				for( std::vector< char* >::iterator it = vec_point1.begin(); it != vec_point1.end(); ++it )
+				{
+					AllocatorSingleton<>::Instance().Deallocate( *it );
+				}
+				vec_point1.clear();
+				printf( "." );
+			}
+		}
+		clock_t t2 = clock();
+		printf("\t%d\n", t2-t1);
+
+		for( int i = 0; i < 1000*1000; ++i )
+		{
+			vec_point2.push_back( new char[rand()%255] );
+			if( i % (1000*100) == 0 )
+			{
+				for( std::vector< char* >::iterator it = vec_point2.begin(); it != vec_point2.end(); ++it )
+				{
+					delete[] *it;
+				}
+				vec_point2.clear();
+				printf( "." );
+			}
+		}
+		clock_t t3 = clock();
+
+		printf( "\t%d\n", t3 - t2 );
+	}
+	getch();
 }
 
 void testdb()
@@ -254,3 +325,7 @@ void testdb()
 	_getch();
 }
 
+void dotest()
+{
+	test_allocator();
+}

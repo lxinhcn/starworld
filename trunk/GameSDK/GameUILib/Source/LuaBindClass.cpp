@@ -262,7 +262,7 @@ namespace UILib
 			SLB::LuaCall< bool( unsigned int /*handle*/, unsigned short& /*repeat*/, unsigned int& /*timer*/) > function;
 		};
 
-		return GuiSystem::Instance().SetTimer( TimerFunction( call( function ) ), repeat, timer );
+		return GuiSystem::Instance().SetTimer( _tfunction( call( function ) ), repeat, timer );
 	}
 
 	//////////////////////////////////////////////////////////////////////////

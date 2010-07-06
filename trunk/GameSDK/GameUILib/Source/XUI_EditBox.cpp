@@ -788,7 +788,7 @@ namespace UILib
 	//»ñµÃ½¹µã
 	void XUI_EditBox::onGetFocus()
 	{
-		m_CaratTimerHandler = GuiSystem::Instance().SetTimer( TimerFunction( bind(&XUI_EditBox::CaratTimerUpdate, this, _1, _2, _3) ), 0, TIMER_SECOND(0.5f) );
+		m_CaratTimerHandler = GuiSystem::Instance().SetTimer( _tfunction( bind(&XUI_EditBox::CaratTimerUpdate, this, _1, _2, _3) ), 0, TIMER_SECOND(0.5f) );
 		XUI_IME::_ImmAssociateContext( GuiSystem::Instance().GetHWND(), XUI_IME::m_hImcDef );
 		XUI_Wnd::onGetFocus();
 	}

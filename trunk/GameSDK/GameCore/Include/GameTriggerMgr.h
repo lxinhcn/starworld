@@ -6,8 +6,6 @@
 #endif
 
 #include <hash_map>
-#include "Loki/Allocator.h"
-#include "Loki/Function.h"
 #include "XObjectPool.h"
 
 namespace XGC
