@@ -52,7 +52,7 @@ public:
 	bool Empty()const{ return m_ObjList.empty(); }
 };
 
-class CORE_API CGameMap	: public XObjOnlyTypeT< CGameMap, CXObject, TypeGameMap >
+class CORE_API CGameMap	: public CXObject
 {
 private:
 	// 地图
@@ -81,7 +81,7 @@ protected:
 	}
 
 	CGameMap( bool bIsParent, bool bIsTypeList )
-		: BaseClass( bIsParent, bIsTypeList )
+		: CXObject( bIsParent, bIsTypeList )
 		, m_siBlockSize( xgcSize( 0, 0 ) )
 		, m_siMapSize( xgcSize( 0, 0 ) )	// 地砖横向个数
 		, m_pBlockArray( NULL )
@@ -101,6 +101,8 @@ protected:
 	void DestroyMap();
 
 public:
+	DECLARE_DYNAMICTYPE( CXObject, TypeGameMap );
+
 	inline	_uint32	GetMapWidth()const		{ return m_siMapSize.cx; }
 	inline	_uint32	GetMapHeight()const		{ return m_siMapSize.cy; }
 	inline	_uint32	GetBlockWidth()const	{ return m_siBlockSize.cx; }

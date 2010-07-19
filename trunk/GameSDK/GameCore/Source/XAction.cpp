@@ -164,7 +164,7 @@ namespace XGC
 	// Status class
 	//////////////////////////////////////////////////////////////////////////
 	CXStatus::CXStatus( int nActionID, const action_entry_ptr emap )
-		: BaseClass( nActionID, emap )
+		: CXAction( nActionID, emap )
 		, m_hTimerHandler( INVALID_TIMER_HANDLE )
 	{
 

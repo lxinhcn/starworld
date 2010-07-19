@@ -63,7 +63,11 @@ namespace XGC
 	public:
 		CAttrib()
 			: Value( 0 )
-			, NowValue( 0 )
+		{
+		}
+
+		CAttrib( const CXVariant& InitValue )
+			: Value( InitValue )
 		{
 		}
 
@@ -71,116 +75,104 @@ namespace XGC
 		{
 		}
 
-		operator const CXVariant&()const{ return NowValue; }
-		operator CXVariant()const{ return NowValue; }
+		operator const CXVariant&()const{ return Value; }
+		operator CXVariant()const{ return Value; }
 
-		__inline int ChangeIntegerPercent( float fPercent )
+		__inline int ChangeIntegerPercent( float fPercent, int nBaseValue )
 		{
-			return NowValue.nValue += int( Value.nValue * fPercent * 0.01f );
+			return Value.nValue += int( nBaseValue * fPercent * 0.01f );
 		}
 
-		__inline float ChangeFloatPercent( float fPercent )
+		__inline float ChangeFloatPercent( float fPercent, float fBaseValue )
 		{
-			return NowValue.fValue += Value.fValue * fPercent * 0.01f;
+			return Value.fValue += fBaseValue * fPercent * 0.01f;
 		}
 
 		__inline float ChangeFloatValue( float fValue )
 		{
-			return NowValue.fValue += fValue;
+			return Value.fValue += fValue;
 		}
 
 		__inline int ChangeIntegerValue( int nValue )
 		{
-			return NowValue.nValue += nValue;
+			return Value.nValue += nValue;
 		}
 
 		//////////////////////////////////////////////////////////////////////////
 		// Limit
 		//////////////////////////////////////////////////////////////////////////
-		__inline int ChangeIntegerPercent_Range( float fPercent, int nMin, int nMax )
+		__inline int ChangeIntegerPercent_Range( float fPercent, int nBaseValue, int nMin, int nMax )
 		{
-			NowValue.nValue += int( Value.nValue * fPercent * 0.01f );
+			Value.nValue += int( nBaseValue * fPercent * 0.01f );
 			
-			if( NowValue.nValue > nMax )
-				NowValue.nValue = nMax;
-			else if( NowValue.nValue < nMin )
-				NowValue.nValue = nMin;
+			if( Value.nValue > nMax )
+				Value.nValue = nMax;
+			else if( Value.nValue < nMin )
+				Value.nValue = nMin;
 
-			return NowValue.nValue;
+			return Value.nValue;
 		}
 
-		__inline float ChangeFloatPercent_Range( float fPercent, float fMin, float fMax )
+		__inline float ChangeFloatPercent_Range( float fPercent, float fBaseValue, float fMin, float fMax )
 		{
-			NowValue.fValue += int( Value.fValue * fPercent * 0.01f );
+			Value.fValue += int( Value.fValue * fPercent * 0.01f );
 
-			if( NowValue.fValue > fMax )
-				NowValue.fValue = fMax;
-			else if( NowValue.fValue < fMin )
-				NowValue.fValue = fMin;
+			if( Value.fValue > fMax )
+				Value.fValue = fMax;
+			else if( Value.fValue < fMin )
+				Value.fValue = fMin;
 
-			return NowValue.fValue;
+			return Value.fValue;
 		}
 
 		__inline float ChangeFloatValue_Range( float fValue, float fMin, float fMax )
 		{
-			NowValue.fValue += fValue;
+			Value.fValue += fValue;
 			
-			if( NowValue.fValue > fMax )
-				NowValue.fValue = fMax;
-			else if( NowValue.fValue < fMin )
-				NowValue.fValue = fMin;
+			if( Value.fValue > fMax )
+				Value.fValue = fMax;
+			else if( Value.fValue < fMin )
+				Value.fValue = fMin;
 
-			return NowValue.fValue;
+			return Value.fValue;
 		}
 
 		__inline int ChangeIntegerValue_Range( int nValue, int nMin, int nMax )
 		{
-			NowValue.nValue += nValue;
+			Value.nValue += nValue;
 
-			if( NowValue.nValue > nMax )
-				NowValue.nValue = nMax;
-			else if( NowValue.nValue < nMin )
-				NowValue.nValue = nMin;
+			if( Value.nValue > nMax )
+				Value.nValue = nMax;
+			else if(Value.nValue < nMin )
+				Value.nValue = nMin;
 
-			return NowValue.nValue;
+			return Value.nValue;
 		}
 
 		//////////////////////////////////////////////////////////////////////////
 		// value operator
 		//////////////////////////////////////////////////////////////////////////
-		__inline void InitValue( const CXVariant Val )
-		{ 
-			Value = Val; 
-			NowValue = Val;
-		}
-
 		__inline void SetValue( const CXVariant Val )
 		{ 
-			NowValue = Val; 
-		}
-
-		__inline void ResetValue()
-		{ 
-			NowValue = Value; 
+			Value = Val; 
 		}
 
 		__inline const CXVariant& GetValue()const 
 		{ 
-			return NowValue; 
+			return Value; 
 		}
 
 		__inline float GetFloat()const
 		{
-			return NowValue.fValue;
+			return Value.fValue;
 		}
 
 		__inline int GetInt()const
 		{
-			return NowValue.nValue;
+			return Value.nValue;
 		}
 	private:
 		CXVariant Value;	// 基准值
-		CXVariant NowValue;	// 当前值,经过换算的值
 	};
 
 	typedef std::function< void ( _uint32 /*nType*/, _uint32 /*nIndex*/, const CXVariant& /*Value*/ ) > ListenFunction;
@@ -207,9 +199,9 @@ namespace XGC
 
 		}
 
-		__inline int	ChangeIntegerPercent( float fPercent )	
+		__inline int	ChangeIntegerPercent( float fPercent, int nBaseValue )	
 		{ 
-			int ret = m_Attrib.ChangeIntegerPercent( fPercent );
+			int ret = m_Attrib.ChangeIntegerPercent( fPercent, nBaseValue );
 			if( m_ListenFunction )
 			{
 				m_ListenFunction( m_nType, m_nIndex, m_Attrib.GetValue() );
@@ -218,16 +210,15 @@ namespace XGC
 			return ret;
 		}
 
-		__inline float	ChangeFloatPercent( float fPercent )	
+		__inline float	ChangeFloatPercent( float fPercent, float fBaseValue )	
 		{ 
-			float ret = m_Attrib.ChangeFloatPercent( fPercent );
+			float ret = m_Attrib.ChangeFloatPercent( fPercent, fBaseValue );
 			if( m_ListenFunction )
 			{
 				m_ListenFunction( m_nType, m_nIndex, m_Attrib.GetValue() );
 			}
 
 			return ret;
-
 		}
 
 		__inline float	ChangeFloatValue( float fValue )		
@@ -256,9 +247,9 @@ namespace XGC
 		//////////////////////////////////////////////////////////////////////////
 		// Limit
 		//////////////////////////////////////////////////////////////////////////
-		__inline int	ChangeIntegerPercent_Range( float fPercent, int nMin, int nMax )
+		__inline int	ChangeIntegerPercent_Range( float fPercent, int nBaseValue, int nMin, int nMax )
 		{ 
-			int ret = m_Attrib.ChangeIntegerPercent_Range( fPercent, nMin, nMax );
+			int ret = m_Attrib.ChangeIntegerPercent_Range( fPercent, nBaseValue, nMin, nMax );
 			if( m_ListenFunction )
 			{
 				m_ListenFunction( m_nType, m_nIndex, m_Attrib.GetValue() );
@@ -267,9 +258,9 @@ namespace XGC
 			return ret;
 		}
 
-		__inline float	ChangeFloatPercent_Range( float fPercent, float fMin, float fMax )
+		__inline float	ChangeFloatPercent_Range( float fPercent, float fBaseValue, float fMin, float fMax )
 		{
-			float ret = m_Attrib.ChangeFloatPercent_Range( fPercent, fMin, fMax );
+			float ret = m_Attrib.ChangeFloatPercent_Range( fPercent, fBaseValue, fMin, fMax );
 			if( m_ListenFunction )
 			{
 				m_ListenFunction( m_nType, m_nIndex, m_Attrib.GetValue() );

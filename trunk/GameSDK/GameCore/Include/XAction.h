@@ -52,7 +52,7 @@ namespace XGC
 	#define ACTION_PARAM_MAX 3
 	#define INVALID_ACTION_ID -1
 
-	class CORE_API CXAction	:	public XObjOnlyTypeT< CXAction, CXObject, TypeGameAction >
+	class CORE_API CXAction	:	public CXObject
 	{
 	//DECLARE_EFFECT_MAP()
 	private:
@@ -73,6 +73,7 @@ namespace XGC
 		CXAction( const CXAction& rsh );
 		~CXAction(void);
 
+		DECLARE_DYNAMICTYPE( CXObject, TypeGameAction );
 		//////////////////////////////////////////////////////////////////////////
 		// 设置参数
 		// nIdx		:	索引
@@ -138,7 +139,7 @@ namespace XGC
 		const action_entry_ptr getActionEntry()const;
 	};
 
-	class CORE_API CXStatus :	public  XObjOnlyTypeT< CXStatus, CXAction, TypeStatus >
+	class CORE_API CXStatus :	public  CXAction
 	{
 	private:
 		_uint32	m_hTimerHandler;
@@ -147,6 +148,7 @@ namespace XGC
 		explicit CXStatus( const CXStatus& rsh );
 		~CXStatus();
 
+		DECLARE_DYNAMICTYPE( CXAction, TypeStatus );
 		//---------------------------------------------------//
 		// [9/13/2009 Albert]
 		// Description:	安装定时器
