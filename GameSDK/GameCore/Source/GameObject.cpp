@@ -1,6 +1,11 @@
 #include "StdAfx.h"
 #include "GameObject.h"
 #include "GameMap.h"
+BEGIN_ATTRIBUTE_TABLE(CDynamicObject, CGameObject)
+	DEFINE_ATTRIBUTE( _T("MoveFlag"), DynamicObject_attrCanMove, 0 )
+END_ATTRIBUTE_TABLE()
+
+IMPLEMENT_ATTRIBUTE(CDynamicObject, CGameObject)
 
 CGameObject::CGameObject()
 {
@@ -13,7 +18,7 @@ CGameObject::~CGameObject()
 CDynamicObject::CDynamicObject()
 : m_hUpdateTimer( INVALID_TIMER_HANDLE )
 {
-	SetLocalAttrib( DynamicObject_attrCanMove, 1 );
+
 }
 
 CDynamicObject::~CDynamicObject(void)

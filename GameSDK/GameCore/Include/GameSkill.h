@@ -1,5 +1,4 @@
 #pragma once
-#include "excel.h"
 using namespace XGC;
 
 #ifdef CORE_EXPORTS
@@ -10,9 +9,10 @@ using namespace XGC;
 
 struct config;
 class CGameActor;
-class CORE_API CGameSkill : public XObjOnlyTypeT< CGameSkill, CXObject, TypeSkill >
+class CORE_API CGameSkill : public CXObject
 {
 public:
+	DECLARE_DYNAMICTYPE( CXObject, TypeSkill );
 	CGameSkill( _uint32 hOwner, _int16 nSerial );
 	~CGameSkill(void);
 

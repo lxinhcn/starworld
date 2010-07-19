@@ -5,15 +5,21 @@
 #define CORE_API __declspec(dllimport)
 #endif	//CORE_EXPORTS
 
+#include "defines.h"
+#include "XObject.h"
+#include "XAttribute.h"
 #include <queue>
+using namespace XGC;
 
 class CMapBlock;
 class CGameMap;
 class CXObjectAI;
 //////////////////////////////////////////////////////////////////////////
 // 基础对象类， 所有屏幕上的对象都从此类派生
-class CORE_API CGameObject	:	public XObjOnlyTypeT< CGameObject, CXObject, TypeGameObject >
+class CORE_API CGameObject	:	public CXObject
 {
+public:
+	DECLARE_DYNAMICTYPE(CXObject,TypeGameObject);
 friend class CGameMap;
 public:
 	CGameObject();
@@ -67,9 +73,11 @@ private:
 	DEBUG_CODE( void *m_pBlock; )
 };
 
-class CORE_API CDynamicObject :	public	XObjTypeT< CDynamicObject, CGameObject, TypeDynamicObject, _DynamicObject_attrCount >
+class CORE_API CDynamicObject :	public CGameObject
 {
 public:
+	DECLARE_DYNAMICTYPE( CGameObject, TypeDynamicObject );
+	DECLARE_ATTRIBUTE(_DynamicObject_attrCount);
 	CDynamicObject();
 	virtual ~CDynamicObject(void);
 

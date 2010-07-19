@@ -2,13 +2,14 @@
 
 #include "GameObject.h"
 class CGameActorAI;
-class CORE_API CGameActor : public XObjOnlyTypeT< CGameActor, CDynamicObject, TypeGameActor >
+class CORE_API CGameActor : public CDynamicObject
 {
 friend class CGameActorAI;
 public:
 	CGameActor(void);
 	~CGameActor(void);
 
+	DECLARE_DYNAMICTYPE( CDynamicObject, TypeGameActor );
 	enum ActorStatus { status_live, status_dead, };
 
 	bool Think( int nObjID, int nEvent, long_ptr lParam );

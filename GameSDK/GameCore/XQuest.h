@@ -3,10 +3,11 @@
 #define _XQUEST_H_
 
 class CXQuest;
-class CXQuestObjective	:	public XObjOnlyTypeT< CXQuestObjective, CXObject, TypeQuestObjective >
+class CXQuestObjective	:	public CXObject
 {
 friend class CXQuest;
 public:
+	DECLARE_DYNAMICTYPE(CXObject, TypeQuestObjective);
 	enum objective_type
 	{
 		type_kill,	// 杀死怪物
@@ -30,13 +31,14 @@ private:
 	_uint16			m_nFinishCount;		// 完成计数
 };
 
-class CXQuest :	public XObjOnlyTypeT< CXQuest, CXObject, TypeQuest >
+class CXQuest :	public CXObject
 {
 friend class CXQuestObjective;
 public:
 	CXQuest(void);
 	~CXQuest(void);
 
+	DECLARE_DYNAMICTYPE( CXObject, TypeQuest );
 protected:
 	//---------------------------------------------------//
 	// [9/15/2009 Albert]
