@@ -5,7 +5,7 @@
 //////////////////////////////////////////////////////////////////////////
 // CGameMap
 // ≥ı ºªØµÿÕº
-void CGameMap::InitializeMap( _uint32 nBlockWidth, _uint32 nBlockHeight, SIZE siBlockSize, POINT ptTransfrom )
+void CGameMap::InitializeMap( _uint32 nBlockWidth, _uint32 nBlockHeight, xgcSize siBlockSize, xgcPoint ptTransfrom )
 {
 	m_pBlockArray = new CMapBlock[nBlockWidth*nBlockHeight];
 

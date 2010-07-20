@@ -65,8 +65,8 @@ protected:
 	
 	float m_InvBW, m_InvBH;
 public:
-	typedef std::list< CMapBlock*, ALLOCATOR< CMapBlock* > >	CBlockList;
-	typedef std::set< _uint32, LESS< _uint32 >, ALLOCATOR< _uint32 > >			CTargetSet;
+	typedef std::list< CMapBlock*, ALLOCATOR< CMapBlock* > > CBlockList;
+	typedef std::set< _uint32, LESS< _uint32 >, ALLOCATOR< _uint32 > > CTargetSet;
 	typedef std::function< bool( CMapBlock* ) > fnBlockCallback;
 
 protected:
@@ -97,7 +97,7 @@ protected:
 	}
 
 	// ≥ı ºªØµÿÕº
-	void InitializeMap( _uint32 nBlockWidth, _uint32 nBlockHeight, SIZE siBlockSize, POINT ptTransfrom );
+	void InitializeMap( _uint32 nBlockWidth, _uint32 nBlockHeight, xgcSize siBlockSize, xgcPoint ptTransfrom );
 	void DestroyMap();
 
 public:
