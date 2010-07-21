@@ -24,7 +24,7 @@ namespace UILib
 
 	void XUI_DrawTextA( _lpcstr lpszText, XUI_IFont* pFont, float x, float y )
 	{
-		_string strText = XA2TSTR( lpszText );
+		_string strText = XA2T( lpszText );
 		XUI_DrawText( strText.c_str(), pFont, x, y );
 	}
 

@@ -81,7 +81,7 @@ size_t CDatabaseService::userRegist( db::connection conn, transaction *header )
 
 		if( db::execute_cmd( conn, cmd ) == false )
 		{
-			XGC_WRITELOGA( LOG, db::get_error_info(conn) );
+			XGC_WRITELOGA( LOG, db::get_error_info() );
 		}
 
 		int ret = db::get_param_integer( cmd, "@Return" );
@@ -121,7 +121,7 @@ size_t CDatabaseService::userLogon( db::connection conn, transaction *header )
 
 		if( db::execute_cmd( conn, cmd ) == false )
 		{
-			XGC_WRITELOGA( LOG, db::get_error_info(conn) );
+			XGC_WRITELOGA( LOG, db::get_error_info() );
 		}
 
 		int ret = db::get_param_integer( cmd, "@Return" );

@@ -59,21 +59,18 @@ protected:
 	int Run( HANDLE hCommand );
 
 private:
-	HANDLE m_hExit;
 	bool m_bWork;
 };
 typedef SingletonHolder< CLoginServer, CreateStatic > LoginServer;
 
 CLoginServer::CLoginServer()
-: m_hExit( CreateEvent( NULL, TRUE, FALSE, NULL ) )
-, m_bWork( true )
+: m_bWork( true )
 {
 
 }
 
 CLoginServer::~CLoginServer()
 {
-	CloseHandle( m_hExit );
 }
 
 //--------------------------------------------------------//
@@ -96,13 +93,7 @@ int CLoginServer::Start()
 
 void CLoginServer::Stop()
 {
-	CLoggerAdapter *pAdapter = CLogger::GetInstance( LOG )->RemoveAdapter( _T("ConsoleLog") );
-	delete pAdapter;
-
-	FiniNetwork();
-
-	db::final();
-	SetEvent( m_hExit );
+	m_bWork = false;
 }
 
 //--------------------------------------------------------//
@@ -137,7 +128,7 @@ int CLoginServer::Run( HANDLE hCommand )
 {
 	_tchar szCommand[1024];
 	DWORD dwRead = 0;
-	CNetworkService network( 19944 );
+	// CNetworkService network( 19944 );
 
 	while( m_bWork )
 	{
@@ -165,7 +156,13 @@ int CLoginServer::Run( HANDLE hCommand )
 			Sleep(1);
 		}
 	}
-	WaitForSingleObject( m_hExit, INFINITE );
+
+	CLoggerAdapter *pAdapter = CLogger::GetInstance( LOG )->RemoveAdapter( _T("ConsoleLog") );
+	delete pAdapter;
+
+	FiniNetwork();
+
+	db::final();
 	return 0;
 }
 
@@ -180,7 +177,8 @@ int CLoginServer::Run( HANDLE hCommand )
 //--------------------------------------------------------//
 BOOL WINAPI Stop( DWORD dwCtrlType )
 {
-	LoginServer::Instance().Stop();
+	// LoginServer::Instance().Stop();
+	for(;;);
 	return TRUE;
 }
 
@@ -195,6 +193,7 @@ void dotest();
 int _tmain(int argc, _TCHAR* argv[])
 {
 	setlocale( LC_ALL, "chs" );
+	SetConsoleCtrlHandler( NULL, FALSE );
 	SetConsoleCtrlHandler( Stop, TRUE );
 
 	// dotest();
@@ -277,7 +276,7 @@ void testdb()
 	{
 		if( db::execute_sql( conn, "delete from test" ) == false )
 		{
-			puts( db::get_error_info(conn) );
+			puts( db::get_error_info() );
 		}
 
 		db::command cmd = db::create_command( db::dbCmdStoredProc, "InsertData" );
@@ -291,7 +290,7 @@ void testdb()
 			db::insert_param_bigint( cmd, "ret", db::dbParamReturnValue, 0 );
 			if( db::execute_cmd( conn, cmd ) == false )
 			{
-				puts( db::get_error_info(conn) );
+				puts( db::get_error_info() );
 			}
 			printf( "ret value = %d", db::get_param_integer(cmd, "ret" ) );
 
@@ -303,7 +302,7 @@ void testdb()
 			db::insert_param_lvstring( cmd, "lvc", db::dbParamInput, "01234567890123456789012345678901", 32 );
 			if( db::execute_cmd( conn, cmd ) == false )
 			{
-				puts( db::get_error_info(conn) );
+				puts( db::get_error_info() );
 			}
 
 			// unicode×Ö·û´®²âÊÔ
@@ -314,7 +313,7 @@ void testdb()
 			db::insert_param_lvwstring( cmd, "lvc", db::dbParamInput, L"01234567890123456789012345678901", 32 );
 			if( db::execute_cmd( conn, cmd ) == false )
 			{
-				puts( db::get_error_info(conn) );
+				puts( db::get_error_info() );
 			}
 
 			db::destroy_command( cmd );
