@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "DatabaseService.h"
 #include <process.h>
+using namespace net;
 
 BEGIN_DISPATCHER_TABLE( CDatabaseService, database )
 	DECLARE_DISPATCH( db_user_regist,	userRegist )
@@ -75,9 +76,9 @@ size_t CDatabaseService::userRegist( db::connection conn, transaction *header )
 	db::command cmd = db::create_command( db::dbCmdStoredProc, "RegistUser" );
 	if( cmd )
 	{
+		db::insert_param_integer( cmd, "@Return", db::dbParamReturnValue, 0 );
 		db::insert_param_string( cmd, "@username", db::dbParamInput, msg->username, strlen( msg->username ) );
 		db::insert_param_string( cmd, "@password", db::dbParamInput, msg->password, strlen( msg->password ) );
-		db::insert_param_integer( cmd, "@Return", db::dbParamReturnValue, 0 );
 
 		if( db::execute_cmd( conn, cmd ) == false )
 		{

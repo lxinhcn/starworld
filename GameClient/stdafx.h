@@ -51,3 +51,4 @@
 #include "UILib.h"
 #include "Netbase.h"
 using namespace UILib;
+using namespace XGC::net;

@@ -61,7 +61,7 @@
       <AdditionalDependencies>Common.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib\$(Configuration);$(SolutionDir)Depend\Loki-0.1.6\Lib;$(SolutionDir)Tools\$(Configuration)\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -88,6 +88,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Application.cpp" />
     <ClCompile Include="DatabaseService.cpp" />
     <ClCompile Include="LogicService.cpp" />
     <ClCompile Include="LoginServer.cpp" />
@@ -99,16 +100,22 @@
     <ClCompile Include="TransQueue.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application.h" />
     <ClInclude Include="DatabaseService.h" />
     <ClInclude Include="LogicService.h" />
     <ClInclude Include="NetworkService.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TransDefine.h" />
     <ClInclude Include="TransQueue.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="icon1.ico" />
+    <None Include="icon2.ico" />
+    <None Include="LoginServer.ico" />
     <None Include="ReadMe.txt" />
+    <None Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\xgcBase\Database\Database.vcxproj">
@@ -119,6 +126,9 @@
       <Project>{f2303fee-e0f3-4856-a054-8329189231ac}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="LoginServer.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

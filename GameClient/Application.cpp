@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "Application.h"
 #include "Canvas.h"
+#include "NetworkService.h"
 
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 600
@@ -148,14 +149,18 @@ bool CApplication::Initialize()
 
 	restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "RegisterClassA",	m_pRegisterClass );
 
-	ConnectServer( "127.0.0.1", 19944, &m_pMessageQueue, 0 );
 	return true;
 }
 
 void CApplication::Run()
 {
 	// 系统开始运作
+	CNetworkService Client;
+	Client.Start();
+	ConnectServer( "127.0.0.1", 18890, &m_pMessageQueue, 0 );
 	m_hge->System_Start();
+	Client.Stop();
+	m_pMessageQueue->Release();
 }
 
 void CApplication::UnInitialize()

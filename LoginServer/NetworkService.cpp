@@ -2,6 +2,7 @@
 #include "NetworkService.h"
 #include <process.h>
 
+using namespace XGC::net;
 BEGIN_DISPATCHER_TABLE( CNetworkService, message_type )
 	DECLARE_DISPATCH( SYSTEM_MESSAGE_TYPE, OnSystemMessage )
 	//DECLARE_DISPATCH( MMO_LOGON_CLIENT_MESSAGE_TYPE, OnServerMessage )
