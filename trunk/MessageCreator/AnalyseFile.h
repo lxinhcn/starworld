@@ -4,6 +4,10 @@
 #include <fstream>
 #include <strstream>
 using namespace std;
+
+typedef const char*			_lpcstr;
+typedef char*				_lpstr;
+
 struct param
 {
 	string	tline;
@@ -60,28 +64,15 @@ struct root
 
 	struct _config
 	{
-		string	incdir;		// 包含文件输出目录
-		string	libdir;		// 库文件输出路径
-		string	outname;	// 输出文件名
+		string	outdir;		// 输出文件名
 		string	prefix;		// 预定义文件名前缀
-		string	libname;	// 导入库文件名
-		string	libpath;// 库文件目录
-		string	lib;	// 库文件连接参数
-		string	inc;	// 包含文件编译参数
+		string	userdef;	// 用户自定义包含头
+		string	yu;			// 预编译头文件
 	}config;
-
-	struct _opt
-	{
-		bool	_debug;
-		bool	_runtime;
-		bool	_library;
-		string	version;		// 版本
-		string	runtime;		// 运行库
-		string	linktar;		// 连接目标 dll or lib
-		string	unicode;
-	}opt;
 };
 struct command;
+
+char* strntok( char *string, const char *end, const char *control, char **next );
 
 //--------------------------------------------------------//
 //	created:	18:12:2009   16:37

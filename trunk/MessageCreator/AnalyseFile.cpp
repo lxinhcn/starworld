@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "AnalyseFile.h"
-
+#include <string>
 struct command
 {
 	const char *keyword;
@@ -35,6 +35,74 @@ static command commands[] =
 	{ "message", makemessage },
 	//{ "enum", makeenum },
 };
+
+char* strntok( char *string, const char *end, const char *control, char **next )
+{
+	unsigned char *str;
+	const unsigned char *ctl = (const unsigned char*)control;
+	unsigned char map[32];
+	int count;
+
+	if( *next == end ) 
+		return NULL;
+
+	/* Clear control map */
+	for (count = 0; count < 32; count++)
+	{
+		map[count] = 0;
+	}
+
+	/* Set bits in delimiter table */
+	do {
+		map[*ctl >> 3] |= (1 << (*ctl & 7));
+	} while (*ctl++);
+
+	/* If string is NULL, set str to the saved
+	* pointer (i.e., continue breaking tokens out of the string
+	* from the last strtok call) */
+	if (string != NULL )
+	{
+		str = (unsigned char*)string;
+	}
+	else
+	{
+		str = (unsigned char*)(*next+1);
+	}
+
+	/* Find beginning of token (skip over leading delimiters). Note that
+	* there is no token iff this loop sets str to point to the terminal
+	* null (*str == 0) */
+	while ((map[*str >> 3] & (1 << (*str & 7))) && *str != 0 && (char*)str != end )
+	{
+		str++;
+	}
+
+	string = (char*)str;
+
+	/* Find the end of the token. If it is not the end of the string,
+	* put a null there. */
+	for ( ; *str != 0 ; str++ )
+	{
+		if ( ( (char*)str == end ) || (map[*str >> 3] & (1 << (*str & 7))) )
+		{
+			//*str++ = 0;
+			break;
+		}
+	}
+
+	/* Update context */
+	*next = (char*)str;
+
+	/* Determine if a token has been found. */
+	if (string == (char*)str)
+	{
+		return NULL;
+	}
+	else
+	{
+		return string;
+	}
+}
 
 void destroyall( root *proot )
 {
@@ -590,7 +658,6 @@ size_t makeenum( root *proot, char *buf, size_t size, void* pdata )
 //--------------------------------------------------------//
 size_t maketree( root *proot, char *buf, size_t size, void* pdata )
 {
-
 	char *match = matchclose( buf, size );
 	if( !match ) return -1;
 
@@ -758,17 +825,17 @@ size_t makemessage( root *proot, char *buf, size_t size, void* pdata )
 			mcode->pvalue = msg->scode;
 			msg->sub.params.push_back( mcode );
 
-			param *vcode  = new param;
-			vcode->_array = false;
-			vcode->_basic = true;
-			vcode->_container = false;
-			vcode->_point = false;
-			vcode->_immediately = true;
-			vcode->tline = "_uint16 vcode;";
-			vcode->tname = "_uint16";
-			vcode->pname = "vcode";
-			vcode->pvalue = "0";
-			msg->sub.params.push_back( vcode );
+			//param *vcode  = new param;
+			//vcode->_array = false;
+			//vcode->_basic = true;
+			//vcode->_container = false;
+			//vcode->_point = false;
+			//vcode->_immediately = true;
+			//vcode->tline = "_uint16 vcode;";
+			//vcode->tname = "_uint16";
+			//vcode->pname = "vcode";
+			//vcode->pvalue = "0";
+			//msg->sub.params.push_back( vcode );
 
 			proot->mcode[msg->stype].push_back( msg->scode );
 		}
@@ -808,8 +875,8 @@ void writemessage( root *proot, message *pmessage )
 		proot->cfile.clear();
 
 		proot->filename = pmessage->filename;
-		string hfile = proot->config.incdir + "\\" + proot->filename+".h";
-		string cfile = proot->config.incdir + "\\" + proot->filename+".cpp";
+		string hfile = proot->config.outdir + "\\" + proot->filename+".h";
+		string cfile = proot->config.outdir + "\\" + proot->filename+".cpp";
 		proot->hfile.open( hfile.c_str(), ios_base::out|ios_base::trunc );
 		if( !proot->hfile.is_open() )
 		{
@@ -832,6 +899,11 @@ void writemessage( root *proot, message *pmessage )
 		}
 		else
 		{
+			if( !proot->config.yu.empty() )
+			{
+				proot->cfile << "#include \"" << proot->config.yu << "\"" << endl;
+			}
+			
 			proot->cfile << "#include \"" << proot->filename << ".h\"" << endl;
 			proot->hfile
 				<< "#ifdef _USRDLL" << endl
@@ -961,7 +1033,7 @@ void writenode_imp( root *proot, node *pnode, string pix )
 
 void writeheader( root *proot )
 {
-	string hfile = proot->config.incdir + "\\" + proot->config.prefix + "messagedef.h";
+	string hfile = proot->config.outdir + "\\" + proot->config.prefix + "messagedef.h";
 	fstream stream;
 	stream.open( hfile.c_str(), ios_base::out|ios_base::trunc );
 	if( !stream.is_open() )
@@ -974,7 +1046,10 @@ void writeheader( root *proot )
 		stream << "#ifndef " << proot->config.prefix << "_MESSAGEDEF_H" << endl;
 		stream << "#define " << proot->config.prefix << "_MESSAGEDEF_H" << endl;
 		stream << "#include \"commonlib.h\"" << endl;
-		stream << "#include \"userdefine.h\"" << endl;
+		if( !proot->config.userdef.empty() )
+		{
+			stream << "#include \"" << proot->config.userdef << "\"" << endl;
+		}
 		stream << "using namespace std;" << endl;
 
 		list< string >::iterator iter = proot->defines.begin();
@@ -1014,8 +1089,8 @@ void writefile( root *proot )
 {
 	if( proot->snode.size() )
 	{
-		string hfile = proot->config.incdir + "\\" + proot->config.prefix + "structsdef.h";
-		string cfile = proot->config.incdir + "\\" + proot->config.prefix + "structsdef.cpp";
+		string hfile = proot->config.outdir + "\\" + proot->config.prefix + "structsdef.h";
+		string cfile = proot->config.outdir + "\\" + proot->config.prefix + "structsdef.cpp";
 		proot->hfile.open( hfile.c_str(), ios_base::out|ios_base::trunc );
 		proot->cfile.open( cfile.c_str(), ios_base::out|ios_base::trunc );
 
