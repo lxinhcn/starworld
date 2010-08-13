@@ -710,7 +710,7 @@ static bool atob(const char* value)
 #ifdef UNIX
 	if (strncasecmp("true", value, 4) == 0) {
 #else
-	if (strnicmp("true", value, 4) == 0) {
+	if (_strnicmp("true", value, 4) == 0) {
 #endif
 		return true;
 	}
@@ -728,7 +728,7 @@ int TiXmlElement::IntAttribute( const char* name, int nDefault ) const
 float TiXmlElement::FloatAttribute( const char* name, float fDefault ) const
 {
 	const char* pattr = Attribute(name);
-	return pattr?atof(Attribute(name)):fDefault;
+	return pattr?(float)atof(Attribute(name)):fDefault;
 }
 
 bool TiXmlElement::BoolAttribute( const char* name, bool bDefault ) const

@@ -7,16 +7,16 @@
     <Filter Include="Controls">
       <UniqueIdentifier>{4e576386-efaa-4438-9aeb-ac4b82fab87c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Controls\头文件">
+    <Filter Include="Core">
+      <UniqueIdentifier>{2b2ad2d6-5f8e-4a38-81c2-865a22c4f84e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\Include">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Controls\源文件">
+    <Filter Include="Controls\Source">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Core">
-      <UniqueIdentifier>{2b2ad2d6-5f8e-4a38-81c2-865a22c4f84e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -33,37 +33,16 @@
       <Filter>XML</Filter>
     </ClCompile>
     <ClCompile Include="Source\XUI_Button.cpp">
-      <Filter>Controls\源文件</Filter>
+      <Filter>Controls\Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\XUI_Dialog.cpp">
-      <Filter>Controls\源文件</Filter>
+      <Filter>Controls\Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\XUI_EditBox.cpp">
-      <Filter>Controls\源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\XUI_Picture.cpp">
-      <Filter>Controls\源文件</Filter>
+      <Filter>Controls\Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\XUI_Window.cpp">
-      <Filter>Controls\源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GuiSystem.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\LuaBindClass.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\UICommander.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\UIFactory.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\UIObject.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\XUI_Base.cpp">
-      <Filter>Core</Filter>
+      <Filter>Controls\Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\XUI_Canvas.cpp">
       <Filter>Core</Filter>
@@ -72,6 +51,21 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\XUI_Wnd.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\XUI_System.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\XUI_Factory.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\XUI_LuaBinder.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\XUI_Object.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\XUI_Commander.cpp">
       <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
@@ -83,49 +77,16 @@
       <Filter>XML</Filter>
     </ClInclude>
     <ClInclude Include="Include\XUI_Button.h">
-      <Filter>Controls\头文件</Filter>
+      <Filter>Controls\Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\XUI_Dialog.h">
-      <Filter>Controls\头文件</Filter>
+      <Filter>Controls\Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\XUI_EditBox.h">
-      <Filter>Controls\头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\XUI_Picture.h">
-      <Filter>Controls\头文件</Filter>
+      <Filter>Controls\Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\XUI_Window.h">
-      <Filter>Controls\头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\GuiHeader.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\GuiMacroDefine.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\GuiSystem.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\LuaBindClass.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\MessageDefine.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\UICommander.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\UIFactory.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="UILib.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\UIObject.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\XUI_Base.h">
-      <Filter>Core</Filter>
+      <Filter>Controls\Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\XUI_Canvas.h">
       <Filter>Core</Filter>
@@ -134,6 +95,30 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Include\XUI_Wnd.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_System.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_Factory.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_Header.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_MacroDefine.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_LuaBinder.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_Object.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_Commander.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI.h">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
