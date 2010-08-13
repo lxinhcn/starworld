@@ -5,23 +5,30 @@
 //////////////////////////////////////////////////////////////////////////
 // CGameMap
 // 初始化地图
-void CGameMap::InitializeMap( _uint32 nBlockWidth, _uint32 nBlockHeight, xgcSize siBlockSize, xgcPoint ptTransfrom )
+void CGameMap::InitializeMap( int nMapWidth, int nMapHeight, int nBlockWidth, int nBlockHeight, int nTransfromX, int nTransfromY )
 {
-	m_pBlockArray = new CMapBlock[nBlockWidth*nBlockHeight];
+	m_pBlockArray = new CMapBlock[nMapWidth*nMapHeight];
 
-	m_siMapSize		= xgcSize( nBlockWidth, nBlockHeight );
-	m_siBlockSize	= siBlockSize;
-	m_ptTransfrom	= ptTransfrom;
+	m_nMapWidth		= nMapWidth;
+	m_nMapHeight	= nMapHeight;
+	m_nBlockSizeX	= nBlockWidth;
+	m_nBlockSizeY	= nBlockHeight;
+	m_nTransfromX	= nTransfromX;
+	m_nTransfromY	= nTransfromY;
 
-	m_InvBW = 1.0f/siBlockSize.cx;
-	m_InvBH = 1.0f/siBlockSize.cy;
+	m_InvBW = 1.0f/nBlockWidth;
+	m_InvBH = 1.0f/nBlockHeight;
 }
 
 void CGameMap::DestroyMap()
 {
-	m_siMapSize		= xgcSize( 0, 0 );
-	m_siBlockSize	= xgcSize( 0, 0 );
-	m_ptTransfrom	= xgcPoint( 0, 0 );
+	m_nMapWidth		= 0;
+	m_nMapHeight	= 0;
+	m_nBlockSizeX	= 0;
+	m_nBlockSizeY	= 0;
+	m_nTransfromX	= 0;
+	m_nTransfromY	= 0;
+
 	m_InvBW = 0.0f;
 	m_InvBH = 0.0f;
 
@@ -30,9 +37,9 @@ void CGameMap::DestroyMap()
 
 inline CMapBlock* CGameMap::GetBlock( int x, int y )const
 {
-	if( x < 0 || x >= m_siMapSize.cx || y < 0 || y >= m_siMapSize.cy )	return NULL;
+	if( x < 0 || x >= m_nMapWidth || y < 0 || y >= m_nMapHeight )	return NULL;
 
-	return m_pBlockArray?m_pBlockArray + (y*m_siMapSize.cx+x):NULL;
+	return m_pBlockArray?m_pBlockArray + (y*m_nMapWidth+x):NULL;
 }
 
 //// 得到当前矩形区域内的所有格子
@@ -73,81 +80,65 @@ inline CMapBlock* CGameMap::GetBlock( int x, int y )const
 //	return true;
 //}
 
-xgcRect CGameMap::GetBlockArea( const xgcRect& rcCollision )const
+RECT CGameMap::GetBlockArea( RECT rcCollision )const
 {
-	xgcRect rc = WorldToMap( rcCollision );
+	RECT ret, rc = WorldToMap( rcCollision );
 
-	int bx = int( ( rc.left + ( m_siBlockSize.cx >> 1 ) )*m_InvBW );
-	int by = int( ( rc.top + ( m_siBlockSize.cy >> 1) )*m_InvBH );
+	ret.left	= int( ( rc.left + ( m_nBlockSizeX >> 1 ) )*m_InvBW );
+	ret.top		= int( ( rc.top + ( m_nBlockSizeY >> 1) )*m_InvBH );
 
-	int ex = int( rc.Width()*m_InvBW + bx );
-	int ey = int( rc.Height()*m_InvBH + by );
+	ret.right	= int( (rc.right - rc.left)*m_InvBW + ret.left );
+	ret.bottom	= int( (rc.bottom - rc.top)*m_InvBH + ret.top );
 
-	return xgcRect( bx, by, ex, ey );
+	return ret;
 }
 
 //---------------------------------------------------//
 // [8/7/2009 Albert]
 // Description:	获取对象占用的格子范围
 //---------------------------------------------------//
-xgcRect	CGameMap::GetBlockArea( float fPosX, float fPosY, float fRadius )const
+RECT CGameMap::GetBlockArea( float fPosX, float fPosY, float fRadius )const
 {
+	RECT rc;
 	// WorldToMap
-	fPosX -= m_ptTransfrom.x;
-	fPosY -= m_ptTransfrom.y;
+	fPosX -= m_nTransfromX;
+	fPosY -= m_nTransfromY;
 
-	float x0 = (fPosX - fRadius)*m_InvBW;
-	float y0 = (fPosY - fRadius)*m_InvBH;
-	float x1 = (fPosX + fRadius)*m_InvBW;
-	float y1 = (fPosY + fRadius)*m_InvBH;
+	rc.left		= (long)((fPosX - fRadius)*m_InvBW);
+	rc.top		= (long)((fPosY - fRadius)*m_InvBH);
+	rc.right	= (long)((fPosX + fRadius)*m_InvBW);
+	rc.bottom	= (long)((fPosY + fRadius)*m_InvBH);
 
-	return xgcRect( int(x0), int(y0), int(x1), int(y1) );
+	return rc;
 }
 
-int CGameMap::GetBlockList( const xgcRect& rcBlockArea, CBlockList& ret )const
+int CGameMap::GetBlockList( int x0, int y0, int x1, int y1, CBlockList& ret )const
 {
-	for( int y = rcBlockArea.top; y <= rcBlockArea.bottom; y++ )
+	for( int y = y0; y <= y1; y++ )
 	{
-		for( int x = rcBlockArea.left; x <= rcBlockArea.right; x++ )
+		for( int x = x0; x <= x1; x++ )
 		{
 			ret.push_back( GetBlock( x, y ) );
 		}
 	}
 	return ret.size();
+}
+
+int CGameMap::GetBlockList( POINT ptBegin, POINT ptEnd, CBlockList& ret )const
+{
+	return GetBlockList( ptBegin.x, ptBegin.y, ptEnd.x, ptEnd.y, ret );
+};
+
+int CGameMap::GetBlockList( RECT rcBlockArea, CBlockList& ret )const
+{
+	return GetBlockList( rcBlockArea.left, rcBlockArea.top, rcBlockArea.right, rcBlockArea.bottom, ret );
 };
 
 //---------------------------------------------------//
 // [9/3/2009 Albert]
 // Description:	获取区域内的所有对象ID
 //---------------------------------------------------//
-int	CGameMap::GetTargets( const CBlockList& bl, CTargetSet& ret )
-{
-	struct _for_each
-	{
-		CTargetSet& _set;
-		_for_each( CTargetSet& set ): _set( set ){}
-		void operator()( _uint32 id ){ _set.insert( id ); }
-	};
-
-	CBlockList::const_iterator ci = bl.begin();
-	while( ci != bl.end() )
-	{
-		CMapBlock *pBlock = *ci;
-
-		if( pBlock )
-		{
-			pBlock->for_each_object( _for_each( ret ) );
-		}
-		++ci;
-	}
-	return ret.size();
-}
-
-//---------------------------------------------------//
-// [9/3/2009 Albert]
-// Description:	获取区域内的所有对象ID
-//---------------------------------------------------//
-int	CGameMap::GetBlockList( xgcPoint ptBegin, xgcPoint ptEnd, int nWidth, CBlockList& ret )const
+int	CGameMap::GetBlockList( POINT ptBegin, POINT ptEnd, int nWidth, CBlockList& ret )const
 {
 	int x0, x = x0 = ptBegin.x;
 	int y0, y = y0 = ptBegin.y;
@@ -196,6 +187,33 @@ int	CGameMap::GetBlockList( xgcPoint ptBegin, xgcPoint ptEnd, int nWidth, CBlock
 				}
 			}
 		}
+	}
+	return ret.size();
+}
+
+//---------------------------------------------------//
+// [9/3/2009 Albert]
+// Description:	获取区域内的所有对象ID
+//---------------------------------------------------//
+int	CGameMap::GetTargets( const CBlockList& bl, CTargetSet& ret )
+{
+	struct _for_each
+	{
+		CTargetSet& _set;
+		_for_each( CTargetSet& set ): _set( set ){}
+		void operator()( _uint32 id ){ _set.insert( id ); }
+	};
+
+	CBlockList::const_iterator ci = bl.begin();
+	while( ci != bl.end() )
+	{
+		CMapBlock *pBlock = *ci;
+
+		if( pBlock )
+		{
+			pBlock->for_each_object( _for_each( ret ) );
+		}
+		++ci;
 	}
 	return ret.size();
 }
@@ -264,10 +282,10 @@ bool CGameMap::DynamicMoveTo( CDynamicObject* pObj, XVector3 &vPosition, bool bC
 	// 小于速度的极限值则直接返回
 	float fPosX = pObj->GetPosX();
 	float fPosY = pObj->GetPosZ();
-	int x0, x = x0 = int(((int)fPosX - m_ptTransfrom.x)*m_InvBW);
-	int y0, y = y0 = int(((int)fPosY - m_ptTransfrom.y)*m_InvBH);
-	int x1 = int(((int)vPosition[0] - m_ptTransfrom.x)*m_InvBW);
-	int y1 = int(((int)vPosition[2] - m_ptTransfrom.y)*m_InvBH);
+	int x0, x = x0 = int(((int)fPosX - m_nTransfromX)*m_InvBW);
+	int y0, y = y0 = int(((int)fPosY - m_nTransfromY)*m_InvBH);
+	int x1 = int(((int)vPosition[0] - m_nTransfromX)*m_InvBW);
+	int y1 = int(((int)vPosition[2] - m_nTransfromY)*m_InvBH);
 
 	DEBUG_CODE( CMapBlock *pBlock = GetBlock(x,y); if( pBlock ) ASSERT_MSG( pBlock->CheckExist(pObj->GetObjID()), _T("发现飞机。") ); )
 	bool ret = true;
@@ -313,16 +331,16 @@ bool CGameMap::DynamicMoveTo( CDynamicObject* pObj, XVector3 &vPosition, bool bC
 						y -= sy;
 						le -= (dx << 1);
 					}
-					vPosition[0] = fPosX + ((steep?y:x) - x0)*m_siBlockSize.cx;
-					vPosition[2] = fPosY + ((steep?x:y) - y0)*m_siBlockSize.cy;
-					x1 = int(((int)vPosition[0] - m_ptTransfrom.x)*m_InvBW);
-					y1 = int(((int)vPosition[2] - m_ptTransfrom.y)*m_InvBH);
+					vPosition[0] = fPosX + ((steep?y:x) - x0)*m_nBlockSizeX;
+					vPosition[2] = fPosY + ((steep?x:y) - y0)*m_nBlockSizeY;
+					x1 = int(((int)vPosition[0] - m_nTransfromX)*m_InvBW);
+					y1 = int(((int)vPosition[2] - m_nTransfromY)*m_InvBH);
 					ret = false;
 					break;
 				}
 			}
 		}
-		ExchangeBlock( pObj, &xgcPoint( x0, y0 ), &xgcPoint( x1, y1 ) );
+		ExchangeBlock( pObj, x0, y0, x1, y1 );
 		// CLogger::GetInstance( _T("Log") )->WriteLog( _T("对象%08x 移动到[%d,%d]"), pObj->GetObjID(), x1, y1 );
 	}
 	OnDynamicMove( pObj, vPosition );
@@ -336,29 +354,23 @@ void CGameMap::OnDynamicMove( CDynamicObject *pObj, XVector3 &vPosition )
 		pObj->SetPosition( vPosition );
 }
 
-void CGameMap::ExchangeBlock( CDynamicObject *pObj, const xgcPoint *pOldBlock, const xgcPoint *pNewBlock )
+void CGameMap::ExchangeBlock( CDynamicObject *pObj, int x0, int y0, int x1, int y1 )
 {
 	// 变换格子引用
 	// 取消旧的格子引用
-	if( pOldBlock )
+	CMapBlock* pBlock = GetBlock( x0, y0 );
+	if( pBlock )
 	{
-		CMapBlock* pBlock = GetBlock( pOldBlock->x, pOldBlock->y );
-		if( pBlock )
-		{
-			//CLogger::GetInstance( LOG )->WriteLog( _T("del object at [%d,%d] %08x"), x1, y1, pObj->GetObjID() );
-			VERIFY( pBlock->DelObject( pObj->GetObjID() ) != 0 );
-		}
+		//CLogger::GetInstance( LOG )->WriteLog( _T("del object at [%d,%d] %08x"), x1, y1, pObj->GetObjID() );
+		VERIFY( pBlock->DelObject( pObj->GetObjID() ) != 0 );
 	}
 
-	if( pNewBlock )
+	pBlock = GetBlock( x1, y1 );
+	if( pBlock )
 	{
-		CMapBlock* pBlock = GetBlock( pNewBlock->x, pNewBlock->y );
-		if( pBlock )
-		{
-			//CLogger::GetInstance( LOG )->WriteLog( _T("add object at [%d,%d] %08x"), x1, y1, pObj->GetObjID() );
-			pBlock->AddObject( pObj->GetObjID() );
-			DEBUG_CODE( pObj->SetBlock( pBlock ); )
-		}
+		//CLogger::GetInstance( LOG )->WriteLog( _T("add object at [%d,%d] %08x"), x1, y1, pObj->GetObjID() );
+		pBlock->AddObject( pObj->GetObjID() );
+		DEBUG_CODE( pObj->SetBlock( pBlock ); )
 	}
 }
 
@@ -367,14 +379,14 @@ bool CGameMap::PreAddChild( CXObject* pObj )	// 将对象放入地图
 	ASSERT( pObj );
 	if( pObj == NULL )
 		return false;
-
 	if( pObj->IsTypeOf( TypeDynamicObject ) )
 	{
 		CDynamicObject* pDynamicObject = static_cast< CDynamicObject* >( pObj );
-		xgcPoint pt( 
-			int(((int)pDynamicObject->GetPosX() - m_ptTransfrom.x)*m_InvBW), 
-			int(((int)pDynamicObject->GetPosZ() - m_ptTransfrom.y)*m_InvBH));
-		ExchangeBlock( pDynamicObject, NULL, &pt );
+		ExchangeBlock( 
+			pDynamicObject, 
+			-1, -1, 
+			int(((int)pDynamicObject->GetPosX() - m_nTransfromX)*m_InvBW),
+			int(((int)pDynamicObject->GetPosZ() - m_nTransfromY)*m_InvBH) );
 	}
 	else if( pObj->IsTypeOf( TypeGameObject ) )
 	{
@@ -385,12 +397,11 @@ bool CGameMap::PreAddChild( CXObject* pObj )	// 将对象放入地图
 		float cy = pGameObject->GetHeight();
 
 		CBlockList	retList;
-		xgcPoint pt( 
-			int(((int)pGameObject->GetPosX() - m_ptTransfrom.x)*m_InvBW), 
-			int(((int)pGameObject->GetPosZ() - m_ptTransfrom.y)*m_InvBH));
-		xgcRect rcBlockArea( pt, pt );
-		rcBlockArea.InflateRect( int(cx/2.0f), int(cy/2.0f) );
-		GetBlockList( rcBlockArea, retList );
+		int x =	int(((int)pGameObject->GetPosX() - m_nTransfromX)*m_InvBW); 
+		int y = int(((int)pGameObject->GetPosZ() - m_nTransfromY)*m_InvBH);
+
+		// rcBlockArea.InflateRect( int(cx/2.0f), int(cy/2.0f) );
+		GetBlockList( (int)(x - cx/2.0f), (int)(y - cx/2.0f), (int)(x + cy/2.0f), (int)(y + cy/2.0f), retList );
 
 		if( retList.empty() )
 		{
@@ -424,28 +435,24 @@ bool CGameMap::PreRemoveChild( CXObject* pObj, bool bRelease )	// 将对象从地图移
 	if( pObj->IsTypeOf( TypeDynamicObject ) )
 	{
 		CDynamicObject *pDynamicObject = static_cast< CDynamicObject* >( pObj );
-		xgcPoint pt( 
-			int(((int)pDynamicObject->GetPosX() - m_ptTransfrom.x)*m_InvBW), 
-			int(((int)pDynamicObject->GetPosZ() - m_ptTransfrom.y)*m_InvBH));
-
-		ExchangeBlock( pDynamicObject, &pt, NULL );
+		ExchangeBlock( 
+			pDynamicObject, 
+			int(((int)pDynamicObject->GetPosX() - m_nTransfromX)*m_InvBW), 
+			int(((int)pDynamicObject->GetPosZ() - m_nTransfromY)*m_InvBH),
+			-1, -1 );
 	}
 	else if( pObj->IsTypeOf( TypeGameObject ) )
 	{
 		CGameObject *pGameObject = static_cast< CGameObject* >( pObj );
 
 		CBlockList	retList;
-		xgcPoint pt( 
-			int(((int)pGameObject->GetPosX() - m_ptTransfrom.x)*m_InvBW), 
-			int(((int)pGameObject->GetPosZ() - m_ptTransfrom.y)*m_InvBH));
+		int x = int(((int)pGameObject->GetPosX() - m_nTransfromX)*m_InvBW); 
+		int y = int(((int)pGameObject->GetPosZ() - m_nTransfromY)*m_InvBH);
 
 		float cx = pGameObject->GetWidth();
 		float cy = pGameObject->GetHeight();
 
-		xgcRect rcBlockArea( pt, pt );
-		rcBlockArea.InflateRect( int(cx/2.0f), int(cy/2.0f) );
-
-		GetBlockList( rcBlockArea, retList );
+		GetBlockList( (int)(x - cx/2.0f), (int)(y - cx/2.0f), (int)(x + cy/2.0f), (int)(y + cy/2.0f), retList );
 		CBlockList::const_iterator citer = retList.begin();
 		while( citer != retList.end() )
 		{

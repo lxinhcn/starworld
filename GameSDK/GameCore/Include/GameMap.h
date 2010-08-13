@@ -59,9 +59,9 @@ private:
 	CMapBlock*	m_pBlockArray;
 
 protected:
-	xgcSize	m_siMapSize;
-	xgcSize	m_siBlockSize;
-	xgcPoint m_ptTransfrom;
+	int	m_nMapWidth, m_nMapHeight;
+	int m_nBlockSizeX, m_nBlockSizeY;
+	int m_nTransfromX, m_nTransfromY;
 	
 	float m_InvBW, m_InvBH;
 public:
@@ -71,8 +71,10 @@ public:
 
 protected:
 	CGameMap()
-		: m_siBlockSize( xgcSize( 0, 0 ) )
-		, m_siMapSize( xgcSize( 0, 0 ) )	// 地砖横向个数
+		: m_nBlockSizeX( 0 )
+		, m_nBlockSizeY( 0 )
+		, m_nMapWidth( 0 )	// 地砖横向个数
+		, m_nMapHeight( 0 )	// 地砖纵向个数
 		, m_pBlockArray( NULL )
 		, m_InvBW( 0.0f )
 		, m_InvBH( 0.0f )
@@ -82,8 +84,10 @@ protected:
 
 	CGameMap( bool bIsParent, bool bIsTypeList )
 		: CXObject( bIsParent, bIsTypeList )
-		, m_siBlockSize( xgcSize( 0, 0 ) )
-		, m_siMapSize( xgcSize( 0, 0 ) )	// 地砖横向个数
+		, m_nBlockSizeX( 0 )
+		, m_nBlockSizeY( 0 )
+		, m_nMapWidth( 0 )	// 地砖横向个数
+		, m_nMapHeight( 0 )	// 地砖纵向个数
 		, m_pBlockArray( NULL )
 		, m_InvBW( 0.0f )
 		, m_InvBH( 0.0f )
@@ -97,38 +101,50 @@ protected:
 	}
 
 	// 初始化地图
-	void InitializeMap( _uint32 nBlockWidth, _uint32 nBlockHeight, xgcSize siBlockSize, xgcPoint ptTransfrom );
+	void InitializeMap( int nMapWidth, int nMapHeight, int nBlockWidth, int nBlockHeight, int nTransfromX, int nTransfromY );
 	void DestroyMap();
 
 public:
 	DECLARE_DYNAMICTYPE( CXObject, TypeGameMap );
 
-	inline	_uint32	GetMapWidth()const		{ return m_siMapSize.cx; }
-	inline	_uint32	GetMapHeight()const		{ return m_siMapSize.cy; }
-	inline	_uint32	GetBlockWidth()const	{ return m_siBlockSize.cx; }
-	inline	_uint32	GetBlockHeight()const	{ return m_siBlockSize.cy; }
-	inline	_uint32	GetWorldWidth()const	{ return m_siMapSize.cx*m_siBlockSize.cx; }
-	inline	_uint32	GetWorldHeight()const	{ return m_siMapSize.cy*m_siBlockSize.cy; }
+	inline	int	GetMapWidth()const		{ return m_nMapWidth; }
+	inline	int	GetMapHeight()const		{ return m_nMapHeight; }
+	inline	int	GetBlockWidth()const	{ return m_nBlockSizeX; }
+	inline	int	GetBlockHeight()const	{ return m_nBlockSizeY; }
+	inline	int	GetWorldWidth()const	{ return m_nMapWidth*m_nBlockSizeX; }
+	inline	int	GetWorldHeight()const	{ return m_nMapHeight*m_nBlockSizeY; }
 
 	inline	CMapBlock*	GetBlock( int x, int y )const;
 
-	xgcRect	MapToWorld( const xgcRect& rc )const{ return rc + m_ptTransfrom; }
-	xgcRect WorldToMap( const xgcRect& rc )const{ return rc - m_ptTransfrom; }
+	RECT MapToWorld( RECT rc )const{ rc.left += m_nTransfromX; rc.right += m_nTransfromX; rc.top += m_nTransfromY; rc.bottom += m_nTransfromY; return rc;}
+	RECT WorldToMap( RECT rc )const{ rc.left -= m_nTransfromY; rc.right -= m_nTransfromX; rc.top -= m_nTransfromY; rc.bottom -= m_nTransfromY; return rc;}
 
-	xgcPoint MapToWorld( const xgcPoint& pt )const{ return pt + m_ptTransfrom; }
-	xgcPoint WorldToMap( const xgcPoint& pt )const{ return pt - m_ptTransfrom; }
+	POINT MapToWorld( POINT pt )const{ pt.x += m_nTransfromX; pt.y += m_nTransfromY; return pt; }
+	POINT WorldToMap( POINT pt )const{ pt.x -= m_nTransfromX; pt.y -= m_nTransfromY; return pt; }
+
+	//---------------------------------------------------//
+	// [8/5/2010 Albert]
+	// Description:	获取矩形范围内的格子列表
+	//---------------------------------------------------//
+	int GetBlockList( int x0, int y0, int x1, int y1, CBlockList& ret )const;
+
+	//---------------------------------------------------//
+	// [8/5/2010 Albert]
+	// Description:	获取矩形范围内的格子列表
+	//---------------------------------------------------//
+	int GetBlockList( POINT ptBegin, POINT ptEnd, CBlockList& ret )const;
 
 	//---------------------------------------------------//
 	// [9/10/2009 Albert]
 	// Description:	获取矩形范围内的格子列表
 	//---------------------------------------------------//
-	int	GetBlockList( const xgcRect& rcBlockArea, CBlockList& ret )const;
+	int	GetBlockList( RECT rcBlockArea, CBlockList& ret )const;
 
 	//---------------------------------------------------//
 	// [9/3/2009 Albert]
 	// Description:	获取直线上的格子列表
 	//---------------------------------------------------//
-	int GetBlockList( xgcPoint ptBegin, xgcPoint ptEnd, int nWidth, CBlockList& ret )const;
+	int GetBlockList( POINT ptBegin, POINT ptEnd, int nWidth, CBlockList& ret )const;
 
 	//---------------------------------------------------//
 	// [9/3/2009 Albert]
@@ -148,13 +164,13 @@ public:
 	// [8/7/2009 Albert]
 	// Description:	获取对象占用的格子范围
 	//---------------------------------------------------//
-	xgcRect	GetBlockArea( const xgcRect& rcCollision )const;
+	RECT GetBlockArea( RECT rcCollision )const;
 
 	//---------------------------------------------------//
 	// [8/7/2009 Albert]
 	// Description:	获取对象占用的格子范围
 	//---------------------------------------------------//
-	xgcRect	GetBlockArea( float fPosX, float fPosY, float fRadius )const;
+	RECT GetBlockArea( float fPosX, float fPosY, float fRadius )const;
 protected:
 
 	//---------------------------------------------------//
@@ -187,5 +203,5 @@ protected:
 	// [8/3/2009 Albert]
 	// Description:	对象所占格子发生改变时调用
 	//---------------------------------------------------//
-	virtual void ExchangeBlock( CDynamicObject* pObj, const xgcPoint *pOldBlock, const xgcPoint *pNewBlock );
+	virtual void ExchangeBlock( CDynamicObject *pObj, int x0, int y0, int x1, int y1 );
 };
