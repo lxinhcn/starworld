@@ -1,0 +1,28 @@
+#define NC2L_LOGIN_MSG_TYPE		0x11
+#define NL2C_LOGIN_MSG_TYPE		0x11
+
+
+// 登录消息
+message NC2L_LoginMessage( NC2L_LOGIN_MSG_TYPE, NC2L_LOGIN_REQUEST_ID )
+{
+	string		account;
+	string		password;
+};
+
+// 登录服务器成功
+message NL2C_LoginGameSuccess( NL2C_LOGIN_MSG_TYPE, NL2C_LOGIN_SUCCESS )
+{
+	string		strIP;
+	string		strKey;
+//	CHAR		IP[MAX_IP_LENGTH];
+//	CHAR		Key[MAX_KEY_MAP_LENGTH];
+	unsigned short	Port;
+	unsigned int	login_id;
+};
+
+// 登录服务器失败
+message NL2C_LoginGameFailed( NL2C_LOGIN_MSG_TYPE, NL2C_LOGIN_FAILED )
+{
+	char 		Reason;
+	enum 		{ ACCOUNT_VERIFIED_FAILED };
+};

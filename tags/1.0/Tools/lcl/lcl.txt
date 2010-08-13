@@ -1,0 +1,76 @@
+#define NLS2CS_MSG_TYPE			0x12
+#define	NCS2LS_MSG_TYPE			0x22
+
+
+// --FROM:LS 请求登陆CS
+message NLS2CS_LogonCenterServer( NLS2CS_MSG_TYPE, NLS2CS_LOGON_CENTERSERVER )
+{
+	short loginID;	// login server id
+};
+
+
+// --FROM:LS 请求分配GS	
+message NLS2CS_RequestAssignGameServer( NLS2CS_MSG_TYPE, NLS2CS_REQUEST_ASSIGN_GAMESERVER )
+{
+	unsigned int userNetID;
+	unsigned int userCharID;
+	string szUserName;
+};
+
+
+// --FROM:LS 回复心跳包
+message NLS2CS_RelayLiveCheck( NLS2CS_MSG_TYPE, NLS2CS_PRN_LIVE )
+{
+	unsigned int loginID;				// 登录ID
+};
+
+
+
+// --FROM:CS 登录CS成功
+message NCS2LS_LogonCenterServerSuccess( NCS2LS_MSG_TYPE, NCS2LS_LOGON_SUCCESS
+{
+};
+
+
+// ---FROM:CS 登录CS失败
+message NCS2LS_LogonCenterServerFail( NCS2LS_MSG_TYPE, NCS2LS_LOGON_FAIL)
+{
+	unsigned char 	reason;				// 失败原因
+};
+
+
+// --FROM:CS 分配GS成功
+message NCS2LS_AssignGameServerSuccess( NCS2LS_MSG_TYPE, NCS2LS_ASSIGN_SERVER_SUCCESS )
+{
+	unsigned int 	loginID;  			// CS分配的登录ID
+	unsigned int 	userNetID;			// 在loginserver上的网络ID  
+	string	      	strIP;				// 新分配的GameServer地址
+	unsigned short	gsPort;				// 新分配的GameServer端口 
+	string	 	strKey;				// 新分配的KEY 
+};
+
+
+// --FROM:CS 分配GS成功
+message NCS2LS_AssignGameServerFail( NCS2LS_MSG_TYPE,  NCS2LS_ASSIGN_SERVER_FAIL )
+{
+	unsigned int 	userNetID;			// 在loginserver上的网络ID 
+	unsigned char	reason;				// 错误码 
+};
+
+
+// --FROM:CS 心跳包检测
+message NCS2LS_CheckLive( NCS2LS_MSG_TYPE, NCS2LS_CHECK_LIVE )
+{
+	unsigned int	charID;				// 被封用户的帐号 
+	unsigned char	opFlag;				// 操作码，如果为0表示解除封号，1表示封号 
+	unsigned int	forbidTime;			// 封帐号时间，如果上面为零则无意义 
+};
+
+
+// --FROM:CS 请求封禁帐号
+message NCS2LS_RequestLockAccount( NCS2LS_MSG_TYPE, NCS2LS_REQUEST_LOCK_ACCOUNT )
+{
+	unsigned int	charID;				// 被封用户的帐号 
+	unsigned char	opFlag;				// 操作码，如果为0表示解除封号，1表示封号 
+	unsigned int	forbidTime;			// 封帐号时间，如果上面为零则无意义 
+};
