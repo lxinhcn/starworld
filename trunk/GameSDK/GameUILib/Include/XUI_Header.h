@@ -14,11 +14,11 @@
 	#include <tchar.h>
 	#include <conio.h>
 
-	#include "MessageDefine.h"
-	#include "GuiMacroDefine.h"
-	#include "EventDefine.h"
+	#include "XUI_MacroDefine.h"
 	#include "XUI_Canvas.h"
+	#include "XUI_Factory.h"
 	#include "XUI_IME.h"
+	#include "DataHelper.h"
 	#include "tinyxml.h"
 	#include "slb\SLB.hpp"
 
