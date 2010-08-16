@@ -11,10 +11,10 @@ namespace XGC
 	{
 		XUI_Commander::XUI_Commander()
 		{
-			m_pCurElement = XUI::Instance().GetRoot();
+			m_pCurElement = NULL;
 			RegistCommand( _T("help"),		&XUI_Commander::cmd_help,		_T("help")	);
 			RegistCommand( _T("create"),	&XUI_Commander::cmd_create,		_T("create control :create [lable]")	);
-			RegistCommand( _T("delete"),	&XUI_Commander::cmd_delete,		_T("delete control :delete (index|control name)")	);
+			RegistCommand( _T("delete"),	&XUI_Commander::cmd_delete,		_T("delete control :delete [index|name]")	);
 			RegistCommand( _T("attrib"),	&XUI_Commander::cmd_attrib,		_T("check control attrib :attrib (index|control name)")	);
 			RegistCommand( _T("save"),		&XUI_Commander::cmd_save,		_T("save ui to file :save filename")	);
 			RegistCommand( _T("load"),		&XUI_Commander::cmd_load,		_T("load ui from file :load filename")	);
@@ -24,7 +24,7 @@ namespace XGC
 			RegistCommand( _T("parent"),	&XUI_Commander::cmd_parent,		_T("返回到父控件 parent")	);
 			RegistCommand( _T("tree"),		&XUI_Commander::cmd_tree,		_T("查看控件树 tree (index|control name)")	);
 			RegistCommand( _T("dir"),		&XUI_Commander::cmd_tree,		_T("查看控件树 tree (index|control name)")	);
-			RegistCommand( _T("lua"),		&XUI_Commander::cmd_lua,			_T("执行lua脚本 lua [script]")	);
+			RegistCommand( _T("lua"),		&XUI_Commander::cmd_lua,		_T("执行lua脚本 lua [script]")	);
 		}
 
 		XUI_Commander::~XUI_Commander()
@@ -89,7 +89,7 @@ namespace XGC
 					_tcsicmp( _T(".."), section ) == 0 )
 					pCurElement = pCurElement->GetParent();
 				else if( section[0] == _T('~') )
-					pCurElement = XUI::Instance().GetRoot();
+					pCurElement = NULL;
 				else
 				{
 					_string child( section );
@@ -108,7 +108,9 @@ namespace XGC
 						pXUI_Wnd = pCurElement->ForAllChild( FindChildByName, (LPVOID)child.c_str() );
 					}
 
-					if( !pXUI_Wnd ) return pCurElement;
+					if( !pXUI_Wnd ) 
+						return pCurElement;
+
 					pCurElement = pXUI_Wnd;
 				}
 
@@ -164,7 +166,7 @@ namespace XGC
 					}
 				}
 
-				(this->* iter->second.func)( param );
+				(this->* iter->second.func)( param, iter->second.helpString );
 			}
 			else
 			{
@@ -189,7 +191,7 @@ namespace XGC
 			}
 			else
 			{
-				m_pCurElement = XUI::Instance().GetRoot();
+				m_pCurElement = NULL;
 				return true;
 			}
 			return false;
@@ -205,7 +207,7 @@ namespace XGC
 			return false;
 		}
 
-		bool XUI_Commander::cmd_help( Params& param )
+		bool XUI_Commander::cmd_help( Params& param, _lpctstr helpstring )
 		{
 			_tprintf( _T("UICommander help:\n") );
 			CCommandMap::iterator iter = m_cmdMap.begin();
@@ -217,13 +219,19 @@ namespace XGC
 			return true;
 		}
 
-		bool XUI_Commander::cmd_create( Params& param )
+		bool XUI_Commander::cmd_create( Params& param, _lpctstr helpstring )
 		{
 			size_t param_count = param.size();
 			if( param_count < 1 ) return true;
 
 			_lptstr p = _tcsdup( param[0].c_str() );
 			_tcsupr_s( p, param[0].size() + 1 );
+
+			if( m_pCurElement == NULL )
+			{
+				_tprintf( _T("cannot create control in root.\n") );
+				return false;
+			}
 
 			XUI_Wnd* pCurElement = XUI_Factory::GetInstance().Creator( XT2A(p) );
 			if( !pCurElement )
@@ -233,7 +241,6 @@ namespace XGC
 			}
 			_tprintf( _T("create %s success.\n"), p );
 
-			if( m_pCurElement == NULL ) m_pCurElement = XUI::Instance().GetRoot();
 			if( m_pCurElement )
 			{
 				if( param_count < 2 )
@@ -249,50 +256,39 @@ namespace XGC
 					}
 				}
 			}
+
 			m_pCurElement = pCurElement;
 			return true;
 		}
 
-		bool XUI_Commander::cmd_delete( Params& param )
+		bool XUI_Commander::cmd_delete( Params& param, _lpctstr helpstring )
 		{
-			XUI_Window* pDesktop = XUI::Instance().GetRoot();
-			if( param.size() == 0 )
+			XUI_Wnd *pElement = m_pCurElement;
+			if( param.size() != 1 )
 			{
-				if( pDesktop == m_pCurElement )
-				{
-					_cputts( _T("Connot delete Desktop.") );
-					return false;
-				}
-
-				XUI_Wnd* pParent = m_pCurElement->GetParent();
-				if( pParent )
-				{
-					_tprintf( _T("\t%s <%s> was destroy."), m_pCurElement->GetName().c_str(), typeid(m_pCurElement).raw_name() );
-					m_pCurElement->Release();
-					m_pCurElement = pParent;
-				}
+				_tprintf( _T("%s"), helpstring );
 			}
 			else if( param.size() == 1 )
 			{
 				XUI_Wnd* pXUI_Wnd = GetElementByPath( param[0].c_str() );
-				if( pXUI_Wnd && pXUI_Wnd != pDesktop )
-				{
-					XUI_Wnd* pParent = pXUI_Wnd;
-					do
-					{
-						// delete parent node
-						if( pParent == m_pCurElement ) break;
-						pParent = pParent->GetParent();
-					}while( pParent != pDesktop );
 
-					if( pParent == m_pCurElement ) m_pCurElement = pXUI_Wnd->GetParent();
+				XUI_Wnd* pParent = pXUI_Wnd;
+				while( pParent )
+				{
+					// check delete control is parent?
+					if( pParent == m_pCurElement ) break;
+					pParent = pParent->GetParent();
+				}
+
+				if( pParent == NULL )
+				{
 					pXUI_Wnd->Release();
 				}
 			}
 			return true;
 		}
 
-		bool XUI_Commander::cmd_attrib( Params& param )
+		bool XUI_Commander::cmd_attrib( Params& param, _lpctstr helpstring )
 		{
 			if( !m_pCurElement ) return false;
 
@@ -300,7 +296,7 @@ namespace XGC
 			return true;
 		}
 
-		bool XUI_Commander::cmd_save( Params& param )
+		bool XUI_Commander::cmd_save( Params& param, _lpctstr helpstring )
 		{
 			if( param.size() != 1 ) return false;
 			XUI::Instance().SaveToFile( XT2A(param[0]) );
@@ -308,7 +304,7 @@ namespace XGC
 			return true;
 		}
 
-		bool XUI_Commander::cmd_load( Params& param )
+		bool XUI_Commander::cmd_load( Params& param, _lpctstr helpstring )
 		{
 			if( param.size() != 1 ) return false;
 			if( XUI::Instance().LoadFromFile( XT2A(param[0]) ) == false )
@@ -317,22 +313,27 @@ namespace XGC
 			}
 			else
 			{
-				m_pCurElement = XUI::Instance().GetRoot();
+				m_pCurElement = NULL;
 			}
 			return true;
 		}
 
-		bool XUI_Commander::cmd_root( Params& param )
+		bool XUI_Commander::cmd_root( Params& param, _lpctstr helpstring )
 		{
-			m_pCurElement = XUI::Instance().GetRoot();
-			int count = 0;
-			m_pCurElement->ForAllChild( EnumAllChild, &count );
-			return true;
+			m_pCurElement = XUI::Instance().GetTopWindow( param[0].c_str() );
+			if( m_pCurElement )
+			{
+				int count = 0;
+				m_pCurElement->ForAllChild( EnumAllChild, &count );
+				return true;
+			}
+			return false;
 		}
 
-		bool XUI_Commander::cmd_tree( Params& param )
+		bool XUI_Commander::cmd_tree( Params& param, _lpctstr helpstring )
 		{
-			if( !m_pCurElement ) return true;
+			if( !m_pCurElement ) 
+				return true;
 			_uint32 count = 1;
 
 			XUI_Wnd* pTreeRoot = ( param.size() == 0 )?m_pCurElement:GetElementByPath( param[0].c_str() );
@@ -341,7 +342,7 @@ namespace XGC
 			return true;
 		}
 
-		bool XUI_Commander::cmd_child( Params& param )
+		bool XUI_Commander::cmd_child( Params& param, _lpctstr helpstring )
 		{
 			if( !m_pCurElement ) return true;
 			int count = 0;
@@ -367,7 +368,7 @@ namespace XGC
 			return true;
 		}
 
-		bool XUI_Commander::cmd_parent( Params& param )
+		bool XUI_Commander::cmd_parent( Params& param, _lpctstr helpstring )
 		{
 			if( !m_pCurElement ) return true;
 			XUI_Wnd* pParent = m_pCurElement->GetParent();
@@ -381,7 +382,7 @@ namespace XGC
 			return false;
 		}
 
-		bool XUI_Commander::cmd_lua( Params& param )
+		bool XUI_Commander::cmd_lua( Params& param, _lpctstr helpstring )
 		{
 			LPCSTR szCommand = XT2A( param[0] );
 			try
