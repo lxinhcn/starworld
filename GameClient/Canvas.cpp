@@ -36,7 +36,7 @@ HTEXTURE CTextureManager::GetTexture( _lpcstr key, _lpstr data, size_t size )
 	}
 	else
 	{
-		std::string path = std::string() + GuiSystem::Instance().GetResourcePath() + key;
+		std::string path = std::string() + XUI::Instance().GetResourcePath() + key;
 		h = hge->Texture_Load( path.c_str() );
 	}
 
@@ -108,7 +108,7 @@ CFontManager::~CFontManager()
 
 GfxFont* CFontManager::GetFont( _lpcstr lpszFont, int nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias )
 {
-	UILib::XUI_FontAttribute font( lpszFont, nSize, dwColor, bBold, bItalic, bAntialias );
+	XGC::ui::XUI_FontAttribute font( lpszFont, nSize, dwColor, bBold, bItalic, bAntialias );
 	CFontMap::iterator iter = m_FontMap.find( font );
 	if( iter != m_FontMap.end() )
 	{
@@ -192,7 +192,7 @@ void CClientSprite::RenderEx( float x, float y, float rot, float hscale /* = 1.0
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 CClientFont::CClientFont( const XUI_FontAttribute& FontAttrib, GfxFont* pFont )
-: XUI_IFont( FontAttrib )
+: XUI_Font( FontAttrib )
 , m_pFont( pFont )
 {
 }
@@ -201,17 +201,17 @@ CClientFont::~CClientFont()
 {
 };
 
-SIZE CClientFont::GetStringSize( _lpctstr lpszString )
+iSize CClientFont::GetStringSize( _lpctstr lpszString )
 {
 	return m_pFont->GetTextSize( lpszString );
 }
 
-INT CClientFont::GetCharacterWidth( _tchar szChar )
+int CClientFont::GetCharacterWidth( _tchar szChar )
 {
 	return m_pFont->GetCharacterWidth( szChar );
 }
 
-INT	CClientFont::GetCharacterHeight()
+int CClientFont::GetCharacterHeight()
 {
 	return m_pFont->GetCharacterHeight();
 }
@@ -234,12 +234,12 @@ void CClientFont::Render( float x, float y, _tchar szChar )const
 //////////////////////////////////////////////////////////////////////////
 // 鼠标功能类
 //////////////////////////////////////////////////////////////////////////
-CClientMouse::CClientMouse( _lpcstr pszCursorConfig )
+ClientInput::ClientInput( _lpcstr pszCursorConfig )
 : m_nCurIndex( 0 )
 , m_nTimerHandle( -1 )
 {
 	TiXmlDocument doc;
-	_astring strPathname( GuiSystem::Instance().GetResourcePath() );
+	_astring strPathname( XUI::Instance().GetResourcePath() );
 	strPathname += pszCursorConfig;
 
 	if( doc.LoadFile( strPathname.c_str() ) )
@@ -286,12 +286,12 @@ CClientMouse::CClientMouse( _lpcstr pszCursorConfig )
 	}
 	else
 	{
-		XGC_WRITELOGA( XUI, "cursor read error! reson: %s. line = %d, column = %d", doc.Error(), doc.ErrorRow(), doc.ErrorCol() );
+		XGC_WRITELOGA( XUILOG, "cursor read error! reson: %s. line = %d, column = %d", doc.Error(), doc.ErrorRow(), doc.ErrorCol() );
 	}
 	SetMouse( XUI_MOUSE_ARROW );
 }
 
-CClientMouse::~CClientMouse()
+ClientInput::~ClientInput()
 {
 	for( int i = 0; i < _countof(m_pCursor); ++i )
 	{
@@ -306,7 +306,7 @@ CClientMouse::~CClientMouse()
 //
 //	purpose:	通过光标文件创建鼠标指针
 //--------------------------------------------------------//
-XUI_IAnimation*	CClientMouse::CreateCursor( _lpcstr cursorfile )
+XUI_IAnimation*	ClientInput::CreateCursor( _lpcstr cursorfile )
 {
 #pragma pack( push )
 	#pragma pack( 2 )
@@ -332,7 +332,7 @@ XUI_IAnimation*	CClientMouse::CreateCursor( _lpcstr cursorfile )
 
 	FILE *fp;
 	XUI_IAnimation *pCursor = NULL;
-	_astring strPathname( GuiSystem::Instance().GetResourcePath() );
+	_astring strPathname( XUI::Instance().GetResourcePath() );
 	strPathname += cursorfile;
 
 	if( fopen_s( &fp, strPathname.c_str(), "rb" ) == 0 )
@@ -402,21 +402,21 @@ XUI_IAnimation*	CClientMouse::CreateCursor( _lpcstr cursorfile )
 	return pCursor;
 }
 
-void CClientMouse::UpdateMouse( float fDeltaTime )
+void ClientInput::UpdateMouse( float fDeltaTime )
 {
 	m_pCursor[m_nCurIndex]->Update( fDeltaTime );
 }
 
-void CClientMouse::GetMousePos( float *x, float *y )
+void ClientInput::GetMousePos( int *x, int *y )
 {
 	POINT pt;
 	GetCursorPos( &pt );
 	ScreenToClient(Application::Instance()->System_GetState(HGE_HWND), &pt);
-	*x = (float)pt.x;
-	*y = (float)pt.y;
+	*x = pt.x;
+	*y = pt.y;
 }
 
-void	CClientMouse::SetMousePos( float x, float y )
+void	ClientInput::SetMousePos( int x, int y )
 {
 	POINT pt;
 	pt.x=(long)x; pt.y=(long)y;
@@ -424,20 +424,20 @@ void	CClientMouse::SetMousePos( float x, float y )
 	SetCursorPos(pt.x,pt.y);
 }
 
-_int32	CClientMouse::GetMouseWheel()
+_int32	ClientInput::GetMouseWheel()
 {
 	return Application::Instance()->Input_GetMouseWheel();
 }
 
-void	CClientMouse::RenderMouse()
+void	ClientInput::RenderMouse()
 {
-	float x, y;
+	int x, y;
 	GetMousePos( &x, &y );
 	XUI_IAnimation *pCursor = m_pCursor[m_nCurIndex];
 	pCursor->Render( x, y );
 }
 
-void	CClientMouse::SetMouse( _uint16 id )
+void	ClientInput::SetMouse( _uint16 id )
 {
 	if( id < _countof(m_pCursor) )
 	{
@@ -445,42 +445,42 @@ void	CClientMouse::SetMouse( _uint16 id )
 	}
 }
 
-bool	CClientMouse::GetKeyState( int key )const
+bool	ClientInput::GetKeyState( int key )const
 {
 	return Application::Instance()->Input_GetKeyState( key );
 }
 
-bool	CClientMouse::IsPressedLButton()const
+bool	ClientInput::IsPressedLButton()const
 {
 	return Application::Instance()->Input_KeyDown(HGEK_LBUTTON);
 }
 
-bool	CClientMouse::IsReleaseLButton()const
+bool	ClientInput::IsReleaseLButton()const
 {
 	return Application::Instance()->Input_KeyUp(HGEK_LBUTTON);
 }
 
-bool	CClientMouse::IsPressedRButton()const
+bool	ClientInput::IsPressedRButton()const
 {
 	return Application::Instance()->Input_KeyDown(HGEK_RBUTTON);
 }
 
-bool	CClientMouse::IsReleaseRButton()const
+bool	ClientInput::IsReleaseRButton()const
 {
 	return Application::Instance()->Input_KeyUp(HGEK_RBUTTON);
 }
 
-bool	CClientMouse::IsPressedMButton()const
+bool	ClientInput::IsPressedMButton()const
 {
 	return Application::Instance()->Input_KeyDown(HGEK_MBUTTON);
 }
 
-bool	CClientMouse::IsReleaseMButton()const
+bool	ClientInput::IsReleaseMButton()const
 {
 	return Application::Instance()->Input_KeyUp(HGEK_MBUTTON);
 }
 
-bool	CClientMouse::IsMouseOver()const
+bool	ClientInput::IsMouseOver()const
 {
 	return Application::Instance()->Input_IsMouseOver();
 }
@@ -524,9 +524,9 @@ void CClientAnimation::Update( float fDelta )
 	m_pAnimation->Update( fDelta );
 }
 
-void CClientAnimation::Render( float x, float y )
+void CClientAnimation::Render( int x, int y )
 {
-	m_pAnimation->Render( x, y );
+	m_pAnimation->Render( (float)x, (float)y );
 }
 
 void CClientAnimation::SetCurrentFrame( int nFrame )
@@ -576,28 +576,28 @@ static void _SetClipping( _int32 x, _int32 y, _int32 w, _int32 h )
 	Application::Instance()->Gfx_SetClipping( x, y, w, h );
 }
 
-static void _DrawText( _lpctstr lpszText, UILib::XUI_IFont* pFont, float x, float y )
+static void _DrawText( _lpctstr lpszText, XGC::ui::XUI_Font* pFont, int x, int y )
 {
-	if( pFont == NULL ) pFont = GuiSystem::Instance().GetDefaultFont();
+	if( pFont == NULL ) pFont = XUI::Instance().GetDefaultFont();
 	CClientFont* pF = static_cast< CClientFont* >( pFont );
 	if( pF )
 	{
-		pF->Render( x, y, lpszText );
+		pF->Render( (float)x, (float)y, lpszText );
 	}
 }
 
-static void _DrawCharacter( _tchar szChar, UILib::XUI_IFont* pFont, float x, float y )
+static void _DrawCharacter( _tchar szChar, XGC::ui::XUI_Font* pFont, int x, int y )
 {
-	if( pFont == NULL ) pFont = GuiSystem::Instance().GetDefaultFont();
+	if( pFont == NULL ) pFont = XUI::Instance().GetDefaultFont();
 	CClientFont* pF = static_cast< CClientFont* >( pFont );
 	if( pF )
 	{
-		pF->Render( x, y, szChar );
+		pF->Render( (float)x, (float)y, szChar );
 	}
 }
 
 //没有边框的矩形背景
-static void _DrawRect( const xgcRect& rc, _uint32 bordercolor, _uint32 backgroundcolor/* = -1*/ )
+static void _DrawRect( const iRect& rc, _uint32 bordercolor, _uint32 backgroundcolor/* = -1*/ )
 {
 	HGE* hge = hgeCreate(HGE_VERSION);
 
@@ -623,15 +623,15 @@ static void _DrawLine( float x0, float y0, float x1, float y1, _uint32 color )
 	Application::Instance()->Gfx_RenderLine( x0, y0, x1, y1, color );
 }
 
-static void _DrawPolygon( const xgcPoint* ptArray, _uint32* dwColorArray, _uint32 nCount, _uint16* pTriListArray, _int32 nTriCount )
+static void _DrawPolygon( const iPoint* ptArray, _uint32* dwColorArray, _uint32 nCount, _uint16* pTriListArray, _int32 nTriCount )
 {
 	// Application::Instance()->Gfx_RenderTriple
 }
 
-static void _DrawSprite( const XUI_ISprite* Tex, int nX, int nY, int nWidth, int nHeight )
+static void _DrawSprite( const XUI_ISprite* Tex, int x, int y, int width, int height )
 {
 	CClientSprite* pSprite = (CClientSprite*)Tex;
-	pSprite->Render( (float)nX, (float)nY, (float)nWidth, (float)nHeight );
+	pSprite->Render( (float)x, (float)y, (float)width, (float)height );
 }
 
 static XUI_ISprite* _CreateSprite( _lpcstr filename, float x, float y, float w, float h )
@@ -665,7 +665,7 @@ static void _DestroyAnimation( XUI_IAnimation *pAnimation )
 	delete pAnimation;
 }
 
-static XUI_IFont* _CreateFont( _lpcstr lpszFontName, int nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias )
+static XUI_Font* _CreateFont( _lpcstr lpszFontName, int nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias )
 {
 	GfxFont* pGfxFont = FontManager::Instance().GetFont( lpszFontName, nSize, dwColor, bBold, bItalic, bAntialias );
 	if( pGfxFont )
@@ -676,38 +676,32 @@ static XUI_IFont* _CreateFont( _lpcstr lpszFontName, int nSize, _uint32 dwColor,
 	return NULL;
 }
 
-static XUI_IFont* _CreateFontEx( const XUI_FontAttribute& FontAttribute )
+static XUI_Font* _CreateFontEx( const XUI_FontAttribute& FontAttribute )
 {
 	return _CreateFont( FontAttribute.m_name.c_str(), FontAttribute.m_size, FontAttribute.m_color, FontAttribute.m_bold, FontAttribute.m_italic, FontAttribute.m_antialias );
 }
 
-static void _DestroyFont( XUI_IFont* pFont )
+static void _DestroyFont( XUI_Font* pFont )
 {
 	delete pFont;
 }
 
-static LRESULT CALLBACK _DefWindowProc( __in HWND hWnd, __in UINT Msg, __in WPARAM wParam, __in LPARAM lParam)
-{
-	return Application::Instance().m_pDefWindowProc( hWnd, Msg, wParam, lParam );
-}
-
 void init_canvas()
 {
-	UILib::XUI_SetClipping		= _SetClipping;
-	UILib::XUI_DrawText			= _DrawText;
-	UILib::XUI_DrawCharacter	= _DrawCharacter;
-	UILib::XUI_DrawRect			= _DrawRect;
-	UILib::XUI_DrawLine			= _DrawLine;
-	UILib::XUI_DrawPolygon		= _DrawPolygon;
-	UILib::XUI_DrawSprite		= _DrawSprite;
-	UILib::XUI_CreateSprite		= _CreateSprite;
-	UILib::XUI_CreateSpriteEx	= _CreateSpriteEx;
-	UILib::XUI_DestroySprite	= _DestroySprite;
-	UILib::XUI_CreateAnimation	= _CreateAnimation;
-	UILib::XUI_CreateAnimationEx= _CreateAnimationEx;
-	UILib::XUI_DestroyAnimation = _DestroyAnimation;
-	UILib::XUI_CreateFont		= _CreateFont;
-	UILib::XUI_CreateFontEx		= _CreateFontEx;
-	UILib::XUI_DestroyFont		= _DestroyFont;
-	UILib::XUI_DefWindowProc	= _DefWindowProc;
+	XGC::ui::XUI_SetClipping		= _SetClipping;
+	XGC::ui::XUI_DrawText			= _DrawText;
+	XGC::ui::XUI_DrawCharacter		= _DrawCharacter;
+	XGC::ui::XUI_DrawRect			= _DrawRect;
+	XGC::ui::XUI_DrawLine			= _DrawLine;
+	XGC::ui::XUI_DrawPolygon		= _DrawPolygon;
+	XGC::ui::XUI_DrawSprite			= _DrawSprite;
+	XGC::ui::XUI_CreateSprite		= _CreateSprite;
+	XGC::ui::XUI_CreateSpriteEx		= _CreateSpriteEx;
+	XGC::ui::XUI_DestroySprite		= _DestroySprite;
+	XGC::ui::XUI_CreateAnimation	= _CreateAnimation;
+	XGC::ui::XUI_CreateAnimationEx	= _CreateAnimationEx;
+	XGC::ui::XUI_DestroyAnimation	= _DestroyAnimation;
+	XGC::ui::XUI_CreateFont			= _CreateFont;
+	XGC::ui::XUI_CreateFontEx		= _CreateFontEx;
+	XGC::ui::XUI_DestroyFont		= _DestroyFont;
 }

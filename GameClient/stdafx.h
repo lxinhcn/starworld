@@ -48,7 +48,8 @@
 
 // ¸¨Öú¿â
 #include "CommonLib.h"
-#include "UILib.h"
+#include "XUI.h"
 #include "Netbase.h"
-using namespace UILib;
+using namespace XGC;
+using namespace XGC::ui;
 using namespace XGC::net;

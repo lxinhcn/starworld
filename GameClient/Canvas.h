@@ -1,7 +1,7 @@
 #pragma once
 #include "GfxFont.h"
 #include <hash_map>
-using namespace UILib;
+using namespace XGC::ui;
 
 class CTextureManager
 {
@@ -46,19 +46,19 @@ public:
 	GfxFont* GetFont( _lpcstr lpszFont, int nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias );
 
 private:
-	typedef std::map< UILib::XUI_FontAttribute, GfxFont* >	CFontMap;
+	typedef std::map< XUI_FontAttribute, GfxFont* >	CFontMap;
 	CFontMap	m_FontMap;
 };
 typedef SingletonHolder< CFontManager, CreateStatic >	FontManager;
 
-struct CClientMouse	:	public XUI_IMouse
+struct ClientInput	:	public XUI_Input
 {
 	XUI_IAnimation	*m_CursorAni[14];
 
-	CClientMouse( _lpcstr pszCursorConfig );
-	virtual ~CClientMouse();
-	virtual void	GetMousePos( float *x, float *y );
-	virtual void	SetMousePos( float x, float y );
+	ClientInput( _lpcstr pszCursorConfig );
+	virtual ~ClientInput();
+	virtual void	GetMousePos( int *x, int *y );
+	virtual void	SetMousePos( int x, int y );
 	virtual _int32	GetMouseWheel();
 	virtual void	RenderMouse();
 	virtual void	SetMouse( _uint16 id );
@@ -89,7 +89,7 @@ private:
 	XUI_IAnimation	*m_pCursor[14];
 };
 
-class CClientSprite	:	public UILib::XUI_ISprite
+class CClientSprite	:	public XUI_ISprite
 {
 public:
 	CClientSprite( _lpcstr _path, float _x, float _y, float _w, float _h );
@@ -129,16 +129,16 @@ private:
 	float		m_diffuse;
 };
 
-class CClientFont	:	public UILib::XUI_IFont
+class CClientFont	:	public XUI_Font
 {
 public:
 	CClientFont( const XUI_FontAttribute& FontAttrib, GfxFont* pFont );
 	~CClientFont();
 
-	virtual SIZE GetStringSize( _lpctstr lpszString );
+	virtual iSize GetStringSize( _lpctstr lpszString );
 
-	virtual INT GetCharacterWidth( _tchar szChar );
-	virtual INT	GetCharacterHeight();
+	virtual int GetCharacterWidth( _tchar szChar );
+	virtual int GetCharacterHeight();
 
 public:
 	void SetColor( _uint32 dwColor );
@@ -158,7 +158,7 @@ public:
 	virtual void Stop();
 	virtual void Resume();
 	virtual void Update( float fDelta );
-	virtual void Render( float x, float y );
+	virtual void Render( int x, int y );
 
 	virtual void	SetCurrentFrame( int nFrame );
 	virtual int		GetCurrentFrame()const;
