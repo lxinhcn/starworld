@@ -205,16 +205,15 @@ namespace XGC
 
 			if( m_bFocused && XUI_IME::m_CompString[0] )
 			{
-				XUI_Window* pWnd = XUI::Instance().GetDesktop( DEFAULT_DESKTOP );
-				const iRect& rcWindow = pWnd->GetWindowRect();
-				CaratPos.x = pFont->GetCharacterWidth( _T(' ') ) + ( (CaratPos.x + XUI_IME::m_CandList.rcCandidate.Width() > rcWindow.Width())?rcWindow.Width()-XUI_IME::m_CandList.rcCandidate.Width()-1:CaratPos.x);
+				iSize siWindow = XUI::Instance().GetClientSize();
+				CaratPos.x = pFont->GetCharacterWidth( _T(' ') ) + ( (CaratPos.x + XUI_IME::m_CandList.rcCandidate.Width() > siWindow.cx)?siWindow.cx-XUI_IME::m_CandList.rcCandidate.Width()-1:CaratPos.x);
 				if( CaratPos.x < 0 ) CaratPos.x = 0;
 
-				CaratPos.y = pFont->GetCharacterHeight()/2 + ( (CaratPos.y + XUI_IME::m_CandList.rcCandidate.Height() > rcWindow.Height())?rcWindow.Height()-XUI_IME::m_CandList.rcCandidate.Height()-1:CaratPos.y );
+				CaratPos.y = pFont->GetCharacterHeight()/2 + ( (CaratPos.y + XUI_IME::m_CandList.rcCandidate.Height() > siWindow.cy)?siWindow.cy-XUI_IME::m_CandList.rcCandidate.Height()-1:CaratPos.y );
 				if( CaratPos.y < 0 ) CaratPos.y = 0;
 
 				iSize compstring_size = pFont->GetStringSize( XUI_IME::m_CompString );
-				XUI_SetClipping( CaratPos.x, CaratPos.y, compstring_size.cx ,compstring_size.cy );
+				// XUI_SetClipping( CaratPos.x, CaratPos.y, compstring_size.cx ,compstring_size.cy );
 				XUI_DrawRect( 
 					iRect( CaratPos, compstring_size ),
 					XUI_ARGB(70,170,170,170), 
@@ -238,7 +237,7 @@ namespace XGC
 				if( XUI_IME::m_CandList.bShowWindow )
 				{
 					CaratPos.y += pFont->GetCharacterHeight() + 2;
-					XUI_SetClipping( CaratPos.x, CaratPos.y, XUI_IME::m_CandList.rcCandidate.Width(), XUI_IME::m_CandList.rcCandidate.Height() );
+					// XUI_SetClipping( CaratPos.x, CaratPos.y, XUI_IME::m_CandList.rcCandidate.Width(), XUI_IME::m_CandList.rcCandidate.Height() );
 					XUI_DrawRect( 
 						iRect( CaratPos, XUI_IME::m_CandList.rcCandidate.Size() ),
 						XUI_ARGB(70,170,170,170),

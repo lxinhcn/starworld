@@ -86,11 +86,12 @@ namespace XGC
 			while( iter != m_TopWindowList.end() )
 			{
 				(*iter)->Render( iRect( 0, 0, m_WindowSize.cx, m_WindowSize.cy ) );
+				++iter;
 			}
 
 			if( m_pInput->IsMouseOver() )
 			{
-				XUI_SetClipping( 0, 0, m_WindowSize.cx, m_WindowSize.cy );
+				// XUI_SetClipping( 0, 0, m_WindowSize.cx, m_WindowSize.cy );
 				if( m_is_edit_mode )
 				{
 					int x, y;
@@ -176,17 +177,22 @@ namespace XGC
 			while( iter != m_TopWindowList.end() )
 			{
 				(*iter)->Update( m_nowtime, fDelta );
+				++iter;
 			}
 		}
 
-		bool XUI_System::OnMouseMove(XUI_Wnd* pElement, const iPoint& pt, _uint32 sysKeys, long_ptr *result )
+		bool XUI_System::OnMouseMove( const iPoint& pt, _uint32 sysKeys, long_ptr *result )
 		{
 			iPoint pt_old = m_mouse_old;
 			m_mouse_old = pt;
-			if( pElement == NULL ) return false;
-			if( !pElement->IsEnable() )	return false;
 
-			XUI_Wnd *pEnterElement = pElement->FindChildInPoint(pt-pElement->GetWindowPosition());
+			XUI_Wnd *pEnterElement = NULL;
+			CTopWindowList::iterator iter = m_TopWindowList.begin();
+			while( iter != m_TopWindowList.end() )
+			{
+				pEnterElement = (*iter)->FindChildInPoint( pt - (*iter)->GetWindowPosition() );
+				++iter;
+			}
 
 			if( m_is_edit_mode )
 			{
@@ -266,7 +272,7 @@ namespace XGC
 						break;
 					}
 				}
-				else if( pEnterElement->GetFlags(XUI_Wnd::FLAGS_EDIT) )
+				else if( pEnterElement && pEnterElement->GetFlags(XUI_Wnd::FLAGS_EDIT) )
 				{
 					m_pInput->SetMouse( XUI_MOUSE_SIZEALL );
 				}
@@ -284,18 +290,13 @@ namespace XGC
 				m_mouseover_element = pEnterElement;
 			}
 
-			m_mouseover_element->OnMouseMove(pt, sysKeys);
+			if( m_mouseover_element )
+				m_mouseover_element->OnMouseMove(pt, sysKeys);
 			return false;
 		}
 
-		bool XUI_System::OnButtonDown( XUI_Wnd* pElement, _uint32 nButton, const iPoint& pt, _uint32 sysKeys, long_ptr *result )
+		bool XUI_System::OnButtonDown( _uint32 nButton, const iPoint& pt, _uint32 sysKeys, long_ptr *result )
 		{
-			if( pElement == NULL )
-				return false;
-
-			if( !pElement->IsEnable() )	
-				return false;
-
 			m_mousedown = pt;
 			m_mousedown_element = m_mouseover_element;
 			if( m_is_edit_mode )
@@ -318,55 +319,58 @@ namespace XGC
 					m_mousedown_element->SetFocus( true );
 				}
 
-				m_mousedown_element->OnButtonDown( nButton, pt, sysKeys );
+				if( m_mousedown_element )
+					m_mousedown_element->OnButtonDown( nButton, pt, sysKeys );
 			}
 			m_capture_element = m_mousedown_element;
 			return false;
 		}
 
-		bool XUI_System::OnButtonUp( XUI_Wnd* pElement, _uint32 nButton, const iPoint& pt, _uint32 sysKeys, long_ptr *result )
+		bool XUI_System::OnButtonUp( _uint32 nButton, const iPoint& pt, _uint32 sysKeys, long_ptr *result )
 		{
-			if( pElement == NULL ) 
-				return false;
-
-			if( !pElement->IsEnable() )
-				return false;
-
-			if( m_is_edit_mode )
+			CTopWindowList::iterator iter = m_TopWindowList.begin();
+			while( iter != m_TopWindowList.end() )
 			{
-				iRect rcArea( m_mousedown, pt );
-				if( rcArea.IsRectEmpty() )
+				XUI_Wnd *pElement = (*iter);
+				if( m_is_edit_mode )
 				{
-					XUI_Wnd* find_element = pElement->FindChildInPoint( pt - pElement->GetWindowPosition() );
-					if( find_element && !find_element->GetFlags( XUI_Wnd::FLAGS_EDIT ) )
+					iRect rcArea( m_mousedown, pt );
+					if( rcArea.IsRectEmpty() )
 					{
-						if( std::find_if( m_capture_list.begin(), m_capture_list.end(), 
-							std::bind2nd( std::equal_to< XUI_Wnd* >(), find_element ) ) == m_capture_list.end() )
+						XUI_Wnd* find_element = pElement->FindChildInPoint( pt - pElement->GetWindowPosition() );
+
+						if( find_element && !find_element->GetFlags( XUI_Wnd::FLAGS_EDIT ) )
 						{
-							find_element->SetFlags( XUI_Wnd::FLAGS_EDIT );
-							m_capture_list.push_back( find_element );
+							if( std::find_if( m_capture_list.begin(), m_capture_list.end(), 
+								std::bind2nd( std::equal_to< XUI_Wnd* >(), find_element ) ) == m_capture_list.end() )
+							{
+								find_element->SetFlags( XUI_Wnd::FLAGS_EDIT );
+								m_capture_list.push_back( find_element );
+							}
 						}
 					}
-				}
-				else
-				{
-					CWndList capture_list;
-					pElement->FindRectIn( rcArea - pElement->GetWindowPosition(), capture_list );
-
-					CWndList::iterator result = capture_list.begin();
-					do
+					else
 					{
-						result = std::find_first_of( result, capture_list.end(), m_capture_list.begin(), m_capture_list.end() );
-						if( result != capture_list.end() )
-							result = capture_list.erase( result );
-					}while( result != capture_list.end() );
-					m_capture_list.insert( m_capture_list.end(), capture_list.begin(), capture_list.end() );
+						CWndList capture_list;
+						pElement->FindRectIn( rcArea - pElement->GetWindowPosition(), capture_list );
 
-					std::for_each( m_capture_list.begin(), m_capture_list.end(), 
-						std::bind2nd( std::mem_fun1< void, XUI_Wnd, _uint16 >( &XUI_Wnd::SetFlags ), XUI_Wnd::FLAGS_EDIT ) );
+						CWndList::iterator result = capture_list.begin();
+						do
+						{
+							result = std::find_first_of( result, capture_list.end(), m_capture_list.begin(), m_capture_list.end() );
+							if( result != capture_list.end() )
+								result = capture_list.erase( result );
+						}while( result != capture_list.end() );
+						m_capture_list.insert( m_capture_list.end(), capture_list.begin(), capture_list.end() );
+
+						std::for_each( m_capture_list.begin(), m_capture_list.end(), 
+							std::bind2nd( std::mem_fun1< void, XUI_Wnd, _uint16 >( &XUI_Wnd::SetFlags ), XUI_Wnd::FLAGS_EDIT ) );
+					}
 				}
+				++iter;
 			}
-			m_capture_element->OnButtonUp( nButton, pt, sysKeys );
+			if( m_capture_element )
+				return m_capture_element->OnButtonUp( nButton, pt, sysKeys );
 			return false;
 		}
 
@@ -425,76 +429,92 @@ namespace XGC
 		bool XUI_System::HandleMouse(_uint32 uMsg, int_ptr wParam, long_ptr lParam, long_ptr *result )
 		{
 			// 如果有模态对话框则将消息都发往模态对话框中
-			XUI_Window* pDesktop = m_pDesktop;
-			if( !m_ModalList.empty() )
-			{
-				pDesktop = *m_ModalList.begin();
-			}
 
 			bool ret = false;
-			if ( pDesktop )
-			{
-				//获取鼠标的坐标
-				iPoint pt( LOWORD(lParam), HIWORD(lParam) );
+			//获取鼠标的坐标
+			iPoint pt( LOWORD(lParam), HIWORD(lParam) );
 
-				//分发消息
-				switch (uMsg)
-				{
-				case WM_MOUSEMOVE:
-					ret = OnMouseMove( pDesktop, pt, wParam, result );
-					break;
-				case WM_LBUTTONDOWN:
-					ret = OnButtonDown( pDesktop, XUI_LBUTTON, pt, wParam, result );
-					break;
-				case WM_RBUTTONDOWN:
-					ret = OnButtonDown( pDesktop, XUI_RBUTTON, pt, wParam, result );
-					break;
-				case WM_MBUTTONDOWN:
-					ret = OnButtonDown( pDesktop, XUI_MBUTTON, pt, wParam, result );
-					break;
-				case WM_LBUTTONUP:
-					ret = OnButtonUp( pDesktop, XUI_LBUTTON, pt, wParam, result );
-					break;
-				case WM_RBUTTONUP:
-					ret = OnButtonUp( pDesktop, XUI_RBUTTON, pt, wParam, result );
-					break;
-				case WM_MBUTTONUP:
-					ret = OnButtonUp( pDesktop, XUI_MBUTTON, pt, wParam, result );
-					break;
-				}
+			//分发消息
+			switch (uMsg)
+			{
+			case WM_MOUSEMOVE:
+				ret = OnMouseMove( pt, wParam, result );
+				break;
+			case WM_LBUTTONDOWN:
+				ret = OnButtonDown( XUI_LBUTTON, pt, wParam, result );
+				break;
+			case WM_RBUTTONDOWN:
+				ret = OnButtonDown( XUI_RBUTTON, pt, wParam, result );
+				break;
+			case WM_MBUTTONDOWN:
+				ret = OnButtonDown( XUI_MBUTTON, pt, wParam, result );
+				break;
+			case WM_LBUTTONUP:
+				ret = OnButtonUp( XUI_LBUTTON, pt, wParam, result );
+				break;
+			case WM_RBUTTONUP:
+				ret = OnButtonUp( XUI_RBUTTON, pt, wParam, result );
+				break;
+			case WM_MBUTTONUP:
+				ret = OnButtonUp( XUI_MBUTTON, pt, wParam, result );
+				break;
 			}
 			return ret;
 		}
 
-		bool XUI_System::OnKeyDown( XUI_Wnd* pElement, _uint32 dwVirtualCode, _uint32 sysKeys, long_ptr *result )
+		bool XUI_System::OnKeyDown( _uint32 dwVirtualCode, _uint32 sysKeys, long_ptr *result )
 		{
-			if( m_capture_element == NULL ) return false;
-			if( !m_capture_element->IsEnable() ) return false;
-			if( m_capture_element->OnKeyDown(dwVirtualCode, sysKeys) )
+			XUI_Wnd *pWindow = NULL;
+			if( !m_ModalList.empty() )
 			{
-				return true;
+				pWindow = *m_ModalList.begin();
+			}
+			else
+			{
+				pWindow = m_capture_element;
+			}
+
+			if( pWindow && pWindow->IsEnable() && pWindow->IsVisible() )
+			{
+				return pWindow->OnKeyDown(dwVirtualCode, sysKeys);
 			}
 			return false;
 		}
 
-		bool XUI_System::OnKeyUp(XUI_Wnd* pElement, _uint32 dwVirtualCode, _uint32 sysKeys, long_ptr *result )
+		bool XUI_System::OnKeyUp( _uint32 dwVirtualCode, _uint32 sysKeys, long_ptr *result )
 		{
-			if( m_capture_element == NULL ) return false;
-			if( !m_capture_element->IsEnable() ) return false;
-			if( m_capture_element->OnKeyUp(dwVirtualCode, sysKeys) )
+			XUI_Wnd *pWindow = NULL;
+			if( !m_ModalList.empty() )
 			{
-				return true;
+				pWindow = *m_ModalList.begin();
+			}
+			else
+			{
+				pWindow = m_capture_element;
+			}
+
+			if( pWindow && pWindow->IsEnable() && pWindow->IsVisible() )
+			{
+				return pWindow->OnKeyUp(dwVirtualCode, sysKeys);
 			}
 			return false;
 		}
 
-		bool XUI_System::OnChar(XUI_Wnd* pElement, _uint32 dwChar, _uint32 sysKeys, long_ptr *result )
+		bool XUI_System::OnChar( _uint32 dwChar, _uint32 sysKeys, long_ptr *result )
 		{
-			if( m_capture_element == NULL ) return false;
-			if( !m_capture_element->IsEnable() ) return false;
-			if( m_capture_element->OnChar( dwChar, sysKeys ) )
+			XUI_Wnd *pWindow = NULL;
+			if( !m_ModalList.empty() )
 			{
-				return true;
+				pWindow = *m_ModalList.begin();
+			}
+			else
+			{
+				pWindow = m_capture_element;
+			}
+
+			if( pWindow && pWindow->IsEnable() && pWindow->IsVisible() )
+			{
+				return pWindow->OnChar( dwChar, sysKeys);
 			}
 			return false;
 		}
@@ -502,57 +522,78 @@ namespace XGC
 		//处理键盘
 		bool XUI_System::HandleKeyboard( _uint32 uMsg, int_ptr wParam, long_ptr lParam, long_ptr *result )
 		{
-			XUI_Window* pDesktop = m_pDesktop;
-			if( !m_ModalList.empty() )
-			{
-				pDesktop = *m_ModalList.begin();
-			}
-
 			bool ret = false;
-			if ( pDesktop )
+			//分发消息
+			switch(uMsg)
 			{
-				//分发消息
-				switch(uMsg)
-				{
-				case WM_KEYDOWN:
-					ret = OnKeyDown(pDesktop, wParam, lParam, result );
-					break;
-				case WM_KEYUP:
-					ret = OnKeyUp(pDesktop, wParam, lParam, result );
-					break;
-				case WM_CHAR:
-					ret = OnChar(pDesktop, wParam, lParam, result );
-					break;
-				}
+			case WM_KEYDOWN:
+				ret = OnKeyDown( wParam, lParam, result );
+				break;
+			case WM_KEYUP:
+				ret = OnKeyUp( wParam, lParam, result );
+				break;
+			case WM_CHAR:
+				ret = OnChar( wParam, lParam, result );
+				break;
 			}
 			return ret;
 		}
 
-		bool XUI_System::OnImeComp(XUI_Wnd* pElement, int_ptr wParam, long_ptr lParam, long_ptr *result )
+		bool XUI_System::OnImeComp( int_ptr wParam, long_ptr lParam, long_ptr *result )
 		{
-			//if (pElement->m_pChildFocusedOn)
-			//	return onImeComp( pElement->m_pChildFocusedOn, wParam, lParam, result );
-			//else
-			//	return pElement->onImeComp(wParam, lParam);
-			return ( m_capture_element != NULL )?m_capture_element->OnImeComp( wParam, lParam ):false;
+			XUI_Wnd *pWindow = NULL;
+			if( !m_ModalList.empty() )
+			{
+				pWindow = *m_ModalList.begin();
+			}
+			else
+			{
+				pWindow = m_capture_element;
+			}
+
+			if( pWindow && pWindow->IsEnable() && pWindow->IsVisible() )
+			{
+				return pWindow->OnImeComp( wParam, lParam );
+			}
+			return false;
 		}
 
-		bool XUI_System::OnImeEndComp(XUI_Wnd* pElement, int_ptr wParam, long_ptr lParam, long_ptr *result )
+		bool XUI_System::OnImeEndComp( int_ptr wParam, long_ptr lParam, long_ptr *result )
 		{
-			//if( pElement->m_pChildFocusedOn )
-			//	return onImeEndComp( pElement->m_pChildFocusedOn, wParam, lParam, result );
-			//else
-			//	return pElement->onImeEndComp( wParam, lParam );
-			return ( m_capture_element != NULL )?m_capture_element->OnImeEndComp( wParam, lParam ):false;
+			XUI_Wnd *pWindow = NULL;
+			if( !m_ModalList.empty() )
+			{
+				pWindow = *m_ModalList.begin();
+			}
+			else
+			{
+				pWindow = m_capture_element;
+			}
+
+			if( pWindow && pWindow->IsEnable() && pWindow->IsVisible() )
+			{
+				return pWindow->OnImeEndComp( wParam, lParam );
+			}
+			return false;
 		}
 
-		bool XUI_System::OnImeNotify(XUI_Wnd* pElement, int_ptr wParam, long_ptr lParam, long_ptr *result )
+		bool XUI_System::OnImeNotify( int_ptr wParam, long_ptr lParam, long_ptr *result )
 		{
-			//if (pElement->m_pChildFocusedOn)
-			//	return onImeNotify( pElement->m_pChildFocusedOn, wParam, lParam, result );
-			//else
-			//	return pElement->onImeNotify( wParam, lParam );
-			return ( m_capture_element != NULL )?m_capture_element->OnImeNotify( wParam, lParam ):false;
+			XUI_Wnd *pWindow = NULL;
+			if( !m_ModalList.empty() )
+			{
+				pWindow = *m_ModalList.begin();
+			}
+			else
+			{
+				pWindow = m_capture_element;
+			}
+
+			if( pWindow && pWindow->IsEnable() && pWindow->IsVisible() )
+			{
+				return pWindow->OnImeNotify( wParam, lParam );
+			}
+			return false;
 		}
 
 		//////////////////////////////////////////////////////////////////////////
@@ -621,6 +662,21 @@ namespace XGC
 			{
 				m_TopWindowList.erase( iter );
 				return pTopWindow;
+			}
+			return NULL;
+		}
+
+		XUI_Window* XUI_System::GetTopWindow( _lpctstr lpszWindowName )
+		{
+			if( lpszWindowName == NULL )
+				return NULL;
+
+			CTopWindowList::iterator iter = m_TopWindowList.begin();
+			while( iter != m_TopWindowList.end() );
+			{
+				if( (*iter)->GetName() == lpszWindowName )
+					return *iter;
+				++iter;
 			}
 			return NULL;
 		}

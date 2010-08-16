@@ -61,25 +61,25 @@ namespace XGC
 			//m_pChildMouseOver	= NULL;
 			//m_pChildFocusedOn	= NULL;
 
-			TiXmlNode* Attribute = pNode->FirstChild( "Attribute" );
+			TiXmlNode* Attribute = pNode->FirstChild( "attribute" );
 			if( Attribute == NULL ) return false;
 			load_file( Attribute->ToElement() );
 
-			TiXmlElement* pNodeChild = pNode->FirstChildElement( "CONTROL" );
+			TiXmlElement* pNodeChild = pNode->FirstChildElement( "control" );
 			while( pNodeChild )
 			{
 				TiXmlElement* pXMLChildElement = pNodeChild;
 				if( pXMLChildElement )
 				{
-					if( strcmp( "CONTROL", pXMLChildElement->Value() ) == 0 )
+					if( strcmp( "control", pXMLChildElement->Value() ) == 0 )
 					{
-						_astring strLable = pXMLChildElement->Attribute( "Lable" );
-						XUI_Wnd* pElement = XUI_Factory::GetInstance().Creator( strLable.c_str() );
+						_lpcstr lpszLable = pXMLChildElement->Attribute( "lable" );
+						XUI_Wnd* pElement = XUI_Factory::GetInstance().Creator( lpszLable );
 						ASSERT_MSG( pElement, _T("无法创建控件") );
 						if( pElement )
 						{
 							AddChild( pElement );
-							Attribute = pXMLChildElement->FirstChild( "Attribute" );
+							Attribute = pXMLChildElement->FirstChild( "attribute" );
 							pElement->load_file( Attribute->ToElement() );
 
 							if( typeid( pElement ) == typeid(XUI_Window) )
@@ -87,22 +87,18 @@ namespace XGC
 								if( ((XUI_Window*)pElement)->CreateFromXMLNode( pNodeChild ) == false ) return false;
 							}
 						}
-						//const iRect& rc = pElement->GetRect();
-						//if( rc.Width() > m_nPanelWidth )	m_nPanelWidth = rc.Width();
-						//if( rc.Height() > m_nPanelHeight )	m_nPanelHeight = rc.Height();
 					}
 				}
-				pNodeChild = pNodeChild->NextSiblingElement( "CONTROL" );
+				pNodeChild = pNodeChild->NextSiblingElement( "control" );
 			}
-			//BindScrollBar();
 			return true;
 		}
 
 		bool XUI_Window::SaveToXMLNode( TiXmlNode* pNode )
 		{
 			TiXmlElement* pElement = pNode->ToElement();
-			//if( SavePropertys( pElement ) == false ) return false;;
-			TiXmlElement Attribute( "Attribute" );
+
+			TiXmlElement Attribute( "attribute" );
 			if( save_file( &Attribute ) == false ) return false;
 			pNode->InsertEndChild( Attribute );
 
@@ -111,14 +107,14 @@ namespace XGC
 			while( citer != m_pChildren.end() )
 			{
 				XUI_Wnd* pXUI_Wnd = *citer;
-				TiXmlElement XmlElement("CONTROL");
-				XmlElement.SetAttribute( "Lable", typeid( pXUI_Wnd ).name() );
+				TiXmlElement XmlElement("control");
+				XmlElement.SetAttribute( "lable", typeid( pXUI_Wnd ).name() );
 				if( typeid( pXUI_Wnd ) == typeid(XUI_Window) )
 					((XUI_Window*)pXUI_Wnd)->SaveToXMLNode( (TiXmlNode*)&XmlElement );
 				else
 				{
 					//if( pXUI_Wnd->SavePropertys( &XmlElement ) == false ) return false;
-					TiXmlElement Attribute( "Attribute" );
+					TiXmlElement Attribute( "attribute" );
 					if( pXUI_Wnd->save_file( &Attribute ) == false ) return false;
 					XmlElement.InsertEndChild( Attribute );
 				}

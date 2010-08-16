@@ -365,7 +365,7 @@ namespace XGC
 
 			iRect rcWindow = GetWindowRect();
 			ClientToScreen( rcWindow );
-			XUI_SetClipping( rcWindow.left, rcWindow.top, rcWindow.Width(), rcWindow.Height() );
+			// XUI_SetClipping( rcWindow.left, rcWindow.top, rcWindow.Width(), rcWindow.Height() );
 			//»æÖÆ×Ô¼º
 			if( m_bOwnerDraw )
 			{
@@ -375,7 +375,7 @@ namespace XGC
 				RenderSelf( clipper.TopLeft() );
 				if( GetFlags(FLAGS_EDIT) )
 				{
-					XUI_SetClipping( rcWindow.left-HANDLE_EDGE, rcWindow.top-HANDLE_EDGE, rcWindow.Width()+HANDLE_EDGE*2, rcWindow.Height()+HANDLE_EDGE*2 );
+					// XUI_SetClipping( rcWindow.left-HANDLE_EDGE, rcWindow.top-HANDLE_EDGE, rcWindow.Width()+HANDLE_EDGE*2, rcWindow.Height()+HANDLE_EDGE*2 );
 					RenderEdit( clipper.TopLeft() );
 				}
 			}

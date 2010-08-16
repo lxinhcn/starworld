@@ -18,7 +18,7 @@ namespace XGC
 			//////////////////////////////////////////////////////////////////////////
 			// 注册命令
 			//////////////////////////////////////////////////////////////////////////
-			typedef bool (XUI_Commander::* Command)( Params& param );
+			typedef bool (XUI_Commander::* Command)( Params& param, _lpctstr helpstring );
 			void RegistCommand( _lpctstr lpszCommand, Command func, _lpctstr lpszHelpString );
 
 			//////////////////////////////////////////////////////////////////////////
@@ -32,19 +32,19 @@ namespace XGC
 			//////////////////////////////////////////////////////////////////////////
 			// 创建对象命令
 			//////////////////////////////////////////////////////////////////////////
-			bool cmd_help( Params& param );
-			bool cmd_save( Params& param );
-			bool cmd_load( Params& param );
+			bool cmd_help( Params& param, _lpctstr helpstring );
+			bool cmd_save( Params& param, _lpctstr helpstring );
+			bool cmd_load( Params& param, _lpctstr helpstring );
 
-			bool cmd_create( Params& param );
-			bool cmd_delete( Params& param );
-			bool cmd_attrib( Params& param );
+			bool cmd_create( Params& param, _lpctstr helpstring );
+			bool cmd_delete( Params& param, _lpctstr helpstring );
+			bool cmd_attrib( Params& param, _lpctstr helpstring );
 
-			bool cmd_root( Params& param );
-			bool cmd_child( Params& param );
-			bool cmd_parent( Params& param );
-			bool cmd_tree( Params& param );
-			bool cmd_lua( Params& param );
+			bool cmd_root( Params& param, _lpctstr helpstring );
+			bool cmd_child( Params& param, _lpctstr helpstring );
+			bool cmd_parent( Params& param, _lpctstr helpstring );
+			bool cmd_tree( Params& param, _lpctstr helpstring );
+			bool cmd_lua( Params& param, _lpctstr helpstring );
 
 		protected:
 			XUI_Wnd* GetElementByPath( _lpctstr lpszPath );
@@ -56,7 +56,7 @@ namespace XGC
 					: func( f )
 					, helpString( s )
 				{}
-				Command	func;
+				Command		func;
 				_lpctstr	helpString;
 			};
 			typedef std::map< _string, cmd >	CCommandMap;

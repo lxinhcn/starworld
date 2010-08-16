@@ -78,26 +78,26 @@ namespace XGC
 			void SetFocus		( XUI_Wnd* pElement );
 
 			//消息处理，保证消息可以按照预定的方式转发
-			bool OnMouseMove	( XUI_Wnd* pElement, const iPoint& pt, _uint32 sysKeys, long_ptr *result );
+			bool OnMouseMove	( const iPoint& pt, _uint32 sysKeys, long_ptr *result );
 			bool OnMouseLeave	( XUI_Wnd* pElement );
 
-			bool OnButtonDown	( XUI_Wnd* pElement, _uint32 nButton, const iPoint& pt, _uint32 sysKeys, long_ptr *result );
-			bool OnButtonUp		( XUI_Wnd* pElement, _uint32 nButton, const iPoint& pt, _uint32 sysKeys, long_ptr *result );
+			bool OnButtonDown	( _uint32 nButton, const iPoint& pt, _uint32 sysKeys, long_ptr *result );
+			bool OnButtonUp		( _uint32 nButton, const iPoint& pt, _uint32 sysKeys, long_ptr *result );
 
-			bool OnKeyDown		( XUI_Wnd* pElement, _uint32 dwVirtualCode, _uint32 sysKeys, long_ptr *result );
-			bool OnKeyUp		( XUI_Wnd* pElement, _uint32 dwVirtualCode, _uint32 sysKeys, long_ptr *result );
-			bool OnChar			( XUI_Wnd* pElement, _uint32 dwChar, _uint32 sysKeys, long_ptr *result );
+			bool OnKeyDown		( _uint32 dwVirtualCode, _uint32 sysKeys, long_ptr *result );
+			bool OnKeyUp		( _uint32 dwVirtualCode, _uint32 sysKeys, long_ptr *result );
+			bool OnChar			( _uint32 dwChar, _uint32 sysKeys, long_ptr *result );
 
-			bool OnImeComp		( XUI_Wnd* pElement, int_ptr wParam, long_ptr lParam, long_ptr *result );
-			bool OnImeEndComp	( XUI_Wnd* pElement, int_ptr wParam, long_ptr lParam, long_ptr *result );
-			bool OnImeNotify	( XUI_Wnd* pElement, int_ptr wParam, long_ptr lParam, long_ptr *result );
+			bool OnImeComp		( int_ptr wParam, long_ptr lParam, long_ptr *result );
+			bool OnImeEndComp	( int_ptr wParam, long_ptr lParam, long_ptr *result );
+			bool OnImeNotify	( int_ptr wParam, long_ptr lParam, long_ptr *result );
 
 			bool HandleMouse	( _uint32 uMsg, int_ptr wParam, long_ptr lParam, long_ptr *result );
 			bool HandleKeyboard	( _uint32 uMsg, int_ptr wParam, long_ptr lParam, long_ptr *result );
 
 		public:
-			HWND GetHWND()const {return m_hWnd;}
-
+			HWND	GetHWND()const			{ return m_hWnd; }
+			iSize	GetClientSize()const	{ return m_WindowSize; }
 			//渲染
 			void Render();
 			void RenderEditFrame();
@@ -113,6 +113,7 @@ namespace XGC
 
 			void RegistTopWindow( XUI_Window* pTopWindow );
 			XUI_Window* RemoveTopWindow( XUI_Window *pTopWindow );
+			XUI_Window* GetTopWindow( _lpctstr lpszWindowName );
 
 			bool EnterModaless( XUI_Window* pDialog );
 			void LeaveModaless();

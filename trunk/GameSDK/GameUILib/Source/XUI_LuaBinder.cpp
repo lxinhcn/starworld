@@ -122,8 +122,7 @@ namespace XGC
 				;
 
 			SLB::Class< XUI_System, SLB::Instance::NoCopyNoDestroy >( "ui::XUI_System" )
-				.set( "GetRoot",		&XUI_System::GetRoot )
-				.set( "GetDesktop",		&XUI_System::GetDesktop )
+				.set( "GetTopWindow",		&XUI_System::GetTopWindow )
 				.set( "Load",			&XUI_System::LoadFromFile )
 				.set( "Save",			&XUI_System::SaveToFile )
 				.set( "GetResPath",		&XUI_System::GetResourcePath )

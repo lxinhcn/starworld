@@ -10,17 +10,15 @@ namespace XGC
 		class XUI_Dialog:	public XUI_Window
 		{
 		public:
-			XUI_Dialog( _lpctstr lpszTemplate = NULL );
+			XUI_Dialog( _lpctstr lpszTemplate = NULL, XUI_Window *pParent = NULL );
 			~XUI_Dialog();
 
-			bool Create( _lpctstr strTemplate, XUI_Window* pParent = NULL );
-
-			typedef BOOL (*fnModalMsgProc)( BOOL bIdle );
-			UINT DoModal( fnModalMsgProc pfn );
+			bool	Create();
+			int		DoModal();
 
 		protected:
 			XUI_Wnd*	PreModal();
-			void		BeginModalLoop( fnModalMsgProc pfn );
+			void		BeginModalLoop();
 			void		PostModal();
 			void		EndModalLoop();
 			void		EndDialog( UINT nResult );
@@ -29,17 +27,17 @@ namespace XGC
 			void		CenterWindow();
 			void		SetFocus( UINT nCtrlID );
 		protected:
-			virtual void	RenderSelf( const iPoint& adjust );
-			virtual bool	onKeyUp( _uint32 keycode, _uint32 sysKeys );
-
 			virtual bool	OnInitDialog(){ return true;}
 			virtual void	OnDestroy(){}
 
+			virtual bool	DefMessageProc( MSG &msg ){ return false; }
 		private:
 			bool			m_bModal;
 			bool			m_bEnableParent;
-			UINT			m_nResult;
+			int				m_nResult;
+
 			_string			m_strTemplate;
+			XUI_Window*		m_pParent;
 		};
 	}
 }

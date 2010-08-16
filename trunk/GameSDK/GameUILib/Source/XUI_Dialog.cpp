@@ -6,14 +6,16 @@ namespace XGC
 {
 	namespace ui
 	{
-		XUI_Dialog::XUI_Dialog( _lpctstr lpszTemplate /*= NULL*/ )
+		XUI_Dialog::XUI_Dialog( _lpctstr lpszTemplate /*= NULL*/, XUI_Window *pParent /*= NULL*/ )
 		{
 			m_bTranslateParent = false;
 			m_bEnableParent = false;
 			m_bModal = false;
 			m_nResult = 0;
-			if( lpszTemplate )	m_strTemplate = lpszTemplate;
-			//BindProperty( _T("Template"), m_strTemplate );
+			if( lpszTemplate )	
+				m_strTemplate = lpszTemplate;
+
+			m_pParent = pParent;
 		}
 
 		XUI_Dialog::~XUI_Dialog()
@@ -21,27 +23,26 @@ namespace XGC
 			OnDestroy();
 		}
 
-		bool XUI_Dialog::Create( _lpctstr strTemplate, XUI_Window* pParent /* = NULL  */)
+		bool XUI_Dialog::Create()
 		{
-			m_strTemplate = strTemplate;
-			if( pParent )
+			if( m_pParent )
 			{
-				SetParent( pParent );
-				pParent->AddChild( this );
+				SetParent( m_pParent );
+				m_pParent->AddChild( this );
 			}
 
 			TiXmlDocument Doc;
-			const char* p = XT2A( m_strTemplate );
+			const char* p = XT2A( m_strTemplate.c_str() );
 			if( Doc.LoadFile( p ) )
 			{
-				TiXmlElement* pElement = Doc.FirstChildElement( "DESKTOP" );
+				TiXmlElement* pElement = Doc.FirstChildElement( "dialog" );
 				CreateFromXMLNode( pElement );
 				iRect rc;
 
-				rc.left		= pElement->IntAttribute( "X" );
-				rc.top		= pElement->IntAttribute( "Y" );
-				rc.right	= pElement->IntAttribute( "Width" ) + rc.left;
-				rc.bottom	= pElement->IntAttribute( "Height" ) + rc.top;
+				rc.left		= pElement->IntAttribute( "x" );
+				rc.top		= pElement->IntAttribute( "y" );
+				rc.right	= pElement->IntAttribute( "width" ) + rc.left;
+				rc.bottom	= pElement->IntAttribute( "height" ) + rc.top;
 
 				MoveWindow( rc.left, rc.top, rc.right, rc.bottom );
 
@@ -58,65 +59,50 @@ namespace XGC
 		XUI_Wnd* XUI_Dialog::PreModal()
 		{
 			XUI_Wnd* pParent = m_pParent;
-			if( pParent == NULL )
-			{
-				//_assert( _afxCurrentGuiSystem );
-				pParent = XUI::Instance().GetRoot();
-			}
 
-			while( pParent->GetParent() )
+			while( pParent )
 			{
+				pParent->EnableWindow( false );
 				pParent = pParent->GetParent();
 			}
-			pParent->EnableWindow( false );
+			
 			m_nResult = 0;
 			m_bEnableParent = true;
 			m_bModal = true;
 			XUI::Instance().EnterModaless( this );
-			return pParent;
+			return m_pParent;
 		}
 
-		UINT XUI_Dialog::DoModal( fnModalMsgProc pfn )
+		int XUI_Dialog::DoModal()
 		{
-			XUI_Wnd* pParent = PreModal();
-			//ASSERT( pParent );
-			if( !Create( m_strTemplate.c_str(), (XUI_Window*)pParent ) )
+			if( !Create() )
 			{
 				ASSERT( FALSE );
 				return -1;
 			}
 
-			BeginModalLoop( pfn );
-			Release();
+			BeginModalLoop();
 			PostModal();
 			if( m_bEnableParent )
 			{
-				pParent->EnableWindow( true );
+				m_pParent->EnableWindow( true );
 				m_bEnableParent = false;
 			}
 
 			return m_nResult;
 		}
 
-		void XUI_Dialog::BeginModalLoop( fnModalMsgProc pfn )
+		void XUI_Dialog::BeginModalLoop()
 		{
 			for(;;)
 			{
 				MSG msg;
-				while( !::PeekMessage( &msg, NULL, NULL, NULL, PM_NOREMOVE ) )
+				while( !::PeekMessage( &msg, NULL, NULL, NULL, PM_REMOVE ) )
 				{
-					pfn( TRUE );
-					if( !m_bModal ) return;
-				}
-
-				while( ::PeekMessage( &msg, NULL, NULL, NULL, PM_NOREMOVE ) )
-				{
-					if( !pfn( FALSE ) )
+					if( !DefMessageProc( msg ) )
 					{
-						::PostMessage( XUI::Instance().GetHWND(), WM_QUIT, 0, 0 );
-						return;
+						XUI::Instance().HandleMessage( msg.hwnd, msg.message, msg.wParam, msg.lParam );
 					}
-
 					if( !m_bModal ) return;
 				}
 			}
@@ -154,37 +140,6 @@ namespace XGC
 				int nOffsetY = rc.Height()/2 - GetWindowRect().Height()/2;
 				Offset( nOffsetX, nOffsetY );
 			}
-		}
-
-		void XUI_Dialog::RenderSelf( const iPoint& adjust )
-		{
-			XUI_Window::RenderSelf( adjust );
-		}
-
-		bool XUI_Dialog::onKeyUp(_uint32 keycode, UINT sysKeys)
-		{
-			// 通过Tab键在控件中切换
-			if( m_bFocused && keycode == VK_TAB )
-			{
-				//for( size_t i= 0; i < m_pChildren.size(); ++i )
-				//{
-				//	if( m_pChildFocusedOn == m_pChildren[i] )
-				//	{
-				//		m_pChildFocusedOn->SetFocus( false );
-				//		if( i >= m_pChildren.size() - 1 )
-				//		{
-				//			m_pChildFocusedOn = m_pChildren[0];
-				//		}
-				//		else
-				//		{
-				//			m_pChildFocusedOn = m_pChildren[i+1];
-				//		}
-				//		m_pChildFocusedOn->SetFocus( true );
-				//		break;
-				//	}
-				//}
-			}
-			return true;
 		}
 
 		void XUI_Dialog::SetFocus( UINT nCtrlID )
