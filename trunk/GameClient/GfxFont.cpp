@@ -61,7 +61,7 @@ GfxFont::GfxFont( _lpctstr lpsFontName, int nFaceSize, BOOL bBold, BOOL bItalic,
 	::GetTextMetrics(m_hMemDC,&tm);
 	m_nAscent		= tm.tmAscent;
 
-	m_nFontSize		= static_cast<float>(nFaceSize);
+	m_nFontSize		= nFaceSize;
 	m_nKerningWidth	= 0;
 	m_nKerningHeight= 0;
 
@@ -137,18 +137,18 @@ _uint32 GfxFont::GetColor(int i)
 }
 
 // 获取文本宽高
-SIZE GfxFont::GetTextSize( const wchar_t* text )
+iSize GfxFont::GetTextSize( const wchar_t* text )
 {
-	SIZE dim = {0, static_cast<LONG>(m_nFontSize)};
-	float nRowWidth = 0;
+	iSize dim( 0, m_nFontSize );
+	int nRowWidth = 0;
 
 	while(*text)
 	{
 		if (*text == L'\n' || *text == L'\r')
 		{
-			dim.cy += static_cast<LONG>(m_nFontSize + m_nKerningHeight);
-			if (dim.cx < static_cast<LONG>(nRowWidth))
-				dim.cx = static_cast<LONG>(nRowWidth);
+			dim.cy += m_nFontSize + m_nKerningHeight;
+			if (dim.cx < nRowWidth)
+				dim.cx = nRowWidth;
 			nRowWidth = 0;
 		}
 		else
@@ -156,29 +156,29 @@ SIZE GfxFont::GetTextSize( const wchar_t* text )
 		++text;
 	}
 
-	if (dim.cx < static_cast<LONG>(nRowWidth))
-		dim.cx = static_cast<LONG>(nRowWidth);
+	if (dim.cx < nRowWidth)
+		dim.cx = nRowWidth;
 
 	return dim;
 }
 
 // 获取字符宽度
-LONG GfxFont::GetCharacterWidth( const wchar_t character )
+int GfxFont::GetCharacterWidth( const wchar_t character )
 {
-	return static_cast<LONG>( GetWidthFromCharacter(character) + m_nKerningWidth );
+	return GetWidthFromCharacter(character) + m_nKerningWidth;
 }
 
 // 获取字符高度
-LONG GfxFont::GetCharacterHeight()const
+int GfxFont::GetCharacterHeight()const
 {
-	return static_cast<LONG>(m_nFontSize + m_nKerningHeight);
+	return m_nFontSize + m_nKerningHeight;
 }
 
 // 根据坐标获取字符
 wchar_t GfxFont::GetCharacterFromPos( const wchar_t* text, float pixel_x, float pixel_y )
 {
-	float x = 0;
-	float y = 0;
+	int x = 0;
+	int y = 0;
 
 	while (*text)
 	{
@@ -192,7 +192,7 @@ wchar_t GfxFont::GetCharacterFromPos( const wchar_t* text, float pixel_x, float 
 				break;
 		}
 
-		float w = GetWidthFromCharacter(*text);
+		int w = GetWidthFromCharacter(*text);
 		if (pixel_x > x && pixel_x <= x + w &&
 			pixel_y > y && pixel_y <= y + m_nFontSize)
 			return *text;
@@ -206,28 +206,28 @@ wchar_t GfxFont::GetCharacterFromPos( const wchar_t* text, float pixel_x, float 
 }
 
 // 设置字间距
-void GfxFont::SetKerningWidth( float kerning )
+void GfxFont::SetKerningWidth( int kerning )
 {
 	m_nKerningWidth = kerning;
 }
-void GfxFont::SetKerningHeight( float kerning )
+void GfxFont::SetKerningHeight( int kerning )
 {
 	m_nKerningHeight = kerning;
 }
 
 // 获取字间距
-float GfxFont::GetKerningWidth()const
+int GfxFont::GetKerningWidth()const
 {
 	return m_nKerningWidth;
 }
 
-float GfxFont::GetKerningHeight()const
+int GfxFont::GetKerningHeight()const
 {
 	return m_nKerningHeight;
 }	
 
 // 字体大小
-float GfxFont::GetFontSize()const
+int GfxFont::GetFontSize()const
 {
 	return m_nFontSize;
 }
@@ -240,11 +240,11 @@ unsigned int GfxFont::GetGlyphByCharacter( wchar_t c )
 	return idx;
 }
 
-inline float GfxFont::GetWidthFromCharacter( wchar_t c, bool original )
+inline int GfxFont::GetWidthFromCharacter( wchar_t c, bool original )
 {
 	unsigned int idx = GetGlyphByCharacter(c);
 	if (original && idx > 0 && idx < font_count) return m_Glyphs[idx].c;
-	return	(idx >= 0x2000) ? m_nFontSize : _floor(m_nFontSize / 2);
+	return	(idx >= 0x2000) ? m_nFontSize : (int)_floor(m_nFontSize / 2.0f);
 }
 
 inline void GfxFont::CacheCharacter(unsigned int idx, wchar_t c)
@@ -322,10 +322,10 @@ inline void GfxFont::CacheCharacter(unsigned int idx, wchar_t c)
 		}
 
 		m_Glyphs[idx].t = hTex;
-		m_Glyphs[idx].w = static_cast<float>(gm.gmBlackBoxX);
-		m_Glyphs[idx].h = static_cast<float>(gm.gmBlackBoxY);
-		m_Glyphs[idx].x = static_cast<float>(-gm.gmptGlyphOrigin.x);
-		m_Glyphs[idx].y = static_cast<float>(-m_nAscent + gm.gmptGlyphOrigin.y);
-		m_Glyphs[idx].c = static_cast<float>(gm.gmCellIncX);
+		m_Glyphs[idx].w = (float)gm.gmBlackBoxX;
+		m_Glyphs[idx].h = (float)gm.gmBlackBoxY;
+		m_Glyphs[idx].x = (float)-gm.gmptGlyphOrigin.x;
+		m_Glyphs[idx].y = (float)(-m_nAscent + gm.gmptGlyphOrigin.y);
+		m_Glyphs[idx].c = gm.gmCellIncX;
 	}
 }

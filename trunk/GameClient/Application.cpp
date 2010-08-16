@@ -7,37 +7,13 @@
 #define SCREEN_HEIGHT 600
 
 CApplication::CApplication(void)
-: m_pDefWindowProc( NULL )
-, m_pRegisterClass( NULL )
-, m_pMessageQueue( NULL )
+: m_pMessageQueue( NULL )
 {
 	init_canvas();
 }
 
 CApplication::~CApplication(void)
 {
-}
-
-ATOM CALLBACK CApplication::UIRegisterClass( __in CONST WNDCLASSA *lpWndClass )
-{
-	WNDCLASSA WndClass = *lpWndClass;
-	Application::Instance().m_pDefWindowProc = lpWndClass->lpfnWndProc;
-	WndClass.lpfnWndProc = &CApplication::UIWindowProc;
-	return Application::Instance().m_pRegisterClass( &WndClass );
-}
-
-LRESULT CALLBACK CApplication::UIWindowProc( __in HWND hWnd, __in UINT Msg, __in WPARAM wParam, __in LPARAM lParam )
-{
-	//char szlog[1024];
-	//_snprintf( szlog, sizeof(szlog), "nMsg = %x\n", Msg );
-	//OutputDebugStringA( szlog );
-	return UILib::GuiSystem::Instance().HandleMessage( hWnd, Msg, wParam, lParam );
-}
-
-LRESULT CALLBACK CApplication::UIDispatchMessage( __in CONST MSG *lpMsg )
-{
-	TranslateMessage( lpMsg );
-	return Application::Instance().m_pDispatchMessage( lpMsg );
 }
 
 bool CApplication::FrameFunc()
@@ -48,7 +24,7 @@ bool CApplication::FrameFunc()
 	switch(Application::Instance()->Input_GetKey())
 	{
 	case HGEK_F10:
-		UILib::SetupDebuger();
+		XGC::ui::SetupDebuger();
 		break;
 	case HGEK_F9:
 		{
@@ -57,14 +33,14 @@ bool CApplication::FrameFunc()
 			freopen("CONIN$","r+t",stdin); 
 
 			Application::Instance()->System_SetState( HGE_DONTSUSPEND, true );
-			GuiSystem::Instance().SetEditMode( true );
+			XUI::Instance().SetEditMode( true );
 			printf( "UICommander start successful. Enter edit mode.\n" );
 		}
 		break;
 	case HGEK_F8:
 		FreeConsole();
 		Application::Instance()->System_SetState( HGE_DONTSUSPEND, false );
-		GuiSystem::Instance().SetEditMode( false );
+		XUI::Instance().SetEditMode( false );
 		printf( "UICommander closed. Quit edit mode.\n" );
 		break;
 		//case HGEK_UP:
@@ -78,7 +54,9 @@ bool CApplication::FrameFunc()
 		return true;
 	}
 
-	return Application::Instance().UpdateLogic( dt );
+	Application::Instance().UpdateLogic( dt );
+	XUI::Instance().Update( Application::Instance()->Timer_GetDelta() );
+	return false;
 }
 
 bool CApplication::RenderFunc()
@@ -88,8 +66,7 @@ bool CApplication::RenderFunc()
 	Application::Instance()->Gfx_BeginScene();
 	Application::Instance()->Gfx_Clear(0);
 	Application::Instance().Render();
-	GuiSystem::Instance().Render();
-	GuiSystem::Instance().Update( Application::Instance()->Timer_GetDelta() );
+	XUI::Instance().Render();
 	Application::Instance()->Gfx_EndScene();
 
 	return false;
@@ -118,18 +95,6 @@ bool CApplication::Initialize()
 
 	// m_hge->System_SetState(HGE_DONTSUSPEND, true );
 
-	GuiSystem::Instance();
-	// 挂接窗口消息处理函数
-	HMODULE hUser32 = GetModuleHandle( _T("User32.dll") );
-	if( hUser32 )
-	{
-		m_pRegisterClass	= ( pfnRegisterClass )GetProcAddress( hUser32, "RegisterClassA" );
-		m_pDispatchMessage	= (pfnDispatchMessage)GetProcAddress( hUser32, "DispatchMessageA" );
-
-		patchimport( GetModuleHandle( _T("hge.dll") ), "User32.dll", NULL, "RegisterClassA", UIRegisterClass );
-		patchimport( GetModuleHandle( _T("hge.dll") ), "User32.dll", NULL, "DispatchMessageA", UIDispatchMessage );
-	}
-
 	// 初始化回调函数
 	if( !m_hge->System_Initiate())
 	{
@@ -137,17 +102,15 @@ bool CApplication::Initialize()
 	}
 
 	// 初始化UI系统
-	GuiSystem::Instance().Initialize( m_hge->System_GetState(HGE_HWND), "..\\Resource\\UI\\" );
+	XUI::Instance().Initialize( m_hge->System_GetState(HGE_HWND), "..\\Resource\\UI\\" );
 
 	// 设置默认字体
-	GuiSystem::Instance().SetDefaultFont( XUI_CreateFontEx( XUI_FontAttribute( "宋体", 18, XUI_ARGB(255, 255, 255, 255), false, false, false ) ) );
+	XUI::Instance().SetDefaultFont( XUI_CreateFontEx( XUI_FontAttribute( "宋体", 18, XUI_ARGB(255, 255, 255, 255), false, false, false ) ) );
 
 	// 设置光标系统
-	GuiSystem::Instance().SetDefaultCursor( new CClientMouse( "Config.xml" ) );
+	XUI::Instance().SetDefaultInput( new ClientInput( "Config.xml" ) );
 
-	UICommander::Instance().ProcessCommand( _T("load main.xml") );
-
-	restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "RegisterClassA",	m_pRegisterClass );
+	UICommander::Instance().Load( "main.xml" );
 
 	return true;
 }
@@ -160,20 +123,15 @@ void CApplication::Run()
 	ConnectServer( "127.0.0.1", 18890, &m_pMessageQueue, 0 );
 	m_hge->System_Start();
 	Client.Stop();
-	m_pMessageQueue->Release();
 }
 
 void CApplication::UnInitialize()
 {
-	restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "DefWindowProcA",	m_pDefWindowProc );
-	restoreimport( GetModuleHandle( _T("hge") ), "User32.dll", NULL, "DispatchMessageA", m_pDispatchMessage );
-	// Clean up and shutdown
-
-	delete GuiSystem::Instance().GetMouseCursor();
-	delete GuiSystem::Instance().GetDefaultFont();
-	GuiSystem::Instance().Unitialize();
+	delete XUI::Instance().GetInput();
+	delete XUI::Instance().GetDefaultFont();
+	XUI::Instance().Unitialize();
 	TextureManager::Instance().Clear();
-	// m_hge->System_Shutdown();
+	m_hge->System_Shutdown();
 	m_hge->Release();
 	m_pMessageQueue->Release();
 	FiniNetwork();
@@ -224,8 +182,5 @@ bool CApplication::UpdateLogic( float fDelta )
 
 void CApplication::Render()
 {
-	//static byte i = 0;
-	//XUI_DrawRect( xgcRect( 1, 1, SCREEN_WIDTH, SCREEN_HEIGHT ), -1, ARGB( 0xff*sin(++i*3.1415/0xff), 0xcc, 0xcc, 0xcc ) );
-	// m_hge->Gfx_SetClipping( 0, 0, 100, 100 );
-	XUI_DrawRect( xgcRect( 1, 1, SCREEN_WIDTH, SCREEN_HEIGHT ), -1, ARGB( 0xcc, 0xcc, 0xcc, 0xcc ) );
+	XUI_DrawRect( iRect( 1, 1, SCREEN_WIDTH, SCREEN_HEIGHT ), -1, ARGB( 0xcc, 0xcc, 0xcc, 0xcc ) );
 }
