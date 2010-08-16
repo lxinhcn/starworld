@@ -1,5 +1,5 @@
-<WINDOW>
-    <Attribute>
+<window>
+    <attribute>
         <x value="0" />
         <y value="0" />
         <background class="sprite">
@@ -21,9 +21,9 @@
             <cx value="800" />
             <cy value="600" />
         </size>
-    </Attribute>
-    <CONTROL Lable="editbox">
-        <Attribute>
+    </attribute>
+    <control lable="editbox">
+        <attribute>
             <backgroundcolor value="807411744" />
             <bordercolor value="-8355712" />
             <singleline value="true" />
@@ -43,10 +43,10 @@
                 <cx value="150" />
                 <cy value="20" />
             </size>
-        </Attribute>
-    </CONTROL>
-    <CONTROL Lable="button">
-        <Attribute>
+        </attribute>
+    </control>
+    <control lable="button">
+        <attribute>
             <caption value="" />
             <skin class="sprite">
                 <path direction="media\enter.png" />
@@ -67,10 +67,10 @@
                 <cx value="94" />
                 <cy value="38" />
             </size>
-        </Attribute>
-    </CONTROL>
-    <CONTROL Lable="button">
-        <Attribute>
+        </attribute>
+    </control>
+    <control lable="button">
+        <attribute>
             <caption value="" />
             <skin class="sprite">
                 <path direction="media\exit.png" />
@@ -97,10 +97,10 @@
                 <right value="667" />
                 <top value="544" />
             </window>
-        </Attribute>
-    </CONTROL>
-    <CONTROL Lable="editbox">
-        <Attribute>
+        </attribute>
+    </control>
+    <control lable="editbox">
+        <attribute>
             <backgroundcolor value="807411744" />
             <bordercolor value="-8355712" />
             <singleline value="true" />
@@ -120,6 +120,6 @@
                 <cx value="150" />
                 <cy value="20" />
             </size>
-        </Attribute>
-    </CONTROL>
-</WINDOW>
+        </attribute>
+    </control>
+</window>
