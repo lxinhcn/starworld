@@ -253,7 +253,7 @@ bool CALL HGE_Impl::System_Start()
 			if (PeekMessage(&msg,NULL,0,0,PM_REMOVE))
 			{ 
 				if (msg.message == WM_QUIT)	break;
-				// TranslateMessage(&msg);
+				TranslateMessage(&msg);
 				DispatchMessage(&msg);
 				continue;
 			}
