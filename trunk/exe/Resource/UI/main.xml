@@ -22,7 +22,7 @@
             <cy value="600" />
         </size>
     </Attribute>
-    <CONTROL Lable="EDIT">
+    <CONTROL Lable="editbox">
         <Attribute>
             <backgroundcolor value="807411744" />
             <bordercolor value="-8355712" />
@@ -45,7 +45,7 @@
             </size>
         </Attribute>
     </CONTROL>
-    <CONTROL Lable="BUTTON">
+    <CONTROL Lable="button">
         <Attribute>
             <caption value="" />
             <skin class="sprite">
@@ -69,7 +69,7 @@
             </size>
         </Attribute>
     </CONTROL>
-    <CONTROL Lable="BUTTON">
+    <CONTROL Lable="button">
         <Attribute>
             <caption value="" />
             <skin class="sprite">
@@ -99,7 +99,7 @@
             </window>
         </Attribute>
     </CONTROL>
-    <CONTROL Lable="EDIT">
+    <CONTROL Lable="editbox">
         <Attribute>
             <backgroundcolor value="807411744" />
             <bordercolor value="-8355712" />
