@@ -303,10 +303,12 @@ namespace XGC
 			{
 			case VK_CONTROL:
 				m_bControl = true;
+				return false;
 				break;
 			case VK_SHIFT:
 			case VK_RSHIFT:
 				m_bShift = true;
+				return false;
 				break;
 			case VK_BACK:
 				HandleBack();

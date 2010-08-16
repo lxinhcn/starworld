@@ -35,10 +35,10 @@ namespace XGC
 			// 设置图片路径
 			_lpcstr	GetResourcePath();
 
-			void SetDefaultFont( XUI_Font *pFont ){ m_default_font_ptr	= pFont; }
+			void SetDefaultFont( XUI_Font *pFont ){ m_pDefaultFont	= pFont; }
 			void SetDefaultInput( XUI_Input *pInput){ m_pInput = pInput; }
 
-			XUI_Font*	GetDefaultFont()const{ return m_default_font_ptr; }
+			XUI_Font*	GetDefaultFont()const{ return m_pDefaultFont; }
 			XUI_Input*	GetInput()const{ return m_pInput; }
 
 		protected:
@@ -55,19 +55,18 @@ namespace XGC
 
 		private:
 			//根
-			typedef std::map< int, XUI_Window* >	CDesktopMap;
+			typedef std::list< XUI_Window* >		CTopWindowList;
 			typedef std::list< XUI_Window* >		CModalList;
 			typedef std::list< XUI_Wnd* >			CWndList;
 
-			XUI_Window		*m_pDesktop;
-			CDesktopMap		m_DesktopMap;
+			CTopWindowList	m_TopWindowList;
 			CModalList		m_ModalList;
 
-			XUI_Font		*m_default_font_ptr;
+			XUI_Font		*m_pDefaultFont;
 			XUI_Input		*m_pInput;
 
-			std::string		m_resource_path;
-			timer			m_timer;
+			std::string		m_strResourcePath;
+			timer			m_Timer;
 			float			m_nowtime;
 			float			m_timer_anchor;
 			bool			m_is_edit_mode;
@@ -99,8 +98,6 @@ namespace XGC
 		public:
 			HWND GetHWND()const {return m_hWnd;}
 
-			XUI_Window* GetRoot() {return m_pDesktop;}
-
 			//渲染
 			void Render();
 			void RenderEditFrame();
@@ -114,10 +111,8 @@ namespace XGC
 			//////////////////////////////////////////////////////////////////////////
 			// 生成界面
 
-			void RegistDesktop( XUI_Window* pDesktop );
-			void SwitchDesktop( int nDesktopID );
-			XUI_Window* RemoveDesktop( int nDesktopID );
-			XUI_Window* GetDesktop( UINT nDesktopID );
+			void RegistTopWindow( XUI_Window* pTopWindow );
+			XUI_Window* RemoveTopWindow( XUI_Window *pTopWindow );
 
 			bool EnterModaless( XUI_Window* pDialog );
 			void LeaveModaless();

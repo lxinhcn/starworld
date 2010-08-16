@@ -17,31 +17,30 @@ namespace XGC
 		}
 
 		XUI_System::XUI_System()
-			: m_pDesktop(NULL)
-			, m_bPointInRoot(false)
+			: m_bPointInRoot(false)
 			, m_is_edit_mode( false )
 			, m_hWnd(NULL)
 			, m_bInitialized( FALSE )
 			, m_nowtime( 0.0f )
 			, m_timer_anchor( 0.0f )
-			, m_default_font_ptr( NULL )
+			, m_pDefaultFont( NULL )
 			, m_capture_element( NULL )
 			, m_mouseover_element( NULL )
 			, m_mousedown_element( NULL )
 			, m_OldProc(NULL)
 		{
-			m_pDesktop = new XUI_Window();
-			m_pDesktop->SetName( _T("root" ) );
 			// 初始化定时器系统
-			m_timer.initialize( 1024, 4096 );
-			RegistDesktop( m_pDesktop );
+			m_Timer.initialize( 1024, 4096 );
 		}
 
 		XUI_System::~XUI_System(void)
 		{
-			XUI_Window* pDesktop = RemoveDesktop( DEFAULT_DESKTOP );
-			delete pDesktop;
-			m_pDesktop = NULL;
+			CTopWindowList::iterator iter = m_TopWindowList.begin();
+			while( iter != m_TopWindowList.end() )
+			{
+				delete *iter;
+				iter = m_TopWindowList.erase(iter);
+			}
 		}
 
 		bool XUI_System::Initialize( HWND hWnd, _lpcstr lpszPath )
@@ -49,15 +48,15 @@ namespace XGC
 			if( m_bInitialized )	return TRUE;
 
 			_lpcstr path = _fullpath( NULL, lpszPath, 0 );
-			m_resource_path	= path;
+			m_strResourcePath	= path;
 			free( (void*)path ); 
 			path = NULL;
+			m_hWnd = hWnd;
 
 			// 初始化lua脚本系统
 			Lua::Instance().Initialize();
 
 			XUI_IME::Initialize();
-			m_hWnd = hWnd;
 
 			m_OldProc = (WNDPROC)SetWindowLong(hWnd, GWL_WNDPROC, (LONG)WndProc);
 			RECT rcWindow;
@@ -65,14 +64,12 @@ namespace XGC
 			m_WindowSize.cx = rcWindow.right - rcWindow.left;
 			m_WindowSize.cy = rcWindow.bottom - rcWindow.top;
 
-			m_pDesktop->MoveWindow( 0, 0, m_WindowSize.cx, m_WindowSize.cy );
-			m_capture_element = m_pDesktop;
 			return TRUE;
 		}
 
 		void XUI_System::Unitialize()
 		{
-			m_default_font_ptr = NULL;
+			m_pDefaultFont = NULL;
 			m_pInput = NULL;
 		}
 
@@ -85,10 +82,10 @@ namespace XGC
 
 		void XUI_System::Render()
 		{
-			if ( m_pDesktop )
+			CTopWindowList::iterator iter = m_TopWindowList.begin();
+			while( iter != m_TopWindowList.end() )
 			{
-				XUI_SetClipping( 0, 0, m_WindowSize.cx, m_WindowSize.cy );
-				m_pDesktop->Render( iRect( 0, 0, m_WindowSize.cx, m_WindowSize.cy ) );
+				(*iter)->Render( iRect( 0, 0, m_WindowSize.cx, m_WindowSize.cy ) );
 			}
 
 			if( m_pInput->IsMouseOver() )
@@ -166,7 +163,7 @@ namespace XGC
 			while( m_nowtime - m_timer_anchor >= 0.1f )
 			{
 				m_timer_anchor += 0.1f;
-				m_timer.active();
+				m_Timer.active();
 			}
 
 			if( m_pInput )
@@ -175,9 +172,10 @@ namespace XGC
 			}
 
 			SLB::LuaCall< void(float, float) >( Lua::Instance().getState(), "UIUpdateEntry" )( m_nowtime, fDelta );
-			if( m_pDesktop )
+			CTopWindowList::iterator iter = m_TopWindowList.begin();
+			while( iter != m_TopWindowList.end() )
 			{
-				m_pDesktop->Update( m_nowtime, fDelta );
+				(*iter)->Update( m_nowtime, fDelta );
 			}
 		}
 
@@ -401,13 +399,13 @@ namespace XGC
 				break;
 				//输入法
 			case WM_IME_COMPOSITION:
-				ret = OnImeComp( m_pDesktop, wParam, lParam, &result );
+				ret = OnImeComp( wParam, lParam, &result );
 				break;
 			case WM_IME_ENDCOMPOSITION:
-				ret = OnImeEndComp( m_pDesktop, wParam, lParam, &result );
+				ret = OnImeEndComp( wParam, lParam, &result );
 				break;
 			case WM_IME_NOTIFY:
-				ret = OnImeNotify( m_pDesktop, wParam, lParam, &result );
+				ret = OnImeNotify( wParam, lParam, &result );
 				break;
 			default:
 				if( uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST )
@@ -561,91 +559,70 @@ namespace XGC
 		// 界面生成
 		bool XUI_System::LoadFromFile( _lpcstr pszFilename )
 		{
-			if( m_pDesktop )
-			{
-				TiXmlDocument Doc;
-				if( Doc.LoadFile( (m_resource_path + pszFilename).c_str() ) == false )
-					return false;
+			TiXmlDocument Doc;
+			if( Doc.LoadFile( (m_strResourcePath + pszFilename).c_str() ) == false )
+				return false;
 
-				TiXmlNode* pNode = Doc.FirstChild( "WINDOW" );
-				if( pNode )
+			TiXmlNode* pNode = Doc.FirstChild( "window" );
+			while( pNode )
+			{
+				XUI_Window *pTopWindow = new XUI_Window();
+				if( pTopWindow )
 				{
-					bool ret = m_pDesktop->CreateFromXMLNode( pNode->ToElement() );
-					int x, y;
-					m_pInput->GetMousePos( &x, &y );
-					m_capture_element = m_pDesktop->FindChildInPoint( iPoint( x, y ) );
-					return ret;
+					if( pTopWindow->CreateFromXMLNode( pNode->ToElement() ) )
+					{
+						RegistTopWindow( pTopWindow );
+						m_capture_element = pTopWindow;
+					}
 				}
+				pNode = Doc.NextSibling( "window" );
 			}
 			return false;
 		}
 
 		bool XUI_System::SaveToFile( _lpcstr pszFilename )
 		{
-			if( m_pDesktop )
+			TiXmlDocument	Doc;
+
+			CTopWindowList::iterator iter = m_TopWindowList.begin();
+			while( iter != m_TopWindowList.end() )
 			{
-				TiXmlDocument	Doc;
-
-				TiXmlElement	XmlElement2( "WINDOW" );
-				if( m_pDesktop->SaveToXMLNode( &XmlElement2 ) )
+				TiXmlElement	XmlWindow( "window" );
+				if( (*iter)->SaveToXMLNode( &XmlWindow ) )
 				{
-					Doc.InsertEndChild( XmlElement2 );
-
-					Doc.SaveFile( (m_resource_path + pszFilename).c_str() );
-					return true;
+					Doc.InsertEndChild( XmlWindow );
 				}
 			}
-			return false;
+
+			return Doc.SaveFile( (m_strResourcePath + pszFilename).c_str() );
 		}
 
 		_lpcstr	XUI_System::GetResourcePath()
 		{
-			return m_resource_path.c_str();
+			return m_strResourcePath.c_str();
 		}
 
-		void XUI_System::RegistDesktop( XUI_Window* pDesktop )
+		void XUI_System::RegistTopWindow( XUI_Window* pTopWindow )
 		{
-			if( !pDesktop )	return;
+			if( NULL == pTopWindow )
+				return;
 
-			CDesktopMap::const_iterator citer = m_DesktopMap.find( pDesktop->GetID() );
-			if( citer == m_DesktopMap.end() )
+			CTopWindowList::const_iterator citer = find( m_TopWindowList.begin(), m_TopWindowList.end(), pTopWindow );
+			if( citer == m_TopWindowList.end() )
 			{
-				m_DesktopMap[pDesktop->GetID()] = pDesktop;
+				m_TopWindowList.push_back( pTopWindow );
 			}
 		}
 
-		void XUI_System::SwitchDesktop( int nDesktopID )
+		XUI_Window* XUI_System::RemoveTopWindow( XUI_Window* pTopWindow )
 		{
-			CDesktopMap::const_iterator citer = m_DesktopMap.find( nDesktopID );
-			if( citer != m_DesktopMap.end() )
+			CTopWindowList::iterator iter = find( m_TopWindowList.begin(), m_TopWindowList.end(), pTopWindow );
+			if( iter != m_TopWindowList.end() )
 			{
-				m_pDesktop = citer->second;
-			}
-		}
-
-		XUI_Window* XUI_System::RemoveDesktop( int nDesktopID )
-		{
-			CDesktopMap::iterator iter = m_DesktopMap.find( nDesktopID );
-			if( iter != m_DesktopMap.end() )
-			{
-				XUI_Window* pDesktop = iter->second;
-				m_DesktopMap.erase( iter );
-				if( nDesktopID != DEFAULT_DESKTOP && m_pDesktop == pDesktop )
-				{
-					SwitchDesktop( DEFAULT_DESKTOP );
-				}
-				return pDesktop;
+				m_TopWindowList.erase( iter );
+				return pTopWindow;
 			}
 			return NULL;
-		}
-
-		XUI_Window* XUI_System::GetDesktop( UINT nDesktopID )
-		{
-			CDesktopMap::iterator iter = m_DesktopMap.find( nDesktopID );
-			if( iter != m_DesktopMap.end() )
-				return iter->second;
-			else
-				return NULL;
 		}
 
 		bool XUI_System::EnterModaless( XUI_Window* pDialog )
@@ -663,12 +640,12 @@ namespace XGC
 
 		unsigned int XUI_System::SetTimer( _tfunction function, unsigned short repeat, unsigned short timer )
 		{
-			return m_timer.insert_event( function, repeat, timer );
+			return m_Timer.insert_event( function, repeat, timer );
 		}
 
 		void XUI_System::KillTimer( unsigned int handle )
 		{
-			m_timer.remove_event( handle );
+			m_Timer.remove_event( handle );
 		}
 
 		bool SetupDebuger()
