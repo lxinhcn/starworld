@@ -65,12 +65,25 @@ namespace SLB {
 		void* get_ptr(lua_State*, int pos) const;
 		const void* get_const_ptr(lua_State*, int pos) const;
 
-		template< class C, typename V >
+		template< class C, class V >
 		void member( const char* name, V C::* offset )
 		{
 			std::string key( "__members::" );
 			set( key + name + "::__get", getMember< C, V >::create( offset ) );
 			set( key + name + "::__set", setMember< C, V >::create( offset ) );
+		}
+
+		template< size_t S, class C, class V >
+		void member( const char* name, V (C::* offset)[S] )
+		{
+			Table *pTable = dynamic_cast<Table*>( rawGet( name ) );
+			std::string key( "__members::" );
+			for( int i = 0; i < S; ++i )
+			{
+				V &_member = (((C*)0)->* offset)[i];
+				// pTable->set( key + name + "::__get", getMember< C, V >::create( (C::* _member ) ) );
+				// pTable->set( key + name + "::__set", setMember< C, V >::create( offset[i] ) );
+			}
 		}
 
 		static int _readonly( lua_State *L )

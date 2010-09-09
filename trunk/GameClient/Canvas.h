@@ -46,50 +46,48 @@ public:
 	GfxFont* GetFont( _lpcstr lpszFont, int nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias );
 
 private:
-	typedef std::map< XUI_FontAttribute, GfxFont* >	CFontMap;
+	typedef std::map< xuiFontInfo, GfxFont* >	CFontMap;
 	CFontMap	m_FontMap;
 };
 typedef SingletonHolder< CFontManager, CreateStatic >	FontManager;
 
-struct ClientInput	:	public XUI_Input
-{
-	XUI_IAnimation	*m_CursorAni[14];
+//struct ClientInput	:	public XUI_Input
+//{
+//	ClientInput( _lpcstr pszCursorConfig );
+//	virtual ~ClientInput();
+//	virtual void	GetMousePos( int *x, int *y );
+//	virtual void	SetMousePos( int x, int y );
+//	virtual _int32	GetMouseWheel();
+//	virtual void	RenderMouse();
+//	virtual void	SetMouse( _uint16 id );
+//	virtual bool	GetKeyState( int key )const;
+//	virtual bool	IsPressedLButton()const;
+//	virtual bool	IsReleaseLButton()const;
+//	virtual bool	IsPressedRButton()const;
+//	virtual bool	IsReleaseRButton()const;
+//	virtual bool	IsPressedMButton()const;
+//	virtual bool	IsReleaseMButton()const;
+//	virtual bool	IsMouseOver()const;
+//
+//	virtual void	UpdateMouse( float fDeltaTime );
+//protected:
+//	//--------------------------------------------------------//
+//	//	created:	18:11:2007   11:22
+//	//	filename: 	d:\Develop\StarGame\GameClient\Canvas.h
+//	//	author:		Albert
+//	//
+//	//	purpose:	通过光标文件创建鼠标指针
+//	//--------------------------------------------------------//
+//	XUI_IAnimation*	CreateCursor( _lpcstr cursorfile );
+//
+//private:
+//	_int32			m_nCount;
+//	_int32			m_nCurIndex;
+//	_uint32			m_nTimerHandle;
+//	XUI_IAnimation	*m_pCursor[14];
+//};
 
-	ClientInput( _lpcstr pszCursorConfig );
-	virtual ~ClientInput();
-	virtual void	GetMousePos( int *x, int *y );
-	virtual void	SetMousePos( int x, int y );
-	virtual _int32	GetMouseWheel();
-	virtual void	RenderMouse();
-	virtual void	SetMouse( _uint16 id );
-	virtual bool	GetKeyState( int key )const;
-	virtual bool	IsPressedLButton()const;
-	virtual bool	IsReleaseLButton()const;
-	virtual bool	IsPressedRButton()const;
-	virtual bool	IsReleaseRButton()const;
-	virtual bool	IsPressedMButton()const;
-	virtual bool	IsReleaseMButton()const;
-	virtual bool	IsMouseOver()const;
-
-	virtual void	UpdateMouse( float fDeltaTime );
-protected:
-	//--------------------------------------------------------//
-	//	created:	18:11:2007   11:22
-	//	filename: 	d:\Develop\StarGame\GameClient\Canvas.h
-	//	author:		Albert
-	//
-	//	purpose:	通过光标文件创建鼠标指针
-	//--------------------------------------------------------//
-	XUI_IAnimation*	CreateCursor( _lpcstr cursorfile );
-
-private:
-	_int32			m_nCount;
-	_int32			m_nCurIndex;
-	_uint32			m_nTimerHandle;
-	XUI_IAnimation	*m_pCursor[14];
-};
-
-class CClientSprite	:	public XUI_ISprite
+class CClientSprite	:	public xuiSpriteInfo
 {
 public:
 	CClientSprite( _lpcstr _path, float _x, float _y, float _w, float _h );
@@ -129,10 +127,10 @@ private:
 	float		m_diffuse;
 };
 
-class CClientFont	:	public XUI_Font
+class CClientFont	:	public xuiFontInfo
 {
 public:
-	CClientFont( const XUI_FontAttribute& FontAttrib, GfxFont* pFont );
+	CClientFont( const xuiFontInfo& FontAttrib, GfxFont* pFont );
 	~CClientFont();
 
 	virtual iSize GetStringSize( _lpctstr lpszString );
@@ -148,7 +146,7 @@ private:
 	GfxFont*	m_pFont;
 };
 
-class CClientAnimation	:	public XUI_IAnimation
+class CClientAnimation	:	public xuiAnimationInfo
 {
 public:
 	CClientAnimation( _lpcstr filename, int frames, float fps, float x, float y, float w, float h );

@@ -22,18 +22,19 @@ namespace XGC
 
 		protected:
 			_string			m_strCaption;
-			XUI_ISprite*	m_pButtonSkin;
-			ButtonState		m_enState;
+			xuiSprite		m_hButtonSkin[4];
+			xuiSpriteInfo	m_ButtonInfo[4];
+			ButtonState		m_eState;
 			_uint32			m_dwColor;
 
 			void RenderSelf( const iPoint& adjust );
 
 			bool OnMouseEnter();
 			bool OnMouseLeave();
-			bool OnButtonDown(int button, const iPoint& pt, UINT sysKeys);
-			bool OnButtonUp(int button, const iPoint& pt, UINT sysKeys);
+			bool OnButtonDown( int nButton, const iPoint& ptMouse, _uint32 nFlags );
+			bool OnButtonUp( int nButton, const iPoint& ptMouse, _uint32 nFlags );
 
-			bool OnKeyDown(_uint32 keycode, UINT sysKeys);
+			bool OnKeyDown( _uint32 nKey, _uint32 nFlags );
 
 			//»ñµÃ½¹µã
 			virtual void OnSetFocus();
@@ -41,8 +42,8 @@ namespace XGC
 			virtual void OnLostFocus();
 
 		protected:
-			void OnEnable( BOOL bEnable );
-			virtual void OnLoadPropertys( const char* name, TiXmlElement* pNode );
+			void OnEnable( bool bEnable );
+			virtual void OnLoadPropertys( const char* pName, TiXmlElement* pNode );
 
 		public:
 			void SetText( _lpctstr sText);

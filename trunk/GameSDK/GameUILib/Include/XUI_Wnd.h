@@ -192,8 +192,6 @@ namespace XGC
 			iPoint			m_WindowPosition;		// 位置和大小，相对于父控件
 			iSize			m_WindowSize;
 
-			XUI_Font*		m_pFont;
-			XUI_ISprite*	m_pBackGround;			// 背景图
 			_byte			m_Flags[1];				// 标志
 		};
 

@@ -85,6 +85,13 @@ namespace SLB {
 			return *this;
 		}
 
+		template< size_t S, class C, class V >
+		__Self &member( const char* name, V (C::* offset)[S] )
+		{
+			_class->member( name, offset );
+			return *this;
+		}
+
 		template< class C, class V >
 		__Self &member_readonly( const char *name, V C::* offset )
 		{

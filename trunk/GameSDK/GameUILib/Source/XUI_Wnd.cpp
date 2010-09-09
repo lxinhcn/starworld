@@ -17,8 +17,6 @@ namespace XGC
 		, m_bVisible( true )
 		, m_bEnable( true )
 		, m_bOwnerDraw( false )
-		, m_pFont( NULL )
-		, m_pBackGround( NULL )
 		, m_WindowPosition( 0, 0 )
 		, m_WindowSize( 100, 100 )
 		{
@@ -41,7 +39,6 @@ namespace XGC
 				SetParent( NULL );
 				pParent->RemoveChild( this, false );
 			}
-			SAFE_DELETE( m_pBackGround );
 		}
 
 		void XUI_Wnd::Release()
@@ -411,10 +408,6 @@ namespace XGC
 
 		void XUI_Wnd::RenderSelf( const iPoint& adjust )
 		{
-			if( m_pBackGround )
-			{
-				XUI_DrawSprite( m_pBackGround, m_WindowPosition.x - adjust.x, m_WindowPosition.y - adjust.y, m_WindowSize.cx, m_WindowSize.cy );
-			}
 		}
 
 		void XUI_Wnd::RenderEdit( const iPoint &adjust )
@@ -546,10 +539,6 @@ namespace XGC
 
 		void XUI_Wnd::OnLoadPropertys( const char* name, TiXmlElement* pNode )
 		{
-			if( strcmp( "window", name ) == 0 )
-			{
-				OnMoveWindow( GetWindowRect() );
-			}
 		}
 	}
 };

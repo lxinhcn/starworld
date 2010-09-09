@@ -108,7 +108,7 @@ CFontManager::~CFontManager()
 
 GfxFont* CFontManager::GetFont( _lpcstr lpszFont, int nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias )
 {
-	XGC::ui::XUI_FontAttribute font( lpszFont, nSize, dwColor, bBold, bItalic, bAntialias );
+	XGC::ui::xuiFontInfo font( lpszFont, nSize, dwColor, bBold, bItalic, bAntialias );
 	CFontMap::iterator iter = m_FontMap.find( font );
 	if( iter != m_FontMap.end() )
 	{
@@ -191,8 +191,8 @@ void CClientSprite::RenderEx( float x, float y, float rot, float hscale /* = 1.0
 }
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-CClientFont::CClientFont( const XUI_FontAttribute& FontAttrib, GfxFont* pFont )
-: XUI_Font( FontAttrib )
+CClientFont::CClientFont( const xuiFontInfo &FontAttrib, GfxFont* pFont )
+: xuiFontInfo( FontAttrib )
 , m_pFont( pFont )
 {
 }
@@ -231,73 +231,73 @@ void CClientFont::Render( float x, float y, _tchar szChar )const
 	m_pFont->Render( x, y, szChar );
 }
 
-//////////////////////////////////////////////////////////////////////////
-// 鼠标功能类
-//////////////////////////////////////////////////////////////////////////
-ClientInput::ClientInput( _lpcstr pszCursorConfig )
-: m_nCurIndex( 0 )
-, m_nTimerHandle( -1 )
-{
-	TiXmlDocument doc;
-	_astring strPathname( XUI::Instance().GetResourcePath() );
-	strPathname += pszCursorConfig;
-
-	if( doc.LoadFile( strPathname.c_str() ) )
-	{
-		_lpstr path = _strdup( pszCursorConfig );
-		_lpstr end = strrchr( path, _T('\\') );
-		if( end ) *(end+1) = 0;
-
-		TiXmlElement *pRoot = doc.FirstChildElement( "CURSOR" );
-		if( pRoot )
-		{
-			for( TiXmlElement *pElement = pRoot->FirstChildElement();
-				pElement != NULL;
-				pElement = pElement->NextSiblingElement()
-				)
-			{
-				_lpcstr pszArrow[] = { "ARROW","TEXT","CROSS","SIZENESW","SIZENS","SIZENWSE","SIZEWE","SIZEALL","WAIT","BUSY","HAND","HANDWRITE","STOP","HELP", };
-				_lpcstr pszValue = pElement->Value();
-				int idx = 0;
-				while( stricmp( pszArrow[idx], pszValue ) ) ++idx;
-
-				if( idx >= _countof(m_pCursor) ) continue;
-
-				XUI_IAnimation *&pCursor = m_pCursor[idx];
-				if( pElement->Attribute("file") )
-				{
-					pCursor = CreateCursor(pElement->Attribute("file"));
-				}
-				else
-				{
-					pCursor = XUI_CreateAnimation( 
-						pElement->Attribute( "texture" ),
-						pElement->IntAttribute( "frames", 1 ),
-						pElement->FloatAttribute( "fps", 1.0f ),
-						pElement->FloatAttribute( "x" ),
-						pElement->FloatAttribute( "y" ),
-						pElement->FloatAttribute( "w" ),
-						pElement->FloatAttribute( "h" ) );
-					pCursor->SetCenter( pElement->FloatAttribute( "hotx" ), pElement->FloatAttribute( "hoty" ) );
-				}
-			}
-		}
-		free( path );
-	}
-	else
-	{
-		XGC_WRITELOGA( XUILOG, "cursor read error! reson: %s. line = %d, column = %d", doc.Error(), doc.ErrorRow(), doc.ErrorCol() );
-	}
-	SetMouse( XUI_MOUSE_ARROW );
-}
-
-ClientInput::~ClientInput()
-{
-	for( int i = 0; i < _countof(m_pCursor); ++i )
-	{
-		XUI_DestroyAnimation( m_pCursor[i] );
-	}
-}
+////////////////////////////////////////////////////////////////////////////
+//// 鼠标功能类
+////////////////////////////////////////////////////////////////////////////
+//ClientInput::ClientInput( _lpcstr pszCursorConfig )
+//: m_nCurIndex( 0 )
+//, m_nTimerHandle( -1 )
+//{
+//	TiXmlDocument doc;
+//	_astring strPathname( XUI::Instance().GetResourcePath() );
+//	strPathname += pszCursorConfig;
+//
+//	if( doc.LoadFile( strPathname.c_str() ) )
+//	{
+//		_lpstr path = _strdup( pszCursorConfig );
+//		_lpstr end = strrchr( path, _T('\\') );
+//		if( end ) *(end+1) = 0;
+//
+//		TiXmlElement *pRoot = doc.FirstChildElement( "CURSOR" );
+//		if( pRoot )
+//		{
+//			for( TiXmlElement *pElement = pRoot->FirstChildElement();
+//				pElement != NULL;
+//				pElement = pElement->NextSiblingElement()
+//				)
+//			{
+//				_lpcstr pszArrow[] = { "ARROW","TEXT","CROSS","SIZENESW","SIZENS","SIZENWSE","SIZEWE","SIZEALL","WAIT","BUSY","HAND","HANDWRITE","STOP","HELP", };
+//				_lpcstr pszValue = pElement->Value();
+//				int idx = 0;
+//				while( stricmp( pszArrow[idx], pszValue ) ) ++idx;
+//
+//				if( idx >= _countof(m_pCursor) ) continue;
+//
+//				XUI_IAnimation *&pCursor = m_pCursor[idx];
+//				if( pElement->Attribute("file") )
+//				{
+//					pCursor = CreateCursor(pElement->Attribute("file"));
+//				}
+//				else
+//				{
+//					pCursor = XUI_CreateAnimation( 
+//						pElement->Attribute( "texture" ),
+//						pElement->IntAttribute( "frames", 1 ),
+//						pElement->FloatAttribute( "fps", 1.0f ),
+//						pElement->FloatAttribute( "x" ),
+//						pElement->FloatAttribute( "y" ),
+//						pElement->FloatAttribute( "w" ),
+//						pElement->FloatAttribute( "h" ) );
+//					pCursor->SetCenter( pElement->FloatAttribute( "hotx" ), pElement->FloatAttribute( "hoty" ) );
+//				}
+//			}
+//		}
+//		free( path );
+//	}
+//	else
+//	{
+//		XGC_WRITELOGA( XUILOG, "cursor read error! reson: %s. line = %d, column = %d", doc.Error(), doc.ErrorRow(), doc.ErrorCol() );
+//	}
+//	SetMouse( XUI_MOUSE_ARROW );
+//}
+//
+//ClientInput::~ClientInput()
+//{
+//	for( int i = 0; i < _countof(m_pCursor); ++i )
+//	{
+//		XUI_DestroyAnimation( m_pCursor[i] );
+//	}
+//}
 
 //--------------------------------------------------------//
 //	created:	18:11:2007   11:22
@@ -306,184 +306,184 @@ ClientInput::~ClientInput()
 //
 //	purpose:	通过光标文件创建鼠标指针
 //--------------------------------------------------------//
-XUI_IAnimation*	ClientInput::CreateCursor( _lpcstr cursorfile )
-{
-#pragma pack( push )
-	#pragma pack( 2 )
-	struct CursorHeader
-	{
-		_uint16 reserved;
-		_uint16 type;
-		_uint16 image_count;
-	};
-
-	struct CursorDirentry
-	{
-		_byte width;	// Specifies image width in pixels. Can be 0, 255 or a number between 0 to 255. Should be 0 if image width is 256 pixels.
-		_byte height;	// Specifies image height in pixels. Can be 0, 255 or a number between 0 to 255. Should be 0 if image height is 256 pixels
-		_byte palette;	// Specifies number of colors in the color palette. Should be 0 if the image is truecolor
-		_byte reseverd;	// Reserved. Should be 0
-		_uint16	hotspot_x;
-		_uint16	hotspot_y;
-		_uint32 resource_size;
-		_uint32 image_offset;
-	};
-#pragma pack( pop )
-
-	FILE *fp;
-	XUI_IAnimation *pCursor = NULL;
-	_astring strPathname( XUI::Instance().GetResourcePath() );
-	strPathname += cursorfile;
-
-	if( fopen_s( &fp, strPathname.c_str(), "rb" ) == 0 )
-	{
-		CursorHeader	file_header;
-		if( fread( (void*)&file_header, sizeof(file_header), 1, fp ) == 1 )
-		{
-			CursorDirentry	cursor_header;
-			if( fread( (void*)&cursor_header, sizeof(CursorDirentry), 1, fp ) == 1 )
-			{
-				fseek( fp, cursor_header.image_offset, SEEK_SET );
-				_lpstr bitmap = (_lpstr)malloc( cursor_header.resource_size );
-				fread( bitmap, cursor_header.resource_size, 1, fp );
-
-				LPBITMAPINFOHEADER binfo = (LPBITMAPINFOHEADER)bitmap;
-				binfo->biHeight /= 2;
-
-				_uint32 andMaskLen = cursor_header.resource_size 
-					- binfo->biSize	// 位图的头
-					- (binfo->biClrUsed?binfo->biClrUsed:binfo->biBitCount>8?0:(1<<binfo->biBitCount))*sizeof(RGBQUAD) // 调色板
-					- binfo->biHeight*((((binfo->biWidth*binfo->biPlanes*binfo->biBitCount)+31)>>5)<<2)
-					;
-
-				binfo->biSizeImage = binfo->biHeight*((((binfo->biWidth*binfo->biPlanes*binfo->biBitCount)+31)>>5)<<2);
-				HTEXTURE h = TextureManager::Instance().GetTexture( cursorfile, bitmap, binfo->biSize + binfo->biSizeImage );
-
-				_lpcstr data = bitmap + binfo->biSize + binfo->biSizeImage;
-				HGE *hge = hgeCreate(HGE_VERSION);
-				_uint32 *pixel = (_uint32*)hge->Texture_Lock( h, false );
-				// 取巧的办法，正确途径还是应该使用And Mask
-				for( int i = 0; i < binfo->biWidth*binfo->biHeight; ++i )
-				{
-					if( !(pixel[i] & 0x00ffffff) )
-					{
-						pixel[i] &= 0x00ffffff;
-					}
-				}
-
-				//for( int y = 0; y < binfo->biHeight; ++y )
-				//{
-				//	for( int x = 0; x < binfo->biWidth; ++x )
-				//	{
-				//		_lpcstr l = data + (binfo->biHeight-1-y)*(((binfo->biWidth+31)>>5)<<2);
-				//		if(l[x/8]&(1<<(x%8)))
-				//			*pixel++ &= 0x00ffffff;
-				//		else
-				//			*pixel++ |= 0xff000000;
-				//	}
-				//}
-
-				hge->Texture_Unlock( h );
-				hge->Release();
-				pCursor = XUI_CreateAnimation( 
-					cursorfile,
-					1,
-					1.0f,
-					0,
-					0,
-					cursor_header.width,
-					cursor_header.height );
-				pCursor->SetCenter( cursor_header.hotspot_x, cursor_header.hotspot_y );
-				free( bitmap );
-			}
-		}
-		fclose( fp );
-	}
-	return pCursor;
-}
-
-void ClientInput::UpdateMouse( float fDeltaTime )
-{
-	m_pCursor[m_nCurIndex]->Update( fDeltaTime );
-}
-
-void ClientInput::GetMousePos( int *x, int *y )
-{
-	POINT pt;
-	GetCursorPos( &pt );
-	ScreenToClient(Application::Instance()->System_GetState(HGE_HWND), &pt);
-	*x = pt.x;
-	*y = pt.y;
-}
-
-void	ClientInput::SetMousePos( int x, int y )
-{
-	POINT pt;
-	pt.x=(long)x; pt.y=(long)y;
-	ClientToScreen(Application::Instance()->System_GetState(HGE_HWND), &pt);
-	SetCursorPos(pt.x,pt.y);
-}
-
-_int32	ClientInput::GetMouseWheel()
-{
-	return Application::Instance()->Input_GetMouseWheel();
-}
-
-void	ClientInput::RenderMouse()
-{
-	int x, y;
-	GetMousePos( &x, &y );
-	XUI_IAnimation *pCursor = m_pCursor[m_nCurIndex];
-	pCursor->Render( x, y );
-}
-
-void	ClientInput::SetMouse( _uint16 id )
-{
-	if( id < _countof(m_pCursor) )
-	{
-		m_nCurIndex = id;
-	}
-}
-
-bool	ClientInput::GetKeyState( int key )const
-{
-	return Application::Instance()->Input_GetKeyState( key );
-}
-
-bool	ClientInput::IsPressedLButton()const
-{
-	return Application::Instance()->Input_KeyDown(HGEK_LBUTTON);
-}
-
-bool	ClientInput::IsReleaseLButton()const
-{
-	return Application::Instance()->Input_KeyUp(HGEK_LBUTTON);
-}
-
-bool	ClientInput::IsPressedRButton()const
-{
-	return Application::Instance()->Input_KeyDown(HGEK_RBUTTON);
-}
-
-bool	ClientInput::IsReleaseRButton()const
-{
-	return Application::Instance()->Input_KeyUp(HGEK_RBUTTON);
-}
-
-bool	ClientInput::IsPressedMButton()const
-{
-	return Application::Instance()->Input_KeyDown(HGEK_MBUTTON);
-}
-
-bool	ClientInput::IsReleaseMButton()const
-{
-	return Application::Instance()->Input_KeyUp(HGEK_MBUTTON);
-}
-
-bool	ClientInput::IsMouseOver()const
-{
-	return Application::Instance()->Input_IsMouseOver();
-}
+//xuiAnimation	ClientInput::CreateCursor( _lpcstr cursorfile )
+//{
+//#pragma pack( push )
+//	#pragma pack( 2 )
+//	struct CursorHeader
+//	{
+//		_uint16 reserved;
+//		_uint16 type;
+//		_uint16 image_count;
+//	};
+//
+//	struct CursorDirentry
+//	{
+//		_byte width;	// Specifies image width in pixels. Can be 0, 255 or a number between 0 to 255. Should be 0 if image width is 256 pixels.
+//		_byte height;	// Specifies image height in pixels. Can be 0, 255 or a number between 0 to 255. Should be 0 if image height is 256 pixels
+//		_byte palette;	// Specifies number of colors in the color palette. Should be 0 if the image is truecolor
+//		_byte reseverd;	// Reserved. Should be 0
+//		_uint16	hotspot_x;
+//		_uint16	hotspot_y;
+//		_uint32 resource_size;
+//		_uint32 image_offset;
+//	};
+//#pragma pack( pop )
+//
+//	FILE *fp;
+//	XUI_IAnimation *pCursor = NULL;
+//	_astring strPathname( XUI::Instance().GetResourcePath() );
+//	strPathname += cursorfile;
+//
+//	if( fopen_s( &fp, strPathname.c_str(), "rb" ) == 0 )
+//	{
+//		CursorHeader	file_header;
+//		if( fread( (void*)&file_header, sizeof(file_header), 1, fp ) == 1 )
+//		{
+//			CursorDirentry	cursor_header;
+//			if( fread( (void*)&cursor_header, sizeof(CursorDirentry), 1, fp ) == 1 )
+//			{
+//				fseek( fp, cursor_header.image_offset, SEEK_SET );
+//				_lpstr bitmap = (_lpstr)malloc( cursor_header.resource_size );
+//				fread( bitmap, cursor_header.resource_size, 1, fp );
+//
+//				LPBITMAPINFOHEADER binfo = (LPBITMAPINFOHEADER)bitmap;
+//				binfo->biHeight /= 2;
+//
+//				_uint32 andMaskLen = cursor_header.resource_size 
+//					- binfo->biSize	// 位图的头
+//					- (binfo->biClrUsed?binfo->biClrUsed:binfo->biBitCount>8?0:(1<<binfo->biBitCount))*sizeof(RGBQUAD) // 调色板
+//					- binfo->biHeight*((((binfo->biWidth*binfo->biPlanes*binfo->biBitCount)+31)>>5)<<2)
+//					;
+//
+//				binfo->biSizeImage = binfo->biHeight*((((binfo->biWidth*binfo->biPlanes*binfo->biBitCount)+31)>>5)<<2);
+//				HTEXTURE h = TextureManager::Instance().GetTexture( cursorfile, bitmap, binfo->biSize + binfo->biSizeImage );
+//
+//				_lpcstr data = bitmap + binfo->biSize + binfo->biSizeImage;
+//				HGE *hge = hgeCreate(HGE_VERSION);
+//				_uint32 *pixel = (_uint32*)hge->Texture_Lock( h, false );
+//				// 取巧的办法，正确途径还是应该使用And Mask
+//				for( int i = 0; i < binfo->biWidth*binfo->biHeight; ++i )
+//				{
+//					if( !(pixel[i] & 0x00ffffff) )
+//					{
+//						pixel[i] &= 0x00ffffff;
+//					}
+//				}
+//
+//				//for( int y = 0; y < binfo->biHeight; ++y )
+//				//{
+//				//	for( int x = 0; x < binfo->biWidth; ++x )
+//				//	{
+//				//		_lpcstr l = data + (binfo->biHeight-1-y)*(((binfo->biWidth+31)>>5)<<2);
+//				//		if(l[x/8]&(1<<(x%8)))
+//				//			*pixel++ &= 0x00ffffff;
+//				//		else
+//				//			*pixel++ |= 0xff000000;
+//				//	}
+//				//}
+//
+//				hge->Texture_Unlock( h );
+//				hge->Release();
+//				pCursor = XUI_CreateAnimation( 
+//					cursorfile,
+//					1,
+//					1.0f,
+//					0,
+//					0,
+//					cursor_header.width,
+//					cursor_header.height );
+//				pCursor->SetCenter( cursor_header.hotspot_x, cursor_header.hotspot_y );
+//				free( bitmap );
+//			}
+//		}
+//		fclose( fp );
+//	}
+//	return pCursor;
+//}
+//
+//void ClientInput::UpdateMouse( float fDeltaTime )
+//{
+//	m_pCursor[m_nCurIndex]->Update( fDeltaTime );
+//}
+//
+//void ClientInput::GetMousePos( int *x, int *y )
+//{
+//	POINT pt;
+//	GetCursorPos( &pt );
+//	ScreenToClient(Application::Instance()->System_GetState(HGE_HWND), &pt);
+//	*x = pt.x;
+//	*y = pt.y;
+//}
+//
+//void	ClientInput::SetMousePos( int x, int y )
+//{
+//	POINT pt;
+//	pt.x=(long)x; pt.y=(long)y;
+//	ClientToScreen(Application::Instance()->System_GetState(HGE_HWND), &pt);
+//	SetCursorPos(pt.x,pt.y);
+//}
+//
+//_int32	ClientInput::GetMouseWheel()
+//{
+//	return Application::Instance()->Input_GetMouseWheel();
+//}
+//
+//void	ClientInput::RenderMouse()
+//{
+//	int x, y;
+//	GetMousePos( &x, &y );
+//	XUI_IAnimation *pCursor = m_pCursor[m_nCurIndex];
+//	pCursor->Render( x, y );
+//}
+//
+//void	ClientInput::SetMouse( _uint16 id )
+//{
+//	if( id < _countof(m_pCursor) )
+//	{
+//		m_nCurIndex = id;
+//	}
+//}
+//
+//bool	ClientInput::GetKeyState( int key )const
+//{
+//	return Application::Instance()->Input_GetKeyState( key );
+//}
+//
+//bool	ClientInput::IsPressedLButton()const
+//{
+//	return Application::Instance()->Input_KeyDown(HGEK_LBUTTON);
+//}
+//
+//bool	ClientInput::IsReleaseLButton()const
+//{
+//	return Application::Instance()->Input_KeyUp(HGEK_LBUTTON);
+//}
+//
+//bool	ClientInput::IsPressedRButton()const
+//{
+//	return Application::Instance()->Input_KeyDown(HGEK_RBUTTON);
+//}
+//
+//bool	ClientInput::IsReleaseRButton()const
+//{
+//	return Application::Instance()->Input_KeyUp(HGEK_RBUTTON);
+//}
+//
+//bool	ClientInput::IsPressedMButton()const
+//{
+//	return Application::Instance()->Input_KeyDown(HGEK_MBUTTON);
+//}
+//
+//bool	ClientInput::IsReleaseMButton()const
+//{
+//	return Application::Instance()->Input_KeyUp(HGEK_MBUTTON);
+//}
+//
+//bool	ClientInput::IsMouseOver()const
+//{
+//	return Application::Instance()->Input_IsMouseOver();
+//}
 
 //////////////////////////////////////////////////////////////////////////
 CClientAnimation::CClientAnimation( _lpcstr filename, int frames, float fps, float x, float y, float w, float h )
@@ -576,23 +576,23 @@ static void _SetClipping( _int32 x, _int32 y, _int32 w, _int32 h )
 	Application::Instance()->Gfx_SetClipping( x, y, w, h );
 }
 
-static void _DrawText( _lpctstr lpszText, XGC::ui::XUI_Font* pFont, int x, int y )
+static void _DrawText( _lpctstr text, xuiFont font, int x, int y )
 {
-	if( pFont == NULL ) pFont = XUI::Instance().GetDefaultFont();
-	CClientFont* pF = static_cast< CClientFont* >( pFont );
-	if( pF )
+	if( font == NULL ) font = XUI::Instance().GetDefaultFont();
+	GfxFont* pFont = static_cast< GfxFont* >( font );
+	if( pFont )
 	{
-		pF->Render( (float)x, (float)y, lpszText );
+		pFont->Render( (float)x, (float)y, XT2W(text) );
 	}
 }
 
-static void _DrawCharacter( _tchar szChar, XGC::ui::XUI_Font* pFont, int x, int y )
+static void _DrawCharacter( _tchar character, xuiFont font, int x, int y )
 {
-	if( pFont == NULL ) pFont = XUI::Instance().GetDefaultFont();
-	CClientFont* pF = static_cast< CClientFont* >( pFont );
-	if( pF )
+	if( font == NULL ) font = XUI::Instance().GetDefaultFont();
+	GfxFont* pFont = static_cast< GfxFont* >( font );
+	if( pFont )
 	{
-		pF->Render( (float)x, (float)y, szChar );
+		pFont->Render( (float)x, (float)y, XT2W(character) );
 	}
 }
 
@@ -628,62 +628,65 @@ static void _DrawPolygon( const iPoint* ptArray, _uint32* dwColorArray, _uint32 
 	// Application::Instance()->Gfx_RenderTriple
 }
 
-static void _DrawSprite( const XUI_ISprite* Tex, int x, int y, int width, int height )
+static void _DrawSprite( const xuiSprite texture, int x, int y, int width, int height )
 {
-	CClientSprite* pSprite = (CClientSprite*)Tex;
+	CClientSprite* pSprite = (CClientSprite*)texture;
 	pSprite->Render( (float)x, (float)y, (float)width, (float)height );
 }
 
-static XUI_ISprite* _CreateSprite( _lpcstr filename, float x, float y, float w, float h )
+static xuiSprite _CreateSprite( _lpcstr filename, float x, float y, float w, float h )
 {
-	return new CClientSprite( filename, x, y, w, h);
+	CClientSprite *pSprite = new CClientSprite( filename, x, y, w, h);
+	return (xuiSprite)pSprite;
 }
 
-static XUI_ISprite* _CreateSpriteEx( const XUI_SpriteAttribute& SpriteAttribute )
+static void _DestroySprite( xuiSprite texture )
 {
-	return _CreateSprite( SpriteAttribute.path.c_str(), SpriteAttribute.x, SpriteAttribute.y, SpriteAttribute.w, SpriteAttribute.h );
+	delete (CClientSprite*)texture;
 }
 
-static void _DestroySprite( XUI_ISprite* pTexture )
-{
-	delete pTexture;
-}
-
-static XUI_IAnimation* _CreateAnimation( _lpcstr filename, int frames, float fps, float x, float y, float w, float h )
+static xuiAnimation _CreateAnimation( _lpcstr filename, int frames, float fps, float x, float y, float w, float h )
 {
 	return new CClientAnimation( filename, frames, fps, x, y, w, h );
 }
 
-static XUI_IAnimation* _CreateAnimationEx( const XUI_AnimationAttribute& AnimationAttribute )
+static void _DestroyAnimation( xuiAnimation animation )
 {
-	const XUI_AnimationAttribute& a = AnimationAttribute;
-	return new CClientAnimation( a.key.c_str(), a.frames, a.fps, a.x, a.y, a.w, a.h );
+	delete (CClientAnimation*)animation;
 }
 
-static void _DestroyAnimation( XUI_IAnimation *pAnimation )
+static xuiFont _CreateFont( _lpcstr fontname, int size, _uint32 color, bool bold, bool italic, bool antialias )
 {
-	delete pAnimation;
-}
-
-static XUI_Font* _CreateFont( _lpcstr lpszFontName, int nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias )
-{
-	GfxFont* pGfxFont = FontManager::Instance().GetFont( lpszFontName, nSize, dwColor, bBold, bItalic, bAntialias );
+	GfxFont* pGfxFont = FontManager::Instance().GetFont( fontname, size, color, bold, italic, antialias );
 	if( pGfxFont )
 	{
-		pGfxFont->SetColor( dwColor );
-		return new CClientFont( XUI_FontAttribute( lpszFontName, nSize, dwColor, bBold, bItalic, bAntialias ), pGfxFont );
+		pGfxFont->SetColor( color );
+		return (xuiFont)pGfxFont;
 	}
-	return NULL;
+	return 0;
 }
 
-static XUI_Font* _CreateFontEx( const XUI_FontAttribute& FontAttribute )
+static void _DestroyFont( xuiFont pFont )
 {
-	return _CreateFont( FontAttribute.m_name.c_str(), FontAttribute.m_size, FontAttribute.m_color, FontAttribute.m_bold, FontAttribute.m_italic, FontAttribute.m_antialias );
+	delete (GfxFont*)pFont;
 }
 
-static void _DestroyFont( XUI_Font* pFont )
+static int _GetCharacterWidth( xuiFont font, _tchar character )
 {
-	delete pFont;
+	GfxFont* pFont = (GfxFont*)font;
+	return pFont->GetCharacterWidth(character);
+}
+
+static int _GetCharacterHeight( xuiFont font )
+{
+	GfxFont* pFont = (GfxFont*)font;
+	return pFont->GetCharacterHeight();
+}
+
+static int _GetStringWidth( xuiFont font, _lpctstr text )
+{
+	GfxFont* pFont = (GfxFont*)font;
+	return pFont->GetTextSize( text ).cx;
 }
 
 void init_canvas()
@@ -696,12 +699,12 @@ void init_canvas()
 	XGC::ui::XUI_DrawPolygon		= _DrawPolygon;
 	XGC::ui::XUI_DrawSprite			= _DrawSprite;
 	XGC::ui::XUI_CreateSprite		= _CreateSprite;
-	XGC::ui::XUI_CreateSpriteEx		= _CreateSpriteEx;
 	XGC::ui::XUI_DestroySprite		= _DestroySprite;
 	XGC::ui::XUI_CreateAnimation	= _CreateAnimation;
-	XGC::ui::XUI_CreateAnimationEx	= _CreateAnimationEx;
 	XGC::ui::XUI_DestroyAnimation	= _DestroyAnimation;
 	XGC::ui::XUI_CreateFont			= _CreateFont;
-	XGC::ui::XUI_CreateFontEx		= _CreateFontEx;
 	XGC::ui::XUI_DestroyFont		= _DestroyFont;
+	XGC::ui::XUI_GetCharacterWidth	= _GetCharacterWidth;
+	XGC::ui::XUI_GetCharacterHeight	= _GetCharacterHeight;
+	XGC::ui::XUI_GetStringWidth		= _GetStringWidth;
 }

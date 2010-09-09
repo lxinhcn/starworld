@@ -157,17 +157,18 @@ namespace XGC
 
 		void XUI_IME::RenderImeWindow()
 		{
-			XUI_Font* pFont = XUI::Instance().GetDefaultFont();
+			xuiFont hFont = XUI::Instance().GetDefaultFont();
 
-			iSize IndicatiorSize = pFont->GetStringSize( g_pszIndicatior );
-			iSize DescriptSize = pFont->GetStringSize( g_pszDescript );
+			int IndicatiorWidth = XUI_GetStringWidth( hFont, g_pszIndicatior );
+			int DescriptWidth = XUI_GetStringWidth( hFont, g_pszDescript );
+			int nFontHeight = XUI_GetCharacterHeight( hFont );
 
-			m_rcWindow.right = m_rcWindow.left + IndicatiorSize.cx + DescriptSize.cx + 4;
-			m_rcWindow.bottom = m_rcWindow.top + __max( IndicatiorSize.cy, DescriptSize.cy ) + 2;
+			m_rcWindow.right = m_rcWindow.left + IndicatiorWidth + DescriptWidth + 4;
+			m_rcWindow.bottom = m_rcWindow.top + nFontHeight + 2;
 
 			XUI_DrawRect( m_rcWindow, XUI_ARGB(0xcc,0xaa, 0xaa, 0xaa), XUI_ARGB(0xcc,0x77, 0x77, 0x77) );
-			XUI_DrawText( g_pszIndicatior, pFont, m_rcWindow.left + 1, m_rcWindow.top + 1 );
-			XUI_DrawText( g_pszDescript, pFont, m_rcWindow.left + 3 + IndicatiorSize.cx, m_rcWindow.top + 1 );
+			XUI_DrawText( g_pszIndicatior, hFont, m_rcWindow.left + 1, m_rcWindow.top + 1 );
+			XUI_DrawText( g_pszDescript, hFont, m_rcWindow.left + 3 + IndicatiorWidth, m_rcWindow.top + 1 );
 		}
 
 		void XUI_IME::CheckInputLocale()
