@@ -8,7 +8,6 @@
             <size w="800.000000" h="600.000000" />
         </background>
         <enable value="true" />
-        <id value="10001" />
         <name value="root" />
         <transparent value="true" />
         <updatefunc value="DesktopUpdate" />
@@ -30,7 +29,6 @@
             <text value="" />
             <warp value="true" />
             <enable value="true" />
-            <id value="1000" />
             <name value="" />
             <transparent value="true" />
             <updatefunc value="" />
@@ -54,7 +52,6 @@
                 <size w="376.000000" h="38.000000" />
             </skin>
             <enable value="true" />
-            <id value="-842150451" />
             <name value="" />
             <transparent value="true" />
             <updatefunc value="" />
@@ -78,7 +75,6 @@
                 <size w="376.000000" h="38.000000" />
             </skin>
             <enable value="true" />
-            <id value="-842150451" />
             <name value="" />
             <transparent value="true" />
             <updatefunc value="" />

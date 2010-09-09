@@ -7,42 +7,41 @@ namespace XGC
 	namespace ui
 	{
 		pfnSetClipping			XUI_SetClipping			= 0;	//   XUI_SetClipping( int x, int y, int w, int h );
-		pfnDrawText				XUI_DrawText			= 0;	//   XUI_DrawText( _lpcstr lpszText, XUI_Font* pFont, float x, float y );
-		pfnDrawCharacter		XUI_DrawCharacter		= 0;	//   XUI_DrawCharacter( _tchar lpszText, XUI_Font* pFont, float x, float y );
+		pfnDrawText				XUI_DrawText			= 0;	//   XUI_DrawText( _lpcstr lpszText, xuiFont pFont, float x, float y );
+		pfnDrawCharacter		XUI_DrawCharacter		= 0;	//   XUI_DrawCharacter( _tchar lpszText, xuiFont pFont, float x, float y );
 		pfnDrawRect				XUI_DrawRect			= 0;	//   XUI_DrawRect( const iRect& rcDest, _uint32 dwBorderColor, _uint32 dwBkColor );
 		pfnDrawPolygon			XUI_DrawPolygon			= 0;	//   XUI_DrawPolygon( const iPoint* ptArray, _uint32* dwColorArray, _uint32 nCount, uint16* pTriListArray, int32 nTriCount );
 		pfnDrawLine				XUI_DrawLine			= 0;	//   XUI_DrawLine( float x0, float y0, float x1, float y1 );
-		pfnDrawSprite			XUI_DrawSprite			= 0;	//   XUI_DrawSprite( const XUI_ISprite* Tex,int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect );
+		pfnDrawSprite			XUI_DrawSprite			= 0;	//   XUI_DrawSprite( const xuiSprite Tex,int nX, int nY, int nWidth, int nHeight, LPCRECT lpClipperRect );
 		pfnCreateSprite			XUI_CreateSprite		= 0;	//   XUI_CreateSprite( _lpcstr filename, float x, float y, float w, float h );
-		pfnCreateSpriteEx		XUI_CreateSpriteEx		= 0;	//   XUI_CreateSpriteEx( const XUI_SpriteAttribute& SpriteAttribute );
-		pfnDestroySprite		XUI_DestroySprite		= 0;	//   XUI_DestroySprite( XUI_ISprite* pSprite );
+		pfnDestroySprite		XUI_DestroySprite		= 0;	//   XUI_DestroySprite( xuiSprite pSprite );
 		pfnCreateAnimation		XUI_CreateAnimation		= 0;	//	 XUI_CreateAnimation( _lpcstr filename, int frames, float fps, float x, float y, float w, float h );
-		pfnCreateAnimationEx	XUI_CreateAnimationEx	= 0;	//	 XUI_CreateAnimation( _lpcstr filename, int frames, float fps, float x, float y, float w, float h );( const XUI_AnimationAttribute& AnimationAttribute );
 		pfnDestroyAnimation		XUI_DestroyAnimation	= 0;	//	 XUI_DestroyAnimation( XUI_IAnimation* pAnimation );
 		pfnCreateFont			XUI_CreateFont			= 0;	//   XUI_CreateFont( _lpcstr lpszFontName, int nSize, bool bBold, bool bItalic, bool bAntialias );
-		pfnCreateFontEx			XUI_CreateFontEx		= 0;	//   XUI_CreateFontEx( const XUI_FontAttribute& FontAttribute );
-		pfnDestroyFont			XUI_DestroyFont			= 0;	//   XUI_DestroyFont( XUI_Font* pFont );
-		pfnDefWindowProc		XUI_DefWindowProc		= 0;	//   XUI_DefWindowProc( __in HWND hWnd, __in UINT Msg, __in WPARAM wParam, __in LPARAM lParam);
+		pfnDestroyFont			XUI_DestroyFont			= 0;	//   XUI_DestroyFont( xuiFont pFont );
+		pfnGetCharacterWidth	XUI_GetCharacterWidth	= 0;
+		pfnGetCharacterHeight	XUI_GetCharacterHeight	= 0;
+		pfnGetStringWidth		XUI_GetStringWidth		= 0;
 
-		void XUI_DrawTextA( _lpcstr lpszText, XUI_Font* pFont, int x, int y )
+		void XUI_DrawTextA( _lpcstr text, xuiFont font, int x, int y )
 		{
-			_string strText = XA2T( lpszText );
-			XUI_DrawText( strText.c_str(), pFont, x, y );
+			_string strText = XA2T( text );
+			XUI_DrawText( strText.c_str(), font, x, y );
 		}
 
-		void XUI_DrawCharacterA( const char* szMbs, XUI_Font* pFont, int x, int y )
+		void XUI_DrawCharacterA( const char* szMbs, xuiFont font, int x, int y )
 		{
 			_wchar sz;
 			if( mbtowc( &sz, szMbs, MB_CUR_MAX ) >= 0 )
 			{
-				XUI_DrawCharacter( sz, pFont, x, y );
+				XUI_DrawCharacter( sz, font, x, y );
 			}
 		}
 
 		//////////////////////////////////////////////////////////////////////////
 		// Sprite Attribute
 		//////////////////////////////////////////////////////////////////////////
-		XUI_SpriteAttribute::XUI_SpriteAttribute( _lpcstr _path, float _x, float _y, float _w, float _h )
+		xuiSpriteInfo::xuiSpriteInfo( _lpcstr _path, float _x, float _y, float _w, float _h )
 			: path( _path )
 			, x( _x )
 			, y( _y )
@@ -51,7 +50,7 @@ namespace XGC
 		{
 		}
 
-		XUI_SpriteAttribute::XUI_SpriteAttribute()
+		xuiSpriteInfo::xuiSpriteInfo()
 			: path( "" )
 			, x( 0.0f )
 			, y( 0.0f )
@@ -60,7 +59,7 @@ namespace XGC
 		{
 		}
 
-		bool XUI_SpriteAttribute::save_file( TiXmlElement* pNode )
+		bool xuiSpriteInfo::save_file( TiXmlElement* pNode )
 		{
 			pNode->SetAttribute( "class", "sprite" );
 			TiXmlElement p( "path" );
@@ -80,7 +79,7 @@ namespace XGC
 			return true;
 		}
 
-		bool XUI_SpriteAttribute::load_file( TiXmlElement* pNode )
+		bool xuiSpriteInfo::load_file( TiXmlElement* pNode )
 		{
 			TiXmlElement* pElement = pNode->FirstChildElement( "path" );
 			path = pElement->Attribute( "direction" );
@@ -104,7 +103,7 @@ namespace XGC
 			return true;
 		}
 
-		bool XUI_SpriteAttribute::operator==( const XUI_SpriteAttribute& rsh )const
+		bool xuiSpriteInfo::operator==( const xuiSpriteInfo& rsh )const
 		{
 			return 
 				path == rsh.path &&
@@ -114,7 +113,7 @@ namespace XGC
 				h == rsh.h;
 		}
 
-		bool XUI_SpriteAttribute::operator<( const XUI_SpriteAttribute& rsh )const
+		bool xuiSpriteInfo::operator<( const xuiSpriteInfo& rsh )const
 		{
 			return 
 				path < rsh.path?true:
@@ -127,7 +126,7 @@ namespace XGC
 		//////////////////////////////////////////////////////////////////////////
 		// Font Attribute
 		//////////////////////////////////////////////////////////////////////////
-		XUI_FontAttribute::XUI_FontAttribute()
+		xuiFontInfo::xuiFontInfo()
 			: m_name( "" )
 			, m_size( 12 )
 			, m_bold( false )
@@ -138,7 +137,7 @@ namespace XGC
 		}
 
 
-		XUI_FontAttribute::XUI_FontAttribute( const char* lpszFont, _int32 nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias )
+		xuiFontInfo::xuiFontInfo( const char* lpszFont, _int32 nSize, _uint32 dwColor, bool bBold, bool bItalic, bool bAntialias )
 			: m_name( lpszFont )
 			, m_size( nSize )
 			, m_color( dwColor )
@@ -149,7 +148,7 @@ namespace XGC
 
 		}
 
-		XUI_FontAttribute::XUI_FontAttribute( const XUI_FontAttribute& src )
+		xuiFontInfo::xuiFontInfo( const xuiFontInfo& src )
 			: m_name( src.m_name )
 			, m_size( src.m_size )
 			, m_color( src.m_color )
@@ -160,7 +159,7 @@ namespace XGC
 
 		}
 
-		bool XUI_FontAttribute::operator==( const XUI_FontAttribute& rsh )const
+		bool xuiFontInfo::operator==( const xuiFontInfo& rsh )const
 		{ 
 			return 
 				m_name == rsh.m_name &&
@@ -170,7 +169,7 @@ namespace XGC
 				m_antialias == rsh.m_antialias; 
 		}
 
-		bool XUI_FontAttribute::operator<( const XUI_FontAttribute& rsh )const
+		bool xuiFontInfo::operator<( const xuiFontInfo& rsh )const
 		{
 			return 
 				m_name < rsh.m_name?true:
@@ -180,7 +179,7 @@ namespace XGC
 				m_antialias < rsh.m_antialias;
 		}
 
-		bool XUI_FontAttribute::save_file( TiXmlElement* pNode )
+		bool xuiFontInfo::save_file( TiXmlElement* pNode )
 		{
 			pNode->SetAttribute( "class", "font" );
 			if( pNode )
@@ -195,13 +194,13 @@ namespace XGC
 			return true;
 		}
 
-		bool XUI_FontAttribute::load_file( TiXmlElement* pNode )
+		bool xuiFontInfo::load_file( TiXmlElement* pNode )
 		{
 			TiXmlElement* pElement = pNode->ToElement();
 			if( pElement )
 			{
 				m_name = pElement->Attribute( "name" );
-				pElement->Attribute( "size", &m_size );
+				pElement->Attribute( "size", (int*)&m_size );
 
 				m_color		= pElement->IntAttribute( "color" );
 				m_bold		= pElement->BoolAttribute( "bold" );

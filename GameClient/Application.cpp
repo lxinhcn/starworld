@@ -105,10 +105,7 @@ bool CApplication::Initialize()
 	XUI::Instance().Initialize( m_hge->System_GetState(HGE_HWND), "..\\Resource\\UI\\" );
 
 	// 设置默认字体
-	XUI::Instance().SetDefaultFont( XUI_CreateFontEx( XUI_FontAttribute( "宋体", 18, XUI_ARGB(255, 255, 255, 255), false, false, false ) ) );
-
-	// 设置光标系统
-	XUI::Instance().SetDefaultInput( new ClientInput( "Config.xml" ) );
+	XUI::Instance().SetDefaultFont( XUI_CreateFont( "宋体", 18, XUI_ARGB(255, 255, 255, 255), false, false, false ) );
 
 	UICommander::Instance().Load( "main.xml" );
 
@@ -127,7 +124,6 @@ void CApplication::Run()
 
 void CApplication::UnInitialize()
 {
-	delete XUI::Instance().GetInput();
 	delete XUI::Instance().GetDefaultFont();
 	XUI::Instance().Unitialize();
 	TextureManager::Instance().Clear();

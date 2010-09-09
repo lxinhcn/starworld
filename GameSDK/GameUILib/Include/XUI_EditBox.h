@@ -61,7 +61,7 @@ namespace XGC
 
 			// virtual LRESULT OnWndMsg( UINT nMsg, WPARAM wParam, LPARAM lParam );
 		protected:
-			void RenderCharacter( _tchar szChar, XUI_Font* pFont, int &x, int &y, bool bRender );
+			void RenderCharacter( _tchar szChar, xuiFont hFont, int &nX, int &nY, bool bRender );
 			void DeleteCharacter( size_t nLine, size_t nPos, size_t nCount );
 			bool CaratTimerUpdate( unsigned int handle, unsigned short& repeat, unsigned int& timer );
 			size_t NaturalLine( size_t nLine );
@@ -284,6 +284,7 @@ namespace XGC
 
 			unsigned int	m_CaratTimerHandler;
 			bool			m_bShowCarat;
+			xuiFont			m_hFont;
 		};
 	}
 }

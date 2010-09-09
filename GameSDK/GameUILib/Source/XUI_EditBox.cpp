@@ -17,12 +17,13 @@ namespace XGC
 			, m_bShowCarat( false )
 			, m_dwBorderColor( XUI_ARGB(0xff,0x80,0x80,0x80) )
 			, m_dwBackgroundColor( XUI_ARGB(0x30,0x20,0x20,0x20) )
+			, m_hFont( NULL )
 		{
-			XUI_Font* pFont = m_pFont?m_pFont:XUI::Instance().GetDefaultFont();
-			if( pFont )
+			xuiFont hFont = m_hFont?m_hFont:XUI::Instance().GetDefaultFont();
+			if( hFont )
 			{
-				m_TextBufferSizeX		= (int)( m_WindowSize.cx/pFont->GetCharacterWidth( _T(' ') ) );
-				m_TextBufferSizeY		= (int)( m_WindowSize.cy/pFont->GetCharacterHeight() );
+				m_TextBufferSizeX = m_WindowSize.cx/XUI_GetCharacterWidth( hFont, _T(' ') );
+				m_TextBufferSizeY = m_WindowSize.cy/XUI_GetCharacterHeight( hFont );
 			}
 
 			m_text.push_back(_T(""));
@@ -82,14 +83,14 @@ namespace XGC
 			return t;
 		}
 
-		void XUI_EditBox::RenderCharacter( _tchar szChar, XUI_Font* pFont, int &x, int &y, bool bRender )
+		void XUI_EditBox::RenderCharacter( _tchar szChar, xuiFont hFont, int &nX, int &nY, bool bRender )
 		{
 			if( bRender )
 			{
-				XUI_DrawCharacter( szChar, pFont, x, y );
+				XUI_DrawCharacter( szChar, hFont, nX, nY );
 			}
 
-			x += pFont->GetCharacterWidth( szChar );
+			nX += XUI_GetCharacterWidth( hFont, szChar );
 		}
 
 		//重绘，通过实现这个方法来表现空间的外观
@@ -102,14 +103,15 @@ namespace XGC
 
 			iPoint CharPos = rcWindow.TopLeft();
 			iPoint CaratPos;
-			XUI_Font* pFont = m_pFont?m_pFont:XUI::Instance().GetDefaultFont();
+			xuiFont hFont = m_hFont?m_hFont:XUI::Instance().GetDefaultFont();
 
+			int nFontHeight = XUI_GetCharacterHeight( hFont );
 			for( Position i = m_FirstLineNumber; i < m_text.size(); ++i )
 			{
 				line& l = m_text[i];
 				end_type t = l.type;
 
-				if( CharPos.y > rcWindow.bottom - pFont->GetCharacterHeight() )
+				if( CharPos.y > rcWindow.bottom - nFontHeight )
 				{
 					// 超出高度则跳出
 					break;
@@ -119,7 +121,7 @@ namespace XGC
 				{
 					_tchar c = l[cursor];
 
-					if( pFont->GetCharacterWidth( c ) + CharPos.x > rcWindow.right )
+					if( XUI_GetCharacterWidth( hFont, c ) + CharPos.x > rcWindow.right )
 					{
 						if( l.type == type_n && m_bWarpText && !m_bSingleLine )
 						{
@@ -150,11 +152,11 @@ namespace XGC
 					}
 
 					// 判断是否被绘制。
-					bool bRender = rcWindow.PtInRect( CharPos + iPoint( pFont->GetCharacterWidth( c ), pFont->GetCharacterHeight() ) );
+					bool bRender = rcWindow.PtInRect( CharPos + iPoint( XUI_GetCharacterWidth( hFont, c ), nFontHeight ) );
 					if( _istprint( c ) )
 					{
 						// 是显示字符
-						RenderCharacter( c, pFont, CharPos.x, CharPos.y, bRender );
+						RenderCharacter( c, hFont, CharPos.x, CharPos.y, bRender );
 					}
 					else if( c == _T('\n') )
 					{
@@ -167,55 +169,55 @@ namespace XGC
 						case '\t':
 							{
 								// 制表对齐
-								int NextTab = CharPos.x + (4 - cursor%4)*pFont->GetCharacterWidth( _T(' ') );
+								int NextTab = CharPos.x + (4 - cursor%4)*XUI_GetCharacterWidth( hFont, _T(' ') );
 								if( NextTab > rcWindow.left + rcWindow.Width() ) NextTab = rcWindow.left + rcWindow.Width();
 								while( CharPos.x < (long)NextTab )
 								{
-									RenderCharacter( _T(' '), pFont, CharPos.x, CharPos.y, bRender );
+									RenderCharacter( _T(' '), hFont, CharPos.x, CharPos.y, bRender );
 								}
 							}
 							break;
 						case '\0':
 							// 为绘制光标占位置。
-							RenderCharacter( _T(' '), pFont, CharPos.x, CharPos.y, bRender );
+							RenderCharacter( _T(' '), hFont, CharPos.x, CharPos.y, bRender );
 							break;
 						default:
-							RenderCharacter( _T('?'), pFont, CharPos.x, CharPos.y, bRender );
+							RenderCharacter( _T('?'), hFont, CharPos.x, CharPos.y, bRender );
 							break;
 						}
 					}
 
 					if( i == m_nCurLineNumber && cursor == m_CaratPos )
 					{
-						int x = CaratPos.x = CharPos.x - ( pFont->GetCharacterWidth( c ) + (pFont->GetCharacterWidth( _T('|') )>>1) );
+						int x = CaratPos.x = CharPos.x - ( XUI_GetCharacterWidth( hFont, c ) + (XUI_GetCharacterWidth( hFont, _T('|') )>>1) );
 						int y = CaratPos.y = CharPos.y;
 						if( m_bShowCarat )
 						{
 							// 是否绘制光标
-							RenderCharacter( _T('|'), pFont, x, y, bRender );
+							RenderCharacter( _T('|'), hFont, x, y, bRender );
 						}
 					}
-
 				}
 
 				// 折行。
 				CharPos.x = rcWindow.left;
-				CharPos.y += pFont->GetCharacterHeight();
+				CharPos.y += nFontHeight;
 			}
 
 			if( m_bFocused && XUI_IME::m_CompString[0] )
 			{
 				iSize siWindow = XUI::Instance().GetClientSize();
-				CaratPos.x = pFont->GetCharacterWidth( _T(' ') ) + ( (CaratPos.x + XUI_IME::m_CandList.rcCandidate.Width() > siWindow.cx)?siWindow.cx-XUI_IME::m_CandList.rcCandidate.Width()-1:CaratPos.x);
+				CaratPos.x = XUI_GetCharacterWidth( hFont, _T(' ') ) + ( (CaratPos.x + XUI_IME::m_CandList.rcCandidate.Width() > siWindow.cx)?siWindow.cx-XUI_IME::m_CandList.rcCandidate.Width()-1:CaratPos.x);
 				if( CaratPos.x < 0 ) CaratPos.x = 0;
 
-				CaratPos.y = pFont->GetCharacterHeight()/2 + ( (CaratPos.y + XUI_IME::m_CandList.rcCandidate.Height() > siWindow.cy)?siWindow.cy-XUI_IME::m_CandList.rcCandidate.Height()-1:CaratPos.y );
+				CaratPos.y = nFontHeight/2 + ( (CaratPos.y + XUI_IME::m_CandList.rcCandidate.Height() > siWindow.cy)?siWindow.cy-XUI_IME::m_CandList.rcCandidate.Height()-1:CaratPos.y );
 				if( CaratPos.y < 0 ) CaratPos.y = 0;
 
-				iSize compstring_size = pFont->GetStringSize( XUI_IME::m_CompString );
+				int cx = XUI_GetStringWidth( hFont, XUI_IME::m_CompString );
+				int cy = nFontHeight;
 				// XUI_SetClipping( CaratPos.x, CaratPos.y, compstring_size.cx ,compstring_size.cy );
 				XUI_DrawRect( 
-					iRect( CaratPos, compstring_size ),
+					iRect( CaratPos.x, CaratPos.y, CaratPos.x + cx, CaratPos.y + cy ),
 					XUI_ARGB(70,170,170,170), 
 					XUI_ARGB(70,190,190,190) );
 
@@ -224,19 +226,19 @@ namespace XGC
 				iPoint imeCaratePos = CaratPos;
 				do
 				{
-					RenderCharacter( *compchar, pFont, imeCaratePos.x, imeCaratePos.y, true );
+					RenderCharacter( *compchar, hFont, imeCaratePos.x, imeCaratePos.y, true );
 					if( m_bShowCarat && XUI_IME::m_CandList.nCaretPos == compchar - XUI_IME::m_CompString )
 					{
-						int x = imeCaratePos.x - ( pFont->GetCharacterWidth( *compchar ) + (pFont->GetCharacterWidth( _T('|') )>>1) );
+						int x = imeCaratePos.x - ( XUI_GetCharacterWidth( hFont, *compchar ) + (XUI_GetCharacterWidth( hFont, _T('|') )>>1) );
 						int y = imeCaratePos.y;
 						// 是否绘制光标
-						RenderCharacter( _T('|'), pFont, x, y, true );
+						RenderCharacter( _T('|'), hFont, x, y, true );
 					}
 				}while( *compchar++ );
 
 				if( XUI_IME::m_CandList.bShowWindow )
 				{
-					CaratPos.y += pFont->GetCharacterHeight() + 2;
+					CaratPos.y += nFontHeight + 2;
 					// XUI_SetClipping( CaratPos.x, CaratPos.y, XUI_IME::m_CandList.rcCandidate.Width(), XUI_IME::m_CandList.rcCandidate.Height() );
 					XUI_DrawRect( 
 						iRect( CaratPos, XUI_IME::m_CandList.rcCandidate.Size() ),
@@ -249,8 +251,8 @@ namespace XGC
 					while( citer != XUI_IME::m_CandList.l.end() )
 					{
 						_snwprintf( show, _countof(show), _T("%02d %s"), ++idx, citer->c_str() );
-						XUI_DrawText( show, pFont, CaratPos.x, CaratPos.y );
-						CaratPos.y += pFont->GetCharacterHeight();
+						XUI_DrawText( show, hFont, CaratPos.x, CaratPos.y );
+						CaratPos.y += nFontHeight;
 						++citer;
 					}
 				}
@@ -681,7 +683,7 @@ namespace XGC
 
 						int startOfPage = 0;
 
-						XUI_Font *pFont = m_pFont?m_pFont:XUI::Instance().GetDefaultFont();
+						xuiFont hFont = m_hFont?m_hFont:XUI::Instance().GetDefaultFont();
 						XUI_IME::CCandList& Watch = XUI_IME::m_CandList;
 						Watch.l.clear();
 						Watch.rcCandidate.SetRectEmpty();
@@ -689,9 +691,10 @@ namespace XGC
 						{
 							_lpcwstr text_ptr = (_lpwstr)((ulong_ptr)lpCandList + lpCandList->dwOffset[i]);
 							Watch.l.push_back( text_ptr );
-							iSize text_size = pFont->GetStringSize( text_ptr );
-							Watch.rcCandidate.bottom += text_size.cy + 1;
-							Watch.rcCandidate.right = __max( Watch.rcCandidate.right, text_size.cx + pFont->GetCharacterWidth(_T('0'))*4 );
+							int cx = XUI_GetStringWidth( hFont, text_ptr );
+							int cy = XUI_GetCharacterHeight( hFont ); 
+							Watch.rcCandidate.bottom += cy + 1;
+							Watch.rcCandidate.right = __max( Watch.rcCandidate.right, cx + XUI_GetCharacterWidth( hFont,_T('0'))*4 );
 						}
 						Watch.dwCount = __min( lpCandList->dwCount, MAX_CANDLIST );
 
@@ -740,11 +743,11 @@ namespace XGC
 
 		unsigned int XUI_EditBox::OnMoveWindow( iRect& rcWindow )
 		{
-			XUI_Font* pFont = m_pFont?m_pFont:XUI::Instance().GetDefaultFont();
-			if( pFont )
+			xuiFont hFont = m_hFont?m_hFont:XUI::Instance().GetDefaultFont();
+			if( hFont )
 			{
-				m_TextBufferSizeX		= (int)( m_WindowSize.cx/pFont->GetCharacterWidth( _T(' ') ) );
-				m_TextBufferSizeY		= (int)( m_WindowSize.cy/pFont->GetCharacterHeight() );
+				m_TextBufferSizeX		= (int)( m_WindowSize.cx/XUI_GetCharacterWidth( hFont, _T(' ') ) );
+				m_TextBufferSizeY		= (int)( m_WindowSize.cy/XUI_GetCharacterHeight( hFont ) );
 			}
 			Analyse();
 			return 0;

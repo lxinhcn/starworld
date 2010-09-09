@@ -75,54 +75,33 @@ namespace XGC
 				.set( "load",		&load_file< iSize > )
 				;
 
-			SLB::Class< XUI_SpriteAttribute >( "ui::XUI_SpriteAttribute" )
+			SLB::Class< xuiSpriteInfo >( "ui::xuiSpriteInfo" )
 				.constructor< _lpcstr, float, float, float, float >()
-				.member_readonly( "f",	&XUI_SpriteAttribute::path )
-				.member_readonly( "x",	&XUI_SpriteAttribute::x )
-				.member_readonly( "y",	&XUI_SpriteAttribute::y )
-				.member_readonly( "w",	&XUI_SpriteAttribute::w )
-				.member_readonly( "h",	&XUI_SpriteAttribute::h )
-				.set( "members",&show_members< XUI_SpriteAttribute > )
-				.set( "save",	&XUI_SpriteAttribute::save_file )
-				.set( "load",	&XUI_SpriteAttribute::load_file )
+				.member_readonly( "f",	&xuiSpriteInfo::path )
+				.member_readonly( "x",	&xuiSpriteInfo::x )
+				.member_readonly( "y",	&xuiSpriteInfo::y )
+				.member_readonly( "w",	&xuiSpriteInfo::w )
+				.member_readonly( "h",	&xuiSpriteInfo::h )
+				.set( "members",&show_members< xuiSpriteInfo > )
+				.set( "save",	&xuiSpriteInfo::save_file )
+				.set( "load",	&xuiSpriteInfo::load_file )
 				;
 
-			SLB::Class< XUI_ISprite, SLB::Instance::NoCopy >( "ui::XUI_ISprite" )
-				.static_inherits< XUI_SpriteAttribute >()
-				.set( "Render", &XUI_ISprite::Render )
-				.set( "RenderStretch", &XUI_ISprite::RenderStretch )
-				.set( "RenderEx", &XUI_ISprite::RenderEx )
-				.set( "GetWidth",	&XUI_ISprite::GetWidth )
-				.set( "GetHeight",	&XUI_ISprite::GetHeight )
-				.set( "SetUV",		&XUI_ISprite::SetUV )
-				.set( "GetU0",		&XUI_ISprite::GetU0 )
-				.set( "GetU1",		&XUI_ISprite::GetU1 )
-				.set( "GetV0",		&XUI_ISprite::GetV0 )
-				.set( "GetV1",		&XUI_ISprite::GetV1 )
-				.member( "alpha",	&XUI_ISprite::SetAlpha,		&XUI_ISprite::GetAlpha )
-				.member( "angle",	&XUI_ISprite::SetAngle,		&XUI_ISprite::GetAngle )
-				.member( "diffuse", &XUI_ISprite::SetDiffuse,	&XUI_ISprite::GetDiffuse )
-				;
-
-			SLB::Class< XUI_FontAttribute >( "ui::XUI_FontAttribute" )
+			SLB::Class< xuiFontInfo >( "ui::xuiFontInfo" )
 				.constructor< const char*, int, _uint32, bool, bool, bool >()
-				.member_readonly( "name", &XUI_FontAttribute::m_name )
-				.member_readonly( "size", &XUI_FontAttribute::m_size )
-				.member_readonly( "color",&XUI_FontAttribute::m_color )
-				.member_readonly( "bold", &XUI_FontAttribute::m_bold )
-				.member_readonly( "italic",		&XUI_FontAttribute::m_italic )
-				.member_readonly( "antialias",	&XUI_FontAttribute::m_antialias )
-				.set( "members",&show_members< XUI_FontAttribute > )
-				.set( "save",	&XUI_FontAttribute::save_file )
-				.set( "load",	&XUI_FontAttribute::load_file )
-				;
-
-			SLB::Class< XUI_Font, SLB::Instance::NoCopy >( "ui::XUI_Font" )
-				.set( "SetColor", &XUI_Font::SetColor )
+				.member_readonly( "name", &xuiFontInfo::m_name )
+				.member_readonly( "size", &xuiFontInfo::m_size )
+				.member_readonly( "color",&xuiFontInfo::m_color )
+				.member_readonly( "bold", &xuiFontInfo::m_bold )
+				.member_readonly( "italic",		&xuiFontInfo::m_italic )
+				.member_readonly( "antialias",	&xuiFontInfo::m_antialias )
+				.set( "members",&show_members< xuiFontInfo > )
+				.set( "save",	&xuiFontInfo::save_file )
+				.set( "load",	&xuiFontInfo::load_file )
 				;
 
 			SLB::Class< XUI_System, SLB::Instance::NoCopyNoDestroy >( "ui::XUI_System" )
-				.set( "GetTopWindow",		&XUI_System::GetTopWindow )
+				.set( "GetTopWindow",	&XUI_System::GetTopWindow )
 				.set( "Load",			&XUI_System::LoadFromFile )
 				.set( "Save",			&XUI_System::SaveToFile )
 				.set( "GetResPath",		&XUI_System::GetResourcePath )
@@ -147,10 +126,8 @@ namespace XGC
 				.member( "name",		&XUI_Wnd::SetName,		&XUI_Wnd::GetName )
 				.member( "visible",		&XUI_Wnd::ShowWindow,	&XUI_Wnd::IsVisible )
 				.member( "enable",		&XUI_Wnd::EnableWindow,	&XUI_Wnd::IsEnable	)
-				.member( "font",		&XUI_Wnd::m_pFont )
 				.member( "transparent",	&XUI_Wnd::m_bTranslateParent )
 				.member( "updatefunc",	&XUI_Wnd::m_strUpdateFunc )
-				.member( "background",	&XUI_Wnd::m_pBackGround )
 				.member_readonly( "position",	&XUI_Wnd::m_WindowPosition )
 				.member_readonly( "size",	&XUI_Wnd::m_WindowSize )
 				;
@@ -168,7 +145,7 @@ namespace XGC
 				.constructor()
 				.set( "SetState",	&XUI_Button::SetState )
 				.member( "caption",	&XUI_Button::m_strCaption )
-				.member( "skin",	&XUI_Button::m_pButtonSkin )
+				.member( "skininfo", &XUI_Button::m_ButtonInfo )
 				.enumValue( "Normal",		XUI_Button::Normal )
 				.enumValue( "MouseOver",	XUI_Button::MouseOver )
 				.enumValue( "ButtonDown",	XUI_Button::ButtonDown )
@@ -188,11 +165,9 @@ namespace XGC
 			try
 			{
 				SLB::Manager::getInstance().set( "CreateSprite",	SLB::FuncCall::create( XUI_CreateSprite ) );
-				SLB::Manager::getInstance().set( "CreateSpriteEx",	SLB::FuncCall::create( XUI_CreateSpriteEx ) );
 				SLB::Manager::getInstance().set( "DestroySprite",	SLB::FuncCall::create( XUI_DestroySprite ) );
 
 				SLB::Manager::getInstance().set( "CreateFont",		SLB::FuncCall::create( XUI_CreateFont ) );
-				SLB::Manager::getInstance().set( "CreateFontEx",	SLB::FuncCall::create( XUI_CreateFontEx ) );
 				SLB::Manager::getInstance().set( "DestroyFont",		SLB::FuncCall::create( XUI_DestroyFont ) );
 
 				SLB::Manager::getInstance().set( "DrawText",		SLB::FuncCall::create( XUI_DrawTextA ) );

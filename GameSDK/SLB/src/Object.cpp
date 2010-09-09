@@ -29,8 +29,8 @@
 
 namespace SLB {
 		
-	const char *objectsTable_name = "SLB_Objects";
-	const char *refTable_name     = "SLB_References";
+	const char *objTable_name = "SLB_Objects";
+	const char *refTable_name = "SLB_References";
 
 	Object::Object() : _refCounter(0)
 	{
@@ -54,7 +54,7 @@ namespace SLB {
 		lua_pushstring(L, "v");
 		lua_setfield(L, -2, "__mode");
 		lua_setmetatable(L,-2);
-		lua_setfield(L, LUA_REGISTRYINDEX, objectsTable_name); 
+		lua_setfield(L, LUA_REGISTRYINDEX, objTable_name); 
 
 		// create new references' table
 		lua_newtable(L); // create a new table
@@ -75,12 +75,12 @@ namespace SLB {
 		int top = lua_gettop(L);
 
 		// get the table of objects (top+1)
-		lua_getfield(L, LUA_REGISTRYINDEX, objectsTable_name);
+		lua_getfield(L, LUA_REGISTRYINDEX, objTable_name);
 		if (lua_isnil(L, -1))
 		{
 			lua_pop(L, 1); // remove nil
 			initialize(L);
-			lua_getfield(L, LUA_REGISTRYINDEX, objectsTable_name);
+			lua_getfield(L, LUA_REGISTRYINDEX, objTable_name);
 		}
 		// get Reference's table (top+2)
 		lua_getfield(L, LUA_REGISTRYINDEX, refTable_name);

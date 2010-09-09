@@ -30,17 +30,16 @@ namespace XGC
 			void Unitialize();
 
 			void SetEditMode( bool bMode );
-			bool IsEditMode()const{ return m_is_edit_mode; }
+			bool IsEditMode()const{ return m_bEditMode; }
 
 			// 设置图片路径
 			_lpcstr	GetResourcePath();
 
-			void SetDefaultFont( XUI_Font *pFont ){ m_pDefaultFont	= pFont; }
-			void SetDefaultInput( XUI_Input *pInput){ m_pInput = pInput; }
+			void SetDefaultFont( xuiFont hFont ){ m_hDefaultFont = hFont; }
+			xuiFont	GetDefaultFont()const{ return m_hDefaultFont; }
 
-			XUI_Font*	GetDefaultFont()const{ return m_pDefaultFont; }
-			XUI_Input*	GetInput()const{ return m_pInput; }
-
+			bool IsButtonPress( int nKey ){ return (GetKeyState( nKey ) & 0x8000) != 0; }
+			void SetMouseCursor( int nIndex ){}
 		protected:
 
 			// 是否初始化
@@ -51,7 +50,8 @@ namespace XGC
 			HWND		m_hWnd;
 			WNDPROC		m_OldProc;
 			iSize		m_WindowSize;
-			iPoint		m_mouse_old;
+			iPoint		m_ptMouse;
+			iPoint		m_ptMouseDown;
 
 		private:
 			//根
@@ -62,17 +62,15 @@ namespace XGC
 			CTopWindowList	m_TopWindowList;
 			CModalList		m_ModalList;
 
-			XUI_Font		*m_pDefaultFont;
-			XUI_Input		*m_pInput;
+			xuiFont			m_hDefaultFont;
 
 			std::string		m_strResourcePath;
 			timer			m_Timer;
-			float			m_nowtime;
+			float			m_fNowTime;
 			float			m_timer_anchor;
-			bool			m_is_edit_mode;
-			int				m_current_handle;
-			iPoint			m_mousedown;
-			XUI_Wnd			*m_capture_element, *m_mouseover_element, *m_mousedown_element;
+			bool			m_bEditMode;
+			int				m_nCurrentHandler;
+			XUI_Wnd			*m_pCaptureElement, *m_pOverElement;
 			CWndList		m_capture_list;
 		protected:
 			void SetFocus		( XUI_Wnd* pElement );

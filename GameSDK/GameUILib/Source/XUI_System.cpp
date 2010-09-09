@@ -18,15 +18,14 @@ namespace XGC
 
 		XUI_System::XUI_System()
 			: m_bPointInRoot(false)
-			, m_is_edit_mode( false )
+			, m_bEditMode( false )
 			, m_hWnd(NULL)
 			, m_bInitialized( FALSE )
-			, m_nowtime( 0.0f )
+			, m_fNowTime( 0.0f )
 			, m_timer_anchor( 0.0f )
-			, m_pDefaultFont( NULL )
-			, m_capture_element( NULL )
-			, m_mouseover_element( NULL )
-			, m_mousedown_element( NULL )
+			, m_hDefaultFont( NULL )
+			, m_pCaptureElement( NULL )
+			, m_pOverElement( NULL )
 			, m_OldProc(NULL)
 		{
 			// 初始化定时器系统
@@ -69,15 +68,14 @@ namespace XGC
 
 		void XUI_System::Unitialize()
 		{
-			m_pDefaultFont = NULL;
-			m_pInput = NULL;
+			m_hDefaultFont = NULL;
 		}
 
 		void XUI_System::SetEditMode( bool bMode )
 		{ 
-			m_is_edit_mode = bMode; 
-			if( !m_is_edit_mode )
-				m_pInput->SetMouse( XUI_MOUSE_APPSTARTING );
+			m_bEditMode = bMode; 
+			//if( !m_bEditMode )
+				// m_pInput->SetMouse( XUI_MOUSE_APPSTARTING );
 		}
 
 		void XUI_System::Render()
@@ -89,26 +87,22 @@ namespace XGC
 				++iter;
 			}
 
-			if( m_pInput->IsMouseOver() )
+			// if( m_pInput->IsMouseOver() )
 			{
 				// XUI_SetClipping( 0, 0, m_WindowSize.cx, m_WindowSize.cy );
-				if( m_is_edit_mode )
+				if( m_bEditMode )
 				{
-					int x, y;
-					m_pInput->GetMousePos( &x, &y );
-					if( m_pInput->GetKeyState( XUIK_LBUTTON ) && m_mousedown_element && !m_mousedown_element->GetFlags( XUI_Wnd::FLAGS_EDIT ) )
+					int x = m_ptMouse.x, y = m_ptMouse.y;
+					// m_pInput->GetMousePos( &x, &y );
+					if( IsButtonPress( XUIK_LBUTTON ) && m_pCaptureElement && !m_pCaptureElement->GetFlags( XUI_Wnd::FLAGS_EDIT ) )
 					{
-						int x, y;
-						m_pInput->GetMousePos( &x, &y );
-						XUI_DrawRect( iRect(m_mousedown, iPoint(x,y)), XUI_ARGB(0xff,0,0xff,0), XUI_ARGB(0x55,0,0xff,0) );
+						XUI_DrawRect( iRect(m_ptMouseDown, iPoint(x,y)), XUI_ARGB(0xff,0,0xff,0), XUI_ARGB(0x55,0,0xff,0) );
 					}
 					XUI_DrawLine( 0, (float)y, (float)m_WindowSize.cx, (float)y, XUI_ARGB(0xff,0,0xff,0) );
 					XUI_DrawLine( (float)x, 0, (float)x, (float)m_WindowSize.cy, XUI_ARGB(0xff,0,0xff,0) );
 				}
 				XUI_IME::RenderImeWindow();
-				m_pInput->RenderMouse();
 			}
-
 		}
 
 		_uint32 XUI_System::DetectHandler( XUI_Wnd* pElement, const iPoint &pt )
@@ -160,31 +154,26 @@ namespace XGC
 
 		void XUI_System::Update( float fDelta )
 		{
-			m_nowtime += fDelta;
-			while( m_nowtime - m_timer_anchor >= 0.1f )
+			m_fNowTime += fDelta;
+			while( m_fNowTime - m_timer_anchor >= 0.1f )
 			{
 				m_timer_anchor += 0.1f;
 				m_Timer.active();
 			}
 
-			if( m_pInput )
-			{
-				m_pInput->UpdateMouse( fDelta );
-			}
-
-			SLB::LuaCall< void(float, float) >( Lua::Instance().getState(), "UIUpdateEntry" )( m_nowtime, fDelta );
+			SLB::LuaCall< void(float, float) >( Lua::Instance().getState(), "UIUpdateEntry" )( m_fNowTime, fDelta );
 			CTopWindowList::iterator iter = m_TopWindowList.begin();
 			while( iter != m_TopWindowList.end() )
 			{
-				(*iter)->Update( m_nowtime, fDelta );
+				(*iter)->Update( m_fNowTime, fDelta );
 				++iter;
 			}
 		}
 
 		bool XUI_System::OnMouseMove( const iPoint& pt, _uint32 sysKeys, long_ptr *result )
 		{
-			iPoint pt_old = m_mouse_old;
-			m_mouse_old = pt;
+			iPoint ptOldMouse = m_ptMouse;
+			m_ptMouse = pt;
 
 			XUI_Wnd *pEnterElement = NULL;
 			CTopWindowList::iterator iter = m_TopWindowList.begin();
@@ -194,13 +183,13 @@ namespace XGC
 				++iter;
 			}
 
-			if( m_is_edit_mode )
+			if( m_bEditMode )
 			{
-				if( m_mousedown_element && m_mousedown_element->GetFlags(XUI_Wnd::FLAGS_EDIT) && ( sysKeys & MK_LBUTTON ) )
+				if( m_pCaptureElement && m_pCaptureElement->GetFlags(XUI_Wnd::FLAGS_EDIT) && ( sysKeys & MK_LBUTTON ) )
 				{
 					// 当前悬停对象在捕获列表中 且 按下鼠标右键
-					int dx = pt.x - pt_old.x;
-					int dy = pt.y - pt_old.y;
+					int dx = pt.x - ptOldMouse.x;
+					int dy = pt.y - ptOldMouse.y;
 					struct move_windows
 					{
 						int dx, dy;
@@ -248,60 +237,60 @@ namespace XGC
 							}
 						}
 					};
-					std::for_each( m_capture_list.begin(), m_capture_list.end(), move_windows( dx, dy, m_current_handle ) );
+					std::for_each( m_capture_list.begin(), m_capture_list.end(), move_windows( dx, dy, m_nCurrentHandler ) );
 				}
-				else if( ( m_current_handle = DetectHandler( m_capture_element, pt ) ) != -1 )
+				else if( ( m_nCurrentHandler = DetectHandler( m_pCaptureElement, pt ) ) != -1 )
 				{
-					switch( m_current_handle )
+					switch( m_nCurrentHandler )
 					{
 					case 0:
 					case 4:
-						m_pInput->SetMouse( XUI_MOUSE_SIZENWSE );
+						SetMouseCursor( XUI_MOUSE_SIZENWSE );
 						break;
 					case 1:
 					case 5:
-						m_pInput->SetMouse( XUI_MOUSE_SIZENS );
+						SetMouseCursor( XUI_MOUSE_SIZENS );
 						break;
 					case 2:
 					case 6:
-						m_pInput->SetMouse( XUI_MOUSE_SIZENESW );
+						SetMouseCursor( XUI_MOUSE_SIZENESW );
 						break;
 					case 3:
 					case 7:
-						m_pInput->SetMouse( XUI_MOUSE_SIZEWE );
+						SetMouseCursor( XUI_MOUSE_SIZEWE );
 						break;
 					}
 				}
 				else if( pEnterElement && pEnterElement->GetFlags(XUI_Wnd::FLAGS_EDIT) )
 				{
-					m_pInput->SetMouse( XUI_MOUSE_SIZEALL );
+					SetMouseCursor( XUI_MOUSE_SIZEALL );
 				}
 				else
 				{
-					m_pInput->SetMouse( XUI_MOUSE_ARROW );
+					SetMouseCursor( XUI_MOUSE_ARROW );
 				}
 			}
 
-			if( pEnterElement && pEnterElement != m_mouseover_element )
+			if( pEnterElement && pEnterElement != m_pOverElement )
 			{
-				if( m_mouseover_element ) 
-					m_mouseover_element->OnMouseLeave();
+				if( m_pOverElement ) 
+					m_pOverElement->OnMouseLeave();
 				pEnterElement->OnMouseEnter();
-				m_mouseover_element = pEnterElement;
+				m_pOverElement = pEnterElement;
 			}
 
-			if( m_mouseover_element )
-				m_mouseover_element->OnMouseMove(pt, sysKeys);
+			if( m_pOverElement )
+				m_pOverElement->OnMouseMove(pt, sysKeys);
 			return false;
 		}
 
 		bool XUI_System::OnButtonDown( _uint32 nButton, const iPoint& pt, _uint32 sysKeys, long_ptr *result )
 		{
-			m_mousedown = pt;
-			m_mousedown_element = m_mouseover_element;
-			if( m_is_edit_mode )
+			m_ptMouseDown = pt;
+			XUI_Wnd * pMouseDownElement = m_pOverElement;
+			if( m_bEditMode )
 			{
-				if( !m_mousedown_element->GetFlags( XUI_Wnd::FLAGS_EDIT ) && !(sysKeys & MK_CONTROL) )
+				if( !pMouseDownElement->GetFlags( XUI_Wnd::FLAGS_EDIT ) && !(sysKeys & MK_CONTROL) )
 				{
 					std::for_each( m_capture_list.begin(), m_capture_list.end(), 
 						std::bind2nd( 
@@ -309,20 +298,20 @@ namespace XGC
 
 					m_capture_list.clear();
 				}
-				m_current_handle = DetectHandler( m_capture_element, pt );
+				m_nCurrentHandler = DetectHandler( m_pCaptureElement, pt );
 			}
 			else
 			{
-				if( m_capture_element && m_capture_element != m_mouseover_element) 
+				if( m_pCaptureElement && m_pCaptureElement != m_pOverElement) 
 				{
-					m_capture_element->SetFocus(false);
-					m_mousedown_element->SetFocus( true );
+					m_pCaptureElement->SetFocus(false);
+					pMouseDownElement->SetFocus( true );
 				}
 
-				if( m_mousedown_element )
-					m_mousedown_element->OnButtonDown( nButton, pt, sysKeys );
+				if( pMouseDownElement )
+					pMouseDownElement->OnButtonDown( nButton, pt, sysKeys );
 			}
-			m_capture_element = m_mousedown_element;
+			m_pCaptureElement = pMouseDownElement;
 			return false;
 		}
 
@@ -332,9 +321,9 @@ namespace XGC
 			while( iter != m_TopWindowList.end() )
 			{
 				XUI_Wnd *pElement = (*iter);
-				if( m_is_edit_mode )
+				if( m_bEditMode )
 				{
-					iRect rcArea( m_mousedown, pt );
+					iRect rcArea( m_ptMouseDown, pt );
 					if( rcArea.IsRectEmpty() )
 					{
 						XUI_Wnd* find_element = pElement->FindChildInPoint( pt - pElement->GetWindowPosition() );
@@ -369,8 +358,8 @@ namespace XGC
 				}
 				++iter;
 			}
-			if( m_capture_element )
-				return m_capture_element->OnButtonUp( nButton, pt, sysKeys );
+			if( m_pCaptureElement )
+				return m_pCaptureElement->OnButtonUp( nButton, pt, sysKeys );
 			return false;
 		}
 
@@ -471,7 +460,7 @@ namespace XGC
 			}
 			else
 			{
-				pWindow = m_capture_element;
+				pWindow = m_pCaptureElement;
 			}
 
 			if( pWindow && pWindow->IsEnable() && pWindow->IsVisible() )
@@ -490,7 +479,7 @@ namespace XGC
 			}
 			else
 			{
-				pWindow = m_capture_element;
+				pWindow = m_pCaptureElement;
 			}
 
 			if( pWindow && pWindow->IsEnable() && pWindow->IsVisible() )
@@ -509,7 +498,7 @@ namespace XGC
 			}
 			else
 			{
-				pWindow = m_capture_element;
+				pWindow = m_pCaptureElement;
 			}
 
 			if( pWindow && pWindow->IsEnable() && pWindow->IsVisible() )
@@ -548,7 +537,7 @@ namespace XGC
 			}
 			else
 			{
-				pWindow = m_capture_element;
+				pWindow = m_pCaptureElement;
 			}
 
 			if( pWindow && pWindow->IsEnable() && pWindow->IsVisible() )
@@ -567,7 +556,7 @@ namespace XGC
 			}
 			else
 			{
-				pWindow = m_capture_element;
+				pWindow = m_pCaptureElement;
 			}
 
 			if( pWindow && pWindow->IsEnable() && pWindow->IsVisible() )
@@ -586,7 +575,7 @@ namespace XGC
 			}
 			else
 			{
-				pWindow = m_capture_element;
+				pWindow = m_pCaptureElement;
 			}
 
 			if( pWindow && pWindow->IsEnable() && pWindow->IsVisible() )
@@ -613,7 +602,7 @@ namespace XGC
 					if( pTopWindow->CreateFromXMLNode( pNode->ToElement() ) )
 					{
 						RegistTopWindow( pTopWindow );
-						m_capture_element = pTopWindow;
+						m_pCaptureElement = pTopWindow;
 					}
 				}
 				pNode = Doc.NextSibling( "window" );

@@ -88,7 +88,7 @@ namespace SLB
 		}
 
 	private:
-		V		C::* m_offset;
+		V	C::* m_offset;
 	};
 
 	template< class C, typename V >
