@@ -1,14 +1,19 @@
-<?xml version="1.0" encoding = "Windows-1252"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="LayoutEditor"
 	ProjectGUID="{58905CDE-0ABC-4AA4-A7F4-D73C6574A58E}"
-	Keyword="Win32Proj">
+	Keyword="Win32Proj"
+	TargetFrameworkVersion="0"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
@@ -16,51 +21,64 @@
 			IntermediateDirectory="LayoutEditor.dir\Debug"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\LayoutEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Input\Win32;"
-				BasicRuntimeChecks="3"
-				CompileAs="2"
-				DebugInformationFormat="3"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="0"
-				Optimization="0"
-				RuntimeLibrary="3"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"
-				AssemblerListingLocation="Debug"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Debug/LayoutEditor.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\LayoutEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Input\Win32;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="0"
+				InlineFunctionExpansion="0"
+				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include"
+				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"
+				ExceptionHandling="1"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="Debug"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Debug/LayoutEditor.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\LayoutEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Input\Win32;"
+			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/Debug"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
+				CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/Debug"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
@@ -70,10 +88,32 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 				Version="0.0"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:/SDK/MyGui/bin/Debug/LayoutEditor.pdb"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="D:/SDK/MyGui/bin/Debug/LayoutEditor.pdb"
 				SubSystem="2"
-				ImportLibrary="D:\SDK\MyGui\lib\Debug\LayoutEditor.lib"/>
+				ImportLibrary="D:\SDK\MyGui\lib\Debug\LayoutEditor.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -81,49 +121,62 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 			IntermediateDirectory="LayoutEditor.dir\Release"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\LayoutEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Input\Win32;"
-				CompileAs="2"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="2"
-				Optimization="2"
-				RuntimeLibrary="2"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"
-				AssemblerListingLocation="Release"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Release/LayoutEditor.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\LayoutEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Input\Win32;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="2"
+				InlineFunctionExpansion="2"
+				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"
+				ExceptionHandling="1"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="Release"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Release/LayoutEditor.pdb"
+				WarningLevel="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\LayoutEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Input\Win32;"
+			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/Release"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
+				CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/Release"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
@@ -133,9 +186,31 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 				Version="0.0"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:/SDK/MyGui/bin/Release/LayoutEditor.pdb"
+				ProgramDatabaseFile="D:/SDK/MyGui/bin/Release/LayoutEditor.pdb"
 				SubSystem="2"
-				ImportLibrary="D:\SDK\MyGui\lib\Release\LayoutEditor.lib"/>
+				ImportLibrary="D:\SDK\MyGui\lib\Release\LayoutEditor.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="MinSizeRel|Win32"
@@ -143,49 +218,62 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 			IntermediateDirectory="LayoutEditor.dir\MinSizeRel"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\LayoutEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Input\Win32;"
-				CompileAs="2"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="1"
-				Optimization="1"
-				RuntimeLibrary="2"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
-				AssemblerListingLocation="MinSizeRel"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/MinSizeRel/LayoutEditor.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\LayoutEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Input\Win32;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="1"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
+				ExceptionHandling="1"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="MinSizeRel"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/MinSizeRel/LayoutEditor.pdb"
+				WarningLevel="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\LayoutEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Input\Win32;"
+			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/MinSizeRel"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
+				CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/MinSizeRel"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
@@ -195,9 +283,31 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 				Version="0.0"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:/SDK/MyGui/bin/MinSizeRel/LayoutEditor.pdb"
+				ProgramDatabaseFile="D:/SDK/MyGui/bin/MinSizeRel/LayoutEditor.pdb"
 				SubSystem="2"
-				ImportLibrary="D:\SDK\MyGui\lib\MinSizeRel\LayoutEditor.lib"/>
+				ImportLibrary="D:\SDK\MyGui\lib\MinSizeRel\LayoutEditor.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="RelWithDebInfo|Win32"
@@ -205,50 +315,63 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 			IntermediateDirectory="LayoutEditor.dir\RelWithDebInfo"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\LayoutEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Input\Win32;"
-				CompileAs="2"
-				DebugInformationFormat="3"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="1"
-				Optimization="2"
-				RuntimeLibrary="2"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
-				AssemblerListingLocation="RelWithDebInfo"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/RelWithDebInfo/LayoutEditor.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\LayoutEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Input\Win32;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="2"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
+				ExceptionHandling="1"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="RelWithDebInfo"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/RelWithDebInfo/LayoutEditor.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\LayoutEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\LayoutEditor\..\..\Common\Input\Win32;"
+			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/RelWithDebInfo"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
+				CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/RelWithDebInfo"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
@@ -258,354 +381,427 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 				Version="0.0"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:/SDK/MyGui/bin/RelWithDebInfo/LayoutEditor.pdb"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="D:/SDK/MyGui/bin/RelWithDebInfo/LayoutEditor.pdb"
 				SubSystem="2"
-				ImportLibrary="D:\SDK\MyGui\lib\RelWithDebInfo\LayoutEditor.lib"/>
+				ImportLibrary="D:\SDK\MyGui\lib\RelWithDebInfo\LayoutEditor.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
+	<References>
+	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="">
+			>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\EditorToolTip.cpp">
+				RelativePath="Application.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\EditorWidgets.cpp">
+				RelativePath="BackgroundControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\UndoManager.cpp">
+				RelativePath="BackwardCompatibilityManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\WidgetTypes.cpp">
+				RelativePath="CommandManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\CommandManager.cpp">
+				RelativePath="Dialog.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\MainMenuControl.cpp">
+				RelativePath="DialogManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\SettingsManager.cpp">
+				RelativePath="EditorState.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\WidgetSelectorManager.cpp">
+				RelativePath="EditorToolTip.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\HotKeyManager.cpp">
+				RelativePath="EditorWidgets.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\MessageBoxManager.cpp">
+				RelativePath="HotKeyManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\DialogManager.cpp">
+				RelativePath="MainMenuControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\SettingsSector.cpp">
+				RelativePath="MainPaneControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\MessageBoxFadeControl.cpp">
+				RelativePath="MessageBoxFadeControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\Dialog.cpp">
+				RelativePath="MessageBoxManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\StateManager.cpp">
+				RelativePath="RecentFilesManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\EditorState.cpp">
+				RelativePath="SelectionAreaControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\Application.cpp">
+				RelativePath="SettingsManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\TestState.cpp">
+				RelativePath="SettingsSector.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\BackgroundControl.cpp">
+				RelativePath="StateManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\MainPaneControl.cpp">
+				RelativePath="TestState.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\ToolsControl.cpp">
+				RelativePath="ToolsControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\SelectionAreaControl.cpp">
+				RelativePath="UndoManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\WidgetCreatorManager.cpp">
+				RelativePath="WidgetCreatorManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\RecentFilesManager.cpp">
+				RelativePath="WidgetSelectorManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\BackwardCompatibilityManager.cpp">
+				RelativePath="WidgetTypes.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="">
+			>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\Common.h">
+				RelativePath="Application.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\EditorToolTip.h">
+				RelativePath="BackgroundControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\EditorWidgets.h">
+				RelativePath="BackwardCompatibilityManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\resource.h">
+				RelativePath="CommandManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\UndoManager.h">
+				RelativePath="Common.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\WidgetContainer.h">
+				RelativePath="CyclicBuffer.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\WidgetTypes.h">
+				RelativePath="Dialog.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\CommandManager.h">
+				RelativePath="DialogManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\MainMenuControl.h">
+				RelativePath="EditorState.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\SettingsManager.h">
+				RelativePath="EditorToolTip.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\WidgetSelectorManager.h">
+				RelativePath="EditorWidgets.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\HotKeyManager.h">
+				RelativePath="HotKeyCommand.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\HotKeyCommand.h">
+				RelativePath="HotKeyManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\Localise.h">
+				RelativePath="Localise.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\MessageBoxManager.h">
+				RelativePath="MainMenuControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\DialogManager.h">
+				RelativePath="MainPaneControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\SettingsSector.h">
+				RelativePath="MessageBoxFadeControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\MessageBoxFadeControl.h">
+				RelativePath="MessageBoxManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\CyclicBuffer.h">
+				RelativePath="PossibleValue.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\SkinInfo.h">
+				RelativePath="RecentFilesManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\WidgetStyle.h">
+				RelativePath="resource.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\PossibleValue.h">
+				RelativePath="SelectionAreaControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\Dialog.h">
+				RelativePath="SettingsManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\StateManager.h">
+				RelativePath="SettingsSector.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\StateController.h">
+				RelativePath="SkinInfo.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\Application.h">
+				RelativePath="StateController.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\EditorState.h">
+				RelativePath="StateManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\TestState.h">
+				RelativePath="TestState.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\BackgroundControl.h">
+				RelativePath="ToolsControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\MainPaneControl.h">
+				RelativePath="UndoManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\ToolsControl.h">
+				RelativePath="WidgetContainer.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\SelectionAreaControl.h">
+				RelativePath="WidgetCreatorManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\WidgetCreatorManager.h">
+				RelativePath="WidgetSelectorManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\RecentFilesManager.h">
+				RelativePath="WidgetStyle.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\BackwardCompatibilityManager.h">
+				RelativePath="WidgetTypes.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Resources"
-			Filter="">
+			>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\editor.ico">
+				RelativePath="editor.ico"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\LayoutEditor.rc">
-			</File>
-			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\CMakeLists.txt">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Tools/LayoutEditor/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Tools\LayoutEditor\CMakeLists.txt;D:\SDK\MyGui\Tools\LayoutEditor\LayoutEditor.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Tools\LayoutEditor\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Tools/LayoutEditor/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Tools\LayoutEditor\CMakeLists.txt;D:\SDK\MyGui\Tools\LayoutEditor\LayoutEditor.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Tools\LayoutEditor\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MinSizeRel|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Tools/LayoutEditor/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Tools\LayoutEditor\CMakeLists.txt;D:\SDK\MyGui\Tools\LayoutEditor\LayoutEditor.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Tools\LayoutEditor\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RelWithDebInfo|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Tools/LayoutEditor/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Tools\LayoutEditor\CMakeLists.txt;D:\SDK\MyGui\Tools\LayoutEditor\LayoutEditor.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Tools\LayoutEditor\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
+				RelativePath="LayoutEditor.rc"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Panels"
-			Filter="">
+			>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\PanelControllers.cpp">
+				RelativePath="PanelControllers.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\PanelItems.cpp">
+				RelativePath="PanelItems.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\PanelMainProperties.cpp">
+				RelativePath="PanelMainProperties.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\PanelProperties.cpp">
+				RelativePath="PanelProperties.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\PanelUserData.cpp">
+				RelativePath="PanelUserData.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\PropertiesPanelView.cpp">
+				RelativePath="PropertiesPanelView.cpp"
+				>
 			</File>
-		<Filter
-			Name="Header"
-			Filter="">
-			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\PanelControllers.h">
-			</File>
-			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\PanelItems.h">
-			</File>
-			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\PanelMainProperties.h">
-			</File>
-			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\PanelProperties.h">
-			</File>
-			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\PanelUserData.h">
-			</File>
-			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\PanelView.h">
-			</File>
-			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\PanelViewCell.h">
-			</File>
-			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\PropertiesPanelView.h">
-			</File>
-		</Filter>
+			<Filter
+				Name="Header"
+				>
+				<File
+					RelativePath="PanelControllers.h"
+					>
+				</File>
+				<File
+					RelativePath="PanelItems.h"
+					>
+				</File>
+				<File
+					RelativePath="PanelMainProperties.h"
+					>
+				</File>
+				<File
+					RelativePath="PanelProperties.h"
+					>
+				</File>
+				<File
+					RelativePath="PanelUserData.h"
+					>
+				</File>
+				<File
+					RelativePath="PanelView.h"
+					>
+				</File>
+				<File
+					RelativePath="PanelViewCell.h"
+					>
+				</File>
+				<File
+					RelativePath="PropertiesPanelView.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Windows"
-			Filter="">
+			>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\SettingsWindow.h">
+				RelativePath="SettingsWindow.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\WidgetsWindow.h">
+				RelativePath="SettingsWindow.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\SettingsWindow.cpp">
+				RelativePath="WidgetsWindow.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\WidgetsWindow.cpp">
+				RelativePath="WidgetsWindow.h"
+				>
 			</File>
-		<Filter
-			Name="OpenSaveFileDialog"
-			Filter="">
-			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\OpenSaveFileDialog.h">
-			</File>
-			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\OpenSaveFileDialog.cpp">
-			</File>
-		</Filter>
+			<Filter
+				Name="OpenSaveFileDialog"
+				>
+				<File
+					RelativePath="OpenSaveFileDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath="OpenSaveFileDialog.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Parse"
-			Filter="">
+			>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\Parse.h">
+				RelativePath="Parse.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\Parse.cpp">
+				RelativePath="Parse.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="GroupedMessage"
-			Filter="">
+			>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\GroupMessage.h">
+				RelativePath="GroupMessage.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\GroupMessage.cpp">
+				RelativePath="GroupMessage.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="CodeGenerator"
-			Filter="">
+			>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\CodeGenerator.h">
+				RelativePath="CodeGenerator.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\LayoutEditor\CodeGenerator.cpp">
+				RelativePath="CodeGenerator.h"
+				>
 			</File>
 		</Filter>
 	</Files>
