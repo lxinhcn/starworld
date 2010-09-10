@@ -1,14 +1,19 @@
-<?xml version="1.0" encoding = "Windows-1252"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="Plugin_StrangeButton"
 	ProjectGUID="{3FAAADB1-80D6-499A-B003-D22F76224666}"
-	Keyword="Win32Proj">
+	Keyword="Win32Proj"
+	TargetFrameworkVersion="0"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
@@ -16,62 +21,97 @@
 			IntermediateDirectory="Plugin_StrangeButton.dir\Debug"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Plugins\Plugin_StrangeButton\.;"
-				BasicRuntimeChecks="3"
-				CompileAs="2"
-				DebugInformationFormat="3"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="0"
-				Optimization="0"
-				RuntimeLibrary="3"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;Debug\&quot;,Plugin_StrangeButton_EXPORTS"
-				AssemblerListingLocation="Debug"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Debug/Plugin_StrangeButton_d.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Plugins\Plugin_StrangeButton\.;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;Debug\&quot;,Plugin_StrangeButton_EXPORTS"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;Debug\&quot;,Plugin_StrangeButton_EXPORTS"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="0"
+				InlineFunctionExpansion="0"
+				AdditionalIncludeDirectories="..\MyGUIEngine\include;..\Plugins\Plugin_StrangeButton\."
+				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;Debug\&quot;,Plugin_StrangeButton_EXPORTS"
+				ExceptionHandling="1"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="Debug"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Debug/Plugin_StrangeButton_d.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				CompileAs="2"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;Debug\&quot;,Plugin_StrangeButton_EXPORTS"
+				AdditionalIncludeDirectories="MyGUIEngine\include;Plugins\Plugin_StrangeButton\.;"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
 				AdditionalOptions=" /STACK:10000000 /machine:I386 /debug"
 				AdditionalDependencies="$(NOINHERIT) kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib  ..\..\lib\Debug\MyGUIEngine_d.lib D:\SDK\Ogre3D\Dependencies\lib\debug\freetype2311_D.lib "
-				OutputFile="D:\SDK\MyGui\bin\Debug\Plugin_StrangeButton_d.dll"
+				OutputFile="bin\Debug\Plugin_StrangeButton_d.dll"
 				Version="0.0"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:\SDK\MyGui\bin\Debug\Plugin_StrangeButton_d.pdb"
-				GenerateDebugInformation="TRUE"
-				ImportLibrary="D:\SDK\MyGui\lib\Debug\Plugin_StrangeButton_d.lib"/>
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="bin\Debug\Plugin_StrangeButton_d.pdb"
+				ImportLibrary="lib\Debug\Plugin_StrangeButton_d.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -79,59 +119,94 @@
 			IntermediateDirectory="Plugin_StrangeButton.dir\Release"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Plugins\Plugin_StrangeButton\.;"
-				CompileAs="2"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="2"
-				Optimization="2"
-				RuntimeLibrary="2"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;Release\&quot;,Plugin_StrangeButton_EXPORTS"
-				AssemblerListingLocation="Release"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Release/Plugin_StrangeButton.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Plugins\Plugin_StrangeButton\.;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;Release\&quot;,Plugin_StrangeButton_EXPORTS"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;Release\&quot;,Plugin_StrangeButton_EXPORTS"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="2"
+				InlineFunctionExpansion="2"
+				AdditionalIncludeDirectories="..\MyGUIEngine\include;..\Plugins\Plugin_StrangeButton\."
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;Release\&quot;,Plugin_StrangeButton_EXPORTS"
+				ExceptionHandling="1"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="Release"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Release/Plugin_StrangeButton.pdb"
+				WarningLevel="3"
+				CompileAs="2"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;Release\&quot;,Plugin_StrangeButton_EXPORTS"
+				AdditionalIncludeDirectories="MyGUIEngine\include;Plugins\Plugin_StrangeButton\.;"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
 				AdditionalOptions=" /STACK:10000000 /machine:I386"
 				AdditionalDependencies="$(NOINHERIT) kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib  ..\..\lib\Release\MyGUIEngine.lib D:\SDK\Ogre3D\Dependencies\lib\release\freetype2311.lib "
-				OutputFile="D:\SDK\MyGui\bin\Release\Plugin_StrangeButton.dll"
+				OutputFile="bin\Release\Plugin_StrangeButton.dll"
 				Version="0.0"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:\SDK\MyGui\bin\Release\Plugin_StrangeButton.pdb"
-				ImportLibrary="D:\SDK\MyGui\lib\Release\Plugin_StrangeButton.lib"/>
+				ProgramDatabaseFile="bin\Release\Plugin_StrangeButton.pdb"
+				ImportLibrary="lib\Release\Plugin_StrangeButton.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="MinSizeRel|Win32"
@@ -139,59 +214,94 @@
 			IntermediateDirectory="Plugin_StrangeButton.dir\MinSizeRel"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Plugins\Plugin_StrangeButton\.;"
-				CompileAs="2"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="1"
-				Optimization="1"
-				RuntimeLibrary="2"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;,Plugin_StrangeButton_EXPORTS"
-				AssemblerListingLocation="MinSizeRel"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/MinSizeRel/Plugin_StrangeButton.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Plugins\Plugin_StrangeButton\.;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;,Plugin_StrangeButton_EXPORTS"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;,Plugin_StrangeButton_EXPORTS"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="1"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="..\MyGUIEngine\include;..\Plugins\Plugin_StrangeButton\."
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;,Plugin_StrangeButton_EXPORTS"
+				ExceptionHandling="1"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="MinSizeRel"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/MinSizeRel/Plugin_StrangeButton.pdb"
+				WarningLevel="3"
+				CompileAs="2"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;,Plugin_StrangeButton_EXPORTS"
+				AdditionalIncludeDirectories="MyGUIEngine\include;Plugins\Plugin_StrangeButton\.;"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
 				AdditionalOptions=" /STACK:10000000 /machine:I386"
 				AdditionalDependencies="$(NOINHERIT) kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib  ..\..\lib\MinSizeRel\MyGUIEngine.lib D:\SDK\Ogre3D\Dependencies\lib\release\freetype2311.lib "
-				OutputFile="D:\SDK\MyGui\bin\MinSizeRel\Plugin_StrangeButton.dll"
+				OutputFile="bin\MinSizeRel\Plugin_StrangeButton.dll"
 				Version="0.0"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:\SDK\MyGui\bin\MinSizeRel\Plugin_StrangeButton.pdb"
-				ImportLibrary="D:\SDK\MyGui\lib\MinSizeRel\Plugin_StrangeButton.lib"/>
+				ProgramDatabaseFile="bin\MinSizeRel\Plugin_StrangeButton.pdb"
+				ImportLibrary="lib\MinSizeRel\Plugin_StrangeButton.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="RelWithDebInfo|Win32"
@@ -199,141 +309,144 @@
 			IntermediateDirectory="Plugin_StrangeButton.dir\RelWithDebInfo"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Plugins\Plugin_StrangeButton\.;"
-				CompileAs="2"
-				DebugInformationFormat="3"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="1"
-				Optimization="2"
-				RuntimeLibrary="2"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;,Plugin_StrangeButton_EXPORTS"
-				AssemblerListingLocation="RelWithDebInfo"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/RelWithDebInfo/Plugin_StrangeButton.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Plugins\Plugin_StrangeButton\.;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;,Plugin_StrangeButton_EXPORTS"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;,Plugin_StrangeButton_EXPORTS"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="2"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="..\MyGUIEngine\include;..\Plugins\Plugin_StrangeButton\."
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;,Plugin_StrangeButton_EXPORTS"
+				ExceptionHandling="1"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="RelWithDebInfo"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/RelWithDebInfo/Plugin_StrangeButton.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				CompileAs="2"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_USRDLL,MYGUI_BUILD_DLL,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;,Plugin_StrangeButton_EXPORTS"
+				AdditionalIncludeDirectories="MyGUIEngine\include;Plugins\Plugin_StrangeButton\.;"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
 				AdditionalOptions=" /STACK:10000000 /machine:I386 /debug"
 				AdditionalDependencies="$(NOINHERIT) kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib  ..\..\lib\RelWithDebInfo\MyGUIEngine.lib D:\SDK\Ogre3D\Dependencies\lib\release\freetype2311.lib "
-				OutputFile="D:\SDK\MyGui\bin\RelWithDebInfo\Plugin_StrangeButton.dll"
+				OutputFile="bin\RelWithDebInfo\Plugin_StrangeButton.dll"
 				Version="0.0"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:\SDK\MyGui\bin\RelWithDebInfo\Plugin_StrangeButton.pdb"
-				GenerateDebugInformation="TRUE"
-				ImportLibrary="D:\SDK\MyGui\lib\RelWithDebInfo\Plugin_StrangeButton.lib"/>
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="bin\RelWithDebInfo\Plugin_StrangeButton.pdb"
+				ImportLibrary="lib\RelWithDebInfo\Plugin_StrangeButton.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
+	<References>
+	</References>
 	<Files>
-			<File
-				RelativePath="D:\SDK\MyGui\Plugins\Plugin_StrangeButton\CMakeLists.txt">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Plugins/Plugin_StrangeButton/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Plugins\Plugin_StrangeButton\CMakeLists.txt;D:\SDK\MyGui\Plugins\Plugin_StrangeButton\Plugin_StrangeButton.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Plugins\Plugin_StrangeButton\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Plugins/Plugin_StrangeButton/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Plugins\Plugin_StrangeButton\CMakeLists.txt;D:\SDK\MyGui\Plugins\Plugin_StrangeButton\Plugin_StrangeButton.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Plugins\Plugin_StrangeButton\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MinSizeRel|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Plugins/Plugin_StrangeButton/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Plugins\Plugin_StrangeButton\CMakeLists.txt;D:\SDK\MyGui\Plugins\Plugin_StrangeButton\Plugin_StrangeButton.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Plugins\Plugin_StrangeButton\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RelWithDebInfo|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Plugins/Plugin_StrangeButton/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Plugins\Plugin_StrangeButton\CMakeLists.txt;D:\SDK\MyGui\Plugins\Plugin_StrangeButton\Plugin_StrangeButton.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Plugins\Plugin_StrangeButton\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
-			</File>
 		<Filter
 			Name="Source Files"
-			Filter="">
-		<Filter
-			Name="Plugin"
-			Filter="">
-			<File
-				RelativePath="D:\SDK\MyGui\Plugins\Plugin_StrangeButton\Plugin.cpp">
-			</File>
-			<File
-				RelativePath="D:\SDK\MyGui\Plugins\Plugin_StrangeButton\Plugin_Export.cpp">
-			</File>
-		</Filter>
-		<Filter
-			Name="Widget"
-			Filter="">
-			<File
-				RelativePath="D:\SDK\MyGui\Plugins\Plugin_StrangeButton\StrangeButton.cpp">
-			</File>
-		</Filter>
+			>
+			<Filter
+				Name="Plugin"
+				>
+				<File
+					RelativePath="Plugins\Plugin_StrangeButton\Plugin.cpp"
+					>
+				</File>
+				<File
+					RelativePath="Plugins\Plugin_StrangeButton\Plugin_Export.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Widget"
+				>
+				<File
+					RelativePath="Plugins\Plugin_StrangeButton\StrangeButton.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="">
-		<Filter
-			Name="Plugin"
-			Filter="">
-			<File
-				RelativePath="D:\SDK\MyGui\Plugins\Plugin_StrangeButton\Plugin.h">
-			</File>
-		</Filter>
-		<Filter
-			Name="Widget"
-			Filter="">
-			<File
-				RelativePath="D:\SDK\MyGui\Plugins\Plugin_StrangeButton\StrangeButton.h">
-			</File>
-		</Filter>
+			>
+			<Filter
+				Name="Plugin"
+				>
+				<File
+					RelativePath="Plugins\Plugin_StrangeButton\Plugin.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Widget"
+				>
+				<File
+					RelativePath="Plugins\Plugin_StrangeButton\StrangeButton.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

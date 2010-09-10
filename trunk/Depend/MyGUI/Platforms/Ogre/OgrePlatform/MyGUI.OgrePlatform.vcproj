@@ -266,53 +266,53 @@
 			Name="Source Files"
 			Filter="">
 			<File
-				RelativePath="D:\SDK\MyGui\Platforms\Ogre\OgrePlatform\src\MyGUI_OgreDataManager.cpp">
+				RelativePath="src\MyGUI_OgreDataManager.cpp">
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Platforms\Ogre\OgrePlatform\src\MyGUI_OgreDataStream.cpp">
+				RelativePath="src\MyGUI_OgreDataStream.cpp">
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Platforms\Ogre\OgrePlatform\src\MyGUI_OgreRenderManager.cpp">
+				RelativePath="src\MyGUI_OgreRenderManager.cpp">
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Platforms\Ogre\OgrePlatform\src\MyGUI_OgreRTTexture.cpp">
+				RelativePath="src\MyGUI_OgreRTTexture.cpp">
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Platforms\Ogre\OgrePlatform\src\MyGUI_OgreTexture.cpp">
+				RelativePath="src\MyGUI_OgreTexture.cpp">
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Platforms\Ogre\OgrePlatform\src\MyGUI_OgreVertexBuffer.cpp">
+				RelativePath="src\MyGUI_OgreVertexBuffer.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="D:\SDK\MyGui\Platforms\Ogre\OgrePlatform\include\MyGUI_LastHeader.h">
+				RelativePath="include\MyGUI_LastHeader.h">
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Platforms\Ogre\OgrePlatform\include\MyGUI_OgreDataManager.h">
+				RelativePath="include\MyGUI_OgreDataManager.h">
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Platforms\Ogre\OgrePlatform\include\MyGUI_OgreDataStream.h">
+				RelativePath="include\MyGUI_OgreDataStream.h">
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Platforms\Ogre\OgrePlatform\include\MyGUI_OgreDiagnostic.h">
+				RelativePath="include\MyGUI_OgreDiagnostic.h">
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Platforms\Ogre\OgrePlatform\include\MyGUI_OgrePlatform.h">
+				RelativePath="include\MyGUI_OgrePlatform.h">
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Platforms\Ogre\OgrePlatform\include\MyGUI_OgreRenderManager.h">
+				RelativePath="include\MyGUI_OgreRenderManager.h">
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Platforms\Ogre\OgrePlatform\include\MyGUI_OgreRTTexture.h">
+				RelativePath="include\MyGUI_OgreRTTexture.h">
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Platforms\Ogre\OgrePlatform\include\MyGUI_OgreTexture.h">
+				RelativePath="include\MyGUI_OgreTexture.h">
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Platforms\Ogre\OgrePlatform\include\MyGUI_OgreVertexBuffer.h">
+				RelativePath="include\MyGUI_OgreVertexBuffer.h">
 			</File>
 		</Filter>
 	</Files>

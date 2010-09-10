@@ -1,14 +1,19 @@
-<?xml version="1.0" encoding = "Windows-1252"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="SkinEditor"
 	ProjectGUID="{DEC38180-49B4-4C60-BD6D-366621E07AFE}"
-	Keyword="Win32Proj">
+	Keyword="Win32Proj"
+	TargetFrameworkVersion="0"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
@@ -16,51 +21,64 @@
 			IntermediateDirectory="SkinEditor.dir\Debug"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\SkinEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Input\Win32;"
-				BasicRuntimeChecks="3"
-				CompileAs="2"
-				DebugInformationFormat="3"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="0"
-				Optimization="0"
-				RuntimeLibrary="3"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"
-				AssemblerListingLocation="Debug"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Debug/SkinEditor.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\SkinEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Input\Win32;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="0"
+				InlineFunctionExpansion="0"
+				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include"
+				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"
+				ExceptionHandling="1"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="Debug"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Debug/SkinEditor.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\SkinEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Input\Win32;"
+			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/Debug"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
+				CommandLine=""
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
@@ -70,10 +88,32 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 				Version="0.0"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:/SDK/MyGui/bin/Debug/SkinEditor.pdb"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="D:/SDK/MyGui/bin/Debug/SkinEditor.pdb"
 				SubSystem="2"
-				ImportLibrary="D:\SDK\MyGui\lib\Debug\SkinEditor.lib"/>
+				ImportLibrary="D:\SDK\MyGui\lib\Debug\SkinEditor.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -81,49 +121,62 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 			IntermediateDirectory="SkinEditor.dir\Release"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\SkinEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Input\Win32;"
-				CompileAs="2"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="2"
-				Optimization="2"
-				RuntimeLibrary="2"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"
-				AssemblerListingLocation="Release"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Release/SkinEditor.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\SkinEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Input\Win32;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="2"
+				InlineFunctionExpansion="2"
+				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"
+				ExceptionHandling="1"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="Release"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Release/SkinEditor.pdb"
+				WarningLevel="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\SkinEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Input\Win32;"
+			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/Release"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
+				CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/Release"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
@@ -133,9 +186,31 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 				Version="0.0"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:/SDK/MyGui/bin/Release/SkinEditor.pdb"
+				ProgramDatabaseFile="D:/SDK/MyGui/bin/Release/SkinEditor.pdb"
 				SubSystem="2"
-				ImportLibrary="D:\SDK\MyGui\lib\Release\SkinEditor.lib"/>
+				ImportLibrary="D:\SDK\MyGui\lib\Release\SkinEditor.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="MinSizeRel|Win32"
@@ -143,49 +218,62 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 			IntermediateDirectory="SkinEditor.dir\MinSizeRel"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\SkinEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Input\Win32;"
-				CompileAs="2"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="1"
-				Optimization="1"
-				RuntimeLibrary="2"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
-				AssemblerListingLocation="MinSizeRel"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/MinSizeRel/SkinEditor.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\SkinEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Input\Win32;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="1"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
+				ExceptionHandling="1"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="MinSizeRel"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/MinSizeRel/SkinEditor.pdb"
+				WarningLevel="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\SkinEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Input\Win32;"
+			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/MinSizeRel"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
+				CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/MinSizeRel"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
@@ -195,9 +283,31 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 				Version="0.0"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:/SDK/MyGui/bin/MinSizeRel/SkinEditor.pdb"
+				ProgramDatabaseFile="D:/SDK/MyGui/bin/MinSizeRel/SkinEditor.pdb"
 				SubSystem="2"
-				ImportLibrary="D:\SDK\MyGui\lib\MinSizeRel\SkinEditor.lib"/>
+				ImportLibrary="D:\SDK\MyGui\lib\MinSizeRel\SkinEditor.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="RelWithDebInfo|Win32"
@@ -205,50 +315,63 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 			IntermediateDirectory="SkinEditor.dir\RelWithDebInfo"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\SkinEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Input\Win32;"
-				CompileAs="2"
-				DebugInformationFormat="3"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="1"
-				Optimization="2"
-				RuntimeLibrary="2"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
-				AssemblerListingLocation="RelWithDebInfo"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/RelWithDebInfo/SkinEditor.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\SkinEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Input\Win32;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="2"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
+				ExceptionHandling="1"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="RelWithDebInfo"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/RelWithDebInfo/SkinEditor.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\SkinEditor\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\SkinEditor\..\..\Common\Input\Win32;"
+			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/RelWithDebInfo"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
+				CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/RelWithDebInfo"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
@@ -258,479 +381,603 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 				Version="0.0"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:/SDK/MyGui/bin/RelWithDebInfo/SkinEditor.pdb"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="D:/SDK/MyGui/bin/RelWithDebInfo/SkinEditor.pdb"
 				SubSystem="2"
-				ImportLibrary="D:\SDK\MyGui\lib\RelWithDebInfo\SkinEditor.lib"/>
+				ImportLibrary="D:\SDK\MyGui\lib\RelWithDebInfo\SkinEditor.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
+	<References>
+	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="">
+			>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\Application.cpp">
+				RelativePath="ActionManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SkinItem.cpp">
+				RelativePath="Application.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SkinManager.cpp">
+				RelativePath="AreaSelectorControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\MainPane.cpp">
+				RelativePath="BackgroundControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SkinControl.cpp">
+				RelativePath="ColourPanel.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SkinListControl.cpp">
+				RelativePath="CommandManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\TextFieldControl.cpp">
+				RelativePath="Dialog.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\Property.cpp">
+				RelativePath="DialogManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertySet.cpp">
+				RelativePath="EditorState.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SkinPropertyControl.cpp">
+				RelativePath="ExportManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SkinTextureControl.cpp">
+				RelativePath="HorizontalSelectorBlackControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\MyGUI_FilterNoneSkin.cpp">
+				RelativePath="HorizontalSelectorControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\AreaSelectorControl.cpp">
+				RelativePath="HotKeyManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PositionSelectorControl.cpp">
+				RelativePath="MainMenuControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PositionSelectorBlackControl.cpp">
+				RelativePath="MainPane.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\HorizontalSelectorControl.cpp">
+				RelativePath="MessageBoxFadeControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\HorizontalSelectorBlackControl.cpp">
+				RelativePath="MessageBoxManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\VerticalSelectorControl.cpp">
+				RelativePath="MyGUI_FilterNoneSkin.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\VerticalSelectorBlackControl.cpp">
+				RelativePath="OpenSaveFileDialog.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\StateControl.cpp">
+				RelativePath="PositionSelectorBlackControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\StateListControl.cpp">
+				RelativePath="PositionSelectorControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\StateItem.cpp">
+				RelativePath="Property.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\StatePropertyControl.cpp">
+				RelativePath="PropertyAlignControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\StateTextureControl.cpp">
+				RelativePath="PropertyBoolControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SeparatorItem.cpp">
+				RelativePath="PropertyColourControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SeparatorListControl.cpp">
+				RelativePath="PropertyControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SeparatorControl.cpp">
+				RelativePath="PropertyInt2Control.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyControl.cpp">
+				RelativePath="PropertyInt4Control.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyBoolControl.cpp">
+				RelativePath="PropertyIntControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyAlignControl.cpp">
+				RelativePath="PropertyRegionTypeControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyInt4Control.cpp">
+				RelativePath="PropertySet.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyInt2Control.cpp">
+				RelativePath="PropertyTexturesControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyIntControl.cpp">
+				RelativePath="RecentFilesManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyRegionTypeControl.cpp">
+				RelativePath="RegionControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyTexturesControl.cpp">
+				RelativePath="RegionItem.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyColourControl.cpp">
+				RelativePath="RegionListControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SeparatorPropertyControl.cpp">
+				RelativePath="RegionPropertyControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\TextureControl.cpp">
+				RelativePath="RegionTextureControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SeparatorTextureControl.cpp">
+				RelativePath="SelectorControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SelectorControl.cpp">
+				RelativePath="SeparatorControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\RegionItem.cpp">
+				RelativePath="SeparatorItem.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\RegionControl.cpp">
+				RelativePath="SeparatorListControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\RegionListControl.cpp">
+				RelativePath="SeparatorPropertyControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\RegionPropertyControl.cpp">
+				RelativePath="SeparatorTextureControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\RegionTextureControl.cpp">
+				RelativePath="SettingsManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\ActionManager.cpp">
+				RelativePath="SettingsSector.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\MainMenuControl.cpp">
+				RelativePath="SettingsWindow.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\OpenSaveFileDialog.cpp">
+				RelativePath="SkinControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\CommandManager.cpp">
+				RelativePath="SkinItem.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\ColourPanel.cpp">
+				RelativePath="SkinListControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\Dialog.cpp">
+				RelativePath="SkinManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\TestWindow.cpp">
+				RelativePath="SkinPropertyControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\BackgroundControl.cpp">
+				RelativePath="SkinTextureControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\ExportManager.cpp">
+				RelativePath="StateControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\MessageBoxManager.cpp">
+				RelativePath="StateItem.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\DialogManager.cpp">
+				RelativePath="StateListControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\MessageBoxFadeControl.cpp">
+				RelativePath="StateManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\HotKeyManager.cpp">
+				RelativePath="StatePropertyControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\StateManager.cpp">
+				RelativePath="StateTextureControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\EditorState.cpp">
+				RelativePath="TestState.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\TestState.cpp">
+				RelativePath="TestWindow.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SettingsManager.cpp">
+				RelativePath="TextFieldControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\RecentFilesManager.cpp">
+				RelativePath="TextureControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SettingsSector.cpp">
+				RelativePath="TextureToolControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SettingsWindow.cpp">
+				RelativePath="VerticalSelectorBlackControl.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\TextureToolControl.cpp">
+				RelativePath="VerticalSelectorControl.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="">
+			>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\Binary.h">
+				RelativePath="ActionManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\Application.h">
+				RelativePath="Application.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SkinItem.h">
+				RelativePath="AreaSelectorControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SkinManager.h">
+				RelativePath="BackgroundControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\MainPane.h">
+				RelativePath="Binary.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SkinControl.h">
+				RelativePath="ColourPanel.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SkinListControl.h">
+				RelativePath="CommandManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\TextFieldControl.h">
+				RelativePath="Dialog.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\Property.h">
+				RelativePath="DialogManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertySet.h">
+				RelativePath="EditorState.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SkinPropertyControl.h">
+				RelativePath="ExportManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SkinTextureControl.h">
+				RelativePath="HorizontalSelectorBlackControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\MyGUI_FilterNoneSkin.h">
+				RelativePath="HorizontalSelectorControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\AreaSelectorControl.h">
+				RelativePath="HotKeyCommand.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PositionSelectorControl.h">
+				RelativePath="HotKeyManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PositionSelectorBlackControl.h">
+				RelativePath="ItemHolder.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\HorizontalSelectorControl.h">
+				RelativePath="Localise.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\HorizontalSelectorBlackControl.h">
+				RelativePath="MainMenuControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\VerticalSelectorControl.h">
+				RelativePath="MainPane.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\VerticalSelectorBlackControl.h">
+				RelativePath="MessageBoxFadeControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\StateControl.h">
+				RelativePath="MessageBoxManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\StateListControl.h">
+				RelativePath="MyGUI_FilterNoneSkin.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\StateItem.h">
+				RelativePath="OpenSaveFileDialog.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\StatePropertyControl.h">
+				RelativePath="PositionSelectorBlackControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\StateTextureControl.h">
+				RelativePath="PositionSelectorControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SeparatorItem.h">
+				RelativePath="Property.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SeparatorListControl.h">
+				RelativePath="PropertyAdvisor.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SeparatorControl.h">
+				RelativePath="PropertyAlignControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\ItemHolder.h">
+				RelativePath="PropertyBoolControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyAdvisor.h">
+				RelativePath="PropertyColourControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyControl.h">
+				RelativePath="PropertyControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyBoolControl.h">
+				RelativePath="PropertyInt2Control.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyAlignControl.h">
+				RelativePath="PropertyInt4Control.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyInt4Control.h">
+				RelativePath="PropertyIntControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyInt2Control.h">
+				RelativePath="PropertyRegionTypeControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyIntControl.h">
+				RelativePath="PropertySet.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyRegionTypeControl.h">
+				RelativePath="PropertyTexturesControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyTexturesControl.h">
+				RelativePath="RecentFilesManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\PropertyColourControl.h">
+				RelativePath="RegionControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SeparatorPropertyControl.h">
+				RelativePath="RegionItem.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\TextureControl.h">
+				RelativePath="RegionListControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SeparatorTextureControl.h">
+				RelativePath="RegionPropertyControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SelectorControl.h">
+				RelativePath="RegionTextureControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\RegionItem.h">
+				RelativePath="SelectorControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\RegionControl.h">
+				RelativePath="SeparatorControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\RegionListControl.h">
+				RelativePath="SeparatorItem.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\RegionPropertyControl.h">
+				RelativePath="SeparatorListControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\RegionTextureControl.h">
+				RelativePath="SeparatorPropertyControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\ActionManager.h">
+				RelativePath="SeparatorTextureControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\MainMenuControl.h">
+				RelativePath="SettingsManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\OpenSaveFileDialog.h">
+				RelativePath="SettingsSector.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\CommandManager.h">
+				RelativePath="SettingsWindow.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\ColourPanel.h">
+				RelativePath="SkinControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\Dialog.h">
+				RelativePath="SkinItem.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\TestWindow.h">
+				RelativePath="SkinListControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\BackgroundControl.h">
+				RelativePath="SkinManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\ExportManager.h">
+				RelativePath="SkinPropertyControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\Localise.h">
+				RelativePath="SkinTextureControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\MessageBoxManager.h">
+				RelativePath="StateControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\DialogManager.h">
+				RelativePath="StateController.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\MessageBoxFadeControl.h">
+				RelativePath="StateItem.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\HotKeyCommand.h">
+				RelativePath="StateListControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\HotKeyManager.h">
+				RelativePath="StateManager.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\StateManager.h">
+				RelativePath="StatePropertyControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\StateController.h">
+				RelativePath="StateTextureControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\EditorState.h">
+				RelativePath="TestState.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\TestState.h">
+				RelativePath="TestWindow.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SettingsManager.h">
+				RelativePath="TextFieldControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\RecentFilesManager.h">
+				RelativePath="TextureControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SettingsSector.h">
+				RelativePath="TextureToolControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\SettingsWindow.h">
+				RelativePath="VerticalSelectorBlackControl.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\TextureToolControl.h">
+				RelativePath="VerticalSelectorControl.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Resources"
-			Filter="">
+			>
 			<File
-				RelativePath="D:\SDK\MyGui\Common\Base\BaseResource.rc">
-			</File>
-			<File
-				RelativePath="D:\SDK\MyGui\Tools\SkinEditor\CMakeLists.txt">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Tools/SkinEditor/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Tools\SkinEditor\CMakeLists.txt;D:\SDK\MyGui\Tools\SkinEditor\SkinEditor.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Tools\SkinEditor\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Tools/SkinEditor/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Tools\SkinEditor\CMakeLists.txt;D:\SDK\MyGui\Tools\SkinEditor\SkinEditor.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Tools\SkinEditor\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MinSizeRel|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Tools/SkinEditor/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Tools\SkinEditor\CMakeLists.txt;D:\SDK\MyGui\Tools\SkinEditor\SkinEditor.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Tools\SkinEditor\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RelWithDebInfo|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Tools/SkinEditor/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Tools\SkinEditor\CMakeLists.txt;D:\SDK\MyGui\Tools\SkinEditor\SkinEditor.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Tools\SkinEditor\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
+				RelativePath="Common\Base\BaseResource.rc"
+				>
 			</File>
 		</Filter>
 	</Files>

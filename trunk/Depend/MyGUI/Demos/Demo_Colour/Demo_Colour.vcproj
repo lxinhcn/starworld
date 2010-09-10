@@ -1,14 +1,19 @@
-<?xml version="1.0" encoding = "Windows-1252"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="Demo_Colour"
 	ProjectGUID="{8C187E6F-B315-4EC8-9240-B61A95B0E300}"
-	Keyword="Win32Proj">
+	Keyword="Win32Proj"
+	TargetFrameworkVersion="0"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
@@ -16,51 +21,64 @@
 			IntermediateDirectory="Demo_Colour.dir\Debug"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Demos\Demo_Colour\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Input\Win32;"
-				BasicRuntimeChecks="3"
-				CompileAs="2"
-				DebugInformationFormat="3"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="0"
-				Optimization="0"
-				RuntimeLibrary="3"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"
-				AssemblerListingLocation="Debug"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Debug/Demo_Colour.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Demos\Demo_Colour\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Input\Win32;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="0"
+				InlineFunctionExpansion="0"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Demos\Demo_Colour\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Input\Win32;"
+				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"
+				ExceptionHandling="1"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="Debug"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Debug/Demo_Colour.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Demos\Demo_Colour\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Input\Win32;"
+			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/Debug"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
+				CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/Debug"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
@@ -70,10 +88,32 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 				Version="0.0"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:/SDK/MyGui/bin/Debug/Demo_Colour.pdb"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="D:/SDK/MyGui/bin/Debug/Demo_Colour.pdb"
 				SubSystem="2"
-				ImportLibrary="D:\SDK\MyGui\lib\Debug\Demo_Colour.lib"/>
+				ImportLibrary="D:\SDK\MyGui\lib\Debug\Demo_Colour.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -81,49 +121,62 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 			IntermediateDirectory="Demo_Colour.dir\Release"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Demos\Demo_Colour\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Input\Win32;"
-				CompileAs="2"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="2"
-				Optimization="2"
-				RuntimeLibrary="2"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"
-				AssemblerListingLocation="Release"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Release/Demo_Colour.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Demos\Demo_Colour\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Input\Win32;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="2"
+				InlineFunctionExpansion="2"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Demos\Demo_Colour\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Input\Win32;"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"
+				ExceptionHandling="1"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="Release"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Release/Demo_Colour.pdb"
+				WarningLevel="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Demos\Demo_Colour\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Input\Win32;"
+			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/Release"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
+				CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/Release"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
@@ -133,9 +186,31 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 				Version="0.0"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:/SDK/MyGui/bin/Release/Demo_Colour.pdb"
+				ProgramDatabaseFile="D:/SDK/MyGui/bin/Release/Demo_Colour.pdb"
 				SubSystem="2"
-				ImportLibrary="D:\SDK\MyGui\lib\Release\Demo_Colour.lib"/>
+				ImportLibrary="D:\SDK\MyGui\lib\Release\Demo_Colour.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="MinSizeRel|Win32"
@@ -143,49 +218,62 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 			IntermediateDirectory="Demo_Colour.dir\MinSizeRel"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Demos\Demo_Colour\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Input\Win32;"
-				CompileAs="2"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="1"
-				Optimization="1"
-				RuntimeLibrary="2"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
-				AssemblerListingLocation="MinSizeRel"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/MinSizeRel/Demo_Colour.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Demos\Demo_Colour\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Input\Win32;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="1"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Demos\Demo_Colour\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Input\Win32;"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
+				ExceptionHandling="1"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="MinSizeRel"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/MinSizeRel/Demo_Colour.pdb"
+				WarningLevel="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Demos\Demo_Colour\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Input\Win32;"
+			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/MinSizeRel"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
+				CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/MinSizeRel"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
@@ -195,9 +283,31 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 				Version="0.0"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:/SDK/MyGui/bin/MinSizeRel/Demo_Colour.pdb"
+				ProgramDatabaseFile="D:/SDK/MyGui/bin/MinSizeRel/Demo_Colour.pdb"
 				SubSystem="2"
-				ImportLibrary="D:\SDK\MyGui\lib\MinSizeRel\Demo_Colour.lib"/>
+				ImportLibrary="D:\SDK\MyGui\lib\MinSizeRel\Demo_Colour.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="RelWithDebInfo|Win32"
@@ -205,50 +315,63 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 			IntermediateDirectory="Demo_Colour.dir\RelWithDebInfo"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Demos\Demo_Colour\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Input\Win32;"
-				CompileAs="2"
-				DebugInformationFormat="3"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="1"
-				Optimization="2"
-				RuntimeLibrary="2"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
-				AssemblerListingLocation="RelWithDebInfo"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/RelWithDebInfo/Demo_Colour.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Demos\Demo_Colour\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Input\Win32;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="2"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Demos\Demo_Colour\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Input\Win32;"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
+				ExceptionHandling="1"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="RelWithDebInfo"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/RelWithDebInfo/Demo_Colour.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Demos\Demo_Colour\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Demos\Demo_Colour\..\..\Common\Input\Win32;"
+			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/RelWithDebInfo"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
+				CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/RelWithDebInfo"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
@@ -258,83 +381,75 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 				Version="0.0"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:/SDK/MyGui/bin/RelWithDebInfo/Demo_Colour.pdb"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="D:/SDK/MyGui/bin/RelWithDebInfo/Demo_Colour.pdb"
 				SubSystem="2"
-				ImportLibrary="D:\SDK\MyGui\lib\RelWithDebInfo\Demo_Colour.lib"/>
+				ImportLibrary="D:\SDK\MyGui\lib\RelWithDebInfo\Demo_Colour.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
+	<References>
+	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="">
+			>
 			<File
-				RelativePath="D:\SDK\MyGui\Demos\Demo_Colour\ColourPanel.cpp">
+				RelativePath="D:\SDK\MyGui\Demos\Demo_Colour\ColourPanel.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Demos\Demo_Colour\DemoKeeper.cpp">
+				RelativePath="D:\SDK\MyGui\Demos\Demo_Colour\DemoKeeper.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Demos\Demo_Colour\EditPanel.cpp">
+				RelativePath="D:\SDK\MyGui\Demos\Demo_Colour\EditPanel.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="">
+			>
 			<File
-				RelativePath="D:\SDK\MyGui\Demos\Demo_Colour\ColourPanel.h">
+				RelativePath="D:\SDK\MyGui\Demos\Demo_Colour\ColourPanel.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Demos\Demo_Colour\DemoKeeper.h">
+				RelativePath="D:\SDK\MyGui\Demos\Demo_Colour\DemoKeeper.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Demos\Demo_Colour\EditPanel.h">
+				RelativePath="D:\SDK\MyGui\Demos\Demo_Colour\EditPanel.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Resources"
-			Filter="">
+			>
 			<File
-				RelativePath="D:\SDK\MyGui\Common\Base\BaseResource.rc">
-			</File>
-			<File
-				RelativePath="D:\SDK\MyGui\Demos\Demo_Colour\CMakeLists.txt">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Demos/Demo_Colour/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Demos\Demo_Colour\CMakeLists.txt;D:\SDK\MyGui\Demos\Demo_Colour\Demo_Colour.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Demos\Demo_Colour\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Demos/Demo_Colour/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Demos\Demo_Colour\CMakeLists.txt;D:\SDK\MyGui\Demos\Demo_Colour\Demo_Colour.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Demos\Demo_Colour\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MinSizeRel|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Demos/Demo_Colour/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Demos\Demo_Colour\CMakeLists.txt;D:\SDK\MyGui\Demos\Demo_Colour\Demo_Colour.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Demos\Demo_Colour\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RelWithDebInfo|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Demos/Demo_Colour/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Demos\Demo_Colour\CMakeLists.txt;D:\SDK\MyGui\Demos\Demo_Colour\Demo_Colour.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Demos\Demo_Colour\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
+				RelativePath="D:\SDK\MyGui\Common\Base\BaseResource.rc"
+				>
 			</File>
 		</Filter>
 	</Files>

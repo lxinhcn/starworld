@@ -1,14 +1,19 @@
-<?xml version="1.0" encoding = "Windows-1252"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="FontViewer"
 	ProjectGUID="{0E668BEE-EDD5-4DFC-B2F7-81CB2CE0CA5C}"
-	Keyword="Win32Proj">
+	Keyword="Win32Proj"
+	TargetFrameworkVersion="0"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
@@ -16,51 +21,64 @@
 			IntermediateDirectory="FontViewer.dir\Debug"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\FontViewer\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Input\Win32;"
-				BasicRuntimeChecks="3"
-				CompileAs="2"
-				DebugInformationFormat="3"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="0"
-				Optimization="0"
-				RuntimeLibrary="3"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"
-				AssemblerListingLocation="Debug"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Debug/FontViewer.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\FontViewer\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Input\Win32;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="0"
+				InlineFunctionExpansion="0"
+				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include"
+				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"
+				ExceptionHandling="1"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="Debug"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Debug/FontViewer.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\FontViewer\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Input\Win32;"
+			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/Debug"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
+				CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/Debug"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
@@ -70,10 +88,32 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 				Version="0.0"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:/SDK/MyGui/bin/Debug/FontViewer.pdb"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="D:/SDK/MyGui/bin/Debug/FontViewer.pdb"
 				SubSystem="2"
-				ImportLibrary="D:\SDK\MyGui\lib\Debug\FontViewer.lib"/>
+				ImportLibrary="D:\SDK\MyGui\lib\Debug\FontViewer.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -81,49 +121,62 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 			IntermediateDirectory="FontViewer.dir\Release"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\FontViewer\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Input\Win32;"
-				CompileAs="2"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="2"
-				Optimization="2"
-				RuntimeLibrary="2"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"
-				AssemblerListingLocation="Release"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Release/FontViewer.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\FontViewer\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Input\Win32;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="2"
+				InlineFunctionExpansion="2"
+				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"
+				ExceptionHandling="1"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="Release"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/Release/FontViewer.pdb"
+				WarningLevel="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\FontViewer\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Input\Win32;"
+			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/Release"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
+				CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/Release"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
@@ -133,9 +186,31 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 				Version="0.0"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:/SDK/MyGui/bin/Release/FontViewer.pdb"
+				ProgramDatabaseFile="D:/SDK/MyGui/bin/Release/FontViewer.pdb"
 				SubSystem="2"
-				ImportLibrary="D:\SDK\MyGui\lib\Release\FontViewer.lib"/>
+				ImportLibrary="D:\SDK\MyGui\lib\Release\FontViewer.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="MinSizeRel|Win32"
@@ -143,49 +218,62 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 			IntermediateDirectory="FontViewer.dir\MinSizeRel"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\FontViewer\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Input\Win32;"
-				CompileAs="2"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="1"
-				Optimization="1"
-				RuntimeLibrary="2"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
-				AssemblerListingLocation="MinSizeRel"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/MinSizeRel/FontViewer.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\FontViewer\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Input\Win32;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="1"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
+				ExceptionHandling="1"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="MinSizeRel"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/MinSizeRel/FontViewer.pdb"
+				WarningLevel="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\FontViewer\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Input\Win32;"
+			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/MinSizeRel"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
+				CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/MinSizeRel"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
@@ -195,9 +283,31 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 				Version="0.0"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:/SDK/MyGui/bin/MinSizeRel/FontViewer.pdb"
+				ProgramDatabaseFile="D:/SDK/MyGui/bin/MinSizeRel/FontViewer.pdb"
 				SubSystem="2"
-				ImportLibrary="D:\SDK\MyGui\lib\MinSizeRel\FontViewer.lib"/>
+				ImportLibrary="D:\SDK\MyGui\lib\MinSizeRel\FontViewer.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="RelWithDebInfo|Win32"
@@ -205,50 +315,63 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 			IntermediateDirectory="FontViewer.dir\RelWithDebInfo"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
 			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions=" /Zm1000 /fp:fast"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\FontViewer\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Input\Win32;"
-				CompileAs="2"
-				DebugInformationFormat="3"
-				ExceptionHandling="1"
-				InlineFunctionExpansion="1"
-				Optimization="2"
-				RuntimeLibrary="2"
-				RuntimeTypeInfo="TRUE"
-				WarningLevel="3"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
-				AssemblerListingLocation="RelWithDebInfo"
-				ObjectFile="$(IntDir)\"
-				ProgramDataBaseFileName="D:/SDK/MyGui/bin/RelWithDebInfo/FontViewer.pdb"
-/>
+				Name="VCPreBuildEventTool"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\FontViewer\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Input\Win32;"
-				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"/>
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
-				MkTypLibCompatible="FALSE"
+				MkTypLibCompatible="false"
 				TargetEnvironment="1"
-				GenerateStublessProxies="TRUE"
+				GenerateStublessProxies="true"
 				TypeLibraryName="$(InputName).tlb"
 				OutputDirectory="$(IntDir)"
 				HeaderFileName="$(InputName).h"
 				DLLDataFileName=""
 				InterfaceIdentifierFileName="$(InputName)_i.c"
-				ProxyFileName="$(InputName)_p.c"/>
+				ProxyFileName="$(InputName)_p.c"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000 /fp:fast"
+				Optimization="2"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
+				ExceptionHandling="1"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="true"
+				AssemblerListingLocation="RelWithDebInfo"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="D:/SDK/MyGui/bin/RelWithDebInfo/FontViewer.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				CompileAs="2"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
+				AdditionalIncludeDirectories="D:\SDK\MyGui\MyGUIEngine\include;D:\SDK\MyGui\Tools\FontViewer\.;D:\SDK\MyGui\Common;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Base\DirectX;D:\SDK\MyGui\Platforms\DirectX\DirectXPlatform\include;D:\SDK\D3D9Mar09\Include;D:\SDK\MyGui\Tools\FontViewer\..\..\Common\Input\Win32;"
+			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/RelWithDebInfo"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
+				CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_directory D:/SDK/MyGui/lib/RelWithDebInfo"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
@@ -258,89 +381,83 @@ CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -E make_direct
 				Version="0.0"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
-				ProgramDataBaseFile="D:/SDK/MyGui/bin/RelWithDebInfo/FontViewer.pdb"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="D:/SDK/MyGui/bin/RelWithDebInfo/FontViewer.pdb"
 				SubSystem="2"
-				ImportLibrary="D:\SDK\MyGui\lib\RelWithDebInfo\FontViewer.lib"/>
+				ImportLibrary="D:\SDK\MyGui\lib\RelWithDebInfo\FontViewer.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
+	<References>
+	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="">
+			>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\FontViewer\DemoKeeper.cpp">
+				RelativePath="DemoKeeper.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\FontViewer\FontPanel.cpp">
+				RelativePath="FontPanel.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\FontViewer\FontView.cpp">
+				RelativePath="FontView.cpp"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\FontViewer\TextureView.cpp">
+				RelativePath="TextureView.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="">
+			>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\FontViewer\DemoKeeper.h">
+				RelativePath="DemoKeeper.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\FontViewer\FontPanel.h">
+				RelativePath="FontPanel.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\FontViewer\FontView.h">
+				RelativePath="FontView.h"
+				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Tools\FontViewer\TextureView.h">
+				RelativePath="TextureView.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Resources"
-			Filter="">
+			>
 			<File
-				RelativePath="D:\SDK\MyGui\Common\Base\BaseResource.rc">
-			</File>
-			<File
-				RelativePath="D:\SDK\MyGui\Tools\FontViewer\CMakeLists.txt">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Tools/FontViewer/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Tools\FontViewer\CMakeLists.txt;D:\SDK\MyGui\Tools\FontViewer\FontViewer.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Tools\FontViewer\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Tools/FontViewer/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Tools\FontViewer\CMakeLists.txt;D:\SDK\MyGui\Tools\FontViewer\FontViewer.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Tools\FontViewer\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="MinSizeRel|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Tools/FontViewer/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Tools\FontViewer\CMakeLists.txt;D:\SDK\MyGui\Tools\FontViewer\FontViewer.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Tools\FontViewer\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="RelWithDebInfo|Win32">
-					<Tool
-					Name="VCCustomBuildTool"
-					Description="Building Custom Rule D:/SDK/MyGui/Tools/FontViewer/CMakeLists.txt"
-					CommandLine="&quot;C:\Program Files\CMake 2.8\bin\cmake.exe&quot; -HD:/SDK/MyGui -BD:/SDK/MyGui --check-stamp-file CMakeFiles/generate.stamp"
-					AdditionalDependencies="D:\SDK\MyGui\Tools\FontViewer\CMakeLists.txt;D:\SDK\MyGui\Tools\FontViewer\FontViewer.list;D:\SDK\MyGui\CMake\Templates\VisualStudioUserFile.vcproj.user.in;D:\SDK\MyGui\Tools\FontViewer\CMakeLists.txt;"
-					Outputs="CMakeFiles\generate.stamp"/>
-				</FileConfiguration>
+				RelativePath="D:\SDK\MyGui\Common\Base\BaseResource.rc"
+				>
 			</File>
 		</Filter>
 	</Files>
