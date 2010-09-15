@@ -131,10 +131,6 @@
       <Project>{2db0d95c-7472-4494-bb66-e3f2624eee87}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\GameSDK\GameUILib\GUI.vcxproj">
-      <Project>{0caad250-94f2-4158-a8a5-506b578d6e08}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\GameSDK\SLB\SLB.vcxproj">
       <Project>{a27e7b13-1c7a-4172-9932-b0a4d15f398d}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
