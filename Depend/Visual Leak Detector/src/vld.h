@@ -23,12 +23,14 @@
 
 #pragma once
 
+#include "vld_def.h"
+
 #ifdef _DEBUG
 
 #pragma comment(lib, "vld.lib")
 
 // Force a symbolic reference to the global VisualLeakDetector class object from
-// the DLL. This enusres that the DLL is loaded and linked with the program,
+// the DLL. This ensures that the DLL is loaded and linked with the program,
 // even if no code otherwise imports any of the DLL's exports.
 #pragma comment(linker, "/include:__imp_?vld@@3VVisualLeakDetector@@A")
 
@@ -93,6 +95,56 @@ __declspec(dllimport) void VLDEnable ();
 //
 __declspec(dllimport) void VLDRestore ();
 
+// VLDReportLeaks - Report leaks up to the execution point.
+//
+//  Return Value:
+//
+//    None.
+//
+__declspec(dllimport) void VLDReportLeaks ();
+
+
+// VLDRefreshModules - Look for recently loaded DLLs and patch them if necessary.
+//
+//  Return Value:
+//
+//    None.
+//
+__declspec(dllimport) void VLDRefreshModules();
+
+
+// VLDEnableModule - Enable Memory leak checking on the specified module.
+//
+//  Return Value:
+//
+//    None.
+//
+__declspec(dllimport) void VLDEnableModule(HMODULE);
+
+
+// VLDDisableModule - Disable Memory leak checking on the specified module.
+//
+//  Return Value:
+//
+//    None.
+//
+__declspec(dllimport) void VLDDisableModule(HMODULE);
+
+// VLDSetOptions - Update the report options via function call rather than INI file.
+//
+// Only the following flags are checked
+// VLD_OPT_REPORT_TO_DEBUGGER
+// VLD_OPT_REPORT_TO_FILE
+// VLD_OPT_REPORT_TO_STDOUT
+// VLD_OPT_UNICODE_REPORT
+//
+// filename is optional.
+//  Return Value:
+//
+//    None.
+//
+__declspec(dllimport) void VLDSetReportOptions(UINT32 option_mask, WCHAR *filename = NULL);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
@@ -102,5 +154,11 @@ __declspec(dllimport) void VLDRestore ();
 #define VLDEnable()
 #define VLDDisable()
 #define VLDRestore()
+#define VLDReportLeaks()
+#define VLDRefreshModules()
+
+inline void VLDEnableModule(HMODULE) {}
+inline void VLDDisableModule(HMODULE) {}
+inline void VLDSetReportOptions(UINT32 option_mask, WCHAR *filename = NULL) {}
 
 #endif // _DEBUG
