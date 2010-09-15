@@ -107,9 +107,9 @@ typedef struct patchentry_s
 
 typedef struct moduleentry_s
 {
-	LPCSTR          exportmodulename; // The name of the module exporting the patched API.
-	UINT_PTR        modulebase;       // The base address of the exporting module (filled in at runtime when the modules are loaded).
-	patchentry_t*   patchtable;
+    LPCSTR          exportmodulename; // The name of the module exporting the patched API.
+    UINT_PTR        modulebase;       // The base address of the exporting module (filled in at runtime when the modules are loaded).
+    patchentry_t*   patchtable;
 } moduleentry_t;
 
 // Utility functions. See function definitions for details.
@@ -125,7 +125,7 @@ VOID report (LPCWSTR format, ...);
 VOID restoreimport (HMODULE importmodule, moduleentry_t* module);
 VOID restoremodule (HMODULE importmodule, moduleentry_t patchtable [], UINT tablesize);
 VOID setreportencoding (encoding_e encoding);
-VOID setreportfile (FILE *file, BOOL copydebugger);
+VOID setreportfile (FILE *file, BOOL copydebugger, BOOL copytostdout);
 VOID strapp (LPWSTR *dest, LPCWSTR source);
 BOOL strtobool (LPCWSTR s);
 #if _WIN32_WINNT < 0x0600 // Windows XP or earlier, no GetProcessIdOfThread()

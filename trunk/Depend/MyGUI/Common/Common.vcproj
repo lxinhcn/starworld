@@ -54,7 +54,7 @@
 				AdditionalOptions=" /Zm1000 /fp:fast"
 				Optimization="0"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include"
+				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include;&quot;$(DXSDK_DIR)Include&quot;"
 				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Debug\&quot;"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
@@ -136,7 +136,7 @@
 				AdditionalOptions=" /Zm1000 /fp:fast"
 				Optimization="2"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include"
+				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include;&quot;$(DXSDK_DIR)Include&quot;"
 				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;Release\&quot;"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -217,7 +217,7 @@
 				AdditionalOptions=" /Zm1000 /fp:fast"
 				Optimization="1"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include"
+				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include;&quot;$(DXSDK_DIR)Include&quot;"
 				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -298,7 +298,7 @@
 				AdditionalOptions=" /Zm1000 /fp:fast"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include"
+				AdditionalIncludeDirectories="\.;..\Common;..\Common\Base\DirectX;..\Common\Input\Win32;..\MyGUIEngine\include;..\Platforms\DirectX\DirectXPlatform\include;&quot;$(DXSDK_DIR)Include&quot;"
 				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,MYGUI_DIRECTX_PLATFORM,MYGUI_SAMPLES_INPUT_WIN32,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -349,11 +349,11 @@
 			Name="Base"
 			>
 			<File
-				RelativePath="D:\SDK\MyGui\Common\Base\DirectX\BaseManager.cpp"
+				RelativePath="Base\DirectX\BaseManager.cpp"
 				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Common\Base\DirectX\BaseManager.h"
+				RelativePath="Base\DirectX\BaseManager.h"
 				>
 			</File>
 			<File
@@ -365,19 +365,19 @@
 				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Common\Input\Win32\InputManager.cpp"
+				RelativePath="Input\Win32\InputManager.cpp"
 				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Common\Input\Win32\InputManager.h"
+				RelativePath="Input\Win32\InputManager.h"
 				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Common\Input\Win32\PointerManager.cpp"
+				RelativePath="Input\Win32\PointerManager.cpp"
 				>
 			</File>
 			<File
-				RelativePath="D:\SDK\MyGui\Common\Input\Win32\PointerManager.h"
+				RelativePath="Input\Win32\PointerManager.h"
 				>
 			</File>
 		</Filter>

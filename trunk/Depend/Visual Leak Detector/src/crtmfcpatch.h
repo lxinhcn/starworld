@@ -88,7 +88,7 @@ public:
     template<wchar_t const *mfcdll, int ordinal>
     static void* __cdecl mfcd_new_dbg (context_t& context, size_t size, char const *file, int line);
     template<wchar_t const *mfcdll, int ordinal>
-	static void* __cdecl mfcd_new (context_t& context, size_t size);
+    static void* __cdecl mfcd_new (context_t& context, size_t size);
 };
 
 
@@ -134,7 +134,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::crtd__calloc_dbg (size_t      num,
         // This is the first call to this function. Link to the real
         // _calloc_dbg.
         msvcrxxd = GetModuleHandle(crtddll);
-        pcrtxxd__calloc_dbg = (_calloc_dbg_t)GetProcAddress(msvcrxxd, "_calloc_dbg");
+        pcrtxxd__calloc_dbg = (_calloc_dbg_t)vld._RGetProcAddress(msvcrxxd, "_calloc_dbg");
     }
 
     return vld.__calloc_dbg(pcrtxxd__calloc_dbg, context, num, size, type, file, line);
@@ -164,7 +164,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::crtd__malloc_dbg (size_t      size,
 {
     static _malloc_dbg_t pcrtxxd__malloc_dbg = NULL;
 
-	context_t context;
+    context_t context;
     HMODULE msvcrxxd;
 
     CAPTURE_CONTEXT(context);
@@ -173,7 +173,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::crtd__malloc_dbg (size_t      size,
         // This is the first call to this function. Link to the real
         // _malloc_dbg.
         msvcrxxd = GetModuleHandle(crtddll);
-        pcrtxxd__malloc_dbg = (_malloc_dbg_t)GetProcAddress(msvcrxxd, "_malloc_dbg");
+        pcrtxxd__malloc_dbg = (_malloc_dbg_t)vld._RGetProcAddress(msvcrxxd, "_malloc_dbg");
     }
 
     return vld.__malloc_dbg(pcrtxxd__malloc_dbg, context, size, type, file, line);
@@ -206,7 +206,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::crtd__realloc_dbg (void       *mem,
 {
     static _realloc_dbg_t pcrtxxd__realloc_dbg = NULL;
 
-	context_t context;
+    context_t context;
     HMODULE msvcrxxd;
 
     CAPTURE_CONTEXT(context);
@@ -215,7 +215,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::crtd__realloc_dbg (void       *mem,
         // This is the first call to this function. Link to the real
         // _realloc_dbg.
         msvcrxxd = GetModuleHandle(crtddll);
-        pcrtxxd__realloc_dbg = (_realloc_dbg_t)GetProcAddress(msvcrxxd, "_realloc_dbg");
+        pcrtxxd__realloc_dbg = (_realloc_dbg_t)vld._RGetProcAddress(msvcrxxd, "_realloc_dbg");
     }
 
     return vld.__realloc_dbg(pcrtxxd__realloc_dbg, context, mem, size, type, file, line);
@@ -243,7 +243,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::crtd__scalar_new_dbg (size_t      size,
                                                         char const *file,
                                                         int         line)
 {
-	context_t context;
+    context_t context;
     CAPTURE_CONTEXT(context);
 
     return crtd_new_dbg<crtd_scalar_new_dbg_name>(context, size, type, file, line);
@@ -295,7 +295,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::crtd_calloc (size_t num, size_t size)
 {
     static calloc_t pcrtxxd_calloc = NULL;
 
-	context_t context;
+    context_t context;
     HMODULE msvcrxxd;
 
     CAPTURE_CONTEXT(context);
@@ -303,7 +303,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::crtd_calloc (size_t num, size_t size)
     if (pcrtxxd_calloc == NULL) {
         // This is the first call to this function. Link to the real malloc.
         msvcrxxd = GetModuleHandle(crtddll);
-        pcrtxxd_calloc = (calloc_t)GetProcAddress(msvcrxxd, "calloc");
+        pcrtxxd_calloc = (calloc_t)vld._RGetProcAddress(msvcrxxd, "calloc");
     }
 
     return vld._calloc(pcrtxxd_calloc, context, num, size);
@@ -325,7 +325,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::crtd_malloc (size_t size)
 {
     static malloc_t pcrtxxd_malloc = NULL;
 
-	context_t context;
+    context_t context;
     HMODULE msvcrxxd;
 
     CAPTURE_CONTEXT(context);
@@ -333,7 +333,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::crtd_malloc (size_t size)
     if (pcrtxxd_malloc == NULL) {
         // This is the first call to this function. Link to the real malloc.
         msvcrxxd = GetModuleHandle(crtddll);
-        pcrtxxd_malloc = (malloc_t)GetProcAddress(msvcrxxd, "malloc");
+        pcrtxxd_malloc = (malloc_t)vld._RGetProcAddress(msvcrxxd, "malloc");
     }
 
     return vld._malloc(pcrtxxd_malloc, context, size);
@@ -357,7 +357,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::crtd_realloc (void *mem, size_t size)
 {
     static realloc_t pcrtxxd_realloc = NULL;
 
-	context_t context;
+    context_t context;
     HMODULE msvcrxxd;
 
     CAPTURE_CONTEXT(context);
@@ -365,7 +365,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::crtd_realloc (void *mem, size_t size)
     if (pcrtxxd_realloc == NULL) {
         // This is the first call to this function. Link to the real realloc.
         msvcrxxd = GetModuleHandle(crtddll);
-        pcrtxxd_realloc = (realloc_t)GetProcAddress(msvcrxxd, "realloc");
+        pcrtxxd_realloc = (realloc_t)vld._RGetProcAddress(msvcrxxd, "realloc");
     }
 
     return vld._realloc(pcrtxxd_realloc, context, mem, size);
@@ -383,7 +383,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::crtd_realloc (void *mem, size_t size)
 TEMPLATE_HEADER
 void* CrtMfcPatch<TEMPLATE_ARGS>::crtd_scalar_new (size_t size)
 {
-	context_t context;
+    context_t context;
     CAPTURE_CONTEXT(context);
 
     return crtd_new<crtd_scalar_new_name>(context, size);
@@ -443,7 +443,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::crtd_new_dbg (context_t&  context,
         // This is the first call to this function. Link to the real CRT debug
         // new operator.
         msvcrxxd = GetModuleHandle(crtddll);
-        pcrtxxd_new_dbg = (new_dbg_crt_t)GetProcAddress(msvcrxxd, procname);
+        pcrtxxd_new_dbg = (new_dbg_crt_t)vld._RGetProcAddress(msvcrxxd, procname);
     }
 
     return vld.__new_dbg_crt(pcrtxxd_new_dbg, context, size, type, file, line);
@@ -474,7 +474,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::crtd_new (context_t& context, size_t size)
         // This is the first call to this function. Link to the real CRT new
         // operator.
         msvcrxxd = GetModuleHandle(crtddll);
-        pcrtxxd_scalar_new = (new_t)GetProcAddress(msvcrxxd, procname);
+        pcrtxxd_scalar_new = (new_t)vld._RGetProcAddress(msvcrxxd, procname);
     }
 
     return vld._new(pcrtxxd_scalar_new, context, size);
@@ -508,7 +508,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::mfcd__scalar_new_dbg_4p (size_t       size,
                                                            char const  *file,
                                                            int          line)
 {
-	context_t context;
+    context_t context;
     CAPTURE_CONTEXT(context);
 
     return mfcd_new_dbg<mfcddll, mfcd_scalar_new_dbg_4p_ordinal>
@@ -534,7 +534,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::mfcd__scalar_new_dbg_3p (size_t       size,
                                                            char const  *file,
                                                            int          line)
 {
-	context_t context;	
+    context_t context;	
     CAPTURE_CONTEXT(context);
 
     return mfcd_new_dbg<mfcddll, mfcd_scalar_new_dbg_3p_ordinal>
@@ -608,7 +608,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::mfcd__vector_new_dbg_3p (size_t       size,
 TEMPLATE_HEADER
 void* CrtMfcPatch<TEMPLATE_ARGS>::mfcd_scalar_new (size_t size)
 {
-	context_t context;
+    context_t context;
     CAPTURE_CONTEXT(context);
 
     return mfcd_new<mfcddll, mfcd_scalar_new_ordinal>(context, size);
@@ -816,7 +816,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::mfcd_new_dbg (context_t& context,
         // This is the first call to this function. Link to the real MFC debug
         // new operator.
         mfcxxd = GetModuleHandle(mfcdll);
-        pmfcxxd__new_dbg = (new_dbg_crt_t)GetProcAddress(mfcxxd, (LPCSTR)ordinal);
+        pmfcxxd__new_dbg = (new_dbg_crt_t)vld._RGetProcAddress(mfcxxd, (LPCSTR)ordinal);
     }
 
     return vld.__new_dbg_mfc(pmfcxxd__new_dbg, context, size, type, file, line);
@@ -857,7 +857,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::mfcd_new_dbg (context_t& context,
         // This is the first call to this function. Link to the real MFC debug
         // new operator.
         mfcxxd = GetModuleHandle(mfcdll);
-        pmfcxxd__new_dbg = (new_dbg_mfc_t)GetProcAddress(mfcxxd, (LPCSTR)ordinal);
+        pmfcxxd__new_dbg = (new_dbg_mfc_t)vld._RGetProcAddress(mfcxxd, (LPCSTR)ordinal);
     }
 
     return vld.__new_dbg_mfc(pmfcxxd__new_dbg, context, size, file, line);
@@ -888,7 +888,7 @@ void* CrtMfcPatch<TEMPLATE_ARGS>::mfcd_new (context_t& context, size_t size)
         // This is the first call to this function. Link to the real CRT new
         // operator.
         mfcxxd = GetModuleHandle(mfcdll);
-        pmfcxxd_new = (new_t)GetProcAddress(mfcxxd, (LPCSTR)ordinal);
+        pmfcxxd_new = (new_t)vld._RGetProcAddress(mfcxxd, (LPCSTR)ordinal);
     }
 
     return vld._new(pmfcxxd_new, context, size);
@@ -960,36 +960,36 @@ typedef CrtMfcPatch<msvcr71d_dll, mfc71d_dll, mfc71ud_dll,
 // Visual Studio 2005
 typedef CrtMfcPatch<msvcr80d_dll, mfc80d_dll, mfc80ud_dll,
                     vector_new_name, vector_new_dbg_name,
-					scalar_new_name, scalar_new_dbg_name,
+                    scalar_new_name, scalar_new_dbg_name,
 #if !defined(_M_X64)
                     267, 268, 269, 893, 894, 895,
-					267, 268, 269, 893, 894, 895>
+                    267, 268, 269, 893, 894, 895>
 #else
-					267, 268, 269, 907, 908, 909,
-					267, 268, 269, 907, 908, 909>
+                    267, 268, 269, 907, 908, 909,
+                    267, 268, 269, 907, 908, 909>
 #endif
         VS80;
 // Visual Studio 2008
 typedef CrtMfcPatch<msvcr90d_dll, mfc90d_dll, mfc90ud_dll,
                     vector_new_name, vector_new_dbg_name,
-					scalar_new_name, scalar_new_dbg_name,
+                    scalar_new_name, scalar_new_dbg_name,
 #if !defined(_M_X64)
                     267, 268, 269, 931, 932, 933,
-					267, 268, 269, 935, 936, 937>
+                    267, 268, 269, 935, 936, 937>
 #else
-					267, 268, 269, 909, 910, 911,
-					267, 268, 269, 913, 914, 915>
+                    267, 268, 269, 909, 910, 911,
+                    267, 268, 269, 913, 914, 915>
 #endif
         VS90;
 // Visual Studio 2010
 typedef CrtMfcPatch<msvcr100d_dll, mfc100d_dll, mfc100ud_dll,
                     vector_new_name, vector_new_dbg_name,
-					scalar_new_name, scalar_new_dbg_name,
+                    scalar_new_name, scalar_new_dbg_name,
 #if !defined(_M_X64)
                     267, 268, 269, 1427, 1428, 1429,
                     267, 268, 269, 1434, 1435, 1436>
 #else
-					267, 268, 269, 1405, 1406, 1407,
-					267, 268, 269, 1412, 1413, 1414>
+                    267, 268, 269, 1405, 1406, 1407,
+                    267, 268, 269, 1412, 1413, 1414>
 #endif
         VS100;
