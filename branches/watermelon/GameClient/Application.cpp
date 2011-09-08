@@ -1,15 +1,11 @@
 #include "StdAfx.h"
 #include "Application.h"
-#include "Canvas.h"
-#include "NetworkService.h"
 
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 600
 
 CApplication::CApplication(void)
-: m_pMessageQueue( NULL )
 {
-	init_canvas();
 }
 
 CApplication::~CApplication(void)
@@ -24,7 +20,6 @@ bool CApplication::FrameFunc()
 	switch(Application::Instance()->Input_GetKey())
 	{
 	case HGEK_F10:
-		XGC::ui::SetupDebuger();
 		break;
 	case HGEK_F9:
 		{
@@ -33,14 +28,12 @@ bool CApplication::FrameFunc()
 			freopen("CONIN$","r+t",stdin); 
 
 			Application::Instance()->System_SetState( HGE_DONTSUSPEND, true );
-			XUI::Instance().SetEditMode( true );
 			printf( "UICommander start successful. Enter edit mode.\n" );
 		}
 		break;
 	case HGEK_F8:
 		FreeConsole();
 		Application::Instance()->System_SetState( HGE_DONTSUSPEND, false );
-		XUI::Instance().SetEditMode( false );
 		printf( "UICommander closed. Quit edit mode.\n" );
 		break;
 		//case HGEK_UP:
@@ -55,7 +48,6 @@ bool CApplication::FrameFunc()
 	}
 
 	Application::Instance().UpdateLogic( dt );
-	XUI::Instance().Update( Application::Instance()->Timer_GetDelta() );
 	return false;
 }
 
@@ -66,7 +58,6 @@ bool CApplication::RenderFunc()
 	Application::Instance()->Gfx_BeginScene();
 	Application::Instance()->Gfx_Clear(0);
 	Application::Instance().Render();
-	XUI::Instance().Render();
 	Application::Instance()->Gfx_EndScene();
 
 	return false;
@@ -77,9 +68,6 @@ bool CApplication::Initialize()
 	setlocale( LC_ALL, "chs" );
 
 	m_hge = hgeCreate(HGE_VERSION);
-	CreateNetwork(_T("asio"));
-	if( InitNetwork() == false )
-		return false;
 
 	m_hge->System_SetState(HGE_LOGFILE, "StarGame.log");
 	m_hge->System_SetState(HGE_FRAMEFUNC, FrameFunc);
@@ -101,37 +89,18 @@ bool CApplication::Initialize()
 		return false;
 	}
 
-	// 初始化UI系统
-	XUI::Instance().Initialize( m_hge->System_GetState(HGE_HWND), "..\\Resource\\UI\\" );
-
-	// 设置默认字体
-	XUI::Instance().SetDefaultFont( XUI_CreateFont( "宋体", 18, XUI_ARGB(255, 255, 255, 255), false, false, false ) );
-
-	UICommander::Instance().Load( "main.xml" );
-
 	return true;
 }
 
 void CApplication::Run()
 {
-	// 系统开始运作
-	CNetworkService Client;
-	Client.Start();
-	ConnectServer( "127.0.0.1", 18890, &m_pMessageQueue, 0 );
 	m_hge->System_Start();
-	Client.Stop();
 }
 
 void CApplication::UnInitialize()
 {
-	delete XUI::Instance().GetDefaultFont();
-	XUI::Instance().Unitialize();
-	TextureManager::Instance().Clear();
 	m_hge->System_Shutdown();
 	m_hge->Release();
-	m_pMessageQueue->Release();
-	FiniNetwork();
-	DestroyNetwork();
 }
 
 bool CApplication::UpdateLogic( float fDelta )
@@ -163,7 +132,6 @@ bool CApplication::UpdateLogic( float fDelta )
 						else
 						{
 							szCommand[dwRead] = 0;
-							UICommander::Instance().ProcessCommand( szCommand );
 						}
 						HANDLE hOutput = GetStdHandle( STD_OUTPUT_HANDLE );
 						SetConsoleActiveScreenBuffer( hOutput );
@@ -178,5 +146,4 @@ bool CApplication::UpdateLogic( float fDelta )
 
 void CApplication::Render()
 {
-	XUI_DrawRect( iRect( 1, 1, SCREEN_WIDTH, SCREEN_HEIGHT ), -1, ARGB( 0xcc, 0xcc, 0xcc, 0xcc ) );
 }

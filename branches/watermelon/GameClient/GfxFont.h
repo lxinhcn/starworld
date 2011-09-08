@@ -1,5 +1,6 @@
 #ifndef GDIFONT_H
 #define GDIFONT_H
+#include "DataHelper.h"
 
 class GfxFont
 {
