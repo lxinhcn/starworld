@@ -1,0 +1,17 @@
+<CURSOR>
+	<!--ARROW hotx = "5" hoty = "5" x = "0" y = "0" w = "40" h = "40" frames = "1" texture = "cursor\Arrow.png"/-->
+	<ARROW file = "SkinPlant\Arrow.cur" />
+	<TEXT hotx = "20" hoty = "19" x = "0" y = "0" w = "40" h = "40" frames = "1" texture = "cursor\IBeam.png" />
+	<CROSS hotx = "20" hoty = "20" x = "0" y = "0" w = "40" h = "40" frames = "1" texture = "cursor\Cross.png"/>
+	<SIZENESW hotx = "20" hoty = "20" x = "0" y = "0" w = "40" h = "40" frames = "1" texture = "cursor\SizeNESW.png"/>
+	<SIZENS hotx = "20" hoty = "20" x = "0" y = "0" w = "40" h = "40" frames = "1" texture = "cursor\SizeNS.png"/>
+	<SIZENWSE hotx = "20" hoty = "20" x = "0" y = "0" w = "40" h = "40" frames = "1" texture = "cursor\SizeNWSE.png"/>
+	<SIZEWE hotx = "20" hoty = "20" x = "0" y = "0" w = "40" h = "40" frames = "1" texture = "cursor\SizeWE.png"/>
+	<SIZEALL hotx = "20" hoty = "20" x = "0" y = "0" w = "40" h = "40" frames = "1" texture = "cursor\SizeAll.png"/>
+	<WAIT hotx = "45" hoty = "45" x = "0" y = "0" w = "2560" h = "80" frames = "32" texture = "cursor\Wait.png"/>
+	<BUSY hotx = "45" hoty = "45" x = "0" y = "0" w = "2560" h = "80" frames = "32" texture = "cursor\Wait.png"/>
+	<HAND hotx = "16" hoty = "5" x = "0" y = "0" w = "40" h = "40" frames = "1" texture = "cursor\Hand.png"/>
+	<HANDWRITE hotx = "5" hoty = "34" x = "0" y = "0" w = "40" h = "40" frames = "1" texture = "cursor\HandWriting.png"/>
+	<STOP hotx = "20" hoty = "20" x = "0" y = "0" w = "40" h = "40" frames = "1" texture = "cursor\No.png"/>
+	<HELP hotx = "5" hoty = "5" x = "0" y = "0" w = "40" h = "40" frames = "1" texture = "cursor\Help.png"/>
+</CURSOR>

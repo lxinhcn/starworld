@@ -1,0 +1,12 @@
+glob:.hgignore
+glob:.svn
+glob:*.user
+glob:*.suo
+glob:*.ncb
+glob:*.exe
+glob:*.dll
+glob:*.obj
+glob:*.dir
+glob:CMakeFiles
+glob:bin
+glob:lib

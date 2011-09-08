@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="XML">
+      <UniqueIdentifier>{3dcb9770-ecab-4d62-82d6-03fea17b86b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls">
+      <UniqueIdentifier>{4e576386-efaa-4438-9aeb-ac4b82fab87c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{2b2ad2d6-5f8e-4a38-81c2-865a22c4f84e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\Include">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Controls\Source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\tinystr.cpp">
+      <Filter>XML</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\tinyxml.cpp">
+      <Filter>XML</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\tinyxmlerror.cpp">
+      <Filter>XML</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\tinyxmlparser.cpp">
+      <Filter>XML</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\XUI_Button.cpp">
+      <Filter>Controls\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\XUI_Dialog.cpp">
+      <Filter>Controls\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\XUI_EditBox.cpp">
+      <Filter>Controls\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\XUI_Window.cpp">
+      <Filter>Controls\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\XUI_Canvas.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\XUI_IME.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\XUI_Wnd.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\XUI_System.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\XUI_Factory.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\XUI_LuaBinder.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\XUI_Object.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\XUI_Commander.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\tinystr.h">
+      <Filter>XML</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\tinyxml.h">
+      <Filter>XML</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_Button.h">
+      <Filter>Controls\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_Dialog.h">
+      <Filter>Controls\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_EditBox.h">
+      <Filter>Controls\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_Window.h">
+      <Filter>Controls\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_Canvas.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_IME.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_Wnd.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_System.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_Factory.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_Header.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_MacroDefine.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_LuaBinder.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_Object.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI_Commander.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\XUI.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
