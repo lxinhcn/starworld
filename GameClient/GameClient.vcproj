@@ -41,8 +41,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Depend\hge181\include;..\GameSDK\GameCore\Include;..\GameSDK\SLB\Include;..\xgcBase\Common;&quot;..\Depend\Visual Leak Detector\include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
+				AdditionalIncludeDirectories="..\Depend\hge181\include;..\Depend\Box2D\include;..\GameSDK\GameCore\Include;..\GameSDK\SLB\Include;..\xgcBase\Common;&quot;..\Depend\Visual Leak Detector\include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -63,10 +63,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="hge.lib lua51.lib GameCore.lib Common.lib Slb.lib"
+				AdditionalDependencies="hge.lib lua51.lib GameCore.lib Common.lib Slb.lib Box2D.lib"
 				ShowProgress="2"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;..\Depend\DX81SDK\Lib;&quot;..\Depend\hge181\Lib\$(ConfigurationName)&quot;;&quot;..\Depend\loki-0.1.6\Lib&quot;;&quot;..\GameSDK\lua-5.1.4\src&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;..\Depend\DX81SDK\Lib;&quot;..\Depend\hge181\Lib\$(ConfigurationName)&quot;;..\Depend\Box2D\lib;&quot;..\GameSDK\lua-5.1.4\src&quot;"
 				GenerateManifest="true"
 				IgnoreDefaultLibraryNames="LibC.lib"
 				GenerateDebugInformation="true"
@@ -125,7 +125,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Depend\hge181\include;..\GameSDK\GameCore\Include;..\GameSDK\SLB\Include;..\xgcBase\Common;&quot;..\Depend\Visual Leak Detector\include&quot;"
+				AdditionalIncludeDirectories="..\Depend\hge181\include;..\Depend\Box2D\include;..\GameSDK\GameCore\Include;..\GameSDK\SLB\Include;..\xgcBase\Common;&quot;..\Depend\Visual Leak Detector\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -144,10 +144,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="hge.lib lua51.lib GameCore.lib Common.lib Slb.lib"
+				AdditionalDependencies="hge.lib lua51.lib GameCore.lib Common.lib Slb.lib Box2D.lib"
 				ShowProgress="2"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;..\Depend\DX81SDK\Lib;&quot;..\Depend\hge181\Lib\$(ConfigurationName)&quot;;&quot;..\Depend\loki-0.1.6\Lib&quot;;&quot;..\GameSDK\lua-5.1.4\src&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;..\Depend\DX81SDK\Lib;&quot;..\Depend\hge181\Lib\$(ConfigurationName)&quot;;..\Depend\Box2D\Lib;&quot;..\GameSDK\lua-5.1.4\src&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
