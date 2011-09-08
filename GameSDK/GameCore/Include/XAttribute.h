@@ -175,7 +175,7 @@ namespace XGC
 		CXVariant Value;	// »ù×¼Öµ
 	};
 
-	typedef std::function< void ( _uint32 /*nType*/, _uint32 /*nIndex*/, const CXVariant& /*Value*/ ) > ListenFunction;
+	typedef std::tr1::function< void ( _uint32 /*nType*/, _uint32 /*nIndex*/, const CXVariant& /*Value*/ ) > ListenFunction;
 
 	static ListenFunction EmptyListener;
 	class CORE_API CAttribute

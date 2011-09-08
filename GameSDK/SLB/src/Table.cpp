@@ -154,7 +154,7 @@ namespace SLB {
 				}
 				else
 				{
-					return TableFind(nullptr,key); // not found
+					return TableFind(NULL,key); // not found
 				}
 			}
 

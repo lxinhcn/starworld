@@ -67,7 +67,7 @@ protected:
 public:
 	typedef std::list< CMapBlock*, ALLOCATOR< CMapBlock* > > CBlockList;
 	typedef std::set< _uint32, LESS< _uint32 >, ALLOCATOR< _uint32 > > CTargetSet;
-	typedef std::function< bool( CMapBlock* ) > fnBlockCallback;
+	typedef std::tr1::function< bool( CMapBlock* ) > fnBlockCallback;
 
 protected:
 	CGameMap()
