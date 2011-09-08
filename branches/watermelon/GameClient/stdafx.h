@@ -48,5 +48,7 @@
 
 // ¸¨Öú¿â
 #include "CommonLib.h"
+#include "Box2D\Box2D.h"
+
 using namespace XGC;
 using namespace XGC::common;
