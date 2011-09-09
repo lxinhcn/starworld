@@ -63,6 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				LinkLibraryDependencies="false"
 				AdditionalDependencies="hge.lib lua51.lib GameCore.lib Common.lib Slb.lib Box2D.lib"
 				ShowProgress="2"
 				LinkIncremental="2"
@@ -144,6 +145,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				LinkLibraryDependencies="false"
 				AdditionalDependencies="hge.lib lua51.lib GameCore.lib Common.lib Slb.lib Box2D.lib"
 				ShowProgress="2"
 				LinkIncremental="1"
@@ -196,10 +198,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\GfxFont.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -231,10 +229,6 @@
 			</File>
 			<File
 				RelativePath=".\GameClient.h"
-				>
-			</File>
-			<File
-				RelativePath=".\GfxFont.h"
 				>
 			</File>
 			<File

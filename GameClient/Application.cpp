@@ -146,4 +146,17 @@ bool CApplication::UpdateLogic( float fDelta )
 
 void CApplication::Render()
 {
+	char tmp[256];
+	GetWindowsDirectoryA(tmp,255);
+	strcat(tmp,"\\fonts\\SIMHEI.TTF");
+
+	hgeFontHelper font1( tmp, 18 );
+	font1->Print( 10, 100, 0, L"测试输出文本。" );
+
+	GetWindowsDirectoryA(tmp,255);
+	strcat(tmp,"\\fonts\\STXINGKA.TTF");
+
+	hgeFontHelper font2( tmp, 18 );
+	font2->SetColor( ARGB(255, 128, 255,255) );
+	font2->Print( 10, 150, 0, L"测试输出文本。" );
 }
