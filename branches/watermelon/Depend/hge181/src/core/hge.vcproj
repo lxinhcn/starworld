@@ -48,7 +48,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=""
+				AdditionalIncludeDirectories="..\..\..\freetype"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;HGEDLL;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -75,11 +75,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="winmm.lib d3d8.lib d3dx8.lib user32.lib gdi32.lib Advapi32.lib shell32.lib"
+				AdditionalDependencies="winmm.lib d3d8.lib d3dx8.lib user32.lib gdi32.lib Advapi32.lib shell32.lib freetype242MT_D.lib"
 				OutputFile="$(OutDir)\hge.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(SolutionDir)Depend\DX81SDK\Lib"
+				AdditionalLibraryDirectories="..\..\..\freetype\lib\"
 				IgnoreDefaultLibraryNames="libci.lib"
 				ModuleDefinitionFile=".\hge.def"
 				GenerateDebugInformation="true"
@@ -147,6 +147,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="..\..\..\freetype"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;HGEDLL;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -172,11 +173,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="winmm.lib d3d8.lib d3dx8.lib user32.lib gdi32.lib Advapi32.lib shell32.lib"
+				AdditionalDependencies="winmm.lib d3d8.lib d3dx8.lib user32.lib gdi32.lib Advapi32.lib shell32.lib freetype242MT.lib"
 				OutputFile="$(OutDir)/hge.dll"
 				Version="1.53"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\..\..\freetype\lib\$(ConfigurationName)"
 				IgnoreDefaultLibraryNames="libci.lib"
 				ModuleDefinitionFile=".\hge.def"
 				ProgramDatabaseFile=".\Release/hge.pdb"
@@ -276,6 +278,14 @@
 			</File>
 			<File
 				RelativePath="..\helpers\hgefont.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\helpers\hgefontex.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\helpers\hgefontmanager.cpp"
 				>
 			</File>
 			<File
@@ -701,6 +711,14 @@
 			</File>
 			<File
 				RelativePath="..\..\include\hgefont.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\hgefontex.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\hgefontmanager.h"
 				>
 			</File>
 			<File
