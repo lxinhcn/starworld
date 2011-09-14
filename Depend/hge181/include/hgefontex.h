@@ -24,6 +24,9 @@
 class hgeSprite;
 class hgeFontGlyph;
 class hgeFontFace;
+
+struct FontPage;
+
 /**
  * hgeTTFont
  *
@@ -77,8 +80,8 @@ public:
 	 * @param align Alignment specificator. May be one of these: HGETEXT_LEFT, HGETEXT_RIGHT, HGETEXT_CENTER. 
 	 * @param string the string to be rendered
 	 */
-	virtual void Render( float x, float y, int align, const wchar_t *string );
-	virtual void Render( float x, float y, const wchar_t* text, bool hcenter = false, bool vcenter = false );
+	void Render( float x, float y, int align, const wchar_t *string );
+	void Render( float x, float y, const wchar_t* text, bool hcenter = false, bool vcenter = false );
 
 	void Print( float x, float y, int align, const wchar_t *format, ... );
 
@@ -87,13 +90,13 @@ public:
 	 * GetColor
 	 *
 	 */
-	DWORD GetColor();
+	unsigned int GetColor();
 	
 	/**
 	 * SetColor
 	 *
 	 */
-	void SetColor( DWORD color );
+	void SetColor( unsigned int color );
 
 	/** 
 	 * SetSpacing
@@ -125,32 +128,33 @@ public:
 	 *
 	 *
 	 */
-	bool         attach( hgeFontFace* Face, unsigned int size );
-	virtual Size getDimension( const wchar_t* text );
-	unsigned int getGlyphByChar( wchar_t c );
-	virtual int  getCharacterFromPos( const wchar_t* text, int pixel_x );
-	int          getWidthFromCharacter( wchar_t c );
-	virtual void setKerningWidth( int kerning );
-	virtual void setKerningHeight( int kerning );
+	bool			attach( hgeFontFace* Face, unsigned int size );
+	Size			getDimension( const wchar_t* text );
+	unsigned int	getGlyphByChar( wchar_t c );
+	int				getCharacterFromPos( const wchar_t* text, int pixel_x );
+	int				getWidthFromCharacter( wchar_t c );
+	void			setKerningWidth( int kerning );
+	void			setKerningHeight( int kerning );
 
-	virtual int  getKerningWidth( const wchar_t* thisLetter=0, const wchar_t* previousLetter=0 );
-	virtual int  getKerningHeight();
-
-	//bool         TransParency;
-	bool         attached;
-	unsigned int size;
+	int				getKerningWidth( const wchar_t* thisLetter=0, const wchar_t* previousLetter=0 );
+	int				getKerningHeight();
 
 private:
+
+	bool			attached;
+	unsigned int	size;
+
 	HGE				*hge;
 	hgeFontGlyph	*Glyphs;
 	hgeFontFace		*tt_face;
+
+	FontPage		*page;
 
 	int			GlobalKerningWidth;
 	int			GlobalKerningHeight;
 
 	hgeSprite	*spr;
 	int			mGlyphsCount;
-	DWORD		mColor;
 };
 
 #endif //end _HGE_TT_FONT_H_

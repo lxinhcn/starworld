@@ -725,6 +725,7 @@ bool HGE_Impl::_GfxInit()
 		return false;
 	}
 
+	pD3DDevice->GetDeviceCaps( &Caps );
 	_AdjustWindow();
 
 	System_Log("Mode: %d x %d x %s\n",nScreenWidth,nScreenHeight,szFormats[_format_id(Format)]);

@@ -146,17 +146,35 @@ bool CApplication::UpdateLogic( float fDelta )
 
 void CApplication::Render()
 {
+	static float x = 10;
+	static int c = clock();
+	static float t = 1;
+
 	char tmp[256];
 	GetWindowsDirectoryA(tmp,255);
 	strcat(tmp,"\\fonts\\SIMHEI.TTF");
 
 	hgeFontHelper font1( tmp, 18 );
-	font1->Print( 10, 100, 0, L"测试输出文本。" );
+	font1->Print( 10, 100, 0, L"测试输出文本abc123。" );
 
 	GetWindowsDirectoryA(tmp,255);
 	strcat(tmp,"\\fonts\\STXINGKA.TTF");
 
+	x+=t;
+	if( x >= SCREEN_WIDTH - 100 )
+		t = -t;
+
+	if( x <= 0 )
+		t = -t;
+
 	hgeFontHelper font2( tmp, 18 );
-	font2->SetColor( ARGB(255, 128, 255,255) );
-	font2->Print( 10, 150, 0, L"测试输出文本。" );
+	for( int y = 150; y < 400; y+=32 )
+	{
+		font2->SetColor( ARGB(255, 128, 255,255) );
+		font2->Print( x, y, 0, L"测试输出文本abc123。" );
+	}
+
+	hgeFontHelper font3( tmp, 16 );
+	font3->SetColor( ARGB(200, 255, 0, 0 ) );
+	font3->Print( 10, 10, 0, L"FPS : %d", m_hge->Timer_GetFPS() );
 }

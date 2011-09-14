@@ -31,7 +31,7 @@
 #include <memory.h>
 #include <tchar.h>
 #include <math.h>
-
+#include <time.h>
 // STL lib
 #include <list>
 #include <stack>
