@@ -269,6 +269,8 @@ public:
 	CRenderTargetList*	pTargets;
 	CRenderTargetList*	pCurTarget;
 
+	D3DCAPS8			Caps;
+
 	D3DXMATRIX			matView;
 	D3DXMATRIX			matProj;
 

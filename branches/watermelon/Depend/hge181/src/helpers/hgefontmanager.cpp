@@ -17,7 +17,7 @@
 #include "..\..\include\hgefontmanager.h"
 #include "..\..\include\hgefontex.h"
 
-hgeFontManagerStub& getFontManager(){ static hgeFontManagerStub mFontManager; return mFontManager; }
+__inline hgeFontManagerStub& getFontManager(){ static hgeFontManagerStub mFontManager; return mFontManager; }
 
 hgeFontManagerStub::hgeFontManagerStub()
 {

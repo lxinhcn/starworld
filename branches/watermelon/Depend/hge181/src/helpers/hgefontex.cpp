@@ -24,6 +24,96 @@
  * hgeTTFace
  *
  */
+struct FontPage
+{
+	FontPage()
+		: hTexture(0)
+		, hge(NULL)
+		, offsetX(0)
+		, offsetY(0)
+		, width(0)
+		, height(0)
+		, next(NULL)
+		, bFull(false)
+	{
+		hge = hgeCreate(HGE_VERSION);
+		if( hge )
+		{
+			width	= hge->System_GetState(HGE_MAXTEXTUREW);
+			height	= hge->System_GetState(HGE_MAXTEXTUREH);
+			hTexture = hge->Texture_Create( width, height );
+			hge->Release();
+		}
+	}
+
+	~FontPage()
+	{
+		if(hge)
+		{
+			hge->Texture_Free( hTexture );
+		}
+		width	= 0;
+		height	= 0;
+	}
+
+	bool cache( FT_GlyphSlot glyph, int w, int h )
+	{
+		FT_Bitmap  bits;
+
+		bits = glyph->bitmap;
+
+		unsigned char* pt = bits.buffer;
+
+		unsigned int* texp = (unsigned int*)hge->Texture_Lock( hTexture, false, offsetX, offsetY, w, h );
+
+		for (int i = 0;i < bits.rows;i++)
+		{
+			unsigned int *rowp = texp;
+			for (int j = 0;j < bits.width;j++)
+			{
+				if (*pt)
+				{
+					*rowp = *pt;
+					*rowp *= 0x01010101;
+				}
+				else
+				{
+					*rowp = 0;
+				}
+				pt++;
+				rowp++;
+			}
+			texp += w;
+		}
+
+		hge->Texture_Unlock(hTexture);
+		offsetX += w;
+
+		if(offsetX >= hge->System_GetState(HGE_MAXTEXTUREW) )
+		{
+			offsetX = 0;
+			offsetY += h;
+			if( offsetY >= hge->System_GetState(HGE_MAXTEXTUREH) )
+			{
+				bFull = true;
+				next = new FontPage();
+			}
+		}
+
+		return true;
+	}
+
+	HGE* hge;
+	HTEXTURE hTexture;
+	int width;
+	int height;
+	int offsetX;
+	int offsetY;
+	bool bFull;
+
+	FontPage* next;
+};
+
 class hgeFontFace
 {
 public:
@@ -92,160 +182,65 @@ class hgeFontGlyph
 {
 public:
 	bool cached;
-	HGE  *hge;
 
-	hgeFontGlyph();
-	virtual ~hgeFontGlyph();
-
-	void init();
-	HTEXTURE createTexture( unsigned int *data, int w, int h );
-
-	void cache(unsigned int idx);
-	FT_Face *face;
-	unsigned int size;
-	unsigned int top;
-	unsigned int left;
-	unsigned int texw;
-	unsigned int texh;
-	unsigned int imgw;
-	unsigned int imgh;
-	HTEXTURE tex;
-	int offset;
-	unsigned char *image;
-};
-
-hgeFontGlyph::hgeFontGlyph() 
-{
-	
-	tex = NULL;
-	image = NULL;
-}
-
-hgeFontGlyph::~hgeFontGlyph()
-{
-	if (image)
-		delete image;
-
-	if (tex){
-		hge->Texture_Free( tex );
+	hgeFontGlyph()
+		: tex(0)
+	{
 	}
-}
 
-void hgeFontGlyph::init()
-{
-   tex = NULL;
-   image = NULL;
-}
+	~hgeFontGlyph()
+	{
+	}
 
-void hgeFontGlyph::cache(unsigned int idx)
-{
-	FT_Set_Pixel_Sizes(*face,0,size);
-	if (!FT_Load_Glyph(*face,idx,FT_LOAD_NO_HINTING|FT_LOAD_NO_BITMAP)){
-		FT_GlyphSlot glyph = (*face)->glyph;
-		FT_Bitmap  bits;
-		if (glyph->format == ft_glyph_format_outline ){
-			if (!FT_Render_Glyph( glyph, FT_RENDER_MODE_NORMAL)){
-				bits = glyph->bitmap;
-				unsigned char *pt = bits.buffer;
-				image = new unsigned char[bits.width * bits.rows];
-				memcpy(image,pt,bits.width * bits.rows);
-				top = glyph->bitmap_top;
-				left = glyph->bitmap_left;
-				imgw = 1;
-				imgh = 1;
-				texw = bits.width;
-				texh = bits.rows;
-				for(;;){
-					if (imgw > texw){
-						break;
-					} else {
-						imgw <<= 1;
-					}
+	void cache(FT_Face face, unsigned int idx, unsigned int size, FontPage* page )
+	{
+		FT_Set_Pixel_Sizes(face,0,size);
+		if (!FT_Load_Glyph(face,idx,FT_LOAD_NO_HINTING|FT_LOAD_NO_BITMAP))
+		{
+			FT_GlyphSlot glyph = face->glyph;
+			if (glyph->format == ft_glyph_format_outline )
+			{
+				if (!FT_Render_Glyph( glyph, FT_RENDER_MODE_NORMAL))
+				{
+					FT_Bitmap  bits = glyph->bitmap;
+
+					offsetx = glyph->bitmap_top;
+					offsety = glyph->bitmap_left;
+
+					imgw = bits.width;
+					imgh = bits.rows;
+
+					cached = page->cache(glyph, imgw, imgh);
 				}
-				for(;;){
-					if (imgh > texh){
-						break;
-					} else {
-						imgh <<= 1;
-					}
-				}
-				if (imgw > imgh){
-					imgh = imgw;
-				} else {
-					imgw = imgh;
-				}
-				unsigned int *texd = new unsigned int[imgw*imgh];
-				memset(texd,0,imgw*imgh*sizeof(unsigned int));
-				unsigned int *texp = texd;
-				offset = size - bits.rows;
-				bool cflag = true;//(Driver->getDriverType() == video::EDT_DIRECT3D8);
-				for (int i = 0;i < bits.rows;i++){
-					unsigned int *rowp = texp;
-					for (int j = 0;j < bits.width;j++){
-						if (*pt){
-							if (cflag){
-								*rowp = *pt;
-								*rowp *= 0x01010101;
-							} else {
-								*rowp = *pt << 24;
-								*rowp |= 0xffffff;
-							}
-						} else {
-							*rowp = 0;
-						}
-						pt++;
-						rowp++;
-					}
-					texp += imgw;
-				}
-				char name[128];
-				sprintf(name,"TTFontGlyph%d",idx);
-				//video::IImage *img = Driver->createImageFromData(video::ECF_A8R8G8B8,core::dimension2d<int>(imgw,imgh),texd);
-				
-				if (tex){
-					hge->Texture_Free( tex );
-				}
-				tex = createTexture( texd, imgw, imgh );
-				delete texd;
-				cached = true;
 			}
 		}
 	}
 	
-}
+	unsigned int offsetx;
+	unsigned int offsety;
 
-HTEXTURE hgeFontGlyph::createTexture( unsigned int *data, int w, int h )
-{
-	HTEXTURE tex = hge->Texture_Create( w, h );
-	DWORD *color = hge->Texture_Lock( tex, false );
-	
-	memcpy( color, data, sizeof( unsigned int ) * w * h );
-
-	hge->Texture_Unlock( tex );
-	
-	return tex;
-}
-
+	unsigned int top;
+	unsigned int left;
+	unsigned int imgw;
+	unsigned int imgh;
+	HTEXTURE tex;
+};
 
 ////////////////////////////////////////////////////////
 hgeFontEx::hgeFontEx()
 	: Glyphs( NULL )
 {
 	hge = hgeCreate(HGE_VERSION);
-	//TransParency = false;
+
 	attached = false;
 	GlobalKerningWidth = 0;
 	GlobalKerningHeight = 0;
-	mColor = ARGB( 255, 255, 255, 255 );
 	spr = new hgeSprite( 0, 0, 0, 0, 0 );
+	page = new FontPage();
 }
 
 hgeFontEx::~hgeFontEx()
 {
-	if (attached)	
-	{
-		//delete tt_face;
-	}
 	attached = false;
 
 	free( Glyphs );
@@ -281,34 +276,20 @@ bool hgeFontEx::attach( hgeFontFace* Face, unsigned int size )
 	if (!hge)
 		return false;
 
-	if (attached){
-		//delete tt_face;
-		tt_face = 0;
-	}
 	tt_face = Face;
 
 	this->size = size;
-
-	hgeFontGlyph tmp;  
-	int *tmp2;
 
 	hgeFontGlyph* pTmpGlyph = (hgeFontGlyph*)realloc( Glyphs, sizeof(hgeFontGlyph)*( tt_face->face->num_glyphs ) );
 	if( !pTmpGlyph )
 		return false;
 
 	Glyphs = pTmpGlyph;
-	mGlyphsCount = ( tt_face->face->num_glyphs );
+	mGlyphsCount = tt_face->face->num_glyphs;
 
-	for (int i = 0;i < tt_face->face->num_glyphs;i++)
+	for (int i = 0;i < mGlyphsCount;i++)
 	{
-		Glyphs[i].hge = hge;
-		Glyphs[i].size = size;
-		Glyphs[i].face = &(tt_face->face);
 		Glyphs[i].cached = false;
-
-		tmp2 = (int*)&(Glyphs[i]);
-		*tmp2 = *(int*)(&tmp);
-		Glyphs[i].init();
 	}
 	attached = true;
 	return	true;
@@ -316,15 +297,22 @@ bool hgeFontEx::attach( hgeFontFace* Face, unsigned int size )
 
 unsigned int hgeFontEx::getGlyphByChar(wchar_t c)
 {
-
 	unsigned int idx = FT_Get_Char_Index( tt_face->face, c );
-	if (idx && !Glyphs[idx - 1].cached)	Glyphs[idx - 1].cache(idx);
+	if (idx && !Glyphs[idx - 1].cached)
+	{
+		FontPage* curPage = page;
+		while( curPage && curPage->bFull )
+			curPage = curPage->next;
+
+		if( curPage )
+			Glyphs[idx - 1].cache(tt_face->face, idx, size, curPage );
+	}
 	return	idx;
 }
 
 hgeFontEx::Size  hgeFontEx::getDimension(const wchar_t* text)
 {
-	Size dim(0, Glyphs[0].size);
+	Size dim(0, size);
 
 	for(const wchar_t* p = text; *p; ++p)
 	{
@@ -333,30 +321,35 @@ hgeFontEx::Size  hgeFontEx::getDimension(const wchar_t* text)
 	return dim;
 }
 
-
 inline int hgeFontEx::getWidthFromCharacter(wchar_t c)
 {
 	unsigned int n = getGlyphByChar(c);
-	if ( n > 0){
-		int w = Glyphs[n - 1].texw;
-		int left = Glyphs[n - 1].left;
-		if (w + left > 0) return w + left;
+	if ( n > 0)
+	{
+		int w = Glyphs[n - 1].imgw;
+		int left = Glyphs[n - 1].offsetx;
+		if (w + left > 0)
+			return w + left;
 	}
-	if (c >= 0x2000){
-		return	Glyphs[0].size;
-	} else {
-		return	Glyphs[0].size / 2;
+
+	if (c >= 0x2000)
+	{
+		return	size;
+	} 
+	else 
+	{
+		return	size / 2;
 	}
 }
 
-DWORD hgeFontEx::GetColor()
+unsigned int hgeFontEx::GetColor()
 {
-	return mColor;
+	return spr?spr->GetColor():0;
 }
 
-void hgeFontEx::SetColor( DWORD color )
+void hgeFontEx::SetColor( unsigned int color )
 {
-	mColor = color;
+	spr->SetColor(color);
 }
 
 void hgeFontEx::SetSpacing( float spacing )
@@ -383,7 +376,6 @@ float hgeFontEx::GetHeight()
 
 void hgeFontEx::Render( float offsetX, float offsetY, int align, const wchar_t *text )
 {
-
 	if( align != HGETEXT_LEFT )
 	{
 		Size textDimension;
@@ -403,17 +395,9 @@ void hgeFontEx::Render( float offsetX, float offsetY, int align, const wchar_t *
 		n = getGlyphByChar(*text);
 		if ( n > 0)
 		{
-			int imgw = Glyphs[n-1].imgw;
-			int imgh = Glyphs[n-1].imgh;
-			int texw = Glyphs[n-1].texw;
-			int texh = Glyphs[n-1].texh;
-			int offx = Glyphs[n-1].left;
-			int offy = Glyphs[n-1].size - Glyphs[n-1].top;
-
 			spr->SetTexture( Glyphs[n-1].tex );
-			spr->SetTextureRect( 0, 0, imgw-1.0f, imgh-1.0f );
-			spr->SetColor( mColor );
-			spr->Render( offsetX + offx, offsetY + offy );
+			spr->SetTextureRect( Glyphs[n-1].left, Glyphs[n-1].top, Glyphs[n-1].imgw-1.0f, Glyphs[n-1].imgh-1.0f );
+			spr->Render( offsetX + Glyphs[n-1].offsetx, offsetY + Glyphs[n-1].offsety );
  
 			offsetX += getWidthFromCharacter(*text) + GlobalKerningWidth;
 		} 
@@ -459,17 +443,9 @@ void hgeFontEx::Render( float offsetX, float offsetY, const wchar_t* text, bool 
 		n = getGlyphByChar(*text);
 		if ( n > 0)
 		{
-			int imgw = Glyphs[n-1].imgw;
-			int imgh = Glyphs[n-1].imgh;
-			int texw = Glyphs[n-1].texw;
-			int texh = Glyphs[n-1].texh;
-			int offx = Glyphs[n-1].left;
-			int offy = Glyphs[n-1].size - Glyphs[n-1].top;
-
 			spr->SetTexture( Glyphs[n-1].tex );
-			spr->SetTextureRect( 0, 0, imgw-1.0f, imgh-1.0f );
-			spr->SetColor( mColor );
-			spr->Render( offsetX + offx, offsetY + offy );
+			spr->SetTextureRect( Glyphs[n-1].left, Glyphs[n-1].top, Glyphs[n-1].imgw-1.0f, Glyphs[n-1].imgh-1.0f );
+			spr->Render( offsetX + Glyphs[n-1].offsetx, offsetY + Glyphs[n-1].offsety );
  
 			offsetX += getWidthFromCharacter(*text) + GlobalKerningWidth;
 		} 
@@ -480,7 +456,6 @@ void hgeFontEx::Render( float offsetX, float offsetY, const wchar_t* text, bool 
 		++text;
 	}
 }
-
 
 //! Calculates the index of the character in the text which is on a specific position.
 int hgeFontEx::getCharacterFromPos(const wchar_t* text, int pixel_x)

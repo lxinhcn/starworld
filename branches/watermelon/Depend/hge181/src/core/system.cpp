@@ -566,6 +566,8 @@ int CALL HGE_Impl::System_GetStateInt(hgeIntState state)
 		case HGE_STREAMVOLUME:	return nStreamVolume;
 		case HGE_FPS:			return nHGEFPS;
 		case HGE_POWERSTATUS:	return nPowerStatus;
+		case HGE_MAXTEXTUREW:	return Caps.MaxTextureWidth;
+		case HGE_MAXTEXTUREH:	return Caps.MaxTextureHeight;
 	}
 
 	return 0;

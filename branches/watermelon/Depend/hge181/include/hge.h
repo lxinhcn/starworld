@@ -153,16 +153,18 @@ enum hgeIntState
 
 	HGE_POWERSTATUS		= 25,   // int		battery life percent + status
 	
+	HGE_MAXTEXTUREW		= 26,	// int		max texture width
+	HGE_MAXTEXTUREH		= 27,	// int		max texture height
 	HGEINTSTATE_FORCE_DWORD = 0x7FFFFFF
 };
 
 enum hgeStringState
 {
-	HGE_ICON			= 26,   // char*	icon resource		(default: NULL)
-	HGE_TITLE			= 27,   // char*	window title		(default: "HGE")
+	HGE_ICON			= 28,   // char*	icon resource		(default: NULL)
+	HGE_TITLE			= 29,   // char*	window title		(default: "HGE")
 	
-	HGE_INIFILE			= 28,   // char*	ini file			(default: NULL) (meaning no file)
-	HGE_LOGFILE			= 29,   // char*	log file			(default: NULL) (meaning no file)
+	HGE_INIFILE			= 30,   // char*	ini file			(default: NULL) (meaning no file)
+	HGE_LOGFILE			= 31,   // char*	log file			(default: NULL) (meaning no file)
 
 	HGESTRINGSTATE_FORCE_DWORD = 0x7FFFFFFF
 };
