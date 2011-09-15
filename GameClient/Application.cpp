@@ -79,7 +79,7 @@ bool CApplication::Initialize()
 	m_hge->System_SetState(HGE_SCREENHEIGHT, SCREEN_HEIGHT);
 	m_hge->System_SetState(HGE_SCREENBPP, 32);
 	m_hge->System_SetState(HGE_SCREENBPP, 32);
-	m_hge->System_SetState(HGE_HIDEMOUSE, true);
+	m_hge->System_SetState(HGE_HIDEMOUSE, false);
 
 	// m_hge->System_SetState(HGE_DONTSUSPEND, true );
 
@@ -146,26 +146,33 @@ bool CApplication::UpdateLogic( float fDelta )
 
 void CApplication::Render()
 {
-	static float x = 10;
-	static int c = clock();
-	static float t = 1;
+	//static float x = 10;
+	//static int c = clock();
+	//static float t = 1;
 
 	char tmp[256];
 	GetWindowsDirectoryA(tmp,255);
 	strcat(tmp,"\\fonts\\STXINGKA.TTF");
 
 	hgeFontHelper font1( tmp, 18 );
-	font1->Print( 10, 60, 0, L"测试输出文本abc。" );
+	font1->Print( 10, 60, 0, L"非常非常多的，你不想，随便写点啊三林渡口进去了为熬到奇偶静安寺，梅巷村" );
 
-	x+=t;
-	if( x >= SCREEN_WIDTH - 100 )
-		t = -t;
+	//if( clock() - c >= 20 )
+	//{
+	//	x+=t;
+	//	if( x >= SCREEN_WIDTH - 100 )
+	//		t = -t;
 
-	if( x <= 0 )
-		t = -t;
+	//	if( x <= 0 )
+	//		t = -t;
 
-	hgeFontHelper font2( tmp, 18 );
-	for( int y = 150; y < 400; y+=32 )
+	//	c = clock();
+	//}
+
+	hgeFontHelper font2( "..\\Resource\\ARIALN.ttf", 18 );
+
+	for( float x = 0; x < 700.0f; x+=120.0f )
+	for( float y = 120; y < 580.0f; y+=20.0f )
 	{
 		font2->SetColor( ARGB(255, 128, 255,255) );
 		font2->Print( x, y, 0, L"测试输出文本abc。" );
