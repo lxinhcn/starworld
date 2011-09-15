@@ -63,7 +63,7 @@ struct FontPage
 		bits = glyph->bitmap;
 
 		unsigned char* pt = bits.buffer;
-
+		unsigned int txw = hge->Texture_GetWidth(hTexture);
 		unsigned int* texp = (unsigned int*)hge->Texture_Lock( hTexture, false, offsetX, offsetY, w, h );
 
 		for (int i = 0;i < bits.rows;i++)
@@ -83,7 +83,7 @@ struct FontPage
 				pt++;
 				rowp++;
 			}
-			texp += w;
+			texp += txw;
 		}
 
 		hge->Texture_Unlock(hTexture);
@@ -204,25 +204,29 @@ public:
 				{
 					FT_Bitmap  bits = glyph->bitmap;
 
-					offsetx = glyph->bitmap_top;
-					offsety = glyph->bitmap_left;
+					tex = page->hTexture;
+
+					offsetx = glyph->bitmap_left;
+					offsety = glyph->bitmap_top;
 
 					imgw = bits.width;
 					imgh = bits.rows;
 
+					top = page->offsetY;
+					left = page->offsetX;
 					cached = page->cache(glyph, imgw, imgh);
 				}
 			}
 		}
 	}
 	
-	unsigned int offsetx;
-	unsigned int offsety;
+	int offsetx;
+	int offsety;
 
-	unsigned int top;
-	unsigned int left;
-	unsigned int imgw;
-	unsigned int imgh;
+	int top;
+	int left;
+	int imgw;
+	int imgh;
 	HTEXTURE tex;
 };
 
@@ -396,8 +400,8 @@ void hgeFontEx::Render( float offsetX, float offsetY, int align, const wchar_t *
 		if ( n > 0)
 		{
 			spr->SetTexture( Glyphs[n-1].tex );
-			spr->SetTextureRect( Glyphs[n-1].left, Glyphs[n-1].top, Glyphs[n-1].imgw-1.0f, Glyphs[n-1].imgh-1.0f );
-			spr->Render( offsetX + Glyphs[n-1].offsetx, offsetY + Glyphs[n-1].offsety );
+			spr->SetTextureRect( Glyphs[n-1].left, Glyphs[n-1].top, Glyphs[n-1].imgw, Glyphs[n-1].imgh );
+			spr->Render( offsetX + Glyphs[n-1].offsetx, offsetY + size - Glyphs[n-1].offsety );
  
 			offsetX += getWidthFromCharacter(*text) + GlobalKerningWidth;
 		} 
@@ -407,6 +411,13 @@ void hgeFontEx::Render( float offsetX, float offsetY, int align, const wchar_t *
 		}
 		++text;
 	}
+}
+
+void hgeFontEx::Render( float x, float y )
+{
+	spr->SetTexture( page->hTexture );
+	spr->SetTextureRect(0,0,hge->System_GetState(HGE_MAXTEXTUREW),hge->System_GetState(HGE_MAXTEXTUREH));
+	spr->Render(x,y);
 }
 
 void hgeFontEx::Print( float x, float y, int align, const wchar_t *format, ... )
@@ -444,8 +455,8 @@ void hgeFontEx::Render( float offsetX, float offsetY, const wchar_t* text, bool 
 		if ( n > 0)
 		{
 			spr->SetTexture( Glyphs[n-1].tex );
-			spr->SetTextureRect( Glyphs[n-1].left, Glyphs[n-1].top, Glyphs[n-1].imgw-1.0f, Glyphs[n-1].imgh-1.0f );
-			spr->Render( offsetX + Glyphs[n-1].offsetx, offsetY + Glyphs[n-1].offsety );
+			spr->SetTextureRect( Glyphs[n-1].left, Glyphs[n-1].top, Glyphs[n-1].imgw, Glyphs[n-1].imgh );
+			spr->Render( offsetX + Glyphs[n-1].offsetx, offsetY + size - Glyphs[n-1].offsety );
  
 			offsetX += getWidthFromCharacter(*text) + GlobalKerningWidth;
 		} 

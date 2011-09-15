@@ -83,6 +83,7 @@ public:
 	void Render( float x, float y, int align, const wchar_t *string );
 	void Render( float x, float y, const wchar_t* text, bool hcenter = false, bool vcenter = false );
 
+	void Render( float x, float y );
 	void Print( float x, float y, int align, const wchar_t *format, ... );
 
 	bool Create( const char* fontname, unsigned int fontsize );
