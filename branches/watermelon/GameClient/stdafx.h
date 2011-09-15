@@ -21,7 +21,6 @@
 
 // Windows Header Files:
 #include <windows.h>
-#include <atlconv.h>
 
 // C RunTime Header Files
 #include <stdlib.h>

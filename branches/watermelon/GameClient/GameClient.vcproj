@@ -67,7 +67,7 @@
 				AdditionalDependencies="hge.lib lua51.lib GameCore.lib Common.lib Slb.lib Box2D.lib"
 				ShowProgress="2"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;..\Depend\DX81SDK\Lib;&quot;..\Depend\hge181\Lib\$(ConfigurationName)&quot;;..\Depend\Box2D\lib;&quot;..\GameSDK\lua-5.1.4\src&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;..\Depend\DX81SDK\Lib;&quot;..\Depend\hge181\Lib\$(ConfigurationName)&quot;;..\Depend\Box2D\lib;&quot;..\GameSDK\lua-5.1.4\src&quot;;&quot;..\Depend\Visual Leak Detector\lib&quot;"
 				GenerateManifest="true"
 				IgnoreDefaultLibraryNames="LibC.lib"
 				GenerateDebugInformation="true"
