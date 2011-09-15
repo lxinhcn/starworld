@@ -173,7 +173,5 @@ void CApplication::Render()
 
 	font1->SetColor( ARGB(200, 255, 0, 0 ) );
 	font1->Print( 10, 10, 0, L"FPS : %d", m_hge->Timer_GetFPS() );
-	printf( "FPS: %d\n", m_hge->Timer_GetFPS() );
-
 	font1->Render( 0.0f, 100.0f );
 }
