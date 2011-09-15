@@ -39,8 +39,8 @@ struct FontPage
 		hge = hgeCreate(HGE_VERSION);
 		if( hge )
 		{
-			width	= hge->System_GetState(HGE_MAXTEXTUREW);
-			height	= hge->System_GetState(HGE_MAXTEXTUREH);
+			width	= __min( 2048, hge->System_GetState(HGE_MAXTEXTUREW) );
+			height	= __min( 2048, hge->System_GetState(HGE_MAXTEXTUREH) );
 			hTexture = hge->Texture_Create( width, height );
 			hge->Release();
 		}
@@ -63,7 +63,6 @@ struct FontPage
 		bits = glyph->bitmap;
 
 		unsigned char* pt = bits.buffer;
-		unsigned int txw = hge->Texture_GetWidth(hTexture);
 		unsigned int* texp = (unsigned int*)hge->Texture_Lock( hTexture, false, offsetX, offsetY, w, h );
 
 		for (int i = 0;i < bits.rows;i++)
@@ -83,17 +82,17 @@ struct FontPage
 				pt++;
 				rowp++;
 			}
-			texp += txw;
+			texp += width;
 		}
 
 		hge->Texture_Unlock(hTexture);
 		offsetX += w;
 
-		if(offsetX >= hge->System_GetState(HGE_MAXTEXTUREW) )
+		if(offsetX >= width )
 		{
 			offsetX = 0;
 			offsetY += h;
-			if( offsetY >= hge->System_GetState(HGE_MAXTEXTUREH) )
+			if( offsetY >= height )
 			{
 				bFull = true;
 				next = new FontPage();
@@ -247,6 +246,11 @@ hgeFontEx::~hgeFontEx()
 {
 	attached = false;
 
+	for( int i = 0; i < mGlyphsCount; ++i )
+	{
+		delete Glyphs[i];
+		Glyphs[i] = NULL;
+	}
 	free( Glyphs );
 	delete spr;
 	hge->Release();
@@ -284,7 +288,7 @@ bool hgeFontEx::attach( hgeFontFace* Face, unsigned int size )
 
 	this->size = size;
 
-	hgeFontGlyph* pTmpGlyph = (hgeFontGlyph*)realloc( Glyphs, sizeof(hgeFontGlyph)*( tt_face->face->num_glyphs ) );
+	hgeFontGlyph** pTmpGlyph = (hgeFontGlyph**)realloc( Glyphs, sizeof(hgeFontGlyph*)*( tt_face->face->num_glyphs ) );
 	if( !pTmpGlyph )
 		return false;
 
@@ -293,7 +297,7 @@ bool hgeFontEx::attach( hgeFontFace* Face, unsigned int size )
 
 	for (int i = 0;i < mGlyphsCount;i++)
 	{
-		Glyphs[i].cached = false;
+		Glyphs[i] = NULL;
 	}
 	attached = true;
 	return	true;
@@ -302,14 +306,18 @@ bool hgeFontEx::attach( hgeFontFace* Face, unsigned int size )
 unsigned int hgeFontEx::getGlyphByChar(wchar_t c)
 {
 	unsigned int idx = FT_Get_Char_Index( tt_face->face, c );
-	if (idx && !Glyphs[idx - 1].cached)
+	if (idx && !Glyphs[idx - 1])
 	{
 		FontPage* curPage = page;
 		while( curPage && curPage->bFull )
 			curPage = curPage->next;
 
 		if( curPage )
-			Glyphs[idx - 1].cache(tt_face->face, idx, size, curPage );
+		{
+			Glyphs[idx - 1] = new hgeFontGlyph();
+			if(Glyphs[idx - 1])
+				Glyphs[idx - 1]->cache(tt_face->face, idx, size, curPage );
+		}
 	}
 	return	idx;
 }
@@ -330,8 +338,8 @@ inline int hgeFontEx::getWidthFromCharacter(wchar_t c)
 	unsigned int n = getGlyphByChar(c);
 	if ( n > 0)
 	{
-		int w = Glyphs[n - 1].imgw;
-		int left = Glyphs[n - 1].offsetx;
+		int w = Glyphs[n - 1]->imgw;
+		int left = Glyphs[n - 1]->offsetx;
 		if (w + left > 0)
 			return w + left;
 	}
@@ -397,11 +405,11 @@ void hgeFontEx::Render( float offsetX, float offsetY, int align, const wchar_t *
 	while(*text)
 	{
 		n = getGlyphByChar(*text);
-		if ( n > 0)
+		if ( n > 0 && Glyphs[n-1] )
 		{
-			spr->SetTexture( Glyphs[n-1].tex );
-			spr->SetTextureRect( Glyphs[n-1].left, Glyphs[n-1].top, Glyphs[n-1].imgw, Glyphs[n-1].imgh );
-			spr->Render( offsetX + Glyphs[n-1].offsetx, offsetY + size - Glyphs[n-1].offsety );
+			spr->SetTexture( Glyphs[n-1]->tex );
+			spr->SetTextureRect( Glyphs[n-1]->left, Glyphs[n-1]->top, Glyphs[n-1]->imgw, Glyphs[n-1]->imgh );
+			spr->Render( offsetX + Glyphs[n-1]->offsetx, offsetY + size - Glyphs[n-1]->offsety );
  
 			offsetX += getWidthFromCharacter(*text) + GlobalKerningWidth;
 		} 
@@ -416,7 +424,7 @@ void hgeFontEx::Render( float offsetX, float offsetY, int align, const wchar_t *
 void hgeFontEx::Render( float x, float y )
 {
 	spr->SetTexture( page->hTexture );
-	spr->SetTextureRect(0,0,hge->System_GetState(HGE_MAXTEXTUREW),hge->System_GetState(HGE_MAXTEXTUREH));
+	spr->SetTextureRect(0,0,page->width,page->height);
 	spr->Render(x,y);
 }
 
@@ -452,11 +460,11 @@ void hgeFontEx::Render( float offsetX, float offsetY, const wchar_t* text, bool 
 	while(*text)
 	{
 		n = getGlyphByChar(*text);
-		if ( n > 0)
+		if ( n > 0 && Glyphs[n-1] )
 		{
-			spr->SetTexture( Glyphs[n-1].tex );
-			spr->SetTextureRect( Glyphs[n-1].left, Glyphs[n-1].top, Glyphs[n-1].imgw, Glyphs[n-1].imgh );
-			spr->Render( offsetX + Glyphs[n-1].offsetx, offsetY + size - Glyphs[n-1].offsety );
+			spr->SetTexture( Glyphs[n-1]->tex );
+			spr->SetTextureRect( Glyphs[n-1]->left, Glyphs[n-1]->top, Glyphs[n-1]->imgw, Glyphs[n-1]->imgh );
+			spr->Render( offsetX + Glyphs[n-1]->offsetx, offsetY + size - Glyphs[n-1]->offsety );
  
 			offsetX += getWidthFromCharacter(*text) + GlobalKerningWidth;
 		} 

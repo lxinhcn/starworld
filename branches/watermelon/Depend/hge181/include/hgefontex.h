@@ -146,7 +146,7 @@ private:
 	unsigned int	size;
 
 	HGE				*hge;
-	hgeFontGlyph	*Glyphs;
+	hgeFontGlyph	**Glyphs;
 	hgeFontFace		*tt_face;
 
 	FontPage		*page;
