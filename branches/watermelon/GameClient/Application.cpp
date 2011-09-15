@@ -152,13 +152,10 @@ void CApplication::Render()
 
 	char tmp[256];
 	GetWindowsDirectoryA(tmp,255);
-	strcat(tmp,"\\fonts\\SIMHEI.TTF");
+	strcat(tmp,"\\fonts\\STXINGKA.TTF");
 
 	hgeFontHelper font1( tmp, 18 );
-	font1->Print( 10, 100, 0, L"测试输出文本abc123。" );
-
-	GetWindowsDirectoryA(tmp,255);
-	strcat(tmp,"\\fonts\\STXINGKA.TTF");
+	font1->Print( 10, 60, 0, L"测试输出文本abc。" );
 
 	x+=t;
 	if( x >= SCREEN_WIDTH - 100 )
@@ -171,10 +168,12 @@ void CApplication::Render()
 	for( int y = 150; y < 400; y+=32 )
 	{
 		font2->SetColor( ARGB(255, 128, 255,255) );
-		font2->Print( x, y, 0, L"测试输出文本abc123。" );
+		font2->Print( x, y, 0, L"测试输出文本abc。" );
 	}
 
-	hgeFontHelper font3( tmp, 16 );
-	font3->SetColor( ARGB(200, 255, 0, 0 ) );
-	font3->Print( 10, 10, 0, L"FPS : %d", m_hge->Timer_GetFPS() );
+	font1->SetColor( ARGB(200, 255, 0, 0 ) );
+	font1->Print( 10, 10, 0, L"FPS : %d", m_hge->Timer_GetFPS() );
+	printf( "FPS: %d\n", m_hge->Timer_GetFPS() );
+
+	font1->Render( 0.0f, 100.0f );
 }
