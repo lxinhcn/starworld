@@ -17,7 +17,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)Exe\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)Bin\$(ConfigurationName)"
 			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -115,7 +115,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)Exe\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)Bin\$(ConfigurationName)"
 			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfMFC="0"
