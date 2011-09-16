@@ -12,6 +12,7 @@
 // TODO: 在此处引用程序要求的附加头文件
 // C 运行时头文件
 #include <tchar.h>
+#include <time.h>
 #include <list>
 #include <stack>
 #include <queue>
@@ -20,14 +21,18 @@
 #include <vector>
 #include <complex>
 
+
 #include "commonlib.h"
+#include "delegate.hpp"
+using namespace XGC;
+using namespace XGC::common;
+
 #include "AttribDef.h"
 #include "DataHelper.h"
 #include "XObject.h"
 #include "XAction.h"
 #include "XVector2.h"
 #include "XVector3.h"
-#include "GameCore.h"
-using namespace XGC;
-using namespace XGC::common;
+#include "XUtilityFunctor.h"
+
 // TODO: 在此处引用程序要求的附加头文件

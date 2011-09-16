@@ -685,8 +685,8 @@ namespace XGC
 	typedef xgcPoint< int > iPoint;
 	typedef xgcRect< int >	iRect;
 
-	typedef xgcSize< int >	fSize;
-	typedef xgcPoint< int > fPoint;
-	typedef xgcRect< int >	fRect;
+	typedef xgcSize< float >	fSize;
+	typedef xgcPoint< float >	fPoint;
+	typedef xgcRect< float >	fRect;
 }
 #endif // _DATEHELPER_

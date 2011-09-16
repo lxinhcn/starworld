@@ -4,16 +4,27 @@
 #include "stdafx.h"
 #include "GameCore.h"
 
-CORE_API CGameTriggerMgr*	ThisTriggerMgr()
+namespace XGC
 {
-	core_thread* l = reinterpret_cast< core_thread* >( TlsGetValue( dwTlsIndex ) );
-	ASSERT_POINTER( l );
-	return l->_trigger_mgr;
-}
+	struct CCoreTimer	: public timer
+	{
+		friend struct CreateUsingNew< CCoreTimer >;
+	};
 
-CORE_API timer* ThisTimer()
-{
-	core_thread* l = reinterpret_cast< core_thread* >( TlsGetValue( dwTlsIndex ) );
-	ASSERT_POINTER( l );
-	return l->_timer;
+	typedef SingletonHolder< CCoreTimer, CreateUsingNew, DeletableSingleton >	CoreTimer;
+	bool InitGameCore()
+	{
+		return CoreTimer::Instance().initialize( 0xffff, 0xffff );
+	}
+
+	void FiniGameCore()
+	{
+		DeletableSingleton< CoreTimer >::GracefulDelete();
+		DeletableSingleton< AttributeNameMap >::GracefulDelete();
+	}
+
+	timer& ThisTimer()
+	{
+		return static_cast< timer& >( CoreTimer::Instance() );
+	}
 }
