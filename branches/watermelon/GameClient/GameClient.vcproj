@@ -18,7 +18,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)Exe\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)Bin\$(ConfigurationName)"
 			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Depend\hge181\include;..\Depend\Box2D\include;..\GameSDK\GameCore\Include;..\GameSDK\SLB\Include;..\xgcBase\Common;&quot;..\Depend\Visual Leak Detector\include&quot;"
+				AdditionalIncludeDirectories="..\Depend\hge181\include;..\Depend\Box2D\include;..\GameSDK\GameCore\Include;..\GameSDK\SLB\Include;..\Depend\xgcBase\Include;&quot;..\Depend\Visual Leak Detector\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -67,7 +67,7 @@
 				AdditionalDependencies="hge.lib lua51.lib GameCore.lib Common.lib Slb.lib Box2D.lib"
 				ShowProgress="2"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;..\Depend\DX81SDK\Lib;&quot;..\Depend\hge181\Lib\$(ConfigurationName)&quot;;..\Depend\Box2D\lib;&quot;..\GameSDK\lua-5.1.4\src&quot;;&quot;..\Depend\Visual Leak Detector\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;&quot;..\GameSDK\lua-5.1.4\src&quot;;&quot;..\Depend\hge181\Lib\$(ConfigurationName)&quot;;..\Depend\Box2D\lib;&quot;..\Depend\Visual Leak Detector\lib&quot;;&quot;..\Depend\xgcBase\Lib\$(ConfigurationName)&quot;"
 				GenerateManifest="true"
 				IgnoreDefaultLibraryNames="LibC.lib"
 				GenerateDebugInformation="true"
@@ -103,7 +103,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)Exe\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)Bin\$(ConfigurationName)"
 			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
@@ -126,7 +126,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Depend\hge181\include;..\Depend\Box2D\include;..\GameSDK\GameCore\Include;..\GameSDK\SLB\Include;..\xgcBase\Common;&quot;..\Depend\Visual Leak Detector\include&quot;"
+				AdditionalIncludeDirectories="..\Depend\hge181\include;..\Depend\Box2D\include;..\GameSDK\GameCore\Include;..\GameSDK\SLB\Include;..\Depend\xgcBase\Include;&quot;..\Depend\Visual Leak Detector\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -149,7 +149,7 @@
 				AdditionalDependencies="hge.lib lua51.lib GameCore.lib Common.lib Slb.lib Box2D.lib"
 				ShowProgress="2"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;..\Depend\DX81SDK\Lib;&quot;..\Depend\hge181\Lib\$(ConfigurationName)&quot;;..\Depend\Box2D\Lib;&quot;..\GameSDK\lua-5.1.4\src&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;&quot;..\GameSDK\lua-5.1.4\src&quot;;&quot;..\Depend\hge181\Lib\$(ConfigurationName)&quot;;..\Depend\Box2D\lib;&quot;..\Depend\Visual Leak Detector\lib&quot;;&quot;..\Depend\xgcBase\Lib\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"

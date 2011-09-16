@@ -3,13 +3,6 @@
 #include "hgefontmanager.h"
 #include "hgefontex.h"
 
-//struct hgeFontManager : public hgeFontManagerStub
-//{
-//	friend struct CreateStatic< hgeFontManager >; 
-//};
-//
-//typedef SingletonHolder< hgeFontManager, CreateUsingNew > hgeFontManagerSingleton;
-
 class CApplication
 {
 	friend struct CreateStatic< CApplication >;

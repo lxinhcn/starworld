@@ -146,39 +146,4 @@ bool CApplication::UpdateLogic( float fDelta )
 
 void CApplication::Render()
 {
-	//static float x = 10;
-	//static int c = clock();
-	//static float t = 1;
-
-	char tmp[256];
-	GetWindowsDirectoryA(tmp,255);
-	strcat(tmp,"\\fonts\\STXINGKA.TTF");
-
-	hgeFontHelper font1( tmp, 18 );
-	font1->Print( 10, 60, 0, L"非常非常多的，你不想，随便写点啊三林渡口进去了为熬到奇偶静安寺，梅巷村" );
-
-	//if( clock() - c >= 20 )
-	//{
-	//	x+=t;
-	//	if( x >= SCREEN_WIDTH - 100 )
-	//		t = -t;
-
-	//	if( x <= 0 )
-	//		t = -t;
-
-	//	c = clock();
-	//}
-
-	hgeFontHelper font2( "..\\Resource\\ARIALN.ttf", 18 );
-
-	for( float x = 0; x < 700.0f; x+=120.0f )
-	for( float y = 120; y < 580.0f; y+=20.0f )
-	{
-		font2->SetColor( ARGB(255, 128, 255,255) );
-		font2->Print( x, y, 0, L"测试输出文本abc。" );
-	}
-
-	font1->SetColor( ARGB(200, 255, 0, 0 ) );
-	font1->Print( 10, 10, 0, L"FPS : %d", m_hge->Timer_GetFPS() );
-	font1->Render( 0.0f, 100.0f );
 }

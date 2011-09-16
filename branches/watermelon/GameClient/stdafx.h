@@ -40,13 +40,17 @@
 #include <vector>
 #include <strstream>
 
+// HGE
 #include <hge.h>
 #include <hgesprite.h>
 #include <hgeanim.h>
 #include <hgefont.h>
 
+// Box2D
+#include "Box2D/Box2D.h"
+
 // ¸¨Öú¿â
-#include "CommonLib.h"
+#include "commonlib.h"
 #include "Box2D\Box2D.h"
 
 using namespace XGC;
