@@ -18,7 +18,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)Exe\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)Bin\$(ConfigurationName)"
 			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="1"
@@ -41,13 +41,15 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\;.\include;..\..\xgcBase\Common;&quot;..\..\Depend\Loki-0.1.6\Include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;CORE_EXPORTS"
+				AdditionalIncludeDirectories="&quot;$(BOOSTDIR)&quot;;&quot;$(SolutionDir)Depend\xgcBase\Include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;CORE_EXPORTS;_USE_BOOST"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				EnableEnhancedInstructionSet="1"
 				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="StdAfx.h"
+				PrecompiledHeaderFile="$(IntDir)\(TargetName).pch"
 				ExpandAttributedSource="false"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
@@ -66,16 +68,15 @@
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
 				AdditionalDependencies="Common.lib"
-				ShowProgress="0"
 				OutputFile="$(OutDir)/$(ProjectName).dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)Depend\vld\lib&quot;;&quot;$(SolutionDir)Depend\xgcBase\Lib\$(ConfigurationName)&quot;;&quot;$(BOOSTDIR)stage\lib&quot;"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(SolutionDir)Lib\$(ConfigurationName)/$(TargetName).lib"
+				ImportLibrary="$(SolutionDir)Lib\$(ConfigurationName)\$(TargetName).lib"
 				TargetMachine="1"
 				Profile="false"
 			/>
@@ -103,7 +104,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)Exe\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)Bin\$(ConfigurationName)"
 			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="1"
@@ -125,11 +126,13 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".\;.\include;..\..\xgcBase\Common;&quot;..\..\Depend\Loki-0.1.6\Include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;CORE_EXPORTS"
+				AdditionalIncludeDirectories="&quot;$(BOOSTDIR)&quot;;&quot;$(SolutionDir)Depend\xgcBase\Include&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;CORE_EXPORTS;_USE_BOOST"
 				RuntimeLibrary="2"
 				EnableEnhancedInstructionSet="1"
 				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="StdAfx.h"
+				PrecompiledHeaderFile="$(IntDir)\(TargetName).pch"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
@@ -147,10 +150,10 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="Common.lib loki.lib"
+				AdditionalDependencies="Common.lib"
 				OutputFile="$(OutDir)/$(ProjectName).dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;&quot;$(SolutionDir)Depend\Loki-0.1.6\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)Depend\vld\lib&quot;;&quot;$(SolutionDir)Depend\xgcBase\Lib\$(ConfigurationName)&quot;;&quot;$(BOOSTDIR)stage\lib&quot;"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 				SubSystem="2"
@@ -158,7 +161,179 @@
 				EnableCOMDATFolding="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(SolutionDir)Lib\$(ConfigurationName)/$(TargetName).lib"
+				ImportLibrary="$(SolutionDir)Lib\$(ConfigurationName)\$(TargetName).lib"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+				EnableFxCop="false"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug_Ansi|Win32"
+			OutputDirectory="$(SolutionDir)Bin\$(ConfigurationName)"
+			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="&quot;$(BOOSTDIR)&quot;;&quot;$(SolutionDir)Depend\xgcBase\Include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;CORE_EXPORTS;_USE_BOOST"
+				MinimalRebuild="true"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				EnableEnhancedInstructionSet="1"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="StdAfx.h"
+				PrecompiledHeaderFile="$(IntDir)\(TargetName).pch"
+				ExpandAttributedSource="false"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="4"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkLibraryDependencies="false"
+				AdditionalDependencies="Common.lib"
+				ShowProgress="0"
+				OutputFile="$(OutDir)/$(ProjectName).dll"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)Depend\vld\lib&quot;;&quot;$(SolutionDir)Depend\xgcBase\Lib\$(ConfigurationName)&quot;;&quot;$(BOOSTDIR)stage\lib&quot;"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
+				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+				ImportLibrary="$(SolutionDir)Lib\$(ConfigurationName)\$(TargetName).lib"
+				TargetMachine="1"
+				Profile="false"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release_Ansi|Win32"
+			OutputDirectory="$(SolutionDir)Bin\$(ConfigurationName)"
+			IntermediateDirectory="$(SolutionDir)Temp\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="&quot;$(BOOSTDIR)&quot;;&quot;$(SolutionDir)Depend\xgcBase\Include&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;CORE_EXPORTS;_USE_BOOST"
+				RuntimeLibrary="2"
+				EnableEnhancedInstructionSet="1"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="StdAfx.h"
+				PrecompiledHeaderFile="$(IntDir)\(TargetName).pch"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+				EnablePREfast="false"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				LinkLibraryDependencies="false"
+				AdditionalDependencies="Common.lib"
+				OutputFile="$(OutDir)/$(ProjectName).dll"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)Depend\vld\lib&quot;;&quot;$(SolutionDir)Depend\xgcBase\Lib\$(ConfigurationName)&quot;;&quot;$(BOOSTDIR)stage\lib&quot;"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
+				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+				ImportLibrary="$(SolutionDir)Lib\$(ConfigurationName)\$(TargetName).lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -189,181 +364,233 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source"
-			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
-			>
-			<File
-				RelativePath=".\Source\DataHelper.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\GameActor.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\GameActorAI.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\GameCore.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\GameMap.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\GameObject.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\GameSkill.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\GameTriggerMgr.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\stdafx.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\Source\XAction.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\XMath.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\XObject.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\XObjectPool.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\XQuest.cpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Include"
+			Name="Core"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\Include\AttribDef.h"
+				RelativePath=".\AttribDef.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Include\DataHelper.h"
+				RelativePath=".\XUtilityFunctor.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Include\GameActor.h"
+				RelativePath=".\XUtilityFunctor.h"
 				>
 			</File>
-			<File
-				RelativePath=".\Include\GameActorAI.h"
+			<Filter
+				Name="CoreObject"
 				>
-			</File>
-			<File
-				RelativePath=".\Include\GameCore.h"
+				<File
+					RelativePath=".\GameMap.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\GameMap.h"
+					>
+				</File>
+				<File
+					RelativePath=".\GameObject.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\GameObject.h"
+					>
+				</File>
+				<File
+					RelativePath=".\XAction.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\XAction.h"
+					>
+				</File>
+				<File
+					RelativePath=".\XActorBase.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\XActorBase.h"
+					>
+				</File>
+				<File
+					RelativePath=".\XAttribute.h"
+					>
+				</File>
+				<File
+					RelativePath=".\XObject.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\XObject.h"
+					>
+				</File>
+				<File
+					RelativePath=".\XObjectPool.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\XObjectPool.h"
+					>
+				</File>
+				<File
+					RelativePath=".\XQuest.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\XQuest.h"
+					>
+				</File>
+				<File
+					RelativePath=".\XSkillBase.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\XSkillBase.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Helper"
 				>
-			</File>
-			<File
-				RelativePath=".\Include\GameMap.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Include\GameObject.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Include\GameSkill.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Include\GameTriggerMgr.h"
-				>
-			</File>
-			<File
-				RelativePath=".\stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Include\XAction.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Include\XAttribute.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Include\XMath.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Include\XMath.inl"
-				>
-			</File>
-			<File
-				RelativePath=".\Include\XObject.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Include\XObjectPool.h"
-				>
-			</File>
-			<File
-				RelativePath=".\XQuest.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Include\XVector2.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Include\XVector2.inl"
-				>
-			</File>
-			<File
-				RelativePath=".\Include\XVector3.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Include\XVector3.inl"
-				>
-			</File>
+				<File
+					RelativePath=".\DataHelper.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DataHelper.h"
+					>
+				</File>
+				<File
+					RelativePath=".\XMath.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\XMath.h"
+					>
+				</File>
+				<File
+					RelativePath=".\XStaticName.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\XStaticName.h"
+					>
+				</File>
+				<File
+					RelativePath=".\XVector2.h"
+					>
+				</File>
+				<File
+					RelativePath=".\XVector3.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
-			Name="Resource"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			Name="StateMachine"
 			>
+			<File
+				RelativePath=".\XFsmBase.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\XFsmBase.h"
+				>
+			</File>
+			<Filter
+				Name="State"
+				>
+				<File
+					RelativePath=".\AttackState.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\AttackState.h"
+					>
+				</File>
+				<File
+					RelativePath=".\IdleState.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\IdleState.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MoveState.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MoveState.h"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Controler"
+			>
+			<File
+				RelativePath=".\ObjectControlerBase.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ObjectControlerBase.h"
+				>
+			</File>
 		</Filter>
 		<File
+			RelativePath=".\GameCore.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\GameCore.h"
+			>
+		</File>
+		<File
 			RelativePath=".\ReadMe.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\StdAfx.cpp"
+			>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="1"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Release|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="1"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug_Ansi|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="1"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Release_Ansi|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="1"
+				/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath=".\StdAfx.h"
 			>
 		</File>
 	</Files>

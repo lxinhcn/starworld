@@ -1,5 +1,5 @@
 #pragma once
-#include "XObject.h"
+#include "boost/type_traits.hpp"
 namespace XGC
 {
 	class CXObject;
@@ -9,6 +9,7 @@ namespace XGC
 	/************************************************************************/
 	/* CXObjectPool 类，实现了一个静态的指针列表，用来通过ID的方式转化对象指针。
 	/************************************************************************/
+	#define ObjectPool	CXObjectPool::GetInstance()
 	class CORE_API CXObjectPool
 	{
 		friend class CXObject;
@@ -16,8 +17,8 @@ namespace XGC
 		CXObjectPool( size_t nLen );
 		~CXObjectPool();
 
-		identifier	AddObj( CXObject* pObj );
-		void		DelObj( identifier nID );
+		xObject	AddObject( CXObject* pObj );
+		void	DelObject( xObject nID );
 
 		struct object_handle
 		{
@@ -33,7 +34,7 @@ namespace XGC
 		size_t		m_nCount;
 	public:
 		static CXObjectPool& GetInstance();
-		inline bool IsValidID( identifier id );
+		inline bool IsValidObject( xObject id );
 
 		//--------------------------------------------------------//
 		//	created:	24:11:2009   15:02
@@ -42,10 +43,10 @@ namespace XGC
 		//
 		//	purpose:	通过ID获取对象
 		//--------------------------------------------------------//
-		inline CXObject* GetObj( identifier id )
+		inline CXObject* GetObject( xObject id )
 		{ 
 			object_handle &h = (object_handle&)id;
-			return IsValidID( id )?m_pObjectPool[h.position]:NULL; 
+			return IsValidObject( id )?m_pObjectPool[h.position]:NULL; 
 		}
 
 		//--------------------------------------------------------//
@@ -55,12 +56,20 @@ namespace XGC
 		//
 		//	purpose:	通过id获取对象，同时检查类型
 		//--------------------------------------------------------//
-		inline CXObject* GetObj( identifier id, guid type );
+		inline CXObject* GetObject( xObject id, xType type );
 
-		inline CXObject* operator []( identifier id )
-		{ 
-			object_handle &h = (object_handle&)id;
-			return m_pObjectPool[h.position]; 
+		//---------------------------------------------------//
+		// [12/11/2010 Albert]
+		// Description:	通过id获取对象 
+		//---------------------------------------------------//
+		template< typename ObjectType >
+		ObjectType* GetObject( xObject id )
+		{
+			CXObject* pObject = GetObject( id );
+			if( pObject && pObject->IsTypeOf( ObjectType::GetPointType() ) )
+				return static_cast< ObjectType* >( pObject );
+			else
+				return xgc_nullptr;
 		}
 	};
 }

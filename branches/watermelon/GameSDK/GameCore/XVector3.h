@@ -70,8 +70,8 @@ namespace XGC
 		XVector3	Cross( const XVector3& rhs ) const;
 
 		//! normalize
-		float 	Normalize();
-		float 	NormalizeFast();
+		void 	Normalize();
+		void 	NormalizeFast();
 
 		//! Linear interpolation from v1 to v2. Vectors are expected to be normalized.
 		XVector3&	Lerp( const XVector3& v1, const XVector3& v2, float t );
@@ -99,5 +99,6 @@ namespace XGC
 	static XVector3 	operator * ( float fScale, const XVector3& rhs );
 	static XVector3&	Vector3_Accumulate( XVector3& vOut, const XVector3& vIn, float fDelta );
 
+	/*static XVector3&	operator=( float lsh[3], const XVector3& rsh );*/
 #include "XVector3.inl"
 }

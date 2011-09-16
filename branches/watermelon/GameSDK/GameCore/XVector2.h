@@ -93,5 +93,5 @@ namespace XGC
 	static XVector2&	Lerp( XVector2& r, const XVector2& a, const XVector2& b, float t );
 	static XVector2 	Lerp( const XVector2& v1, const XVector2& v2, float t );
 	static XVector2 	operator * ( float fScale, const XVector2& rhs );
-#include "XVector2.inl"
+	#include "XVector2.inl"
 }

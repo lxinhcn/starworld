@@ -147,24 +147,22 @@
 					   x * rhs.y - y * rhs.x );
 	}
 	//----------------------------------------------------------------------------
-	__inline float XVector3::Normalize()
+	__inline void XVector3::Normalize()
 	{
 		float fSqrLen = x*x + y*y + z*z;
 		float fInvSqrt = XMath::InvSqrt( fSqrLen );
 		x *= fInvSqrt;
 		y *= fInvSqrt;
 		z *= fInvSqrt;
-		return fInvSqrt * fSqrLen;
 	}
 	//----------------------------------------------------------------------------
-	__inline float XVector3::NormalizeFast()
+	__inline void XVector3::NormalizeFast()
 	{
 		float fSqrLen = x*x + y*y + z*z;
 		float fInvSqrt = XMath::FastInvSqrt( fSqrLen );
 		x *= fInvSqrt;
 		y *= fInvSqrt;
 		z *= fInvSqrt;
-		return fInvSqrt * fSqrLen;
 	}
 	//----------------------------------------------------------------------------
 	__inline XVector3& XVector3::Lerp( const XVector3& v1, const XVector3& v2, float t )
@@ -280,3 +278,10 @@
 		vOut.z += vIn.z * fDelta;
 		return vOut;
 	}
+
+	//__inline XVector3&	operator=( float lsh[3], const XVector3& rsh )
+	//{
+	//	lsh[0] = rsh[0];
+	//	lsh[1] = rsh[1];
+	//	lsh[2] = rsh[2];
+	//}
