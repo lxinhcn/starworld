@@ -194,6 +194,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\b2Rander.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\GameClient.cpp"
 				>
 			</File>
@@ -225,6 +229,10 @@
 			>
 			<File
 				RelativePath=".\Application.h"
+				>
+			</File>
+			<File
+				RelativePath=".\b2Rander.h"
 				>
 			</File>
 			<File
