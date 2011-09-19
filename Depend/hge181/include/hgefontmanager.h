@@ -59,7 +59,9 @@ struct EXPORT hgeFontHelper
 
 	hgeFontEx* operator->(){ return pFont; }
 
+	hgeFontEx* getFont(){ return pFont; }
 private:
 	hgeFontEx* pFont;
 };
+
 #endif //end HGE_TT_FONT_MANAGER_H_

@@ -34,6 +34,7 @@ private:
 private:
 
 	HGE			*m_hge;
+	b2World		*m_World;
 	static hgeFontManagerStub m_FontManager;
 };
 

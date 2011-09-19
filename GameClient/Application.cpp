@@ -5,6 +5,8 @@
 #define SCREEN_HEIGHT 600
 
 CApplication::CApplication(void)
+: m_hge(NULL)
+, m_World(NULL)
 {
 }
 
@@ -88,6 +90,12 @@ bool CApplication::Initialize()
 	{
 		return false;
 	}
+
+	b2Vec2 g(0.0f, 10.0f);
+
+	m_World = new b2World( g, true );
+	if( m_World == NULL )
+		return false;
 
 	return true;
 }

@@ -43,6 +43,8 @@ public:
 	void			Clamp() { ColorClamp(r); ColorClamp(g); ColorClamp(b); ColorClamp(a); }
 	void			SetHWColor(DWORD col) {	a = (col>>24)/255.0f; r = ((col>>16) & 0xFF)/255.0f; g = ((col>>8) & 0xFF)/255.0f; b = (col & 0xFF)/255.0f;	}
 	DWORD			GetHWColor() const { return (DWORD(a*255.0f)<<24) + (DWORD(r*255.0f)<<16) + (DWORD(g*255.0f)<<8) + DWORD(b*255.0f);	}
+
+	operator DWORD(){ return GetHWColor(); }
 };
 
 inline hgeColorRGB operator* (const float sc, const hgeColorRGB &c) { return c*sc; }
