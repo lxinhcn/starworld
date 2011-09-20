@@ -272,10 +272,10 @@ bool CApplication::RenderFunc()
 	m_hge->Gfx_Clear(0);
 
 	m_hge->Gfx_SetTransform( 0, 0, 0, 0, 0.0f, 0.0f, 0.0f );
-	hgeFontHelper font( "..\\Resource\\SIMLI.TTF", 16 );
+	hgeFontHelper font( "..\\Resource\\ARIALN.TTF", 12 );
 	font->SetColor( ARGB(255,255,255,255) );
 	wchar_t szInfomation[256];
-	_snwprintf( szInfomation, _countof(szInfomation), L"zoom : %.2f, Offset %.2f, %.2f", m_zoomView, m_ptOffset.x, m_ptOffset.y );
+	_snwprintf( szInfomation, _countof(szInfomation), L"Zoom : %.2f, Offset : %.2f, %.2f, FPS : %d ", m_zoomView, m_ptOffset.x, m_ptOffset.y, m_hge->Timer_GetFPS() );
 	font->Print( 10, 10, 0, szInfomation );
 
 	m_hge->Gfx_SetTransform( 0, 0, SCREEN_WIDTH/2 + m_ptOffset.x, SCREEN_HEIGHT/2 + m_ptOffset.y, b2_pi, m_zoomView, m_zoomView );
