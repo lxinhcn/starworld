@@ -65,7 +65,6 @@
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
 				AdditionalDependencies="hge.lib lua51.lib GameCore.lib Common.lib Slb.lib Box2D.lib"
-				ShowProgress="2"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)Lib\$(ConfigurationName)&quot;;&quot;..\GameSDK\lua-5.1.4\src&quot;;&quot;..\Depend\hge181\Lib\$(ConfigurationName)&quot;;..\Depend\Box2D\lib;&quot;..\Depend\Visual Leak Detector\lib&quot;;&quot;..\Depend\xgcBase\Lib\$(ConfigurationName)&quot;"
 				GenerateManifest="true"

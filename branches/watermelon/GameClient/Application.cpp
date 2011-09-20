@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Application.h"
+#include "b2Rander.h"
 
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 600
@@ -97,6 +98,90 @@ bool CApplication::Initialize()
 	if( m_World == NULL )
 		return false;
 
+	m_Render = new b2Render();
+	m_Render->SetFlags( b2Draw::e_shapeBit );
+	m_World->SetDebugDraw( m_Render );
+	
+	b2Body* ground = NULL;
+	{
+		b2BodyDef bd;
+		ground = m_World->CreateBody(&bd);
+
+		b2EdgeShape shape;
+		shape.Set(b2Vec2(-20.0f, 0.0f), b2Vec2(20.0f, 0.0f));
+
+		b2FixtureDef fd;
+		fd.shape = &shape;
+
+		ground->CreateFixture(&fd);
+	}
+
+	b2Body* attachment;
+	// Define attachment
+	{
+		b2BodyDef bd;
+		bd.type = b2_dynamicBody;
+		bd.position.Set(0.0f, 3.0f);
+		attachment = m_World->CreateBody(&bd);
+
+		b2PolygonShape shape;
+		shape.SetAsBox(0.5f, 2.0f);
+		attachment->CreateFixture(&shape, 2.0f);
+	}
+
+	b2Body* platform;
+	// Define platform
+	{
+		b2BodyDef bd;
+		bd.type = b2_dynamicBody;
+		bd.position.Set(-4.0f, 5.0f);
+		platform = m_World->CreateBody(&bd);
+
+		b2PolygonShape shape;
+		shape.SetAsBox(0.5f, 4.0f, b2Vec2(4.0f, 0.0f), 0.5f * b2_pi);
+
+		b2FixtureDef fd;
+		fd.shape = &shape;
+		fd.friction = 0.6f;
+		fd.density = 2.0f;
+		platform->CreateFixture(&fd);
+
+		b2RevoluteJointDef rjd;
+		rjd.Initialize(attachment, platform, b2Vec2(0.0f, 5.0f));
+		rjd.maxMotorTorque = 50.0f;
+		rjd.enableMotor = true;
+		m_World->CreateJoint(&rjd);
+
+		b2PrismaticJointDef pjd;
+		pjd.Initialize(ground, platform, b2Vec2(0.0f, 5.0f), b2Vec2(1.0f, 0.0f));
+
+		pjd.maxMotorForce = 1000.0f;
+		pjd.enableMotor = true;
+		pjd.lowerTranslation = -10.0f;
+		pjd.upperTranslation = 10.0f;
+		pjd.enableLimit = true;
+
+		(b2PrismaticJoint*)m_World->CreateJoint(&pjd);
+	}
+
+	// Create a payload
+	{
+		b2BodyDef bd;
+		bd.type = b2_dynamicBody;
+		bd.position.Set(0.0f, 8.0f);
+		b2Body* body = m_World->CreateBody(&bd);
+
+		b2PolygonShape shape;
+		shape.SetAsBox(0.75f, 0.75f);
+
+		b2FixtureDef fd;
+		fd.shape = &shape;
+		fd.friction = 0.6f;
+		fd.density = 2.0f;
+
+		body->CreateFixture(&fd);
+	}
+
 	return true;
 }
 
@@ -154,4 +239,5 @@ bool CApplication::UpdateLogic( float fDelta )
 
 void CApplication::Render()
 {
+	m_World->DrawDebugData();
 }
