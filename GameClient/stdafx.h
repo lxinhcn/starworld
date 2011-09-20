@@ -53,5 +53,6 @@
 #include "commonlib.h"
 #include "Box2D\Box2D.h"
 
+#include "DataHelper.h"
 using namespace XGC;
 using namespace XGC::common;

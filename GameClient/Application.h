@@ -7,6 +7,9 @@ class b2Render;
 class CApplication
 {
 	friend struct CreateStatic< CApplication >;
+	friend static bool RenderFunc();
+	friend static bool FrameFunc();
+
 private:
 	CApplication(void);
 	virtual ~CApplication(void);
@@ -23,13 +26,9 @@ public:
 
 protected:
 	bool UpdateLogic( float fDelta );
-	void Render();
 
 private:
-	static
 	bool RenderFunc();
-
-	static
 	bool FrameFunc();
 
 private:
@@ -38,6 +37,11 @@ private:
 	b2World		*m_World;
 	b2Render	*m_Render;
 	static hgeFontManagerStub m_FontManager;
+	float		m_zoomView;
+	fPoint		m_ptOffset;
+
+	fPoint		m_ptMonseDown;
+	fPoint		m_ptMouseUp;
 };
 
 typedef SingletonHolder< CApplication, CreateStatic > Application;

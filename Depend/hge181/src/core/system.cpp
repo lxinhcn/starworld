@@ -843,7 +843,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return FALSE;
 
 		case WM_MOUSEMOVE:
-			pHGE->_BuildEvent(INPUT_MOUSEMOVE, 0, 0, 0, LOWORDINT(lparam), HIWORDINT(lparam));
+			pHGE->_BuildEvent(INPUT_MOUSEMOVE, 0, 0, wparam, LOWORDINT(lparam), HIWORDINT(lparam));
 			return FALSE;
 		case 0x020A: // WM_MOUSEWHEEL, GET_WHEEL_DELTA_WPARAM(wparam);
 			pHGE->_BuildEvent(INPUT_MOUSEWHEEL, short(HIWORD(wparam))/120, 0, 0, LOWORDINT(lparam), HIWORDINT(lparam));

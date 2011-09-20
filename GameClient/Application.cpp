@@ -5,9 +5,22 @@
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 600
 
+bool RenderFunc()
+{
+	return Application::Instance().RenderFunc();
+}
+
+bool FrameFunc()
+{
+	return Application::Instance().FrameFunc();
+}
+
 CApplication::CApplication(void)
 : m_hge(NULL)
 , m_World(NULL)
+, m_zoomView(10.0f)
+, m_ptOffset( 0.0f, 0.0f )
+, m_ptMonseDown( 0, 0 )
 {
 }
 
@@ -17,10 +30,10 @@ CApplication::~CApplication(void)
 
 bool CApplication::FrameFunc()
 {
-	float dt=Application::Instance()->Timer_GetDelta();
+	float dt=m_hge->Timer_GetDelta();
 	// Process keys
 
-	switch(Application::Instance()->Input_GetKey())
+	switch(m_hge->Input_GetKey())
 	{
 	case HGEK_F10:
 		break;
@@ -30,13 +43,13 @@ bool CApplication::FrameFunc()
 			freopen("CONOUT$","w+t",stdout); 
 			freopen("CONIN$","r+t",stdin); 
 
-			Application::Instance()->System_SetState( HGE_DONTSUSPEND, true );
+			m_hge->System_SetState( HGE_DONTSUSPEND, true );
 			printf( "UICommander start successful. Enter edit mode.\n" );
 		}
 		break;
 	case HGEK_F8:
 		FreeConsole();
-		Application::Instance()->System_SetState( HGE_DONTSUSPEND, false );
+		m_hge->System_SetState( HGE_DONTSUSPEND, false );
 		printf( "UICommander closed. Quit edit mode.\n" );
 		break;
 		//case HGEK_UP:
@@ -50,19 +63,70 @@ bool CApplication::FrameFunc()
 		return true;
 	}
 
-	Application::Instance().UpdateLogic( dt );
-	return false;
-}
+	hgeInputEvent e;
+	while( m_hge->Input_GetEvent( &e ) )
+	{
+		switch( e.type )
+		{
+		case INPUT_MOUSEWHEEL:
+			if( e.wheel < 0 )
+				m_zoomView *= 0.9f;
+			else if( e.wheel > 0 )
+				m_zoomView *= 1.1f;
+			break;
+		case INPUT_MBUTTONDOWN:
+			if( e.key == HGEK_RBUTTON )
+				m_ptMonseDown = m_ptMouseUp = fPoint( e.x, e.y );
+			break;
+		case INPUT_MOUSEMOVE:
+			if( e.flags & MK_RBUTTON )
+			{
+				m_ptOffset += fPoint(e.x,e.y) - m_ptMouseUp;
+				m_ptMouseUp = fPoint(e.x,e.y);
+			}
+			break;
+		}
 
-bool CApplication::RenderFunc()
-{
-	// Render the scene
+	}
 
-	Application::Instance()->Gfx_BeginScene();
-	Application::Instance()->Gfx_Clear(0);
-	Application::Instance().Render();
-	Application::Instance()->Gfx_EndScene();
+	if( m_hge->System_GetState( HGE_DONTSUSPEND ) )
+	{
+		int ch = 0;
+		if( _kbhit() )
+		{
+			switch( ch = _getch() )
+			{
+			case 13:
+				{
+					_tchar szCommand[256];
+					DWORD dwRead = 0;
+					while(true)
+					{
+						HANDLE hInput = GetStdHandle( STD_INPUT_HANDLE );
+						SetConsoleActiveScreenBuffer( hInput );
 
+						_tprintf( _T(">>") );
+						ReadConsole( GetStdHandle( STD_INPUT_HANDLE ), szCommand, _countof(szCommand), &dwRead, NULL  );
+						if( dwRead <= 2 ) break;
+						if( dwRead >= _countof(szCommand) )
+						{
+							ASSERT_MSG( false, _T("超长的输入串，你太牛了。") );
+							break;
+						}
+						else
+						{
+							szCommand[dwRead] = 0;
+						}
+						HANDLE hOutput = GetStdHandle( STD_OUTPUT_HANDLE );
+						SetConsoleActiveScreenBuffer( hOutput );
+					}
+				}
+				break;
+			}
+		}
+	}
+
+	UpdateLogic( dt );
 	return false;
 }
 
@@ -73,8 +137,8 @@ bool CApplication::Initialize()
 	m_hge = hgeCreate(HGE_VERSION);
 
 	m_hge->System_SetState(HGE_LOGFILE, "StarGame.log");
-	m_hge->System_SetState(HGE_FRAMEFUNC, FrameFunc);
-	m_hge->System_SetState(HGE_RENDERFUNC, RenderFunc);
+	m_hge->System_SetState(HGE_FRAMEFUNC, ::FrameFunc);
+	m_hge->System_SetState(HGE_RENDERFUNC, ::RenderFunc);
 	m_hge->System_SetState(HGE_TITLE, "StarGame");
 	m_hge->System_SetState(HGE_USESOUND, false);
 	m_hge->System_SetState(HGE_WINDOWED, true);
@@ -92,7 +156,7 @@ bool CApplication::Initialize()
 		return false;
 	}
 
-	b2Vec2 g(0.0f, 10.0f);
+	b2Vec2 g(0.0f, -10.0f);
 
 	m_World = new b2World( g, true );
 	if( m_World == NULL )
@@ -138,7 +202,7 @@ bool CApplication::Initialize()
 		platform = m_World->CreateBody(&bd);
 
 		b2PolygonShape shape;
-		shape.SetAsBox(0.5f, 4.0f, b2Vec2(4.0f, 0.0f), 0.5f * b2_pi);
+		shape.SetAsBox(0.5f, 4.0f, b2Vec2(4.0f, 0.0f), 0.6f * b2_pi);
 
 		b2FixtureDef fd;
 		fd.shape = &shape;
@@ -168,7 +232,7 @@ bool CApplication::Initialize()
 	{
 		b2BodyDef bd;
 		bd.type = b2_dynamicBody;
-		bd.position.Set(0.0f, 8.0f);
+		bd.position.Set(0.0f, 28.0f);
 		b2Body* body = m_World->CreateBody(&bd);
 
 		b2PolygonShape shape;
@@ -198,46 +262,29 @@ void CApplication::UnInitialize()
 
 bool CApplication::UpdateLogic( float fDelta )
 {
-	if( m_hge->System_GetState( HGE_DONTSUSPEND ) )
-	{
-		int ch = 0;
-		if( _kbhit() )
-		{
-			switch( ch = _getch() )
-			{
-			case 13:
-				{
-					_tchar szCommand[256];
-					DWORD dwRead = 0;
-					while(true)
-					{
-						HANDLE hInput = GetStdHandle( STD_INPUT_HANDLE );
-						SetConsoleActiveScreenBuffer( hInput );
-
-						_tprintf( _T(">>") );
-						ReadConsole( GetStdHandle( STD_INPUT_HANDLE ), szCommand, _countof(szCommand), &dwRead, NULL  );
-						if( dwRead <= 2 ) break;
-						if( dwRead >= _countof(szCommand) )
-						{
-							ASSERT_MSG( false, _T("超长的输入串，你太牛了。") );
-							break;
-						}
-						else
-						{
-							szCommand[dwRead] = 0;
-						}
-						HANDLE hOutput = GetStdHandle( STD_OUTPUT_HANDLE );
-						SetConsoleActiveScreenBuffer( hOutput );
-					}
-				}
-				break;
-			}
-		}
-	}
+	m_World->Step( fDelta, 6, 2 );
 	return false;
 }
 
-void CApplication::Render()
+bool CApplication::RenderFunc()
 {
+	m_hge->Gfx_BeginScene();
+	m_hge->Gfx_Clear(0);
+
+	m_hge->Gfx_SetTransform( 0, 0, 0, 0, 0.0f, 0.0f, 0.0f );
+	hgeFontHelper font( "..\\Resource\\SIMLI.TTF", 16 );
+	font->SetColor( ARGB(255,255,255,255) );
+	wchar_t szInfomation[256];
+	_snwprintf( szInfomation, _countof(szInfomation), L"zoom : %.2f, Offset %.2f, %.2f", m_zoomView, m_ptOffset.x, m_ptOffset.y );
+	font->Print( 10, 10, 0, szInfomation );
+
+	m_hge->Gfx_SetTransform( 0, 0, SCREEN_WIDTH/2 + m_ptOffset.x, SCREEN_HEIGHT/2 + m_ptOffset.y, b2_pi, m_zoomView, m_zoomView );
+
+	m_hge->Gfx_RenderLine( -SCREEN_WIDTH/2, 0, SCREEN_WIDTH/2, 0 );
+	m_hge->Gfx_RenderLine( 0, -SCREEN_HEIGHT/2, 0, SCREEN_HEIGHT/2 );
 	m_World->DrawDebugData();
+
+	m_hge->Gfx_EndScene();
+
+	return false;
 }
