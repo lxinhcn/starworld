@@ -83,9 +83,11 @@ void CALL HGE_Impl::Gfx_SetTransform(float x, float y, float dx, float dy, float
 {
 	D3DXMATRIX tmp;
 
-	if(vscale==0.0f) D3DXMatrixIdentity(&matView);
+	if(vscale==0.0f) 
+		D3DXMatrixIdentity(&matView);
 	else
 	{
+		D3DXMatrixIdentity(&matView);
 		D3DXMatrixTranslation(&matView, -x, -y, 0.0f);
 		D3DXMatrixScaling(&tmp, hscale, vscale, 1.0f);
 		D3DXMatrixMultiply(&matView, &matView, &tmp);

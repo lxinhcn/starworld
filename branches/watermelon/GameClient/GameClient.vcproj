@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Depend\hge181\include;..\Depend\Box2D\include;..\GameSDK\GameCore\Include;..\GameSDK\SLB\Include;..\Depend\xgcBase\Include;&quot;..\Depend\Visual Leak Detector\include&quot;"
+				AdditionalIncludeDirectories="..\Depend\hge181\include;..\Depend\Box2D\include;..\GameSDK\GameCore;..\GameSDK\SLB\Include;..\Depend\xgcBase\Include;&quot;..\Depend\Visual Leak Detector\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -125,7 +125,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Depend\hge181\include;..\Depend\Box2D\include;..\GameSDK\GameCore\Include;..\GameSDK\SLB\Include;..\Depend\xgcBase\Include;&quot;..\Depend\Visual Leak Detector\include&quot;"
+				AdditionalIncludeDirectories="..\Depend\hge181\include;..\Depend\Box2D\include;..\GameSDK\GameCore;..\GameSDK\SLB\Include;..\Depend\xgcBase\Include;&quot;..\Depend\Visual Leak Detector\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
