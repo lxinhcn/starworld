@@ -3,6 +3,7 @@
 #include "hgefontmanager.h"
 #include "hgefontex.h"
 
+class b2Render;
 class CApplication
 {
 	friend struct CreateStatic< CApplication >;
@@ -35,6 +36,7 @@ private:
 
 	HGE			*m_hge;
 	b2World		*m_World;
+	b2Render	*m_Render;
 	static hgeFontManagerStub m_FontManager;
 };
 
