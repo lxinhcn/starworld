@@ -230,10 +230,10 @@ class xgc_multimap : public std::multimap< _Kty, _Ty, _Pr, _Alloc > {};
 template<class _Ty, class _Ax = xgc_allocator< _Ty > >
 class xgc_deque : public std::deque< _Ty, _Ax > {};
 
-template<class _Ty,	class _Ax = xgc_allocator<_Ty>, class _Container = deque<_Ty, _Ax> >
+template<class _Ty,	class _Ax = xgc_allocator<_Ty>, class _Container = std::deque<_Ty, _Ax> >
 class xgc_queue : public std::queue< _Ty, _Container > {};
 
-template<class _Ty,	class _Ax = xgc_allocator<_Ty>, class _Container = deque<_Ty, _Ax> >
+template<class _Ty,	class _Ax = xgc_allocator<_Ty>, class _Container = std::deque<_Ty, _Ax> >
 class xgc_stack : public std::stack< _Ty, _Container > {};
 
 #endif //_MACRO_DEFINE_H
