@@ -178,7 +178,7 @@
 				Version="1.53"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\..\..\freetype\lib\$(ConfigurationName)"
+				AdditionalLibraryDirectories="..\..\..\freetype\lib\"
 				IgnoreDefaultLibraryNames="libci.lib"
 				ModuleDefinitionFile=".\hge.def"
 				ProgramDatabaseFile=".\Release/hge.pdb"
