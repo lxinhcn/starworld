@@ -4,6 +4,7 @@
 #include "hgefontex.h"
 
 class b2Render;
+class CGameLevel;
 class CApplication
 {
 	friend struct CreateStatic< CApplication >;
@@ -42,6 +43,10 @@ private:
 
 	fPoint		m_ptMonseDown;
 	fPoint		m_ptMouseUp;
+
+	bool		m_bDebug;
+	bool		m_bEdit;
+	CGameLevel*	m_pLevel;
 };
 
 typedef SingletonHolder< CApplication, CreateStatic > Application;
