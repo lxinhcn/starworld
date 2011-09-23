@@ -30,6 +30,7 @@ namespace SLB
 		operator unsigned long()const{ return (unsigned long)tointeger(); }
 		operator unsigned int()const{ return (unsigned int)tointeger(); }
 
+		bool		istable()const;
 		bool		isfunction()const;
 		bool		isboolean()const;
 		bool		isstring()const;

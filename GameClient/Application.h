@@ -33,7 +33,6 @@ private:
 	bool FrameFunc();
 
 private:
-
 	HGE			*m_hge;
 	b2World		*m_World;
 	b2Render	*m_Render;
