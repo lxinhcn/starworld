@@ -92,7 +92,7 @@ bool CApplication::FrameFunc()
 
 	}
 
-	if( m_hge->System_GetState( HGE_DONTSUSPEND ) )
+	if( m_bEdit )
 	{
 		int ch = 0;
 		if( _kbhit() )
@@ -159,7 +159,7 @@ bool CApplication::Initialize()
 		return false;
 	}
 
-	Setting::Instance().Load( "config.lua" );
+	Setting::Instance().Initialize( "config.lua" );
 	_lpcstr resource = Setting::Instance().getResourcePath();
 
 	if( !m_hge->Resource_AttachPack( "..\\Resource\\Pack.zip" ) )
@@ -214,11 +214,9 @@ bool CApplication::RenderFunc()
 	if( m_pLevel )
 		m_pLevel->Render();
 
-	hgeFontHelper font( "..\\Resource\\ZYHei.TTF", 12 );
-	font->SetColor( ARGB(255,255,255,255) );
 	wchar_t szInfomation[256];
 	_snwprintf( szInfomation, _countof(szInfomation), L"Zoom : %.2f, Offset : %.2f, %.2f, FPS : %d ", m_zoomView, m_ptOffset.x, m_ptOffset.y, m_hge->Timer_GetFPS() );
-	font->Print( 10, 10, 0, szInfomation );
+	Setting::Instance().getFont()->Print( 10, 10, 0, szInfomation );
 
 	if( m_bDebug )
 	{

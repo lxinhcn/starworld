@@ -4,18 +4,26 @@
 
 using namespace SLB;
 class hgeFontEx;
+class hgeSprite;
+
 struct AppSetting
 {
 	AppSetting(void);
 	~AppSetting(void);
 
-	bool Load(const char* filename);
+	bool Initialize(const char* filename);
 
 	_lpcstr getResourcePath();
-	_lpcstr getFont();
+	_lpcstr getFontName();
+	int		getFontSize();
+
+	hgeFontEx*	getFont();
+	hgeSprite*	getSprite();
 private:
-	Script mScript;
-	LuaObject mSetting;
+	Script		mScript;
+	LuaObject	mSetting;
+
+	hgeFontEx*	mFont;
 };
 
 typedef SingletonHolder< AppSetting, CreateStatic > Setting;
