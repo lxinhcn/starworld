@@ -1,0 +1,5 @@
+
+setting = 
+{
+	resource = "..\\resource"
+}

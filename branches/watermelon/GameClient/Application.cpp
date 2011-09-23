@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "b2Rander.h"
 #include "GameLevel.h"
+#include "Setting.h"
 
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 600
@@ -23,6 +24,7 @@ CApplication::CApplication(void)
 , m_ptOffset( 0.0f, 0.0f )
 , m_ptMonseDown( 0, 0 )
 , m_bDebug( true )
+, m_bEdit( false )
 {
 }
 
@@ -42,18 +44,23 @@ bool CApplication::FrameFunc()
 		break;
 	case HGEK_F9:
 		{
-			AllocConsole();
-			freopen("CONOUT$","w+t",stdout); 
-			freopen("CONIN$","r+t",stdin); 
+			if( m_bEdit )
+			{
+				FreeConsole();
+				m_hge->System_SetState( HGE_DONTSUSPEND, false );
+				printf( "UICommander closed. Quit edit mode.\n" );
+			}
+			else
+			{
+				AllocConsole();
+				freopen("CONOUT$","w+t",stdout); 
+				freopen("CONIN$","r+t",stdin); 
 
-			m_hge->System_SetState( HGE_DONTSUSPEND, true );
-			printf( "UICommander start successful. Enter edit mode.\n" );
+				m_hge->System_SetState( HGE_DONTSUSPEND, true );
+				printf( "UICommander start successful. Enter edit mode.\n" );
+			}
+			m_bEdit = !m_bEdit;
 		}
-		break;
-	case HGEK_F8:
-		FreeConsole();
-		m_hge->System_SetState( HGE_DONTSUSPEND, false );
-		printf( "UICommander closed. Quit edit mode.\n" );
 		break;
 	case HGEK_ESCAPE:
 		return true;
@@ -151,6 +158,9 @@ bool CApplication::Initialize()
 	{
 		return false;
 	}
+
+	Setting::Instance().Load( "config.lua" );
+	_lpcstr resource = Setting::Instance().getResourcePath();
 
 	if( !m_hge->Resource_AttachPack( "..\\Resource\\Pack.zip" ) )
 	{

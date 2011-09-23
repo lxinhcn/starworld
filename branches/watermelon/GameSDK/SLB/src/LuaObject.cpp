@@ -133,6 +133,15 @@ namespace SLB
 		return ret;
 	}
 
+	bool LuaObject::istable()const
+	{
+		lua_getref( m_state, m_luaobject );			// t
+		//const char* tn = lua_typename( m_state, -1 );
+		bool ret = lua_istable( m_state, -1 ) != 0;
+		lua_pop( m_state, 1 );
+		return ret;
+	}
+
 	bool LuaObject::isvalid()const
 	{
 		return m_state && m_luaobject!=LUA_REFNIL;
