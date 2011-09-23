@@ -3,6 +3,7 @@
 #include "hgecolor.h"
 #include "hgefontex.h"
 #include "hgefontmanager.h"
+#include "Setting.h"
 
 #include <cstdio>
 #include <cstdarg>
@@ -11,7 +12,7 @@ using namespace std;
 
 b2Render::b2Render()
 : hge( hgeCreate(HGE_VERSION) )
-, font( hgeFontHelper( "..\\Resource\\ARIALN.ttf", 12 ).getFont() )
+, font( Setting::Instance().getFont() )
 {
 }
 
