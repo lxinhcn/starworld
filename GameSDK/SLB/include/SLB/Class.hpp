@@ -123,6 +123,8 @@ namespace SLB {
 
 		__Self &constructor();
 
+		template<typename TValue>
+		__Self &constructor( TValue );
 
 		/** Declares a class as hybrid, this will imply that the __index
 		 * and __newindex methods will be overriden, see 
@@ -358,6 +360,14 @@ namespace SLB {
 	inline Class<T,W> &Class<T,W>::constructor()
 	{
 		_class->setConstructor( FuncCall::classConstructor<T>() );
+		return *this;
+	}
+
+	template<typename T,  typename W>
+	template<typename TValue>
+	inline Class<T,W> &Class<T,W>::constructor( TValue v )
+	{
+		_class->setConstructor( FuncCall::create(v) );
 		return *this;
 	}
 

@@ -280,6 +280,14 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="LuaScripts"
+			>
+			<File
+				RelativePath="..\Bin\Debug\config.lua"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>
