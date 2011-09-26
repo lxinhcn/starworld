@@ -287,6 +287,10 @@
 				RelativePath="..\Bin\Debug\config.lua"
 				>
 			</File>
+			<File
+				RelativePath="..\Bin\Resource\defines.lua"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
