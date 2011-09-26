@@ -7,7 +7,15 @@ setting =
 		fontname = "..\\resource\\ARIALN1.ttf",
 		fontsize = 18,
 		fontcolor = -1,
-	}
+	},
+};
+
+defines = 
+{
+	texture = 
+	{
+		background = HGE.Texture( setting.resource + "\\" + background.png );
+	},
 
 	sprite = 
 	{

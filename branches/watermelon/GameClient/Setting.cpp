@@ -2,6 +2,17 @@
 #include "Setting.h"
 #include "hgefontex.h"
 #include "hgefontmanager.h"
+HTEXTURE LoadTexture( _lpcstr lpszTexture )
+{
+	HGE* hge = hgeCreate(HGE_VERSION);
+	if( hge )
+	{
+		return hge->Texture_Load( lpszTexture );
+	}
+	hge->Release();
+
+	return 0;
+}
 
 AppSetting::AppSetting(void)
 {
@@ -25,7 +36,9 @@ bool AppSetting::Initialize( const char* filename )
 		return false;
 	}
 
-	Class< HTEXTURE >( "HGE::Texture" )
+	Class< HTEXTURE >( "HGE::Texture")
+		.constructor( LoadTexture );
+		;
 
 	Class< hgeSprite >( "HGE::Sprite" )
 		.constructor< HTEXTURE, float, float, float, float >()
