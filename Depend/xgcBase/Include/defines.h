@@ -164,16 +164,20 @@ typedef std::wstring	_wstring;
 #define XGC_GETBIT(v,w) ((XGC_BIT(w)&v)>>w)
 #define XGC_SETBIT(v,w)	(XGC_BIT(w)|v)
 
+#define XGC_ASSERT_MSGW(expr, msg) \
+	(void) ((!!(expr)) || \
+	(1 != _CrtDbgReportW(_CRT_ASSERT, _CRT_WIDE(__FILE__), __LINE__, NULL, msg)) || \
+	(_CrtDbgBreak(), 0))
+
+#define XGC_ASSERT_MSGA(expr, msg) \
+	(void) ((!!(expr)) || \
+	(1 != _CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, NULL, msg)) || \
+	(_CrtDbgBreak(), 0))
+
 #if defined(_UNICODE) || defined(UNICODE)
-	#define XGC_ASSERT_MSG(expr, msg) \
-		(void) ((!!(expr)) || \
-		(1 != _CrtDbgReportW(_CRT_ASSERT, _CRT_WIDE(__FILE__), __LINE__, NULL, msg)) || \
-		(_CrtDbgBreak(), 0))
+	#define XGC_ASSERT_MSG	XGC_ASSERT_MSGW
 #else
-	#define XGC_ASSERT_MSG(expr, msg) \
-		(void) ((!!(expr)) || \
-		(1 != _CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, NULL, msg)) || \
-		(_CrtDbgBreak(), 0))
+	#define XGC_ASSERT_MSG	XGC_ASSERT_MSGA
 #endif
 
 #ifdef _DEBUG

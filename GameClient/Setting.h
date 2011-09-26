@@ -1,8 +1,5 @@
 #pragma once
 #include "singleton.h"
-#include "SLB/SLB.hpp"
-
-using namespace SLB;
 class hgeFontEx;
 class hgeSprite;
 
@@ -17,11 +14,17 @@ struct AppSetting
 	_lpcstr getFontName();
 	int		getFontSize();
 
+	Script&		getScript(){ return mScript; }
+	LuaObject	getSetting(){ return mSetting; }
+	LuaObject	getTexture(){ return mTexture; }
+	LuaObject	getSprites(){ return mSprites; }
 	hgeFontEx*	getFont();
 	hgeSprite*	getSprite();
 private:
 	Script		mScript;
 	LuaObject	mSetting;
+	LuaObject	mTexture;
+	LuaObject	mSprites;
 
 	hgeFontEx*	mFont;
 };

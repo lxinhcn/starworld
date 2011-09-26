@@ -24,21 +24,9 @@ AppSetting::~AppSetting(void)
 
 bool AppSetting::Initialize( const char* filename )
 {
-	try
-	{
-		mScript.doFile( "config.lua" );
-		mSetting = mScript.get< LuaObject >( "setting" );
-
-		return true;
-	}
-	catch( std::runtime_error e )
-	{
-		return false;
-	}
-
 	Class< HTEXTURE >( "HGE::Texture")
 		.constructor( LoadTexture );
-		;
+	;
 
 	Class< hgeSprite >( "HGE::Sprite" )
 		.constructor< HTEXTURE, float, float, float, float >()
@@ -46,7 +34,41 @@ bool AppSetting::Initialize( const char* filename )
 		.set("setTextureRect", &hgeSprite::SetTextureRect)
 		.set("setColor", &hgeSprite::SetColor)
 		.set("setHotSpot", &hgeSprite::SetHotSpot)
-	;
+		;
+
+	Class< hgeAnimation >( "HGE::Animation" )
+		.constructor< HTEXTURE, int, float, float, float, float, float >()
+		.set( "play", &hgeAnimation::Play )
+		.set( "stop", &hgeAnimation::Stop )
+		.set( "resume", &hgeAnimation::Resume )
+		.set( "setSpeed", &hgeAnimation::SetSpeed )
+		.set( "setFrames", &hgeAnimation::SetFrames )
+		.set( "setMode", &hgeAnimation::SetMode )
+		;
+
+	try
+	{
+		mScript.doFile( "config.lua" );
+		mSetting = mScript.get< LuaObject >( "setting" );
+		if( !mSetting.isvalid() )
+			return false;
+
+		mTexture = mScript.get< LuaObject >( "texture" );
+		if( !mTexture.isvalid() )
+			return false;
+
+		mSprites = mScript.get< LuaObject >( "sprites" );
+		if( !mSprites.isvalid() )
+			return false;
+
+		return true;
+	}
+	catch( std::runtime_error e )
+	{
+		XGC_ASSERT_MSGA( true, e.what() );
+		return false;
+	}
+
 }
 
 _lpcstr AppSetting::getResourcePath()

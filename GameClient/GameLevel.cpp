@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "GameLevel.h"
+#include "Setting.h"
 
 CGameLevel::CGameLevel( b2World* world )
 : m_world( world )
@@ -15,9 +16,11 @@ CGameLevel::~CGameLevel(void)
 
 bool CGameLevel::Load( const char* filename )
 {
-	m_hBackground = hge->Texture_Load( "background.png" );
+	LuaObject texture = Setting::Instance().getTexture();
+	m_hBackground = texture.get< HTEXTURE >( "background" );
+
 	m_Background.SetTexture(m_hBackground);
-	m_Background.SetTextureRect( 0, 0, hge->Texture_GetWidth(m_hBackground), hge->Texture_GetHeight(m_hBackground) );
+	m_Background.SetTextureRect( 0.0f, 0.0f, (float)hge->Texture_GetWidth(m_hBackground), (float)hge->Texture_GetHeight(m_hBackground) );
 
 	b2Body* ground = NULL;
 	{
@@ -113,7 +116,7 @@ bool CGameLevel::UpdateLogic( float fDelta )
 
 void CGameLevel::Render()
 {
-	m_Background.RenderStretch( 0, 0, hge->System_GetState( HGE_SCREENWIDTH ), hge->System_GetState( HGE_SCREENHEIGHT )  );
+	m_Background.RenderStretch( 0.0f, 0.0f, (float)hge->System_GetState( HGE_SCREENWIDTH ), (float)hge->System_GetState( HGE_SCREENHEIGHT )  );
 }
 
 void CGameLevel::Destroy()
