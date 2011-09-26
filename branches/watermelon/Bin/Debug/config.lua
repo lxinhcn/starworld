@@ -1,3 +1,4 @@
+slb.using( slb.HGE )
 
 setting = 
 {
@@ -10,25 +11,15 @@ setting =
 	},
 };
 
-defines = 
+texture = 
 {
-	texture = 
-	{
-		background = HGE.Texture( setting.resource + "\\" + background.png );
-	},
+	background = Texture( "background.png" );
+	block1 = Texture( "blocks1.png" );
+	block2 = Texture( "blocks2.png" );
+};
 
-	sprite = 
-	{
-		function createWood()
-		{
-		}
-
-		function createStone()
-		{
-		}
-
-		function createArmor()
-		{
-		}
-	}
-}
+sprites = 
+{
+	wood1 = Sprite( texture.block1, 310, 644, 204, 20 );
+	wood2 = Sprite( texture.block1, 310, 666, 204, 20 );
+};

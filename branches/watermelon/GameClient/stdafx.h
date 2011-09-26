@@ -49,6 +49,10 @@
 // Box2D
 #include "Box2D/Box2D.h"
 
+// SLB
+#include "SLB/SLB.hpp"
+using namespace SLB;
+
 // ¸¨Öú¿â
 #include "commonlib.h"
 #include "Box2D\Box2D.h"
