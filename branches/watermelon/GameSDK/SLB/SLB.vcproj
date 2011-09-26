@@ -183,6 +183,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\LuaTableIterator.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Manager.cpp"
 				>
 			</File>
@@ -266,6 +270,10 @@
 			</File>
 			<File
 				RelativePath=".\include\SLB\LuaObject.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\SLB\LuaTableIterator.h"
 				>
 			</File>
 			<File

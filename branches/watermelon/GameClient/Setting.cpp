@@ -53,6 +53,21 @@ bool AppSetting::Initialize( const char* filename )
 		if( !mSetting.isvalid() )
 			return false;
 
+		LuaObject package = mSetting.get< LuaObject >( "package" );
+		if( package.isvalid() && package.istable() )
+		{
+			HGE* hge = hgeCreate( HGE_VERSION );
+			for( LuaTableIterator it(package); it; it.next() )
+			{
+				_lpcstr v = it.getValue< _lpcstr >();
+				if( v )
+					hge->Resource_AttachPack( v );
+			}
+			hge->Release();
+		}
+
+		mScript.doFile( mSetting.get< _lpcstr >( "defines" ) );
+
 		mTexture = mScript.get< LuaObject >( "texture" );
 		if( !mTexture.isvalid() )
 			return false;

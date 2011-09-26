@@ -17,6 +17,7 @@ private:
 	HGE*	 hge;
 	b2World* m_world;
 
-	hgeSprite	m_Background;
+	hgeSprite	mBackground;
+	hgeSprite	*mBody;
 	HTEXTURE m_hBackground;
 };

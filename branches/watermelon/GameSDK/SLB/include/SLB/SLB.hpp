@@ -31,6 +31,7 @@
 #include "Value.hpp"
 #include "Class.hpp"
 #include "LuaObject.h"
+#include "LuaTableIterator.h"
 #include "Hybrid.hpp"
 #include "StatefulHybrid.hpp"
 #include "Script.hpp"

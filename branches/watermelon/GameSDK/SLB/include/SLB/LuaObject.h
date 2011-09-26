@@ -9,6 +9,7 @@ namespace SLB
 	class LuaCallBase;
 	class LuaObject
 	{
+		friend class LuaTableIterator;
 	public:
 		LuaObject();
 		LuaObject( lua_State* L, int ref );
@@ -37,6 +38,7 @@ namespace SLB
 		bool		isnumber()const;
 		bool		isnil()const;
 		bool		isvalid()const;
+
 		//---------------------------------------------------------------------//
 		// Description	: …Ë÷√∂‘œÛ
 		// return	: none

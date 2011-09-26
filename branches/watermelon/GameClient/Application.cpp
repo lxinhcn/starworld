@@ -159,11 +159,6 @@ bool CApplication::Initialize()
 		return false;
 	}
 
-	if( !m_hge->Resource_AttachPack( "..\\Resource\\Pack.zip" ) )
-	{
-		return false;
-	}
-
 	Setting::Instance().Initialize( "config.lua" );
 	_lpcstr resource = Setting::Instance().getResourcePath();
 

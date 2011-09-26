@@ -5,7 +5,8 @@
 CGameLevel::CGameLevel( b2World* world )
 : m_world( world )
 , hge( hgeCreate(HGE_VERSION) )
-, m_Background( 0, 0, 0, 0, 0 )
+, mBackground( 0, 0, 0, 0, 0 )
+, mBody( NULL )
 {
 }
 
@@ -19,8 +20,12 @@ bool CGameLevel::Load( const char* filename )
 	LuaObject texture = Setting::Instance().getTexture();
 	m_hBackground = texture.get< HTEXTURE >( "background" );
 
-	m_Background.SetTexture(m_hBackground);
-	m_Background.SetTextureRect( 0.0f, 0.0f, (float)hge->Texture_GetWidth(m_hBackground), (float)hge->Texture_GetHeight(m_hBackground) );
+	mBackground.SetTexture(m_hBackground);
+	mBackground.SetTextureRect( 0.0f, 0.0f, (float)hge->Texture_GetWidth(m_hBackground), (float)hge->Texture_GetHeight(m_hBackground) );
+
+	LuaObject sprites = Setting::Instance().getSprites();
+
+	mBody = sprites.get< hgeSprite* >( "wood1" );
 
 	b2Body* ground = NULL;
 	{
@@ -116,7 +121,8 @@ bool CGameLevel::UpdateLogic( float fDelta )
 
 void CGameLevel::Render()
 {
-	m_Background.RenderStretch( 0.0f, 0.0f, (float)hge->System_GetState( HGE_SCREENWIDTH ), (float)hge->System_GetState( HGE_SCREENHEIGHT )  );
+	mBackground.RenderStretch( 0.0f, 0.0f, (float)hge->System_GetState( HGE_SCREENWIDTH ), (float)hge->System_GetState( HGE_SCREENHEIGHT )  );
+	mBody->Render( 100, 100 );
 }
 
 void CGameLevel::Destroy()
