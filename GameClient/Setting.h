@@ -18,13 +18,14 @@ struct AppSetting
 	LuaObject	getSetting(){ return mSetting; }
 	LuaObject	getTexture(){ return mTexture; }
 	LuaObject	getSprites(){ return mSprites; }
+	LuaObject	getAnimation(){ return mAnimation; }
 	hgeFontEx*	getFont();
-	hgeSprite*	getSprite();
 private:
 	Script		mScript;
 	LuaObject	mSetting;
 	LuaObject	mTexture;
 	LuaObject	mSprites;
+	LuaObject	mAnimation;
 
 	hgeFontEx*	mFont;
 };
