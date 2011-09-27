@@ -10,17 +10,18 @@
 #include "..\..\include\hgeanim.h"
 
 
-hgeAnimation::hgeAnimation(HTEXTURE tex, int nframes, float FPS, float x, float y, float w, float h)
+hgeAnimation::hgeAnimation(HTEXTURE tex, int row, int col, int mode, float FPS, float x, float y, float w, float h)
 	: hgeSprite(tex, x, y, w, h)
 {
 	orig_width = hge->Texture_GetWidth(tex, true);
 
+	nRow = row;
+	nCol = col;
 	fSinceLastFrame=-1.0f;
 	fSpeed=1.0f/FPS;
 	bPlaying=false;
-	nFrames=nframes;
 
-	Mode=HGEANIM_FWD | HGEANIM_LOOP;
+	Mode = mode; //HGEANIM_FWD | HGEANIM_LOOP | HGEANIM_ROW;
 	nDelta=1;
 	SetFrame(0);
 }
@@ -35,7 +36,8 @@ hgeAnimation::hgeAnimation(const hgeAnimation & anim)
 	this->fSinceLastFrame = anim.fSinceLastFrame;
 	this->Mode            = anim.Mode;
 	this->nDelta          = anim.nDelta;
-	this->nFrames         = anim.nFrames;
+	this->nRow			  = anim.nRow;
+	this->nCol			  = anim.nCol;
 	this->nCurFrame       = anim.nCurFrame;
 }
 
@@ -46,7 +48,7 @@ void hgeAnimation::SetMode(int mode)
 	if(mode & HGEANIM_REV)
 	{
 		nDelta = -1;
-		SetFrame(nFrames-1);
+		SetFrame(nCol*nRow-1);
 	}
 	else
 	{
@@ -63,7 +65,7 @@ void hgeAnimation::Play()
 	if(Mode & HGEANIM_REV)
 	{
 		nDelta = -1;
-		SetFrame(nFrames-1);
+		SetFrame(nCol*nRow-1);
 	}
 	else
 	{
@@ -86,7 +88,7 @@ void hgeAnimation::Update(float fDeltaTime)
 	{
 		fSinceLastFrame -= fSpeed;
 
-		if(nCurFrame + nDelta == nFrames)
+		if(nCurFrame + nDelta == nRow*nCol)
 		{
 			switch(Mode)
 			{
@@ -127,22 +129,21 @@ void hgeAnimation::SetFrame(int n)
 {
 	float tx1, ty1, tx2, ty2;
 	bool bX, bY, bHS;
-	int ncols = int(orig_width) / int(width);
 
-
-	n = n % nFrames;
-	if(n < 0) n = nFrames + n;
+	n = n % (nRow * nCol);
+	if(n < 0) n = nRow * nCol + n;
 	nCurFrame = n;
 
 	// calculate texture coords for frame n
-	ty1 = ty;
-	tx1 = tx + n*width;
-
-	if(tx1 > orig_width-width)
+	if( Mode | HGEANIM_ROW )
 	{
-		n -= int(orig_width-tx) / int(width);
-		tx1 = width * (n%ncols);
-		ty1 += height * (1 + n/ncols);
+		ty1 = ty + nCurFrame/nCol;
+		tx1 = tx + nCurFrame%nCol * width;
+	}
+	else
+	{
+		ty1 = ty + nCurFrame%nRow * height;
+		tx1 = tx + nCurFrame/nRow;
 	}
 
 	tx2 = tx1 + width;

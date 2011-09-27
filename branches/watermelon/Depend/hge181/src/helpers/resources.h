@@ -120,7 +120,7 @@ struct RSprite : public ResDesc
 
 struct RAnimation : public RSprite
 {
-	int			frames;
+	int			row, col;
 	float		fps;
 	int			mode;
 

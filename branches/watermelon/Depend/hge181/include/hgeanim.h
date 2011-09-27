@@ -20,15 +20,17 @@
 #define HGEANIM_NOPINGPONG	0
 #define HGEANIM_LOOP		4
 #define HGEANIM_NOLOOP		0
+#define HGEANIM_ROW			8
+#define HGEANIM_COL			16
 
-
+#define HGE_ANIM_DEFAULT	(HGEANIM_FWD | HGEANIM_LOOP | HGEANIM_ROW)
 /*
 ** HGE Animation class
 */
 class EXPORT hgeAnimation : public hgeSprite
 {
 public:
-	hgeAnimation(HTEXTURE tex, int nframes, float FPS, float x, float y, float w, float h);
+	hgeAnimation(HTEXTURE tex, int row, int col, int mode, float FPS, float x, float y, float w, float h);
 	hgeAnimation(const hgeAnimation &anim);
 	
 	void		Play();
@@ -38,16 +40,16 @@ public:
 	bool		IsPlaying() const { return bPlaying; }
 
 	void		SetTexture(HTEXTURE tex) { hgeSprite::SetTexture(tex); orig_width = hge->Texture_GetWidth(tex, true); }
-	void		SetTextureRect(float x1, float y1, float x2, float y2) { hgeSprite::SetTextureRect(x1,y1,x2,y2); SetFrame(nCurFrame); }
+	void		SetTextureRect(float x1, float y1, float w, float h) { hgeSprite::SetTextureRect(x1,y1,w,h); SetFrame(nCurFrame); }
 	void		SetMode(int mode);
 	void		SetSpeed(float FPS) { fSpeed=1.0f/FPS; }
 	void		SetFrame(int n);
-	void		SetFrames(int n) { nFrames=n; }
+	void		SetFrames(int row, int col ) { nRow = row; nCol = col; }
 
 	int			GetMode() const { return Mode; }
 	float		GetSpeed() const { return 1.0f/fSpeed; }
 	int			GetFrame() const { return nCurFrame; }
-	int			GetFrames() const { return nFrames; }
+	int			GetFrames() const { return nRow*nCol; }
 
 private:
 	hgeAnimation();
@@ -61,7 +63,7 @@ private:
 
 	int			Mode;
 	int			nDelta;
-	int			nFrames;
+	int			nRow, nCol;
 	int			nCurFrame;
 };
 

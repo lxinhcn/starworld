@@ -201,11 +201,19 @@ void ScriptParseSpriteAnim(RScriptParser *sp, RSprite *rc, bool anim)
 				rc->resgroup=sp->tkn_int();
 				break;
 
-			case TTPAR_FRAMES:
+			case TTPAR_FRAMES_ROW:
 				if(anim)
 				{
 					sp->get_token(); sp->get_token();
-					((RAnimation *)rc)->frames=sp->tkn_int();
+					((RAnimation *)rc)->row=sp->tkn_int();
+					break;
+				}
+
+			case TTPAR_FRAMES_COL:
+				if(anim)
+				{
+					sp->get_token(); sp->get_token();
+					((RAnimation *)rc)->col=sp->tkn_int();
 					break;
 				}
 
@@ -701,11 +709,8 @@ void RAnimation::Parse(hgeResourceManager *rm, RScriptParser *sp, const char *na
 		rc->z=0.5f;
 		rc->bXFlip=false;
 		rc->bYFlip=false;
-//		rc->x=rc->y=0;
-//		rc->scale=1.0f;
-//		rc->rotation=0.0f;
-//		rc->collision=HGECOL_RECT;
-		rc->frames=1;
+		rc->row=1;
+		rc->col=1;
 		rc->fps=12.0f;
 		rc->mode=HGEANIM_FWD | HGEANIM_LOOP;
 	}
@@ -722,7 +727,7 @@ DWORD RAnimation::Get(hgeResourceManager *rm)
 	hgeAnimation *spr;
 	if(!handle)
 	{
-		spr = new hgeAnimation(rm->GetTexture(texname, resgroup), frames, fps, tx, ty, w, h);
+		spr = new hgeAnimation(rm->GetTexture(texname, resgroup), row, col, mode, fps, tx, ty, w, h);
 		spr->SetColor(color);
 		spr->SetZ(z);
 		spr->SetBlendMode(blend);
@@ -732,7 +737,7 @@ DWORD RAnimation::Get(hgeResourceManager *rm)
 //		spr->SetScale(scale);
 //		spr->SetRotation(rotation);
 //		spr->SetCollisionType(collision);
-		spr->SetMode(mode);
+//		spr->SetMode(mode);
 
 		handle=(DWORD)spr;
 	}
