@@ -15,6 +15,7 @@ HTEXTURE LoadTexture( _lpcstr lpszTexture )
 }
 
 AppSetting::AppSetting(void)
+: mFont( NULL )
 {
 }
 
@@ -37,7 +38,7 @@ bool AppSetting::Initialize( const char* filename )
 		;
 
 	Class< hgeAnimation >( "HGE::Animation" )
-		.constructor< HTEXTURE, int, float, float, float, float, float >()
+		.constructor< HTEXTURE, int, int, int, float, float, float, float, float >()
 		.set( "play", &hgeAnimation::Play )
 		.set( "stop", &hgeAnimation::Stop )
 		.set( "resume", &hgeAnimation::Resume )
@@ -76,14 +77,18 @@ bool AppSetting::Initialize( const char* filename )
 		if( !mSprites.isvalid() )
 			return false;
 
+		mAnimation = mScript.get< LuaObject >( "animation" );
+		if( !mAnimation.isvalid() )
+			return false;
+
 		return true;
 	}
 	catch( std::runtime_error e )
 	{
+		ASSERT(false);
 		XGC_ASSERT_MSGA( true, e.what() );
 		return false;
 	}
-
 }
 
 _lpcstr AppSetting::getResourcePath()

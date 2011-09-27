@@ -20,10 +20,8 @@ public:
 	void Run();
 	void UnInitialize();
 
-	HGE* operator->(){ return m_hge; }
-	HGE* getEngine(){ return m_hge; }
-
-	hgeFontManagerStub& getFontManager(){ return m_FontManager; }
+	HGE* operator->(){ return hge; }
+	HGE* getEngine(){ return hge; }
 
 protected:
 	bool UpdateLogic( float fDelta );
@@ -33,19 +31,20 @@ private:
 	bool FrameFunc();
 
 private:
-	HGE			*m_hge;
-	b2World		*m_World;
-	b2Render	*m_Render;
-	static hgeFontManagerStub m_FontManager;
-	float		m_zoomView;
-	fPoint		m_ptOffset;
+	HGE			*hge;
+	b2World		*mWorld;
+	b2Render	*mRender;
+	float		mZoom;
+	fPoint		ptOffset;
 
-	fPoint		m_ptMonseDown;
-	fPoint		m_ptMouseUp;
+	fPoint		ptMonseDown;
+	fPoint		ptMouseUp;
 
-	bool		m_bDebug;
-	bool		m_bEdit;
-	CGameLevel*	m_pLevel;
+	bool		mDebug;
+	bool		mEdit;
+
+	CGameLevel*		mLevel;
+	hgeAnimation*	mCursor;
 };
 
 typedef SingletonHolder< CApplication, CreateStatic > Application;

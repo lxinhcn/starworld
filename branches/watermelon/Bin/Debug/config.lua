@@ -3,6 +3,7 @@ setting =
 {
 	resource = "..\\resource",
 	defines = "..\\resource\\defines.lua",
+	cursors = "..\\resource\\cursor.png",
 	package = 
 	{
 		"..\\resource\\Pack.zip",
