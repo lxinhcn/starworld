@@ -124,8 +124,6 @@ namespace Private
 			}
 			// use this class...	
 			getClass(L)->push_ptr(L, (void*) obj, fromConstructor);
-
-
 		}
 
 		static T* get(lua_State *L, int pos)
@@ -1355,6 +1353,30 @@ namespace Private
 		{
 			SLB_DEBUG_CALL;
 			return (lua_istable( L, pos ) != 0);
+		}
+	};
+
+	template<>
+	struct Type< FuncCall* >
+	{
+		static void push(lua_State *L, FuncCall* obj)
+		{
+			SLB_DEBUG_CALL; 
+			SLB_DEBUG(8,"Push<T=%s>(L=%p, obj =%p)", typeid(T).name(), L, obj);
+			obj->push(L);
+		}
+
+		static FuncCall* get(lua_State *L, int pos)
+		{
+			SLB_DEBUG_CALL; 
+			SLB_DEBUG(8,"Get<T=%s>(L=%p, pos = %i)", typeid(T).name(), L, pos);
+			return (FuncCall*)lua_touserdata( L, pos );
+		}
+
+		static bool check(lua_State *L, int pos)
+		{
+			SLB_DEBUG_CALL;
+			return (lua_isuserdata( L, pos ) != 0);
 		}
 	};
 }

@@ -291,6 +291,14 @@
 				RelativePath="..\Bin\Resource\defines.lua"
 				>
 			</File>
+			<Filter
+				Name="Level"
+				>
+				<File
+					RelativePath="..\Bin\Resource\level\level1.lua"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"

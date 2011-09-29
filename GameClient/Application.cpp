@@ -166,7 +166,11 @@ bool CApplication::Initialize()
 		return false;
 	}
 
-	Setting::Instance().Initialize( "config.lua" );
+	if( !Setting::Instance().Initialize( "config.lua" ) )
+	{
+		return false;
+	}
+
 	_lpcstr resource = Setting::Instance().getResourcePath();
 
 	LuaObject animation = Setting::Instance().getAnimation();
@@ -186,7 +190,11 @@ bool CApplication::Initialize()
 	mLevel = new CGameLevel(mWorld);
 	if( mLevel )
 	{
-		mLevel->Load( "" );
+		if( mLevel->Load( (_astring( resource ) + "level\\level1.lua").c_str() ) == false )
+		{
+			SAFE_DELETE( mLevel );
+			return false;
+		}
 	}
 	return true;
 }

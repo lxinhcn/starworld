@@ -1,17 +1,16 @@
 
 setting = 
 {
-	resource = "..\\resource",
-	defines = "..\\resource\\defines.lua",
-	cursors = "..\\resource\\cursor.png",
+	resource= "..\\resource\\",
+	defines = "defines.lua",
 	package = 
 	{
-		"..\\resource\\Pack.zip",
+		"Pack.zip",
 	},
 	
 	font = 
 	{
-		fontname = "..\\resource\\ARIALN.ttf",
+		fontname = "ARIALN.ttf",
 		fontsize = 18,
 		fontcolor = -1,
 	},
