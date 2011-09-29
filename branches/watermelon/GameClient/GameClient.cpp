@@ -16,8 +16,9 @@
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
-	Application::Instance().Initialize();
-	Application::Instance().Run();
+	if( Application::Instance().Initialize() )
+		Application::Instance().Run();
+
 	Application::Instance().UnInitialize();
 	return 0;
 }

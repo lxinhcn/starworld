@@ -81,6 +81,18 @@ inline void setGlobal(lua_State *L, T v, const char *name)
 	lua_setglobal(L,name);
 }
 
+//#define SLB_REPEAT(N) \
+//template<class R SPP_COMMA_IF(N) SPP_ENUM_D(N, class T)>\
+//template<>\
+//inline void setGlobal(lua_State *L, R (*func)(SPP_ENUM_D(N,T)), const char *name ) \
+//{\
+//	SLB_DEBUG_CALL;\
+//	SLB::push(L,FuncCall::create(func));\
+//	lua_setglobal(L,name);\
+//};\
+//SPP_MAIN_REPEAT_Z(MAX,SLB_REPEAT)
+//#undef SLB_REPEAT
+
 template<class T>
 inline T getGlobal(lua_State *L, const char *name)
 {

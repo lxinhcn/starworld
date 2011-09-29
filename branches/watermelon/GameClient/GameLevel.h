@@ -13,11 +13,19 @@ public:
 protected:
 	void Destroy();
 
-private:
-	HGE*	 hge;
-	b2World* m_world;
+	LuaObject	getTexture(){ return mTexture; }
+	LuaObject	getSprites(){ return mSprites; }
+	LuaObject	getAnimation(){ return mAnimation; }
 
-	hgeSprite	mBackground;
-	hgeSprite	*mBody;
-	HTEXTURE m_hBackground;
+private:
+	HGE*		hge;
+	b2World*	mWorld;
+
+	Script		mScript;
+	hgeSprite*	mBackground;
+
+	LuaObject	mTexture;
+	LuaObject	mSprites;
+	LuaObject	mAnimation;
+
 };

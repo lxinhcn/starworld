@@ -36,6 +36,7 @@
 #include "StatefulHybrid.hpp"
 #include "Script.hpp"
 #include "SPP.hpp"
+#include "util.hpp"
 
 // just for help....
 #define SLB_ON_LOAD( FuncName ) \

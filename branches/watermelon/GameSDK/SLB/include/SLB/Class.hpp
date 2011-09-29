@@ -107,24 +107,23 @@ namespace SLB {
 		}
 
 		template< class setMethod >
-		void member_set( const char* name, setMethod s )
+		__Self &member_set( const char* name, setMethod s )
 		{
 			_class->member_set( name, s );
+			return *this;
 		}
 
 		template< class getMethod >
-		void member_get( const char* name, getMethod g )
+		__Self &member_get( const char* name, getMethod g )
 		{
 			_class->member_get( name, g );
+			return *this;
 		}
 
 		template<typename TEnum>
 		__Self &enumValue(const char *name, TEnum obj);
 
 		__Self &constructor();
-
-		template<typename TValue>
-		__Self &constructor( TValue );
 
 		/** Declares a class as hybrid, this will imply that the __index
 		 * and __newindex methods will be overriden, see 
@@ -360,14 +359,6 @@ namespace SLB {
 	inline Class<T,W> &Class<T,W>::constructor()
 	{
 		_class->setConstructor( FuncCall::classConstructor<T>() );
-		return *this;
-	}
-
-	template<typename T,  typename W>
-	template<typename TValue>
-	inline Class<T,W> &Class<T,W>::constructor( TValue v )
-	{
-		_class->setConstructor( FuncCall::create(v) );
 		return *this;
 	}
 
