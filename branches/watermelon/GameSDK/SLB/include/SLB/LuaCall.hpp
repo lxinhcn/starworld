@@ -37,7 +37,7 @@
 
 namespace SLB
 {
-
+	class Script;
 	class SLB_EXPORT LuaCallBase 
 	{ 
 	public:
@@ -46,8 +46,8 @@ namespace SLB
 		virtual ~LuaCallBase();
 		bool valid()const;
 	protected: 
-		LuaCallBase(lua_State *L, int index);
-		LuaCallBase(lua_State *L, const char *func);
+		LuaCallBase( Script *L, int index);
+		LuaCallBase( Script *L, const char *func);
 		LuaCallBase( const LuaObject& obj );
 		LuaCallBase( const LuaCallBase& rsh );
 		LuaCallBase& operator= ( const LuaCallBase& rsh );
@@ -73,8 +73,8 @@ namespace SLB
 		template<class R SPP_COMMA_IF(N) SPP_ENUM_D(N, class T)> \
 		struct SLB_EXPORT LuaCall<R( SPP_ENUM_D(N,T) )> : public LuaCallBase\
 		{ \
-			LuaCall(lua_State *L, int index) : LuaCallBase(L,index) {} \
-			LuaCall(lua_State *L, const char *func) : LuaCallBase(L,func) {} \
+			LuaCall(Script *L, int index) : LuaCallBase(L,index) {} \
+			LuaCall(Script *L, const char *func) : LuaCallBase(L,func) {} \
 			LuaCall(const LuaObject& obj ) : LuaCallBase( obj ) {} \
 			LuaCall(const LuaCall& rsh ) : LuaCallBase( rsh ) {} \
 			R operator()( SPP_REPEAT( N, SLB_ARG) char dummyARG = 0) /*TODO: REMOVE dummyARG */\
@@ -100,8 +100,8 @@ namespace SLB
 		template<SPP_ENUM_D(N, class T)> \
 		struct SLB_EXPORT LuaCall<void( SPP_ENUM_D(N,T) )> : public LuaCallBase\
 		{ \
-			LuaCall(lua_State *L, int index) : LuaCallBase(L,index) {} \
-			LuaCall(lua_State *L, const char *func) : LuaCallBase(L,func) {} \
+			LuaCall(Script *L, int index) : LuaCallBase(L,index) {} \
+			LuaCall(Script *L, const char *func) : LuaCallBase(L,func) {} \
 			LuaCall(const LuaObject& obj ) : LuaCallBase( obj ) {} \
 			LuaCall(const LuaCall& rsh ) : LuaCallBase( rsh ) {} \
 			void operator()( SPP_REPEAT( N, SLB_ARG) char dummyARG = 0) /*TODO: REMOVE dummyARG */\

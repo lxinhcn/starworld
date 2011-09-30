@@ -30,7 +30,8 @@
 namespace SLB {
 	
 	class SLB_EXPORT Script
-	{	
+	{
+		friend class LuaCallBase;
 	public:
 		Script(bool loadDefaultLibs = true);
 		virtual ~Script();

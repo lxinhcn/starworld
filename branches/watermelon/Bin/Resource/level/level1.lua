@@ -15,3 +15,14 @@ sprites =
 animation = 
 {
 };
+
+function CreateLevel( world )
+	bd = BodyDef();
+	shape = EdgeShape();
+	shape:Set(Vector2(-20.0, 0.0), Vector2(20.0, 0.0));
+	
+	ground = world:CreateBody(bd);
+
+
+	ground:CreateFixtureEx(shape,0);
+end;

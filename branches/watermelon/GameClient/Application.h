@@ -30,6 +30,8 @@ private:
 	bool RenderFunc();
 	bool FrameFunc();
 
+	void DrawShape(b2Fixture* fixture, const b2Transform& xf, const b2Color& color);
+
 private:
 	HGE			*hge;
 	b2World		*mWorld;
@@ -43,6 +45,7 @@ private:
 	bool		mDebug;
 	bool		mEdit;
 
+	b2Transform		mWorldTransform;
 	CGameLevel*		mLevel;
 	hgeAnimation*	mCursor;
 };

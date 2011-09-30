@@ -22,22 +22,24 @@
 
 #include <SLB/LuaCall.hpp>
 #include <SLB/Debug.hpp>
+#include <SLB/Script.hpp>
+
 #include <sstream>
 
 namespace SLB {
 
-	LuaCallBase::LuaCallBase(lua_State *L, int index) : _L(L) 
+	LuaCallBase::LuaCallBase( Script *L, int index) : _L(L->getState()) 
 	{ 
 		SLB_DEBUG_CALL; 
 		getFunc(index); 
 	}
 
-	LuaCallBase::LuaCallBase(lua_State *L, const char *func) : _L(L) 
+	LuaCallBase::LuaCallBase( Script *L, const char *func) : _L(L->getState()) 
 	{
 		SLB_DEBUG_CALL;
-		lua_getglobal(L,func);
+		lua_getglobal(_L,func);
 		getFunc(-1);
-		lua_pop(L,1); 
+		lua_pop(_L,1); 
 	}
 
 	LuaCallBase::LuaCallBase( const LuaObject& obj )
