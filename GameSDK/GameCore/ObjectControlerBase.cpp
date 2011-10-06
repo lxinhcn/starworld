@@ -152,7 +152,7 @@ namespace XGC
 		m_vSpeed *= fSpeed*0.25f;
 		m_fSpeed = fSpeed;
 
-		m_pHost->Trigger( TypeServerObject, INVALID_OBJECT_ID, (long_ptr)this, CGameObject::Event_MoveBegin );
+		m_pHost->Trigger( TypeGameObject, INVALID_OBJECT_ID, (long_ptr)this, CGameObject::Event_MoveBegin );
 		// timer 参数为 -1 则表示立即被执行
 		if( !IsUpdate() )
 		{
@@ -186,11 +186,11 @@ namespace XGC
 				//	, m_vTargetPosition[0], m_vTargetPosition[1], m_vNextPosition[2] );
 				if( m_vTargetPosition == m_vNextPosition )
 				{
-					m_pHost->Trigger( TypeServerObject, INVALID_OBJECT_ID, (long_ptr)this, CGameObject::Event_MoveArrived ); // Arrived 
+					m_pHost->Trigger( TypeGameObject, INVALID_OBJECT_ID, (long_ptr)this, CGameObject::Event_MoveArrived ); // Arrived 
 				}
 				else
 				{
-					m_pHost->Trigger( TypeServerObject, INVALID_OBJECT_ID, (long_ptr)this, CGameObject::Event_MoveStep ); // Step 
+					m_pHost->Trigger( TypeGameObject, INVALID_OBJECT_ID, (long_ptr)this, CGameObject::Event_MoveStep ); // Step 
 					_tevent* event = ThisTimer().get_event( handle );
 					event->set_interval( TIMER_SECONDS(CalcNextPosition()) );
 					return false;
@@ -198,7 +198,7 @@ namespace XGC
 			}
 			else if( m_pHost )
 			{
-				m_pHost->Trigger( TypeServerObject, INVALID_OBJECT_ID, (long_ptr)this, CGameObject::Event_MoveStop ); // Stop 
+				m_pHost->Trigger( TypeGameObject, INVALID_OBJECT_ID, (long_ptr)this, CGameObject::Event_MoveStop ); // Stop 
 			}
 		}
 		StopUpdate();
@@ -246,7 +246,7 @@ namespace XGC
 
 	bool CObjectIdleControler::UpdateIdle( unsigned int handle )
 	{
-		m_pHost->Trigger( TypeServerObject, INVALID_OBJECT_ID, (long_ptr)this, CGameObject::Event_Stand );
+		m_pHost->Trigger( TypeGameObject, INVALID_OBJECT_ID, (long_ptr)this, CGameObject::Event_Stand );
 		StopUpdate();
 		return true;
 	}

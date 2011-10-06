@@ -61,7 +61,7 @@ namespace XGC
 	{
 		mStateParams = static_cast< MoveStateParams& >( Params );
 
-		Object.RegisteTrigger( TypeServerObject, bind(&CMoveState::OnTrigger, this, _1, _2, _3, _4 ) );
+		Object.RegisteTrigger( TypeGameObject, bind(&CMoveState::OnTrigger, this, _1, _2, _3, _4 ) );
 		m_pControler->Attach( &Object );
 		m_pControler->MoveTo( mStateParams.Position, mStateParams.fSpeed, mStateParams.fDelay );
 
@@ -103,6 +103,6 @@ namespace XGC
 	void CMoveState::OnLeave( CGameObject& Object )
 	{
 		m_pControler->Detach();
-		Object.DismissTrigger( TypeServerObject, bind(&CMoveState::OnTrigger, this, _1, _2, _3, _4 ) );
+		Object.DismissTrigger( TypeGameObject, bind(&CMoveState::OnTrigger, this, _1, _2, _3, _4 ) );
 	}
 }

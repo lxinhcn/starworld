@@ -2,6 +2,8 @@
 #include "Setting.h"
 #include "hgefontex.h"
 #include "hgefontmanager.h"
+#include "GameObject.h"
+
 HTEXTURE LoadTexture( _lpcstr lpszTexture )
 {
 	HTEXTURE hTexture = 0;
@@ -24,7 +26,7 @@ int GetTextureWidth( HTEXTURE hTexture )
 	HGE* hge = hgeCreate(HGE_VERSION);
 	if( hge )
 	{
-		width = hge->Texture_GetWidth( hTexture );
+		width = hge->Texture_GetWidth( hTexture, true );
 	}
 	hge->Release();
 
@@ -40,7 +42,7 @@ int GetTextureHeight( HTEXTURE hTexture )
 	HGE* hge = hgeCreate(HGE_VERSION);
 	if( hge )
 	{
-		height = hge->Texture_GetHeight( hTexture );
+		height = hge->Texture_GetHeight( hTexture, true );
 	}
 	hge->Release();
 
@@ -61,6 +63,10 @@ bool AppSetting::Initialize( const char* filename )
 	Manager::getInstance().set( "Texture",		FuncCall::create( LoadTexture ) );
 	Manager::getInstance().set( "TextureWidth",	FuncCall::create( GetTextureWidth ) );
 	Manager::getInstance().set( "TextureHeight",FuncCall::create( GetTextureHeight ) );
+
+	Manager::getInstance().enums< b2BodyType >( "b2static",	b2_staticBody );
+	Manager::getInstance().enums< b2BodyType >( "b2kinematic",b2_kinematicBody );
+	Manager::getInstance().enums< b2BodyType >( "b2dynamic",	b2_dynamicBody );
 
 	RegisterArray< b2Vec2 >( "b2::VectorArray" );
 
@@ -84,6 +90,11 @@ bool AppSetting::Initialize( const char* filename )
 
 	Class< b2Vec2 >( "b2::Vector2" )
 		.constructor< float, float >()
+		.set( "Set", &b2Vec2::Set )
+		.set( "SetZero", &b2Vec2::SetZero )
+		.set( "Length", &b2Vec2::Length)
+		.set( "LengthSquared", &b2Vec2::LengthSquared )
+		.set( "Normalize", &b2Vec2::Normalize )
 		.member("x", &b2Vec2::x )
 		.member("y", &b2Vec2::y )
 		;
@@ -132,8 +143,8 @@ bool AppSetting::Initialize( const char* filename )
 		.inherits< b2Shape >()
 		.constructor()
 		.set( "Set", &b2PolygonShape::Set )
-		.set< void (b2PolygonShape::*)(float32, float32) >( "SetAsBox",	&b2PolygonShape::SetAsBox )
-		.set< void (b2PolygonShape::*)(float32, float32, const b2Vec2&, float32) >( "SetAsBoxEx",	&b2PolygonShape::SetAsBox )
+		.set( "SetAsBox", (void (b2PolygonShape::*)( float32, float32 ))&b2PolygonShape::SetAsBox )
+		.set( "SetAsBoxEx",	(void (b2PolygonShape::*)(float32, float32, const b2Vec2&, float32 ))&b2PolygonShape::SetAsBox )
 		;
 
 	Class< b2CircleShape >( "b2::CircleShape" )
@@ -154,11 +165,12 @@ bool AppSetting::Initialize( const char* filename )
 
 	Class< b2Fixture, Instance::NoCopy >( "b2::Fixture" )
 		.set( "GetType", &b2Fixture::GetShape )
+		.member( "userdata", &b2Fixture::SetUserData, &b2Fixture::GetUserData );
 		;
 
 	Class< b2Body, Instance::NoCopyNoDestroy >( "b2::Body" )
-		.set< b2Body, b2Fixture*, const b2FixtureDef* >( "CreateFixture",	&b2Body::CreateFixture )
-		.set< b2Body, b2Fixture*, const b2Shape*, float32 >( "CreateFixtureEx", &b2Body::CreateFixture )
+		.set( "CreateFixture", (b2Fixture* (b2Body::*)(const b2FixtureDef*))&b2Body::CreateFixture )
+		.set( "CreateFixtureEx", (b2Fixture* (b2Body::*)(const b2Shape*, float32))&b2Body::CreateFixture )
 		.set( "DestoryBody", &b2Body::DestroyFixture )
 		.set( "SetTransform", &b2Body::SetTransform )
 		.set( "GetTransform", &b2Body::GetTransform )
@@ -210,6 +222,14 @@ bool AppSetting::Initialize( const char* filename )
 		.set( "CreateJoint",	&b2World::CreateJoint )
 		;
 
+	Class< GameObject >( "game::GameObject" )
+		.constructor()
+		.member( "type", &GameObject::type )
+		.member( "hp", &GameObject::hp )
+		.member( "st", &GameObject::st )
+		.member( "sprite", &GameObject::mSprite )
+		.member( "animation", &GameObject::mAnimation )
+		;
 	try
 	{
 		mScript.doFile( "config.lua" );

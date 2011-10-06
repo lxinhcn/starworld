@@ -40,7 +40,7 @@ namespace XGC
 	//---------------------------------------------------//
 	void CGameObject::EnterEyeshot( CGameObject* pObject )
 	{
-		Trigger( TypeServerObject, pObject->GetObjectID(), xgc_nullptr, Event_EnterEyeshot );
+		Trigger( TypeGameObject, pObject->GetObjectID(), xgc_nullptr, Event_EnterEyeshot );
 	}
 
 	//---------------------------------------------------//
@@ -50,6 +50,6 @@ namespace XGC
 	//---------------------------------------------------//
 	void CGameObject::LeaveEyeshot( CGameObject* pObject )
 	{
-		Trigger( TypeServerObject, pObject->GetObjectID(), xgc_nullptr, Event_LeaveEyeshot );
+		Trigger( TypeGameObject, pObject->GetObjectID(), xgc_nullptr, Event_LeaveEyeshot );
 	}
 }

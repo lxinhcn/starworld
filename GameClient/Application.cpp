@@ -4,8 +4,8 @@
 #include "GameLevel.h"
 #include "Setting.h"
 
-#define SCREEN_WIDTH  800
-#define SCREEN_HEIGHT 600
+#define SCREEN_WIDTH  1440
+#define SCREEN_HEIGHT 900
 
 bool RenderFunc()
 {
@@ -19,13 +19,11 @@ bool FrameFunc()
 
 CApplication::CApplication(void)
 : hge(NULL)
-, mWorld(NULL)
 , mZoom(10.0f)
 , ptOffset( 0.0f, 0.0f )
 , ptMonseDown( 0, 0 )
 , mDebug( true )
 , mEdit( false )
-, mWorldTransform( b2Vec2(1,1), b2Rot(0) )
 {
 }
 
@@ -33,9 +31,62 @@ CApplication::~CApplication(void)
 {
 }
 
+bool CApplication::Initialize()
+{
+	setlocale( LC_ALL, "chs" );
+
+	hge = hgeCreate(HGE_VERSION);
+
+	hge->System_SetState(HGE_LOGFILE, "StarGame.log");
+	hge->System_SetState(HGE_FRAMEFUNC, ::FrameFunc);
+	hge->System_SetState(HGE_RENDERFUNC, ::RenderFunc);
+	hge->System_SetState(HGE_TITLE, "StarGame");
+	hge->System_SetState(HGE_USESOUND, false);
+	hge->System_SetState(HGE_WINDOWED, true);
+	hge->System_SetState(HGE_SCREENWIDTH, SCREEN_WIDTH);
+	hge->System_SetState(HGE_SCREENHEIGHT, SCREEN_HEIGHT);
+	hge->System_SetState(HGE_SCREENBPP, 32);
+	hge->System_SetState(HGE_SCREENBPP, 32);
+	hge->System_SetState(HGE_HIDEMOUSE, true);
+
+	// m_hge->System_SetState(HGE_DONTSUSPEND, true );
+
+	// 初始化回调函数
+	if( !hge->System_Initiate())
+	{
+		return false;
+	}
+
+	if( !Setting::Instance().Initialize( "config.lua" ) )
+	{
+		return false;
+	}
+
+	_lpcstr resource = Setting::Instance().getResourcePath();
+
+	LuaObject animation = Setting::Instance().getAnimation();
+	if( animation.isvalid() && animation.istable() )
+		mCursor = animation.get< hgeAnimation* >("cursor");
+
+	mRender = new b2Render();
+	mRender->SetFlags( b2Draw::e_shapeBit | b2Draw::e_jointBit );
+	
+	mLevel = new CGameLevel(mRender, b2Transform( b2Vec2(SCREEN_WIDTH/2,SCREEN_HEIGHT*3/4), b2Rot(0) ));
+	if( mLevel )
+	{
+		if( mLevel->Load( (_astring( resource ) + "level\\level1.lua").c_str() ) == false )
+		{
+			SAFE_DELETE( mLevel );
+			return false;
+		}
+	}
+	return true;
+}
+
 bool CApplication::FrameFunc()
 {
 	float dt=hge->Timer_GetDelta();
+	float ft=hge->Timer_GetTime();
 	// Process keys
 
 	switch(hge->Input_GetKey())
@@ -137,67 +188,8 @@ bool CApplication::FrameFunc()
 		}
 	}
 
-	UpdateLogic( dt );
+	UpdateLogic( ft, dt );
 	return false;
-}
-
-bool CApplication::Initialize()
-{
-	setlocale( LC_ALL, "chs" );
-
-	hge = hgeCreate(HGE_VERSION);
-
-	hge->System_SetState(HGE_LOGFILE, "StarGame.log");
-	hge->System_SetState(HGE_FRAMEFUNC, ::FrameFunc);
-	hge->System_SetState(HGE_RENDERFUNC, ::RenderFunc);
-	hge->System_SetState(HGE_TITLE, "StarGame");
-	hge->System_SetState(HGE_USESOUND, false);
-	hge->System_SetState(HGE_WINDOWED, true);
-	hge->System_SetState(HGE_SCREENWIDTH, SCREEN_WIDTH);
-	hge->System_SetState(HGE_SCREENHEIGHT, SCREEN_HEIGHT);
-	hge->System_SetState(HGE_SCREENBPP, 32);
-	hge->System_SetState(HGE_SCREENBPP, 32);
-	hge->System_SetState(HGE_HIDEMOUSE, true);
-
-	// m_hge->System_SetState(HGE_DONTSUSPEND, true );
-
-	// 初始化回调函数
-	if( !hge->System_Initiate())
-	{
-		return false;
-	}
-
-	if( !Setting::Instance().Initialize( "config.lua" ) )
-	{
-		return false;
-	}
-
-	_lpcstr resource = Setting::Instance().getResourcePath();
-
-	LuaObject animation = Setting::Instance().getAnimation();
-	if( animation.isvalid() && animation.istable() )
-		mCursor = animation.get< hgeAnimation* >("cursor");
-
-	b2Vec2 g(0.0f, -10.0f);
-
-	mWorld = new b2World( g, true );
-	if( mWorld == NULL )
-		return false;
-
-	mRender = new b2Render();
-	mRender->SetFlags( b2Draw::e_shapeBit | b2Draw::e_jointBit );
-	mWorld->SetDebugDraw( mRender );
-	
-	mLevel = new CGameLevel(mWorld);
-	if( mLevel )
-	{
-		if( mLevel->Load( (_astring( resource ) + "level\\level1.lua").c_str() ) == false )
-		{
-			SAFE_DELETE( mLevel );
-			return false;
-		}
-	}
-	return true;
 }
 
 void CApplication::Run()
@@ -211,11 +203,12 @@ void CApplication::UnInitialize()
 	hge->Release();
 }
 
-bool CApplication::UpdateLogic( float fDelta )
+bool CApplication::UpdateLogic( float fTime, float fDelta )
 {
 	if( mLevel )
-		mLevel->UpdateLogic( fDelta );
-	mWorld->Step( fDelta, 6, 2 );
+	{
+		mLevel->UpdateLogic( fTime, fDelta );
+	}
 	return false;
 }
 
@@ -223,8 +216,6 @@ bool CApplication::RenderFunc()
 {
 	hge->Gfx_BeginScene();
 	hge->Gfx_Clear(0);
-
-	hge->Gfx_SetTransform( 0, 0, 0, 0, 0.0f, 0.0f, 0.0f );
 
 	if( mLevel )
 		mLevel->Render();
@@ -235,111 +226,12 @@ bool CApplication::RenderFunc()
 		hge->Input_GetMousePos(&x,&y);
 		mCursor->Render( x, y );
 	}
+
 	wchar_t szInfomation[256];
 	_snwprintf( szInfomation, _countof(szInfomation), L"Zoom : %.2f, Offset : %.2f, %.2f, FPS : %d ", mZoom, ptOffset.x, ptOffset.y, hge->Timer_GetFPS() );
 	Setting::Instance().getFont()->Print( 10, 10, 0, szInfomation );
 
-	if( mDebug )
-	{
-		hge->Gfx_SetTransform( 0, 0, SCREEN_WIDTH/2 + ptOffset.x, SCREEN_HEIGHT/2 + ptOffset.y, b2_pi, mZoom, mZoom );
-		hge->Gfx_RenderLine( -SCREEN_WIDTH/2, 0, SCREEN_WIDTH/2, 0 );
-		hge->Gfx_RenderLine( 0, -SCREEN_HEIGHT/2, 0, SCREEN_HEIGHT/2 );
-		mWorld->DrawDebugData();
-
-		for( b2Body* b = mWorld->GetBodyList(); b; b= b->GetNext() )
-		{
-			const b2Transform& xf = b2Mul( mWorldTransform, b->GetTransform() );
-			for (b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext())
-			{
-				if (b->IsActive() == false)
-				{
-					DrawShape(f, xf, b2Color(0.5f, 0.5f, 0.3f));
-				}
-				else if (b->GetType() == b2_staticBody)
-				{
-					DrawShape(f, xf, b2Color(0.5f, 0.9f, 0.5f));
-				}
-				else if (b->GetType() == b2_kinematicBody)
-				{
-					DrawShape(f, xf, b2Color(0.5f, 0.5f, 0.9f));
-				}
-				else if (b->IsAwake() == false)
-				{
-					DrawShape(f, xf, b2Color(0.6f, 0.6f, 0.6f));
-				}
-				else
-				{
-					DrawShape(f, xf, b2Color(0.9f, 0.7f, 0.7f));
-				}
-			}
-		}
-
-	}
-
 	hge->Gfx_EndScene();
 
 	return false;
-}
-
-void CApplication::DrawShape(b2Fixture* fixture, const b2Transform& xf, const b2Color& color)
-{
-	switch (fixture->GetType())
-	{
-	case b2Shape::e_circle:
-		{
-			b2CircleShape* circle = (b2CircleShape*)fixture->GetShape();
-
-			b2Vec2 center = b2Mul(xf, circle->m_p);
-			float32 radius = circle->m_radius;
-			b2Vec2 axis = b2Mul(xf.q, b2Vec2(1.0f, 0.0f));
-
-			mRender->DrawSolidCircle(center, radius, axis, color);
-		}
-		break;
-
-	case b2Shape::e_edge:
-		{
-			b2EdgeShape* edge = (b2EdgeShape*)fixture->GetShape();
-			b2Vec2 v1 = b2Mul(xf, edge->m_vertex1);
-			b2Vec2 v2 = b2Mul(xf, edge->m_vertex2);
-			mRender->DrawSegment(v1, v2, color);
-		}
-		break;
-
-	case b2Shape::e_chain:
-		{
-			b2ChainShape* chain = (b2ChainShape*)fixture->GetShape();
-			int32 count = chain->GetVertexCount();
-			const b2Vec2* vertices = chain->GetVertices();
-
-			b2Vec2 v1 = b2Mul(xf, vertices[0]);
-			for (int32 i = 1; i < count; ++i)
-			{
-				b2Vec2 v2 = b2Mul(xf, vertices[i]);
-				mRender->DrawSegment(v1, v2, color);
-				mRender->DrawCircle(v1, 0.05f, color);
-				v1 = v2;
-			}
-		}
-		break;
-
-	case b2Shape::e_polygon:
-		{
-			b2PolygonShape* poly = (b2PolygonShape*)fixture->GetShape();
-			int32 vertexCount = poly->m_vertexCount;
-			b2Assert(vertexCount <= b2_maxPolygonVertices);
-			b2Vec2 vertices[b2_maxPolygonVertices];
-
-			for (int32 i = 0; i < vertexCount; ++i)
-			{
-				vertices[i] = b2Mul(xf, poly->m_vertices[i]);
-			}
-
-			mRender->DrawSolidPolygon(vertices, vertexCount, color);
-		}
-		break;
-
-	default:
-		break;
-	}
 }

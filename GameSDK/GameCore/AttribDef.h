@@ -9,7 +9,7 @@
 #define		TypeMap						0x30000000
 #define		TypeSkillBase				0x20000000
 
-#define		TypeServerObject			0x10000000
+#define		TypeGameObject			0x10000000
 #define			TypeActorBase			0x11000000
 #define			TypeItem				0x12000000
 #define			TypeWatcher				0x13000000	// 守望者
@@ -17,7 +17,7 @@
 #define TIMER_INTERVAL	50
 #define TIMER_SECONDS( s )	int((s)*1000.0f/TIMER_INTERVAL)
 
-enum eServerActorBase
+enum eGameActorBase
 {
 	attrActorType,	// 角色类型
 	attrHealth,		// 生命值
@@ -34,7 +34,7 @@ enum eServerActorBase
 	ActorBase_attrCount,
 };
 
-enum eServerSkillBase
+enum eGameSkillBase
 {
 	attrConsume,
 	attrCastingTime,

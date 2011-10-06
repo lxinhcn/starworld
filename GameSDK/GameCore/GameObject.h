@@ -29,7 +29,7 @@ namespace XGC
 	class CORE_API CGameObject	:	public CXObject
 	{
 	public:
-		DECLARE_DYNAMICTYPE(CXObject,TypeServerObject);
+		DECLARE_DYNAMICTYPE(CXObject,TypeGameObject);
 		friend class CServerMap;
 		friend class CStateMachine;
 	public:
