@@ -55,7 +55,6 @@ using namespace SLB;
 
 // ¸¨Öú¿â
 #include "commonlib.h"
-#include "Box2D\Box2D.h"
 
 #include "DataHelper.h"
 using namespace XGC;

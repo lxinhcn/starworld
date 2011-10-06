@@ -53,9 +53,9 @@ namespace SLB {
 			if (!lua_isnil(L,-1))
 			{
 				ClassInfo* ci = reinterpret_cast<ClassInfo*>( lua_touserdata(L,-1) );
-				const void* raw = ci->get_const_ptr(L, 1);
+				void* raw = ci->get_ptr(L, 1);
 				lua_settop(L, top);
-				lua_pushinteger(L, (lua_Integer) raw);
+				lua_pushlightuserdata(L, raw);
 				return 1;
 			}
 		}
@@ -403,7 +403,7 @@ namespace SLB {
 		return c;
 	}
 	
-	void Manager::set(const std::string &name, Object *obj)
+	void Manager::set( const char* name, Object *obj)
 	{
 		SLB_DEBUG_CALL;
 		_global->set(name, obj);

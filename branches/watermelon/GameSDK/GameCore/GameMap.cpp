@@ -378,7 +378,7 @@ namespace XGC
 	//---------------------------------------------------//
 	void CServerMap::NotifyEnterEyeshot( CGameObject* pObj, xObject nObjID )
 	{
-		CGameObject* pTarget = static_cast< CGameObject* >( ObjectPool.GetObject( nObjID, TypeServerObject ) );
+		CGameObject* pTarget = static_cast< CGameObject* >( ObjectPool.GetObject( nObjID, TypeGameObject ) );
 		if( !pTarget || !pObj || pTarget == pObj )
 			return;
 
@@ -395,7 +395,7 @@ namespace XGC
 	//---------------------------------------------------//
 	void CServerMap::NotifyLeaveEyeshot( CGameObject* pObj, xObject nObjID )
 	{
-		CGameObject* pTarget = static_cast< CGameObject* >( ObjectPool.GetObject( nObjID, TypeServerObject ) );
+		CGameObject* pTarget = static_cast< CGameObject* >( ObjectPool.GetObject( nObjID, TypeGameObject ) );
 		if( !pTarget || !pObj || pTarget == pObj )
 			return;
 
@@ -505,7 +505,7 @@ namespace XGC
 	//	int n = 0;
 	//	for( AreaSet::iterator j = targets.begin(); j != targets.end() && n != nCount; ++j )
 	//	{
-	//		CServerObject* pObject = static_cast< CServerObject* >( ObjectPool.GetObject( *j, TypeServerObject ) );
+	//		CServerObject* pObject = static_cast< CServerObject* >( ObjectPool.GetObject( *j, TypeGameObject ) );
 	//		if( pObject )
 	//		{
 	//			XVector3 vDistance = pObject->GetPosition() - vCenter;

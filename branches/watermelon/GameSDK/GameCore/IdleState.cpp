@@ -43,7 +43,7 @@ namespace XGC
 	{
 		mStateParams = static_cast< IdleStateParams& >( Params );
 
-		Object.RegisteTrigger( TypeServerObject, bind(&CIdleState::OnTrigger, this, _1, _2, _3, _4 ) );
+		Object.RegisteTrigger( TypeGameObject, bind(&CIdleState::OnTrigger, this, _1, _2, _3, _4 ) );
 		m_pControler->Attach( &Object );
 		m_pControler->Idle( mStateParams.fIdleTime );
 
@@ -85,6 +85,6 @@ namespace XGC
 	void CIdleState::OnLeave( CGameObject& Object )
 	{
 		m_pControler->Detach();
-		Object.DismissTrigger( TypeServerObject, bind(&CIdleState::OnTrigger, this, _1, _2, _3, _4 ) );
+		Object.DismissTrigger( TypeGameObject, bind(&CIdleState::OnTrigger, this, _1, _2, _3, _4 ) );
 	}
 }

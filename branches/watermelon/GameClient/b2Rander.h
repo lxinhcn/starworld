@@ -41,5 +41,4 @@ private:
 	b2Vec2 offset;
 };
 
-
 #endif

@@ -23,18 +23,17 @@ public:
 	HGE* operator->(){ return hge; }
 	HGE* getEngine(){ return hge; }
 
+	bool IsDebug()const{ return mDebug; }
+	bool IsEdit()const{ return mEdit; }
 protected:
-	bool UpdateLogic( float fDelta );
+	bool UpdateLogic( float fTime, float fDelta );
 
 private:
 	bool RenderFunc();
 	bool FrameFunc();
 
-	void DrawShape(b2Fixture* fixture, const b2Transform& xf, const b2Color& color);
-
 private:
 	HGE			*hge;
-	b2World		*mWorld;
 	b2Render	*mRender;
 	float		mZoom;
 	fPoint		ptOffset;
@@ -45,7 +44,6 @@ private:
 	bool		mDebug;
 	bool		mEdit;
 
-	b2Transform		mWorldTransform;
 	CGameLevel*		mLevel;
 	hgeAnimation*	mCursor;
 };

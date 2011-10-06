@@ -69,7 +69,22 @@ namespace SLB {
 		bool copy(lua_State *from, int pos, lua_State *to);
 
 		// set a global value ( will be registered authomatically on every lua_State )
-		void set(const std::string &, Object *obj);
+		void set( const char*, Object *obj);
+
+		template< typename Enum >
+		void enums( const char* name, Enum e )
+		{
+			// "fake" Declaration of TEnum...
+			ClassInfo *c = getOrCreateClass( typeid(Enum) );
+			if (!c->initialized())
+			{
+				// if it is not initialized then add a simple adapter for 
+				// references.
+				c->setInstanceFactory( new InstanceFactoryAdapter< Enum, SLB::Instance::Default::Implementation<Enum> >() );
+			}
+			// push a reference
+			return _global->set( name, Value::copy(e) );
+		};
 
 		// This will add a SLB table to the current global state
 		void registerSLB(lua_State *L);
