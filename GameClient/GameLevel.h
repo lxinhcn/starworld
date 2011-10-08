@@ -11,6 +11,10 @@ public:
 	bool UpdateLogic( float fTime, float fDelta );
 	void Render();
 
+	void OnButtonDown( float x, float y, int key, int flags, bool editing );
+	void OnButtonUp( float x, float y, int key, int flags, bool editing );
+	void OnMouseWheel( float x, float y, int wheel, int flags, bool editing );
+	void OnMouseMove( float x, float y, int key, int flags, bool editing );
 protected:
 	void Destroy();
 
@@ -21,6 +25,7 @@ protected:
 	LuaObject	getSprites(){ return mSprites; }
 	LuaObject	getAnimation(){ return mAnimation; }
 
+	b2Vec2 Screen2World( fPoint pt );
 private:
 	HGE*		hge;
 	b2World*	mWorld;
@@ -29,7 +34,10 @@ private:
 	Script		mScript;
 	hgeSprite*	mBackground;
 
-	b2Transform		mWorldTransform;
+	b2Transform	mWorldTransform;
+
+	b2MouseJoint*	mMouseJoint;
+	b2Body*			mGroundBody;
 
 	LuaObject	mTexture;
 	LuaObject	mSprites;

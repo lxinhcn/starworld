@@ -2,14 +2,14 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{3bfa50d6-be97-462e-9720-7f6866529937}</UniqueIdentifier>
+      <UniqueIdentifier>{cfac7810-6623-4c4a-afa5-0de318c456e0}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
     </Filter>
     <Filter Include="Source Files\ZLIB">
-      <UniqueIdentifier>{0134c23b-9a76-49fb-88c0-8339f4d40169}</UniqueIdentifier>
+      <UniqueIdentifier>{5558a083-d16c-4897-a6e8-a6b87bc69873}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{0d17e9ec-ed8f-4d40-b4fb-abf831f359dd}</UniqueIdentifier>
+      <UniqueIdentifier>{01d9de65-6ce6-447c-92f9-354cbbe96561}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl</Extensions>
     </Filter>
   </ItemGroup>
@@ -30,6 +30,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\helpers\hgefont.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\helpers\hgefontex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\helpers\hgefontmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\helpers\hgegui.cpp">
@@ -145,6 +151,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\hgefont.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\hgefontex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\hgefontmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\hgegui.h">

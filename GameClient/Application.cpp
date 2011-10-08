@@ -128,6 +128,9 @@ bool CApplication::FrameFunc()
 				mZoom *= 0.9f;
 			else if( e.wheel > 0 )
 				mZoom *= 1.1f;
+
+			if( mLevel )
+				mLevel->OnMouseWheel( e.x, e.y, e.wheel, e.flags, mEdit );
 			break;
 		case INPUT_MBUTTONDOWN:
 			if( e.key == HGEK_RBUTTON )
@@ -135,10 +138,17 @@ bool CApplication::FrameFunc()
 
 			if( e.key == HGEK_LBUTTON )
 				mCursor->SetFrame(2);
+
+			if( mLevel )
+				mLevel->OnButtonDown( e.x, e.y, e.key, e.flags, mEdit );
+
 			break;
 		case INPUT_MBUTTONUP:
 			if( e.key == HGEK_LBUTTON )
 				mCursor->SetFrame(0);
+
+			if( mLevel )
+				mLevel->OnButtonUp( e.x, e.y, e.key, e.flags, mEdit );
 			break;
 		case INPUT_MOUSEMOVE:
 			if( e.flags & MK_RBUTTON )
@@ -146,6 +156,9 @@ bool CApplication::FrameFunc()
 				ptOffset += fPoint(e.x,e.y) - ptMouseUp;
 				ptMouseUp = fPoint(e.x,e.y);
 			}
+
+			if( mLevel )
+				mLevel->OnMouseMove( e.x, e.y, e.key, e.flags, mEdit );
 			break;
 		}
 

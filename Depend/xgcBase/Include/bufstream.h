@@ -80,10 +80,12 @@ namespace XGC
 				: m_data( xgc_nullptr )
 				, m_capacity( 0 )
 			{
-				m_data = (char*)realloc( m_data, size );
-				if( m_data )
+				char* newdata = (char*)realloc( m_data, size );
+				if( data )
 				{	
-					memcpy( m_data, data, size );
+					free( m_data );
+					memcpy( newdata, data, size );
+					m_data = newdata;
 					m_capacity = size;
 				}
 			}
@@ -92,10 +94,11 @@ namespace XGC
 				: m_data( xgc_nullptr )
 				, m_capacity( 0 )
 			{
-				m_data = (char*)realloc( m_data, rsh.m_capacity );
-				if( m_data )
+				char* newdata = (char*)realloc( m_data, rsh.m_capacity );
+				if( newdata )
 				{	
-					memcpy( m_data, rsh.m_data, rsh.m_capacity );
+					memcpy( newdata, rsh.m_data, rsh.m_capacity );
+					m_data = newdata;
 					m_capacity = rsh.m_capacity;
 				}
 			}
@@ -104,10 +107,11 @@ namespace XGC
 				: m_data( xgc_nullptr )
 				, m_capacity( 0 )
 			{
-				m_data = (char*)realloc( m_data, rsh.m_capacity );
-				if( m_data )
+				char* newdata = (char*)realloc( m_data, rsh.m_capacity );
+				if( newdata )
 				{	
-					memcpy( m_data, rsh.m_data, rsh.m_capacity );
+					memcpy( newdata, rsh.m_data, rsh.m_capacity );
+					m_data = newdata;
 					m_capacity = rsh.m_capacity;
 				}
 			}
@@ -119,10 +123,11 @@ namespace XGC
 
 			mbuffer& operator=( const mbuffer& rsh )
 			{
-				m_data = (char*)realloc( m_data, rsh.m_capacity );
-				if( m_data )
+				char* newdata = (char*)realloc( m_data, rsh.m_capacity );
+				if( newdata )
 				{	
-					memcpy( m_data, rsh.m_data, rsh.m_capacity );
+					memcpy( newdata, rsh.m_data, rsh.m_capacity );
+					m_data = newdata;
 					m_capacity = rsh.m_capacity;
 				}
 				return *this;
@@ -130,10 +135,11 @@ namespace XGC
 
 			mbuffer& operator=( const cbuffer& rsh )
 			{
-				m_data = (char*)realloc( m_data, rsh.m_capacity );
-				if( m_data )
+				char* newdata = (char*)realloc( m_data, rsh.m_capacity );
+				if( newdata )
 				{
-					memcpy( m_data, rsh.m_data, rsh.m_capacity );
+					memcpy( newdata, rsh.m_data, rsh.m_capacity );
+					m_data = newdata;
 					m_capacity = rsh.m_capacity;
 				}
 				return *this;
@@ -141,9 +147,10 @@ namespace XGC
 
 			mbuffer& alloc( size_t size )
 			{
-				m_data = (char*)realloc( m_data, size );
-				if( m_data )
+				char* newdata = (char*)realloc( m_data, size );
+				if( newdata )
 				{	
+					m_data = newdata;
 					m_capacity = size;
 				}
 				return *this;
@@ -151,10 +158,11 @@ namespace XGC
 
 			void copyto( _lpcstr data, size_t size )
 			{
-				m_data = (char*)realloc( m_data, size );
-				if( m_data )
+				char* newdata = (char*)realloc( m_data, size );
+				if( newdata )
 				{	
-					memcpy( m_data, data, size );
+					memcpy( newdata, data, size );
+					m_data = newdata;
 					m_capacity = size;
 				}
 			}
