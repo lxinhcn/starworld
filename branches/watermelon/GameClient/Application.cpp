@@ -22,7 +22,7 @@ CApplication::CApplication(void)
 , mZoom(10.0f)
 , ptOffset( 0.0f, 0.0f )
 , ptMonseDown( 0, 0 )
-, mDebug( true )
+, mDebug( false )
 , mEdit( false )
 {
 }

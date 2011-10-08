@@ -30,7 +30,7 @@ bool CGameLevel::Load( const char* filename )
 		mWorld = new b2World( mScript.get< const b2Vec2& >("gravity"), true );
 		mZoom = mScript.get< float >( "zoom" );
 
-		mWorldTransform.q.c *= -mZoom;
+		mWorldTransform.q.c *= mZoom;
 		mWorldTransform.q.s *= mZoom;
 
 		mTexture = mScript.get< LuaObject >( "texture" );
@@ -92,7 +92,10 @@ void CGameLevel::Draw( b2Transform transform )
 {
 	for( b2Body* b = mWorld->GetBodyList(); b; b= b->GetNext() )
 	{
-		const b2Transform& xf = b2Mul( transform, b->GetTransform() );
+		b2Transform xf = b->GetTransform();
+		xf.p.y = -xf.p.y;
+		xf.q.c = -xf.q.c;
+		xf = b2Mul( transform, xf );
 		for (b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext())
 		{
 			if (b->IsActive() == false)

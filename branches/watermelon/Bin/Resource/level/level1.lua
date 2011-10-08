@@ -19,7 +19,6 @@ sprites =
 		Sprite( texture.blocks1, 310, 644, 205, 20 ),
 		Sprite( texture.blocks1, 310, 666, 205, 20 ),
 	},
-	
 };
 
 animation = 
@@ -61,9 +60,8 @@ function CreateLevel( world )
 	ground( world );
 	wood( world, 0, 0.8*3 );
 	wood( world, 3.5, 0.8*4 );
-	--[[
+	
 	wood( world, 0, 1.6*3 );
 	wood( world, 0, 2.4*3 );
 	wood( world, 10.5, 2.4*3 );
-	]]--
 end;
