@@ -13,24 +13,33 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="LuaScripts">
+      <UniqueIdentifier>{83ac9066-8f94-404b-949e-9544c2ca51b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LuaScripts\Level">
+      <UniqueIdentifier>{8fca8e08-7462-4906-9f3d-40f276cab785}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Canvas.cpp">
+    <ClCompile Include="b2Rander.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GfxFont.cpp">
+    <ClCompile Include="GameLevel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Setting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NetworkService.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,37 +47,51 @@
     <ClInclude Include="Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Canvas.h">
+    <ClInclude Include="b2Rander.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameClient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GfxFont.h">
+    <ClInclude Include="GameLevel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
+    <ClInclude Include="Setting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkService.h">
+    <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="GameClient.ico">
+    <Image Include="GameClient.ico">
       <Filter>Resource Files</Filter>
-    </None>
-    <None Include="small.ico">
+    </Image>
+    <Image Include="small.ico">
       <Filter>Resource Files</Filter>
-    </None>
-    <None Include="ReadMe.txt" />
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GameClient.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Bin\Debug\config.lua">
+      <Filter>LuaScripts</Filter>
+    </None>
+    <None Include="..\Bin\Resource\defines.lua">
+      <Filter>LuaScripts</Filter>
+    </None>
+    <None Include="..\Bin\Resource\level\level1.lua">
+      <Filter>LuaScripts\Level</Filter>
+    </None>
+    <None Include="ReadMe.txt" />
   </ItemGroup>
 </Project>

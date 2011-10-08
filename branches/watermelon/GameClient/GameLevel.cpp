@@ -13,6 +13,7 @@ CGameLevel::CGameLevel( b2Render* Render, b2Transform transform )
 , mWorldTransform( transform )
 , mLastTime( 0.0f )
 , mZoom( 20.0f )
+, mMouseJoint( NULL )
 {
 }
 
@@ -28,6 +29,10 @@ bool CGameLevel::Load( const char* filename )
 		mScript.doFile( filename );
 
 		mWorld = new b2World( mScript.get< const b2Vec2& >("gravity"), true );
+
+		b2BodyDef bodyDef;
+		mGroundBody = mWorld->CreateBody(&bodyDef);
+
 		mZoom = mScript.get< float >( "zoom" );
 
 		mWorldTransform.q.c *= mZoom;
@@ -234,4 +239,106 @@ void CGameLevel::DrawShape(b2Fixture* fixture, const b2Transform& xf, const b2Co
 			break;
 		}
 	}
+}
+
+void CGameLevel::OnButtonDown( float x, float y, int key, int flags, bool editing )
+{
+	struct QueryCallback : public b2QueryCallback
+	{
+	public:
+		QueryCallback(const b2Vec2& point)
+		{
+			m_point = point;
+			m_fixture = NULL;
+		}
+
+		bool ReportFixture(b2Fixture* fixture)
+		{
+			b2Body* body = fixture->GetBody();
+			if (body->GetType() == b2_dynamicBody)
+			{
+				bool inside = fixture->TestPoint(m_point);
+				if (inside)
+				{
+					m_fixture = fixture;
+
+					// We are done, terminate the query.
+					return false;
+				}
+			}
+
+			// Continue the query.
+			return true;
+		}
+
+		b2Vec2 m_point;
+		b2Fixture* m_fixture;
+	};
+
+	b2Vec2 mouse = Screen2World( fPoint( x, y ) );
+
+	if( editing )
+	{
+		if( mMouseJoint != NULL )
+		{
+			return;
+		}
+
+		// Make a small box.
+		b2AABB aabb;
+		b2Vec2 d;
+		d.Set(0.001f, 0.001f);
+		aabb.lowerBound = mouse - d;
+		aabb.upperBound = mouse + d;
+
+		// Query the world for overlapping shapes.
+		QueryCallback callback(mouse);
+		mWorld->QueryAABB(&callback, aabb);
+
+		if (callback.m_fixture)
+		{
+			b2Body* body = callback.m_fixture->GetBody();
+			b2MouseJointDef md;
+			md.bodyA = mGroundBody;
+			md.bodyB = body;
+			md.target = mouse;
+			md.maxForce = 1000.0f * body->GetMass();
+			mMouseJoint = (b2MouseJoint*)mWorld->CreateJoint(&md);
+			body->SetAwake(true);
+		}
+	}
+}
+
+void CGameLevel::OnButtonUp( float x, float y, int key, int flags, bool editing )
+{
+	if( mMouseJoint )
+	{
+		mWorld->DestroyJoint( mMouseJoint );
+		mMouseJoint = NULL;
+	}
+}
+
+void CGameLevel::OnMouseWheel( float x, float y, int wheel, int flags, bool editing )
+{
+
+}
+
+void CGameLevel::OnMouseMove( float x, float y, int key, int flags, bool editing )
+{
+	if( mMouseJoint )
+	{
+		b2Vec2 pt = Screen2World( fPoint( x, y ) );
+		mMouseJoint->SetTarget( pt );
+	}
+}
+
+b2Vec2 CGameLevel::Screen2World( fPoint pt )
+{
+	float x = pt.x - mWorldTransform.p.x;
+	float y = pt.y - mWorldTransform.p.y;
+
+	x /= mZoom;
+	y /= -mZoom;
+
+	return b2Vec2( x, y );
 }

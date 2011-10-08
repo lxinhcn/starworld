@@ -1,129 +1,153 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Include">
+    <Filter Include="Core">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    <Filter Include="Core\CoreObject">
+      <UniqueIdentifier>{d60c491b-5e65-460e-9bec-dad8ab961d20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Helper">
+      <UniqueIdentifier>{7eda13ef-3797-4a58-978b-060297380e68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="StateMachine">
+      <UniqueIdentifier>{dd345b54-cce6-4fea-bd0f-1af5867cb4c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="StateMachine\State">
+      <UniqueIdentifier>{8b48dded-ed51-450f-b797-2a18931addb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controler">
+      <UniqueIdentifier>{dd32f622-8a54-4f65-9246-cc07e7ff40fd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\DataHelper.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GameActor.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GameActorAI.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="GameCore.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GameMap.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GameObject.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GameSkill.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GameTriggerMgr.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\XAction.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\XMath.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\XObject.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\XObjectPool.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="XQuest.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Include\AttribDef.h">
-      <Filter>Include</Filter>
+    <ClInclude Include="AttribDef.h">
+      <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Include\DataHelper.h">
-      <Filter>Include</Filter>
+    <ClInclude Include="XUtilityFunctor.h">
+      <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Include\GameActor.h">
-      <Filter>Include</Filter>
+    <ClInclude Include="GameMap.h">
+      <Filter>Core\CoreObject</Filter>
     </ClInclude>
-    <ClInclude Include="Include\GameActorAI.h">
-      <Filter>Include</Filter>
+    <ClInclude Include="GameObject.h">
+      <Filter>Core\CoreObject</Filter>
     </ClInclude>
-    <ClInclude Include="Include\GameCore.h">
-      <Filter>Include</Filter>
+    <ClInclude Include="XAction.h">
+      <Filter>Core\CoreObject</Filter>
     </ClInclude>
-    <ClInclude Include="Include\GameMap.h">
-      <Filter>Include</Filter>
+    <ClInclude Include="XActorBase.h">
+      <Filter>Core\CoreObject</Filter>
     </ClInclude>
-    <ClInclude Include="Include\GameObject.h">
-      <Filter>Include</Filter>
+    <ClInclude Include="XAttribute.h">
+      <Filter>Core\CoreObject</Filter>
     </ClInclude>
-    <ClInclude Include="Include\GameSkill.h">
-      <Filter>Include</Filter>
+    <ClInclude Include="XObject.h">
+      <Filter>Core\CoreObject</Filter>
     </ClInclude>
-    <ClInclude Include="Include\GameTriggerMgr.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\XAction.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\XAttribute.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\XMath.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\XObject.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\XObjectPool.h">
-      <Filter>Include</Filter>
+    <ClInclude Include="XObjectPool.h">
+      <Filter>Core\CoreObject</Filter>
     </ClInclude>
     <ClInclude Include="XQuest.h">
-      <Filter>Include</Filter>
+      <Filter>Core\CoreObject</Filter>
     </ClInclude>
-    <ClInclude Include="Include\XVector2.h">
-      <Filter>Include</Filter>
+    <ClInclude Include="XSkillBase.h">
+      <Filter>Core\CoreObject</Filter>
     </ClInclude>
-    <ClInclude Include="Include\XVector3.h">
-      <Filter>Include</Filter>
+    <ClInclude Include="DataHelper.h">
+      <Filter>Core\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="XMath.h">
+      <Filter>Core\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="XStaticName.h">
+      <Filter>Core\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="XVector2.h">
+      <Filter>Core\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="XVector3.h">
+      <Filter>Core\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="XFsmBase.h">
+      <Filter>StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="AttackState.h">
+      <Filter>StateMachine\State</Filter>
+    </ClInclude>
+    <ClInclude Include="IdleState.h">
+      <Filter>StateMachine\State</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveState.h">
+      <Filter>StateMachine\State</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectControlerBase.h">
+      <Filter>Controler</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Include\XMath.inl">
-      <Filter>Include</Filter>
-    </None>
-    <None Include="Include\XVector2.inl">
-      <Filter>Include</Filter>
-    </None>
-    <None Include="Include\XVector3.inl">
-      <Filter>Include</Filter>
-    </None>
+    <ClCompile Include="XUtilityFunctor.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GameMap.cpp">
+      <Filter>Core\CoreObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Core\CoreObject</Filter>
+    </ClCompile>
+    <ClCompile Include="XAction.cpp">
+      <Filter>Core\CoreObject</Filter>
+    </ClCompile>
+    <ClCompile Include="XActorBase.cpp">
+      <Filter>Core\CoreObject</Filter>
+    </ClCompile>
+    <ClCompile Include="XObject.cpp">
+      <Filter>Core\CoreObject</Filter>
+    </ClCompile>
+    <ClCompile Include="XObjectPool.cpp">
+      <Filter>Core\CoreObject</Filter>
+    </ClCompile>
+    <ClCompile Include="XQuest.cpp">
+      <Filter>Core\CoreObject</Filter>
+    </ClCompile>
+    <ClCompile Include="XSkillBase.cpp">
+      <Filter>Core\CoreObject</Filter>
+    </ClCompile>
+    <ClCompile Include="DataHelper.cpp">
+      <Filter>Core\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="XMath.cpp">
+      <Filter>Core\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="XStaticName.cpp">
+      <Filter>Core\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="XFsmBase.cpp">
+      <Filter>StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="AttackState.cpp">
+      <Filter>StateMachine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="IdleState.cpp">
+      <Filter>StateMachine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveState.cpp">
+      <Filter>StateMachine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectControlerBase.cpp">
+      <Filter>Controler</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore.cpp" />
+    <ClCompile Include="StdAfx.cpp" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="ReadMe.txt" />
   </ItemGroup>
 </Project>
