@@ -4,8 +4,8 @@
 #include "GameLevel.h"
 #include "Setting.h"
 
-#define SCREEN_WIDTH  1440
-#define SCREEN_HEIGHT 900
+#define SCREEN_WIDTH  800
+#define SCREEN_HEIGHT 600
 
 bool RenderFunc()
 {
@@ -100,7 +100,7 @@ bool CApplication::FrameFunc()
 			{
 				FreeConsole();
 				hge->System_SetState( HGE_DONTSUSPEND, false );
-				printf( "UICommander closed. Quit edit mode.\n" );
+				printf( "Commander closed. Quit edit mode.\n" );
 			}
 			else
 			{
@@ -109,7 +109,7 @@ bool CApplication::FrameFunc()
 				freopen("CONIN$","r+t",stdin); 
 
 				hge->System_SetState( HGE_DONTSUSPEND, true );
-				printf( "UICommander start successful. Enter edit mode.\n" );
+				printf( "Commander start successful. Enter edit mode.\n" );
 			}
 			mEdit = !mEdit;
 		}
